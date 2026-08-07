@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Pokedex, UserPokedexData } from "@/types/pokemon";
+import SignOutButton from "@/components/auth/SignOutButton";
 
 type StatusFilter = "All" | "Caught" | "Missing";
 type StatFilter = "Any" | "300+" | "400+" | "500+";
@@ -15,6 +16,7 @@ interface SidebarProps {
   onSelect: (number: string) => void;
   theme: "dark" | "light";
   onThemeToggle: () => void;
+  displayName: string;
 }
 
 export default function Sidebar({
@@ -26,6 +28,7 @@ export default function Sidebar({
   onSelect,
   theme,
   onThemeToggle,
+  displayName,
 }: SidebarProps) {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
@@ -119,6 +122,11 @@ export default function Sidebar({
           <span className="slider" />
         </label>
         <span>{theme === "dark" ? "Dark" : "Light"}</span>
+      </div>
+
+      <div className="account-row">
+        <span className="account-name" title={displayName}>👤 {displayName}</span>
+        <SignOutButton />
       </div>
     </aside>
   );

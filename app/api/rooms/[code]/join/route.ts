@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readAnonId } from "@/lib/session";
+import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getPokemon } from "@/lib/pokedex";
 import { buildFighterState } from "@/lib/battleEngine";
@@ -9,8 +9,8 @@ import type { Json } from "@/types/supabase";
 
 export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code]/join">) {
   const { code } = await ctx.params;
-  const anonId = await readAnonId();
-  if (!anonId) return NextResponse.json({ error: "Missing anon_id" }, { status: 400 });
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
   const fighterNumber = body.fighterNumber as string | undefined;
@@ -42,7 +42,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
   const { error: updateError } = await supabase
     .from("battle_rooms")
     .update({
-      player2_id: anonId,
+      player2_id: user.id,
       player2_fighter: fighterNumber,
       status: "battling",
       state: state as unknown as Json,
@@ -53,5 +53,5 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
 
   await broadcastToRoom(roomCode, "battle-start", { fighter1: state.fighter1, fighter2: state.fighter2 });
 
-  return NextResponse.json({ roomCode, playerId: anonId, slot: 2, state });
+  return NextResponse.json({ roomCode, playerId: user.id, slot: 2, state });
 }

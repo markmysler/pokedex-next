@@ -3,9 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
 
 // Secret key — full table access, bypasses RLS. Only ever imported from
-// Route Handlers (app/api/**/route.ts). Route Handlers trust the httpOnly
-// anon_id cookie as the identity boundary instead of Supabase Auth/RLS —
-// see the plan's "Auth/trust model" note.
+// Route Handlers (app/api/**/route.ts) and Server Components. Route Handlers
+// authenticate the caller via lib/session.ts's getCurrentUser() (Supabase
+// Auth session, see lib/supabase/ssrServerClient.ts) and then scope every
+// query to that user's id themselves — RLS policies also exist on
+// user_pokedex/profiles as defense-in-depth, but this client bypasses them,
+// so scoping queries correctly here is what actually enforces access.
 let client: ReturnType<typeof createClient<Database>> | null = null;
 
 export function getSupabaseServerClient() {

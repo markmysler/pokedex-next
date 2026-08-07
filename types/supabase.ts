@@ -1,29 +1,47 @@
-// Hand-written to match supabase/migrations/20260807000000_init_schema.sql.
-// If you later run `supabase gen types typescript`, that generated file can
-// replace this one directly — same shape/convention.
+// Hand-written to match supabase/migrations/*.sql. If you later run
+// `supabase gen types typescript`, that generated file can replace this one
+// directly — same shape/convention.
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          user_id: string;
+          display_name: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          display_name: string;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          display_name?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       user_pokedex: {
         Row: {
-          anon_id: string;
+          user_id: string;
           pokemon_number: string;
           acquired: boolean;
           notes: string;
           updated_at: string;
         };
         Insert: {
-          anon_id: string;
+          user_id: string;
           pokemon_number: string;
           acquired?: boolean;
           notes?: string;
           updated_at?: string;
         };
         Update: {
-          anon_id?: string;
+          user_id?: string;
           pokemon_number?: string;
           acquired?: boolean;
           notes?: string;

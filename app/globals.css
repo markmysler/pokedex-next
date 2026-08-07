@@ -244,3 +244,51 @@ body {
   white-space: pre-wrap;
   margin: 0;
 }
+
+/* ACCOUNT (sidebar) */
+.account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+}
+.account-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+/* AUTH PAGES (login/signup) */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  padding: 20px;
+}
+.auth-form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-form h1 { margin: 0 0 4px 0; font-size: 22px; text-align: center; }
+.auth-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: bold; }
+.auth-form input {
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+.auth-error { color: #E74C3C; font-size: 13px; margin: 0; }
+.auth-switch { font-size: 13px; color: var(--text-secondary); text-align: center; margin: 0; }
+.auth-switch a { color: #3498DB; }

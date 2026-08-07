@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readAnonId } from "@/lib/session";
+import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import type { RoomState } from "@/types/pokemon";
 
@@ -9,8 +9,8 @@ import type { RoomState } from "@/types/pokemon";
 // permanently stuck if a broadcast doesn't arrive.
 export async function GET(_request: Request, ctx: RouteContext<"/api/rooms/[code]">) {
   const { code } = await ctx.params;
-  const anonId = await readAnonId();
-  if (!anonId) return NextResponse.json({ error: "Missing anon_id" }, { status: 400 });
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supabase = getSupabaseServerClient();
   const roomCode = code.toUpperCase();
@@ -22,7 +22,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/rooms/[code
     .single();
   if (error || !room) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
-  if (room.player1_id !== anonId && room.player2_id !== anonId) {
+  if (room.player1_id !== user.id && room.player2_id !== user.id) {
     return NextResponse.json({ error: "Not a player in this room" }, { status: 403 });
   }
 

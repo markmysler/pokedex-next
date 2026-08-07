@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readAnonId } from "@/lib/session";
+import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { resolveRound } from "@/lib/battleEngine";
 import { broadcastToRoom } from "@/lib/supabase/broadcast";
@@ -8,8 +8,8 @@ import type { Json } from "@/types/supabase";
 
 export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code]/move">) {
   const { code } = await ctx.params;
-  const anonId = await readAnonId();
-  if (!anonId) return NextResponse.json({ error: "Missing anon_id" }, { status: 400 });
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
   const moveIndex = body.moveIndex as number | undefined;
@@ -26,8 +26,8 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
   if (fetchError || !room) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
   let mySlot: RoomSlot;
-  if (room.player1_id === anonId) mySlot = 1;
-  else if (room.player2_id === anonId) mySlot = 2;
+  if (room.player1_id === user.id) mySlot = 1;
+  else if (room.player2_id === user.id) mySlot = 2;
   else return NextResponse.json({ error: "Not a player in this room" }, { status: 403 });
 
   const state = room.state as unknown as RoomState;

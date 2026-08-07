@@ -14,9 +14,10 @@ interface PokedexAppProps {
   pokedex: Pokedex;
   order: string[];
   typesList: string[];
+  displayName: string;
 }
 
-export default function PokedexApp({ pokedex, order, typesList }: PokedexAppProps) {
+export default function PokedexApp({ pokedex, order, typesList, displayName }: PokedexAppProps) {
   const [userData, setUserData] = useState<UserPokedexData>({});
   const [userDataLoaded, setUserDataLoaded] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(order[0] ?? null);
@@ -76,6 +77,7 @@ export default function PokedexApp({ pokedex, order, typesList }: PokedexAppProp
         onSelect={setSelectedId}
         theme={theme}
         onThemeToggle={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+        displayName={displayName}
       />
 
       <main className="main-panel">

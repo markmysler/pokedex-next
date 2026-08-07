@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { readAnonId } from "@/lib/session";
+import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToRoom } from "@/lib/supabase/broadcast";
 
 export async function POST(_request: Request, ctx: RouteContext<"/api/rooms/[code]/leave">) {
   const { code } = await ctx.params;
-  const anonId = await readAnonId();
-  if (!anonId) return NextResponse.json({ error: "Missing anon_id" }, { status: 400 });
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const roomCode = code.toUpperCase();
   const supabase = getSupabaseServerClient();
@@ -17,7 +17,7 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/rooms/[cod
     .eq("code", roomCode)
     .single();
 
-  if (room && (room.player1_id === anonId || room.player2_id === anonId)) {
+  if (room && (room.player1_id === user.id || room.player2_id === user.id)) {
     await supabase.from("battle_rooms").update({ status: "over" }).eq("code", roomCode);
     await broadcastToRoom(roomCode, "opponent-left", {});
   }
