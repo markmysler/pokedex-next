@@ -15,6 +15,11 @@ export interface RoundResultPayload {
   winner: RoomSlot | null;
 }
 
+export interface ChatMessagePayload {
+  text: string;
+  senderDisplayName: string;
+}
+
 interface RoomChannelHandlers {
   onOpponentJoined: () => void;
   onPlayerLockedIn: (payload: { slot: RoomSlot }) => void;
@@ -24,20 +29,30 @@ interface RoomChannelHandlers {
   onOpponentLeft: () => void;
   onRematchRequested: (payload: { slot: RoomSlot }) => void;
   onRematchStarted: () => void;
+  onChatMessage: (payload: ChatMessagePayload) => void;
 }
 
-// Subscribes to the Supabase Realtime broadcast channel for one room. All
-// events are pushed by Route Handlers (app/api/rooms/**) via
-// lib/supabase/broadcast.ts — this hook only listens, never sends.
+// Subscribes to the Supabase Realtime broadcast channel for one room. Every
+// other event is pushed by Route Handlers (app/api/rooms/**) via
+// lib/supabase/broadcast.ts, but chat is different: messages aren't a
+// cheating vector, so there's nothing to validate server-side — the
+// returned sendChatMessage() sends browser-to-browser directly on this same
+// channel with the publishable key, no Route Handler involved (see
+// upgrades/08-chat.md). Broadcast doesn't echo back to the sender, so the
+// caller is expected to also append its own sent message locally.
 export function useRoomChannel(roomCode: string | null, handlers: RoomChannelHandlers) {
   const handlersRef = useRef(handlers);
+  const channelRef = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
     handlersRef.current = handlers;
   }, [handlers]);
 
   useEffect(() => {
-    if (!roomCode) return;
+    if (!roomCode) {
+      channelRef.current = null;
+      return;
+    }
 
     const supabase = getSupabaseBrowserClient();
     const channel: RealtimeChannel = supabase
@@ -50,6 +65,7 @@ export function useRoomChannel(roomCode: string | null, handlers: RoomChannelHan
       .on("broadcast", { event: "opponent-left" }, () => handlersRef.current.onOpponentLeft())
       .on("broadcast", { event: "rematch-requested" }, ({ payload }) => handlersRef.current.onRematchRequested(payload as never))
       .on("broadcast", { event: "rematch-started" }, () => handlersRef.current.onRematchStarted())
+      .on("broadcast", { event: "chat-message" }, ({ payload }) => handlersRef.current.onChatMessage(payload as never))
       .subscribe((status, err) => {
         // Broadcasts are silent on failure otherwise — this is the only
         // signal that the client ever actually joined the channel. Check
@@ -61,8 +77,17 @@ export function useRoomChannel(roomCode: string | null, handlers: RoomChannelHan
         }
       });
 
+    channelRef.current = channel;
+
     return () => {
+      channelRef.current = null;
       supabase.removeChannel(channel);
     };
   }, [roomCode]);
+
+  function sendChatMessage(payload: ChatMessagePayload) {
+    channelRef.current?.send({ type: "broadcast", event: "chat-message", payload });
+  }
+
+  return { sendChatMessage };
 }

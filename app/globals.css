@@ -295,6 +295,35 @@ body {
 
 .rematch-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
 
+/* IN-MATCH CHAT (upgrades/08-chat.md — never persisted, local state only) */
+.chat-panel { display: flex; flex-direction: column; gap: 8px; }
+.chat-panel h3 { margin: 0; }
+.chat-messages {
+  min-height: 100px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--input-bg);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+.chat-empty { color: var(--text-muted); margin: 0; font-size: 12px; }
+.chat-message { word-break: break-word; }
+.chat-message.mine .chat-sender { color: #2FA572; }
+.chat-sender { font-weight: bold; }
+.chat-input-row { display: flex; gap: 8px; }
+.chat-input-row input {
+  flex: 1;
+  padding: 8px 10px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
 .log-container { flex: 1; display: flex; flex-direction: column; }
 .action-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .btn-primary, .btn-secondary {

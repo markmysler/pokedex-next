@@ -8,12 +8,17 @@ export default async function OnlinePage() {
   if (!user) return null;
 
   const supabase = getSupabaseServerClient();
-  const { pokemon } = await getInventoryForUser(supabase, user.id);
+  const [{ pokemon }, { data: profile }] = await Promise.all([
+    getInventoryForUser(supabase, user.id),
+    supabase.from("profiles").select("display_name").eq("user_id", user.id).single(),
+  ]);
+
+  const displayName = profile?.display_name ?? user.email ?? "Trainer";
 
   return (
     <div className="page">
       <h1 className="page-title">🌐 Online Battle</h1>
-      <OnlineBattle inventory={pokemon} />
+      <OnlineBattle inventory={pokemon} displayName={displayName} />
     </div>
   );
 }

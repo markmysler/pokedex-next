@@ -5,10 +5,12 @@ import type { BattleAction, OwnedPokemon, RoomSlot, TeamState } from "@/types/po
 import FighterCard from "@/components/battle/FighterCard";
 import MoveButton from "@/components/battle/MoveButton";
 import TeamPicker from "./TeamPicker";
+import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
 
 interface OnlineBattleProps {
   inventory: OwnedPokemon[];
+  displayName: string;
 }
 
 type Phase = "setup" | "waiting" | "picking" | "battling";
@@ -23,7 +25,7 @@ interface OnlineBattleState {
 
 const POLL_INTERVAL_MS = 2500;
 
-export default function OnlineBattle({ inventory }: OnlineBattleProps) {
+export default function OnlineBattle({ inventory, displayName }: OnlineBattleProps) {
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [mySlot, setMySlot] = useState<RoomSlot | null>(null);
@@ -35,6 +37,7 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
   const [log, setLog] = useState<string[]>([]);
   const [moveLocked, setMoveLocked] = useState(false);
   const [rematchRequestedBy, setRematchRequestedBy] = useState<RoomSlot | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const logRef = useRef<HTMLPreElement>(null);
   const mySlotRef = useRef<RoomSlot | null>(null);
   const lockedInRef = useRef(false);
@@ -118,7 +121,7 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
     }
   }
 
-  useRoomChannel(roomCode, {
+  const { sendChatMessage } = useRoomChannel(roomCode, {
     onOpponentJoined: () => {
       resetForRematch();
       setStatus("Opponent joined! Pick your team.");
@@ -160,7 +163,15 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
     onRematchStarted: () => {
       resetForRematch();
     },
+    onChatMessage: ({ text, senderDisplayName }) => {
+      setChatMessages((prev) => [...prev, { text, senderDisplayName, mine: false }]);
+    },
   });
+
+  function sendChat(text: string) {
+    setChatMessages((prev) => [...prev, { text, senderDisplayName: displayName, mine: true }]);
+    sendChatMessage({ text, senderDisplayName: displayName });
+  }
 
   // Polling backstop: Realtime broadcast is the fast path, but this
   // guarantees the game can't get permanently stuck if a broadcast doesn't
@@ -233,6 +244,7 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
     setTurnStatus("");
     setRoomCodeInput("");
     setRematchRequestedBy(null);
+    setChatMessages([]);
     lastTurnRef.current = null;
   }
 
@@ -249,6 +261,7 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
     setTurnStatus("");
     setStatus("");
     setRematchRequestedBy(null);
+    setChatMessages([]);
     setPhase("picking");
     lastTurnRef.current = null;
   }
@@ -377,11 +390,14 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
 
   if (phase === "waiting") {
     return (
-      <div className="card" id="online-setup">
-        <h3>🌐 Room Code: {roomCode}</h3>
-        <div className="online-status">{status}</div>
-        <button className="btn-secondary" onClick={leaveRoom}>Cancel</button>
-      </div>
+      <>
+        <div className="card" id="online-setup">
+          <h3>🌐 Room Code: {roomCode}</h3>
+          <div className="online-status">{status}</div>
+          <button className="btn-secondary" onClick={leaveRoom}>Cancel</button>
+        </div>
+        <ChatPanel messages={chatMessages} onSend={sendChat} />
+      </>
     );
   }
 
@@ -400,6 +416,7 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
         ) : (
           <TeamPicker inventory={inventory} onSubmit={lockIn} />
         )}
+        <ChatPanel messages={chatMessages} onSend={sendChat} />
       </>
     );
   }
@@ -490,6 +507,8 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
           )}
         </div>
       )}
+
+      <ChatPanel messages={chatMessages} onSend={sendChat} />
     </>
   );
 }
