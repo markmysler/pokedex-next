@@ -27,26 +27,51 @@ function validateAction(action: BattleAction, team: TeamState): string | null {
   return "Invalid action";
 }
 
+// Lightweight {number, name}[] copy, not owned-instance ids — cheap to snapshot
+// now and doesn't go stale if the instance is later discarded (see
+// upgrades/07-match-history-leaderboard.md).
+function teamSnapshot(team: TeamState): { number: string; name: string }[] {
+  return team.members.map((m) => ({ number: m.pokemon.number, name: m.pokemon.name }));
+}
+
 async function recordBattleEnd(
   supabase: SupabaseClient<Database>,
   roomCode: string,
   room: { player1_id: string; player2_id: string | null },
-  winner: RoomSlot
+  winner: RoomSlot,
+  team1: TeamState,
+  team2: TeamState
 ) {
   await supabase.from("battle_rooms").update({ status: "over" }).eq("code", roomCode);
 
   const winnerId = winner === 1 ? room.player1_id : room.player2_id;
   const loserId = winner === 1 ? room.player2_id : room.player1_id;
+  const winnerTeam = winner === 1 ? team1 : team2;
+  const loserTeam = winner === 1 ? team2 : team1;
 
   // Winner gets a lootbox every time (100%, unconditional — unlike bot
   // battles' 25% roll). Both players get a match_results row so each
   // account's own history/dashboard reflects the result.
   if (winnerId) await supabase.from("lootboxes").insert({ user_id: winnerId });
   if (winnerId) {
-    await supabase.from("match_results").insert({ user_id: winnerId, opponent: loserId ?? "unknown", mode: "online", won: true });
+    await supabase.from("match_results").insert({
+      user_id: winnerId,
+      opponent: loserId ?? "unknown",
+      mode: "online",
+      won: true,
+      room_code: roomCode,
+      team_snapshot: teamSnapshot(winnerTeam) as unknown as Json,
+    });
   }
   if (loserId) {
-    await supabase.from("match_results").insert({ user_id: loserId, opponent: winnerId ?? "unknown", mode: "online", won: false });
+    await supabase.from("match_results").insert({
+      user_id: loserId,
+      opponent: winnerId ?? "unknown",
+      mode: "online",
+      won: false,
+      room_code: roomCode,
+      team_snapshot: teamSnapshot(loserTeam) as unknown as Json,
+    });
   }
 }
 
@@ -165,7 +190,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
   if (finalizeError) return NextResponse.json({ error: finalizeError.message }, { status: 500 });
 
   if (result.over && result.winner) {
-    await recordBattleEnd(supabase, roomCode, room, result.winner);
+    await recordBattleEnd(supabase, roomCode, room, result.winner, team1, team2);
   }
 
   const roundResultPayload = {

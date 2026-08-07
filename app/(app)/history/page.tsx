@@ -1,20 +1,13 @@
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
+import { getMatchHistoryForUser } from "@/lib/history";
 
-// Deliberately placeholder-grade (see upgrades/04-app-shell-navigation.md) —
-// full per-match detail and a public leaderboard are step 7.
 export default async function HistoryPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
   const supabase = getSupabaseServerClient();
-  const { data } = await supabase
-    .from("match_results")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("played_at", { ascending: false });
-
-  const matches = data ?? [];
+  const matches = await getMatchHistoryForUser(supabase, user.id);
 
   return (
     <div className="page">
@@ -25,15 +18,22 @@ export default async function HistoryPage() {
         ) : (
           <ul className="match-list">
             {matches.map((m) => (
-              <li key={m.id} className={`match-row${m.won ? " win" : " loss"}`}>
-                {m.won ? "🏆 Won" : "💀 Lost"} — {m.mode === "bot" ? "vs Bot" : "vs Player"} —{" "}
-                {new Date(m.played_at).toLocaleString()}
+              <li key={m.id} className={`match-row match-row-detailed${m.won ? " win" : " loss"}`}>
+                <div className="match-row-main">
+                  <span>{m.won ? "🏆 Won" : "💀 Lost"} vs {m.opponentLabel}</span>
+                  <span className="match-row-date">{new Date(m.playedAt).toLocaleString()}</span>
+                </div>
+                <div className="match-row-sub">
+                  {m.mode === "online" ? `Online${m.roomCode ? ` — room ${m.roomCode}` : ""}` : "vs Bot"}
+                  {m.teamSnapshot && m.teamSnapshot.length > 0 && (
+                    <> · Your team: {m.teamSnapshot.map((p) => p.name).join(", ")}</>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
         )}
       </div>
-      <p className="dashboard-note">This is a simple log for now — full match detail and a public leaderboard are coming later.</p>
     </div>
   );
 }

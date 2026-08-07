@@ -156,6 +156,8 @@ export interface Database {
           mode: "bot" | "online";
           won: boolean;
           played_at: string;
+          room_code: string | null;
+          team_snapshot: Json | null;
         };
         Insert: {
           id?: string;
@@ -164,6 +166,8 @@ export interface Database {
           mode: "bot" | "online";
           won: boolean;
           played_at?: string;
+          room_code?: string | null;
+          team_snapshot?: Json | null;
         };
         Update: {
           id?: string;
@@ -172,6 +176,8 @@ export interface Database {
           mode?: "bot" | "online";
           won?: boolean;
           played_at?: string;
+          room_code?: string | null;
+          team_snapshot?: Json | null;
         };
         Relationships: [];
       };

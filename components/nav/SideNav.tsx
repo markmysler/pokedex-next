@@ -12,6 +12,7 @@ const LINKS = [
   { href: "/battle", label: "Battle", icon: "⚔️" },
   { href: "/online", label: "Online", icon: "🌐" },
   { href: "/history", label: "History", icon: "📜" },
+  { href: "/leaderboard", label: "Leaderboard", icon: "🏆" },
   { href: "/profile", label: "Profile", icon: "👤" },
 ];
 
