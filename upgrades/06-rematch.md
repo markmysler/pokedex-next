@@ -18,8 +18,17 @@ Reuses the `TeamPicker`/lock-in flow built in step 5 almost as-is — "same or d
 
 ## End state
 
-- [ ] After a battle ends, either player can request a rematch; the other player sees a prompt and must explicitly accept before anything resets.
-- [ ] Accepting keeps the same room code — verify in the Supabase table editor that no new `battle_rooms` row is created, the existing row's `state`/`status` just change.
-- [ ] Both players can pick the same instances again or different ones via the reused `TeamPicker`, and the resulting battle behaves identically to a fresh one (mana/HP reset, no leftover state from the previous battle).
-- [ ] Leaving instead of accepting a rematch request behaves the same as leaving does today (opponent notified, room ends).
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] After a battle ends, either player can request a rematch; the other player sees a prompt and must explicitly accept before anything resets.
+- [x] Accepting keeps the same room code — verify in the Supabase table editor that no new `battle_rooms` row is created, the existing row's `state`/`status` just change.
+- [x] Both players can pick the same instances again or different ones via the reused `TeamPicker`, and the resulting battle behaves identically to a fresh one (mana/HP reset, no leftover state from the previous battle).
+- [x] Leaving instead of accepting a rematch request behaves the same as leaving does today (opponent notified, room ends).
+- [x] `npm run build` / `npm run lint` clean.
+
+Validated live against the production Supabase project via two disposable
+test accounts: a full battle to completion, a rematch request rejected as
+self-acceptable, the request visible (but nothing reset) to the opponent
+before accept, accept resetting the *same* `battle_rooms` row (`created_at`
+unchanged) with team-id columns and state cleared, a double-accept race
+correctly rejected, a full rematch with a different Pokémon selection
+played to completion with fresh HP/MP and no leftover state, and a second
+rematch request declined by leaving.
