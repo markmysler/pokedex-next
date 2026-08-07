@@ -37,6 +37,39 @@ export interface UserPokedexEntry {
 
 export type UserPokedexData = Record<string, UserPokedexEntry>;
 
+// The rolled result of opening a lootbox (or a starter grant) — the same
+// shape whether it came from lib/collection.ts's rollInstance() or a fixed
+// starter roster, since both ultimately become a pokemon_instances row.
+export interface RolledStats {
+  hp: number;
+  atk: number;
+  def: number;
+  spatk: number;
+  spdef: number;
+  spd: number;
+  total: number;
+  moves: Move[];
+}
+
+// A specific Pokemon an account owns: species display fields (looked up by
+// pokemon_number from the static Pokedex) + this instance's own rolled
+// stats/moves. Two instances of the same species can have completely
+// different stats — that's the point (see upgrades/02-collection-system.md).
+export interface OwnedPokemon extends RolledStats {
+  id: string;
+  number: string;
+  name: string;
+  type1: PokemonType;
+  type2: PokemonType | null;
+  isStarter: boolean;
+}
+
+export interface Lootbox {
+  id: string;
+  openedAt: string | null;
+  createdAt: string;
+}
+
 export interface FighterState {
   hp: number;
   maxHp: number;

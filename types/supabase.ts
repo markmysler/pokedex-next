@@ -29,23 +29,89 @@ export interface Database {
         Row: {
           user_id: string;
           pokemon_number: string;
-          acquired: boolean;
           notes: string;
           updated_at: string;
         };
         Insert: {
           user_id: string;
           pokemon_number: string;
-          acquired?: boolean;
           notes?: string;
           updated_at?: string;
         };
         Update: {
           user_id?: string;
           pokemon_number?: string;
-          acquired?: boolean;
           notes?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      pokemon_instances: {
+        Row: {
+          id: string;
+          user_id: string;
+          pokemon_number: string;
+          hp: number;
+          atk: number;
+          def: number;
+          spatk: number;
+          spdef: number;
+          spd: number;
+          total: number;
+          moves: Json;
+          is_starter: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          pokemon_number: string;
+          hp: number;
+          atk: number;
+          def: number;
+          spatk: number;
+          spdef: number;
+          spd: number;
+          total: number;
+          moves: Json;
+          is_starter?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          pokemon_number?: string;
+          hp?: number;
+          atk?: number;
+          def?: number;
+          spatk?: number;
+          spdef?: number;
+          spd?: number;
+          total?: number;
+          moves?: Json;
+          is_starter?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      lootboxes: {
+        Row: {
+          id: string;
+          user_id: string;
+          opened_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          opened_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          opened_at?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };
