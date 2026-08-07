@@ -1,9 +1,39 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
-import type { OwnedPokemon } from "@/types/pokemon";
+import type { Lootbox, OwnedPokemon } from "@/types/pokemon";
 import { getPokemon } from "@/lib/pokedex";
 import { toOwnedPokemon } from "@/lib/collection";
+
+// Shared by GET /api/inventory and the Server Components that need the same
+// data (app/(app)/inventory, /battle, /online) — one query, no duplicated
+// fetch-and-map logic across route handler and pages.
+export async function getInventoryForUser(
+  supabase: SupabaseClient<Database>,
+  userId: string
+): Promise<{ pokemon: OwnedPokemon[]; lootboxes: Lootbox[] }> {
+  const [instancesRes, lootboxesRes] = await Promise.all([
+    supabase.from("pokemon_instances").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+    supabase.from("lootboxes").select("*").eq("user_id", userId).is("opened_at", null).order("created_at", { ascending: true }),
+  ]);
+
+  if (instancesRes.error) throw new Error(instancesRes.error.message);
+  if (lootboxesRes.error) throw new Error(lootboxesRes.error.message);
+
+  const pokemon: OwnedPokemon[] = [];
+  for (const row of instancesRes.data) {
+    const species = getPokemon(row.pokemon_number);
+    if (species) pokemon.push(toOwnedPokemon(row, species));
+  }
+
+  const lootboxes: Lootbox[] = lootboxesRes.data.map((row) => ({
+    id: row.id,
+    openedAt: row.opened_at,
+    createdAt: row.created_at,
+  }));
+
+  return { pokemon, lootboxes };
+}
 
 // Fetches a pokemon_instances row and returns it as an OwnedPokemon only if
 // it belongs to `userId` — ownership and existence are checked in the same

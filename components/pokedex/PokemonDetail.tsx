@@ -18,14 +18,12 @@ const STAT_INFO: Array<{ label: string; key: keyof Pokemon; color: string }> = [
 interface PokemonDetailProps {
   pokemon: Pokemon;
   entry: UserPokedexEntry;
-  onToggleAcquired: (acquired: boolean) => void;
   onNotesChange: (notes: string) => void;
 }
 
-// The parent (PokedexApp) mounts this with key={pokemon.number} and only
-// once the initial user-data fetch has settled, so `entry` is always
+// The parent mounts this with key={pokemon.number}, so `entry` is always
 // up to date on mount — no effect needed to resync notesDraft afterwards.
-export default function PokemonDetail({ pokemon, entry, onToggleAcquired, onNotesChange }: PokemonDetailProps) {
+export default function PokemonDetail({ pokemon, entry, onNotesChange }: PokemonDetailProps) {
   const [notesDraft, setNotesDraft] = useState(entry.notes);
   const [saved, setSaved] = useState(false);
   const debouncedSave = useDebouncedCallback((notes: string) => {
@@ -40,15 +38,13 @@ export default function PokemonDetail({ pokemon, entry, onToggleAcquired, onNote
       <div className="card" id="card-header">
         <h2>#{pokemon.number} {pokemon.name}</h2>
         <TypeBadges type1={pokemon.type1} type2={pokemon.type2} />
-        <label className="switch-labeled">
-          <input
-            type="checkbox"
-            checked={entry.acquired}
-            onChange={(e) => onToggleAcquired(e.target.checked)}
-          />
-          <span className="slider" />
-          <span>Mark as Acquired (Caught)</span>
-        </label>
+        {/* Caught status is derived from owned pokemon_instances (see
+            upgrades/02-collection-system.md) -- read-only here, not a
+            manual toggle. Open lootboxes on the Inventory page to catch
+            more. */}
+        <span className={`caught-badge${entry.acquired ? " caught" : ""}`}>
+          {entry.acquired ? "✅ Caught" : "⚪ Not caught yet"}
+        </span>
       </div>
 
       <div className="card sprites-card">
