@@ -60,3 +60,35 @@ export async function getOwnedPokemonInstance(
 
   return toOwnedPokemon(data, species);
 }
+
+// Batch version of getOwnedPokemonInstance, for team lock-in (step 5): all
+// ids must belong to userId, be distinct, and exist, or the whole batch is
+// rejected — a partial team is not a valid pick. Preserves the order the
+// ids were given in (the caller's pick order becomes team index order).
+export async function getOwnedPokemonInstances(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+  instanceIds: string[]
+): Promise<OwnedPokemon[] | null> {
+  const uniqueIds = Array.from(new Set(instanceIds));
+  if (uniqueIds.length !== instanceIds.length) return null;
+
+  const { data, error } = await supabase
+    .from("pokemon_instances")
+    .select("*")
+    .eq("user_id", userId)
+    .in("id", uniqueIds);
+
+  if (error || !data || data.length !== uniqueIds.length) return null;
+
+  const byId = new Map(data.map((row) => [row.id, row]));
+  const result: OwnedPokemon[] = [];
+  for (const id of uniqueIds) {
+    const row = byId.get(id);
+    if (!row) return null;
+    const species = getPokemon(row.pokemon_number);
+    if (!species) return null;
+    result.push(toOwnedPokemon(row, species));
+  }
+  return result;
+}

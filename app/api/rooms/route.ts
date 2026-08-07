@@ -1,33 +1,24 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
-import { getOwnedPokemonInstance } from "@/lib/inventory";
 import { generateRoomCode } from "@/lib/roomCode";
 
 const MAX_ATTEMPTS = 5;
 
-export async function POST(request: Request) {
+// Team composition is decided in the picking phase after both players are
+// seated (see [code]/lock-in) — creating a room no longer takes a Pokemon.
+export async function POST() {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
-  const pokemonInstanceId = body.pokemonInstanceId as string | undefined;
-  if (!pokemonInstanceId) return NextResponse.json({ error: "Missing pokemonInstanceId" }, { status: 400 });
-
   const supabase = getSupabaseServerClient();
-
-  // Never trust the client on which Pokemon it is or its stats — only the
-  // id is taken from the request; everything else is re-fetched here.
-  const owned = await getOwnedPokemonInstance(supabase, user.id, pokemonInstanceId);
-  if (!owned) return NextResponse.json({ error: "You don't own that Pokemon" }, { status: 403 });
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const code = generateRoomCode();
     const { error } = await supabase.from("battle_rooms").insert({
       code,
       player1_id: user.id,
-      player1_pokemon_instance_id: pokemonInstanceId,
-      status: "waiting",
+      status: "waiting_for_players",
       state: {},
     });
 

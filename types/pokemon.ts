@@ -80,10 +80,38 @@ export interface FighterState {
 
 export type RoomSlot = 1 | 2;
 
+// A player's move during a normal (non-forced-switch) turn: either an
+// attack from the active member's moveset, or a voluntary switch to a
+// benched member — switching costs the whole turn, same as attacking.
+export interface AttackAction {
+  type: "attack";
+  moveIndex: number;
+}
+
+export interface SwitchAction {
+  type: "switch";
+  teamIndex: 0 | 1 | 2;
+}
+
+export type BattleAction = AttackAction | SwitchAction;
+
+// Three owned Pokemon per side (see upgrades/05-3v3-battles.md). Members
+// keep their HP/MP across switches — switching out doesn't heal or reset.
+export interface TeamState {
+  members: [FighterState, FighterState, FighterState];
+  activeIndex: 0 | 1 | 2;
+}
+
+export type RoomStatus = "waiting_for_players" | "picking" | "battling" | "over";
+
 export interface RoomState {
-  fighter1: FighterState;
-  fighter2: FighterState;
-  pending: Partial<Record<RoomSlot, Move>>;
+  team1: TeamState;
+  team2: TeamState;
+  pending: Partial<Record<RoomSlot, BattleAction>>;
+  // Set to the slot that must submit a switch (and only a switch) before
+  // anyone can act again — set when an attack faints a team's active member
+  // but the team isn't fully wiped yet. Null the rest of the time.
+  awaitingForcedSwitch: RoomSlot | null;
   turnCount: number;
   over: boolean;
   winner: RoomSlot | null;
@@ -92,10 +120,8 @@ export interface RoomState {
 export interface BattleRoom {
   code: string;
   player1_id: string;
-  player1_fighter: string;
   player2_id: string | null;
-  player2_fighter: string | null;
-  status: "waiting" | "battling" | "over";
+  status: RoomStatus;
   state: RoomState | Record<string, never>;
   created_at: string;
 }

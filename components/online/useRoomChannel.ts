@@ -8,14 +8,17 @@ import type { RoomSlot } from "@/types/pokemon";
 export interface RoundResultPayload {
   log: string[];
   turnCount: number;
-  fighter1: unknown;
-  fighter2: unknown;
+  team1: unknown;
+  team2: unknown;
+  awaitingForcedSwitch: RoomSlot | null;
   over: boolean;
   winner: RoomSlot | null;
 }
 
 interface RoomChannelHandlers {
-  onBattleStart: (payload: { fighter1: unknown; fighter2: unknown }) => void;
+  onOpponentJoined: () => void;
+  onPlayerLockedIn: (payload: { slot: RoomSlot }) => void;
+  onBattleStart: (payload: { team1: unknown; team2: unknown }) => void;
   onRoundResult: (payload: RoundResultPayload) => void;
   onOpponentMoveSubmitted: () => void;
   onOpponentLeft: () => void;
@@ -37,6 +40,8 @@ export function useRoomChannel(roomCode: string | null, handlers: RoomChannelHan
     const supabase = getSupabaseBrowserClient();
     const channel: RealtimeChannel = supabase
       .channel(`room:${roomCode}`)
+      .on("broadcast", { event: "opponent-joined" }, () => handlersRef.current.onOpponentJoined())
+      .on("broadcast", { event: "player-locked-in" }, ({ payload }) => handlersRef.current.onPlayerLockedIn(payload as never))
       .on("broadcast", { event: "battle-start" }, ({ payload }) => handlersRef.current.onBattleStart(payload as never))
       .on("broadcast", { event: "round-result" }, ({ payload }) => handlersRef.current.onRoundResult(payload as never))
       .on("broadcast", { event: "opponent-move-submitted" }, () => handlersRef.current.onOpponentMoveSubmitted())

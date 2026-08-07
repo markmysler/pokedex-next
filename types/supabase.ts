@@ -119,9 +119,9 @@ export interface Database {
         Row: {
           code: string;
           player1_id: string;
-          player1_pokemon_instance_id: string;
+          player1_team_ids: Json | null;
           player2_id: string | null;
-          player2_pokemon_instance_id: string | null;
+          player2_team_ids: Json | null;
           status: string;
           state: Json;
           created_at: string;
@@ -129,9 +129,9 @@ export interface Database {
         Insert: {
           code: string;
           player1_id: string;
-          player1_pokemon_instance_id: string;
+          player1_team_ids?: Json | null;
           player2_id?: string | null;
-          player2_pokemon_instance_id?: string | null;
+          player2_team_ids?: Json | null;
           status?: string;
           state?: Json;
           created_at?: string;
@@ -139,9 +139,9 @@ export interface Database {
         Update: {
           code?: string;
           player1_id?: string;
-          player1_pokemon_instance_id?: string;
+          player1_team_ids?: Json | null;
           player2_id?: string | null;
-          player2_pokemon_instance_id?: string | null;
+          player2_team_ids?: Json | null;
           status?: string;
           state?: Json;
           created_at?: string;
