@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
-import { getPokemon } from "@/lib/pokedex";
+import { getOwnedPokemonInstance } from "@/lib/inventory";
 import { buildFighterState } from "@/lib/battleEngine";
 import { broadcastToRoom } from "@/lib/supabase/broadcast";
 import type { RoomState } from "@/types/pokemon";
@@ -13,10 +13,8 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
-  const fighterNumber = body.fighterNumber as string | undefined;
-  if (!fighterNumber || !getPokemon(fighterNumber)) {
-    return NextResponse.json({ error: "Unknown fighter" }, { status: 400 });
-  }
+  const pokemonInstanceId = body.pokemonInstanceId as string | undefined;
+  if (!pokemonInstanceId) return NextResponse.json({ error: "Missing pokemonInstanceId" }, { status: 400 });
 
   const supabase = getSupabaseServerClient();
   const roomCode = code.toUpperCase();
@@ -30,9 +28,18 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
   if (fetchError || !room) return NextResponse.json({ error: "Room not found" }, { status: 404 });
   if (room.player2_id) return NextResponse.json({ error: "Room is full" }, { status: 409 });
 
+  const player2Owned = await getOwnedPokemonInstance(supabase, user.id, pokemonInstanceId);
+  if (!player2Owned) return NextResponse.json({ error: "You don't own that Pokemon" }, { status: 403 });
+
+  // Re-fetch player 1's chosen instance too (not just trust what was stored
+  // at create time) — cheap, and correctly handles the edge case where it
+  // was discarded between room creation and this join.
+  const player1Owned = await getOwnedPokemonInstance(supabase, room.player1_id, room.player1_pokemon_instance_id);
+  if (!player1Owned) return NextResponse.json({ error: "Room's Pokemon no longer exists" }, { status: 409 });
+
   const state: RoomState = {
-    fighter1: buildFighterState(getPokemon(room.player1_fighter)),
-    fighter2: buildFighterState(getPokemon(fighterNumber)),
+    fighter1: buildFighterState(player1Owned),
+    fighter2: buildFighterState(player2Owned),
     pending: {},
     turnCount: 0,
     over: false,
@@ -43,7 +50,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
     .from("battle_rooms")
     .update({
       player2_id: user.id,
-      player2_fighter: fighterNumber,
+      player2_pokemon_instance_id: pokemonInstanceId,
       status: "battling",
       state: state as unknown as Json,
     })

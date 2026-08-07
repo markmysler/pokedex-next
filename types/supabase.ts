@@ -119,9 +119,9 @@ export interface Database {
         Row: {
           code: string;
           player1_id: string;
-          player1_fighter: string;
+          player1_pokemon_instance_id: string;
           player2_id: string | null;
-          player2_fighter: string | null;
+          player2_pokemon_instance_id: string | null;
           status: string;
           state: Json;
           created_at: string;
@@ -129,9 +129,9 @@ export interface Database {
         Insert: {
           code: string;
           player1_id: string;
-          player1_fighter: string;
+          player1_pokemon_instance_id: string;
           player2_id?: string | null;
-          player2_fighter?: string | null;
+          player2_pokemon_instance_id?: string | null;
           status?: string;
           state?: Json;
           created_at?: string;
@@ -139,12 +139,39 @@ export interface Database {
         Update: {
           code?: string;
           player1_id?: string;
-          player1_fighter?: string;
+          player1_pokemon_instance_id?: string;
           player2_id?: string | null;
-          player2_fighter?: string | null;
+          player2_pokemon_instance_id?: string | null;
           status?: string;
           state?: Json;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      match_results: {
+        Row: {
+          id: string;
+          user_id: string;
+          opponent: string;
+          mode: "bot" | "online";
+          won: boolean;
+          played_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          opponent: string;
+          mode: "bot" | "online";
+          won: boolean;
+          played_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          opponent?: string;
+          mode?: "bot" | "online";
+          won?: boolean;
+          played_at?: string;
         };
         Relationships: [];
       };

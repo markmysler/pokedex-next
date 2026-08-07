@@ -75,6 +75,38 @@ export function rollInstance(pokemon: Pokemon): RolledStats {
   return { ...stats, total, moves: rollMoveset(pokemon) };
 }
 
+// Generates an ephemeral bot opponent: species is random (never chosen by
+// the player), but its stats are re-centered on `playerLevel` (the average
+// `total` of the team the player brought into this fight) instead of the
+// species' own base stats — this is what reconciles "randomized species"
+// with "adjusted to the user's level" (see upgrades/03-bot-battle-rework.md).
+// Never persisted to pokemon_instances — `id` is a placeholder, not a real
+// row, since bots aren't owned by anyone.
+export function rollBotOpponent(species: Pokemon, playerLevel: number): OwnedPokemon {
+  const scale = species.total > 0 ? playerLevel / species.total : 1;
+  const stats = {
+    hp: rollStatAround(species.hp * scale),
+    atk: rollStatAround(species.atk * scale),
+    def: rollStatAround(species.def * scale),
+    spatk: rollStatAround(species.spatk * scale),
+    spdef: rollStatAround(species.spdef * scale),
+    spd: rollStatAround(species.spd * scale),
+  };
+  const total = stats.hp + stats.atk + stats.def + stats.spatk + stats.spdef + stats.spd;
+
+  return {
+    id: `bot-${species.number}-${Math.random().toString(36).slice(2)}`,
+    number: species.number,
+    name: species.name,
+    type1: species.type1,
+    type2: species.type2,
+    ...stats,
+    total,
+    moves: rollMoveset(species),
+    isStarter: false,
+  };
+}
+
 interface PokemonInstanceRow {
   id: string;
   pokemon_number: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Pokedex, UserPokedexData } from "@/types/pokemon";
+import type { OwnedPokemon, Pokedex, UserPokedexData } from "@/types/pokemon";
 import Sidebar from "./Sidebar";
 import PokemonDetail from "./PokemonDetail";
 import CompletionBanner from "./CompletionBanner";
@@ -20,6 +20,8 @@ interface PokedexAppProps {
 export default function PokedexApp({ pokedex, order, typesList, displayName }: PokedexAppProps) {
   const [userData, setUserData] = useState<UserPokedexData>({});
   const [userDataLoaded, setUserDataLoaded] = useState(false);
+  const [inventory, setInventory] = useState<OwnedPokemon[]>([]);
+  const [inventoryLoaded, setInventoryLoaded] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(order[0] ?? null);
   const [activeTab, setActiveTab] = useState<Tab>("info");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -32,6 +34,19 @@ export default function PokedexApp({ pokedex, order, typesList, displayName }: P
         /* first-ever visit or offline — empty Pokedex is a valid starting state */
       })
       .finally(() => setUserDataLoaded(true));
+  }, []);
+
+  // Battle Arena and Online Battle both pick a fighter from owned Pokemon
+  // instead of the full static Pokedex now — fetched once here (like
+  // userData above) rather than duplicating the request in each component.
+  useEffect(() => {
+    fetch("/api/inventory")
+      .then((res) => res.json())
+      .then((data: { pokemon: OwnedPokemon[] }) => setInventory(data.pokemon ?? []))
+      .catch(() => {
+        /* transient — inventoryLoaded stays true so the empty-state UI shows instead of hanging */
+      })
+      .finally(() => setInventoryLoaded(true));
   }, []);
 
   useEffect(() => {
@@ -119,13 +134,16 @@ export default function PokedexApp({ pokedex, order, typesList, displayName }: P
         {/* Battle Arena and Online Battle stay mounted (just hidden) across tab
             switches so their in-progress battle/room state survives navigating
             back to the Pokedex Info tab — matches pokedex-web's display:none
-            tab switching instead of unmounting. */}
+            tab switching instead of unmounting. Gated on inventoryLoaded so
+            they don't initialize a fighter from an empty inventory before
+            the first fetch resolves — mirrors the userDataLoaded gate on
+            PokemonDetail above. */}
         <section className={`tab-content${activeTab === "battle" ? " active" : ""}`}>
-          <BattleArena pokedex={pokedex} order={order} syncFighter1Id={selectedId} />
+          {inventoryLoaded && <BattleArena inventory={inventory} />}
         </section>
 
         <section className={`tab-content${activeTab === "online" ? " active" : ""}`}>
-          <OnlineBattle pokedex={pokedex} order={order} />
+          {inventoryLoaded && <OnlineBattle inventory={inventory} />}
         </section>
       </main>
     </>

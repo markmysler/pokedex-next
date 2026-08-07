@@ -83,6 +83,20 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
 
   if (result.over) {
     await supabase.from("battle_rooms").update({ status: "over" }).eq("code", roomCode);
+
+    const winnerId = result.winner === 1 ? room.player1_id : room.player2_id;
+    const loserId = result.winner === 1 ? room.player2_id : room.player1_id;
+
+    // Winner gets a lootbox every time (100%, unconditional — unlike bot
+    // battles' 25% roll). Both players get a match_results row so each
+    // account's own history/dashboard reflects the result.
+    if (winnerId) await supabase.from("lootboxes").insert({ user_id: winnerId });
+    if (winnerId) {
+      await supabase.from("match_results").insert({ user_id: winnerId, opponent: loserId ?? "unknown", mode: "online", won: true });
+    }
+    if (loserId) {
+      await supabase.from("match_results").insert({ user_id: loserId, opponent: winnerId ?? "unknown", mode: "online", won: false });
+    }
   }
 
   const roundResultPayload = {

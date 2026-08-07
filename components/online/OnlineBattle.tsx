@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Pokedex, FighterState, RoomSlot, RoomState } from "@/types/pokemon";
+import type { FighterState, OwnedPokemon, RoomSlot, RoomState } from "@/types/pokemon";
 import FighterCard from "@/components/battle/FighterCard";
 import MoveButton from "@/components/battle/MoveButton";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
 
 interface OnlineBattleProps {
-  pokedex: Pokedex;
-  order: string[];
+  inventory: OwnedPokemon[];
 }
 
 interface OnlineBattleState {
@@ -20,8 +19,8 @@ interface OnlineBattleState {
 
 const POLL_INTERVAL_MS = 2500;
 
-export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
-  const [fighterChoice, setFighterChoice] = useState(order[0]);
+export default function OnlineBattle({ inventory }: OnlineBattleProps) {
+  const [fighterChoice, setFighterChoice] = useState<string | null>(inventory[0]?.id ?? null);
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [mySlot, setMySlot] = useState<RoomSlot | null>(null);
@@ -173,10 +172,11 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
   }
 
   async function createRoom() {
+    if (!fighterChoice) return setStatus("⚠️ You don't own any Pokemon to battle with.");
     const res = await fetch("/api/rooms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fighterNumber: fighterChoice }),
+      body: JSON.stringify({ pokemonInstanceId: fighterChoice }),
     });
     const data = await res.json();
     if (data.error) return setStatus(`⚠️ ${data.error}`);
@@ -190,11 +190,12 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
   async function joinRoom() {
     const code = roomCodeInput.trim().toUpperCase();
     if (!code) return setStatus("⚠️ Enter a room code first.");
+    if (!fighterChoice) return setStatus("⚠️ You don't own any Pokemon to battle with.");
 
     const res = await fetch(`/api/rooms/${code}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fighterNumber: fighterChoice }),
+      body: JSON.stringify({ pokemonInstanceId: fighterChoice }),
     });
     const data = await res.json();
     if (data.error) return setStatus(`⚠️ ${data.error}`);
@@ -251,9 +252,9 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
         <h3>🌐 Online Battle</h3>
         <div className="fighter-select">
           <label>Your Fighter:</label>
-          <select value={fighterChoice} onChange={(e) => setFighterChoice(e.target.value)}>
-            {order.map((num) => (
-              <option key={num} value={num}>#{pokedex[num].number} {pokedex[num].name}</option>
+          <select value={fighterChoice ?? ""} onChange={(e) => setFighterChoice(e.target.value)}>
+            {inventory.map((p) => (
+              <option key={p.id} value={p.id}>#{p.number} {p.name} (Total {p.total})</option>
             ))}
           </select>
         </div>

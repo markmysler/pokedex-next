@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Pokedex, FighterState, Move } from "@/types/pokemon";
+import type { FighterState, Move, OwnedPokemon } from "@/types/pokemon";
 import { buildFighterState, resolveRound } from "@/lib/battleEngine";
+import { rollBotOpponent } from "@/lib/collection";
+import { getPokemon, pokedexOrder } from "@/lib/pokedex";
 import FighterCard from "./FighterCard";
 import MoveButton from "./MoveButton";
 
 interface BattleArenaProps {
-  pokedex: Pokedex;
-  order: string[];
-  syncFighter1Id: string | null;
+  inventory: OwnedPokemon[];
 }
 
 interface LocalBattleState {
@@ -20,10 +20,18 @@ interface LocalBattleState {
   winner: 1 | 2 | null;
 }
 
-function freshBattle(pokedex: Pokedex, f1Id: string, f2Id: string): LocalBattleState {
+// Species is never chosen by the player — only its level (see
+// lib/collection.ts's rollBotOpponent) is tied to what they're bringing in.
+function randomBotFor(playerTotal: number): OwnedPokemon {
+  const randomNumber = pokedexOrder[Math.floor(Math.random() * pokedexOrder.length)];
+  const species = getPokemon(randomNumber);
+  return rollBotOpponent(species, playerTotal);
+}
+
+function freshBattle(myPokemon: OwnedPokemon): LocalBattleState {
   return {
-    f1: buildFighterState(pokedex[f1Id]),
-    f2: buildFighterState(pokedex[f2Id]),
+    f1: buildFighterState(myPokemon),
+    f2: buildFighterState(randomBotFor(myPokemon.total)),
     turnCount: 0,
     over: false,
     winner: null,
@@ -34,36 +42,35 @@ function startLog(battle: LocalBattleState): string[] {
   const p1 = battle.f1.pokemon;
   const p2 = battle.f2.pokemon;
   return [
-    `=== ⚔️ BATTLE START: #${p1.number} ${p1.name} vs #${p2.number} ${p2.name} ===`,
+    `=== ⚔️ BATTLE START: #${p1.number} ${p1.name} vs a wild #${p2.number} ${p2.name} ===`,
     `• ${p1.name}: HP ${battle.f1.hp} | Mana: ${battle.f1.mp}/100 | Atk: ${p1.atk} | Spd: ${p1.spd}`,
     `• ${p2.name}: HP ${battle.f2.hp} | Mana: ${battle.f2.mp}/100 | Atk: ${p2.atk} | Spd: ${p2.spd}\n`,
     "👇 Select an Attack Move below. Higher power moves cost more Mana!",
   ];
 }
 
-export default function BattleArena({ pokedex, order, syncFighter1Id }: BattleArenaProps) {
-  const [f1Id, setF1Id] = useState<string>(syncFighter1Id ?? order[0]);
-  const [f2Id, setF2Id] = useState<string>(order[order.length - 1]);
-  const [battle, setBattle] = useState<LocalBattleState>(() => freshBattle(pokedex, f1Id, f2Id));
-  const [log, setLog] = useState<string[]>(() => startLog(battle));
+async function reportBotResult(won: boolean) {
+  try {
+    await fetch("/api/battles/bot-result", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ won }),
+    });
+  } catch {
+    // Best-effort — a dropped report just costs a possible lootbox roll,
+    // not a broken battle. The battle itself is already fully resolved
+    // client-side by this point.
+  }
+}
+
+export default function BattleArena({ inventory }: BattleArenaProps) {
+  const [f1Id, setF1Id] = useState<string | null>(inventory[0]?.id ?? null);
+  const selected = inventory.find((p) => p.id === f1Id) ?? inventory[0] ?? null;
+
+  const [battle, setBattle] = useState<LocalBattleState | null>(() => (selected ? freshBattle(selected) : null));
+  const [log, setLog] = useState<string[]>(() => (battle ? startLog(battle) : []));
   const [autoRunning, setAutoRunning] = useState(false);
   const logRef = useRef<HTMLPreElement>(null);
-
-  // Render-time sync of Fighter 1 with the selected Pokedex tab Pokemon,
-  // following React's "adjusting state when a prop changes" pattern instead
-  // of an effect (see react.dev/learn/you-might-not-need-an-effect) — this
-  // mirrors pokedex-web's select_pokemon() -> on_battle_fighter_changed().
-  const [prevSyncId, setPrevSyncId] = useState(syncFighter1Id);
-  if (syncFighter1Id !== prevSyncId) {
-    setPrevSyncId(syncFighter1Id);
-    if (syncFighter1Id && syncFighter1Id !== f1Id) {
-      const fresh = freshBattle(pokedex, syncFighter1Id, f2Id);
-      setF1Id(syncFighter1Id);
-      setBattle(fresh);
-      setLog(startLog(fresh));
-      setAutoRunning(false);
-    }
-  }
 
   function appendLog(lines: string[]) {
     setLog((prev) => [...prev, ...lines]);
@@ -73,28 +80,21 @@ export default function BattleArena({ pokedex, order, syncFighter1Id }: BattleAr
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
   }, [log]);
 
-  function reset(nextF1: string, nextF2: string) {
+  function reset(pokemon: OwnedPokemon) {
     setAutoRunning(false);
-    const fresh = freshBattle(pokedex, nextF1, nextF2);
+    const fresh = freshBattle(pokemon);
     setBattle(fresh);
     setLog(startLog(fresh));
   }
 
   function onChangeF1(id: string) {
     setF1Id(id);
-    reset(id, f2Id);
-  }
-  function onChangeF2(id: string) {
-    setF2Id(id);
-    reset(f1Id, id);
-  }
-  function pickRandomOpponent() {
-    const randomId = order[Math.floor(Math.random() * order.length)];
-    onChangeF2(randomId);
+    const pokemon = inventory.find((p) => p.id === id);
+    if (pokemon) reset(pokemon);
   }
 
   function playerSelectMove(moveIndex: number) {
-    if (battle.over) return;
+    if (!battle || battle.over) return;
     const moves1 = battle.f1.pokemon.moves;
     const move1 = moves1[moveIndex];
     if (!move1) return;
@@ -120,19 +120,24 @@ export default function BattleArena({ pokedex, order, syncFighter1Id }: BattleAr
 
     if (result.over) {
       setAutoRunning(false);
-      if (result.winner === 2) {
-        appendLog([`\n💀 ${f1State.pokemon.name} FAINTED!`, `🏆 VICTORY: ${f2State.pokemon.name} wins the battle in ${nextTurn} rounds!`]);
-      } else {
+      const won = result.winner === 1;
+      if (won) {
         appendLog([`\n💀 ${f2State.pokemon.name} FAINTED!`, `🏆 VICTORY: ${f1State.pokemon.name} wins the battle in ${nextTurn} rounds!`]);
+      } else {
+        appendLog([`\n💀 ${f1State.pokemon.name} FAINTED!`, `💀 DEFEAT: ${f2State.pokemon.name} wins the battle in ${nextTurn} rounds!`]);
       }
+      // Server rolls the lootbox chance itself — this only ever reports
+      // win/loss, never "and I should get a lootbox."
+      reportBotResult(won);
     }
 
     setBattle({ f1: f1State, f2: f2State, turnCount: nextTurn, over: result.over, winner: result.winner });
   }
 
   function toggleAutoBattle() {
+    if (!battle) return;
     if (battle.over) {
-      reset(f1Id, f2Id);
+      if (selected) reset(selected);
       return;
     }
     setAutoRunning((running) => !running);
@@ -143,7 +148,7 @@ export default function BattleArena({ pokedex, order, syncFighter1Id }: BattleAr
   // component unmounts, so no separate imperative timer-ref bookkeeping is
   // needed elsewhere (e.g. reset()/toggleAutoBattle() just flip state).
   useEffect(() => {
-    if (!autoRunning || battle.over) return;
+    if (!autoRunning || !battle || battle.over) return;
 
     const timer = setTimeout(() => {
       const moves = battle.f1.pokemon.moves;
@@ -159,30 +164,33 @@ export default function BattleArena({ pokedex, order, syncFighter1Id }: BattleAr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoRunning, battle]);
 
+  if (!selected || !battle) {
+    return (
+      <div className="card">
+        <p>You don&apos;t own any Pokémon yet. This shouldn&apos;t normally happen — every account starts with 3 starters.</p>
+      </div>
+    );
+  }
+
   const p2MovesLabel = battle.f2.pokemon.moves.map((m) => `${m.name} (${m.mana_cost ?? 10} MP)`).join(" | ");
 
   return (
     <>
       <div className="card select-bar">
         <div className="fighter-select">
-          <label>Player Fighter 1:</label>
-          <select value={f1Id} onChange={(e) => onChangeF1(e.target.value)}>
-            {order.map((num) => (
-              <option key={num} value={num}>#{pokedex[num].number} {pokedex[num].name}</option>
+          <label>Your Fighter:</label>
+          <select value={f1Id ?? ""} onChange={(e) => onChangeF1(e.target.value)}>
+            {inventory.map((p) => (
+              <option key={p.id} value={p.id}>#{p.number} {p.name} (Total {p.total})</option>
             ))}
           </select>
         </div>
         <div className="vs-badge">
           <div className="vs-text">⚡ VS ⚡</div>
-          <button id="btn-random-rival" onClick={pickRandomOpponent}>🎲 Random Rival</button>
         </div>
         <div className="fighter-select">
-          <label>Rival Fighter 2:</label>
-          <select value={f2Id} onChange={(e) => onChangeF2(e.target.value)}>
-            {order.map((num) => (
-              <option key={num} value={num}>#{pokedex[num].number} {pokedex[num].name}</option>
-            ))}
-          </select>
+          <label>Opponent:</label>
+          <div className="online-status">🎲 Randomly generated, matched to your level</div>
         </div>
       </div>
 
@@ -232,7 +240,7 @@ export default function BattleArena({ pokedex, order, syncFighter1Id }: BattleAr
           <button className="btn-primary" onClick={toggleAutoBattle}>
             {autoRunning ? "⏸️ Pause Battle" : "⚡ Auto Battle"}
           </button>
-          <button className="btn-secondary" onClick={() => reset(f1Id, f2Id)}>🔄 Reset Battle</button>
+          <button className="btn-secondary" onClick={() => selected && reset(selected)}>🔄 Reset Battle</button>
         </div>
         <pre className="battle-log" ref={logRef}>{log.join("\n")}</pre>
       </div>
