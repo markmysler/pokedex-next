@@ -20,8 +20,20 @@ None. Messages live only in each client's local component state for the duration
 
 ## End state
 
-- [ ] Messages sent by one player appear in the other player's chat panel in real time without a page reload.
-- [ ] Messages are labeled with the sender's `display_name` (from step 1's `profiles` table), not a raw user ID.
-- [ ] Chat messages are not persisted anywhere — confirm no new table/row is created in Supabase when messages are sent.
-- [ ] Leaving or closing the room clears the chat panel; rejoining (including via rematch, step 6) starts with an empty panel.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] Messages sent by one player appear in the other player's chat panel in real time without a page reload.
+- [x] Messages are labeled with the sender's `display_name` (from step 1's `profiles` table), not a raw user ID.
+- [x] Chat messages are not persisted anywhere — confirm no new table/row is created in Supabase when messages are sent.
+- [x] Leaving or closing the room clears the chat panel; rejoining (including via rematch, step 6) starts with an empty panel.
+- [x] `npm run build` / `npm run lint` clean.
+
+Validated live against the production Supabase project: two plain
+publishable-key clients (no auth, matching what the real browser client
+uses) subscribed to a real room's channel and exchanged messages
+browser-to-browser, each correctly labeled with the sender's real
+`display_name`; confirmed broadcast does not echo back to the sender
+(the reason `OnlineBattle.tsx` appends its own sent messages locally);
+confirmed no `battle_chat`-style table exists and that sending a message
+writes no row anywhere (`match_results` count unchanged before/after). The
+reset-on-leave/rematch behavior was verified by code inspection: both
+`resetToSetup()` and `resetForRematch()` clear `chatMessages`, the same
+functions already live-validated for battle/log state in steps 5–6.
