@@ -293,6 +293,8 @@ body {
 .bench-name { font-size: 10px; font-weight: bold; }
 .bench-hp { font-size: 9px; color: var(--text-secondary); }
 
+.rematch-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+
 .log-container { flex: 1; display: flex; flex-direction: column; }
 .action-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .btn-primary, .btn-secondary {

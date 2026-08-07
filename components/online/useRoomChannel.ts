@@ -22,6 +22,8 @@ interface RoomChannelHandlers {
   onRoundResult: (payload: RoundResultPayload) => void;
   onOpponentMoveSubmitted: () => void;
   onOpponentLeft: () => void;
+  onRematchRequested: (payload: { slot: RoomSlot }) => void;
+  onRematchStarted: () => void;
 }
 
 // Subscribes to the Supabase Realtime broadcast channel for one room. All
@@ -46,6 +48,8 @@ export function useRoomChannel(roomCode: string | null, handlers: RoomChannelHan
       .on("broadcast", { event: "round-result" }, ({ payload }) => handlersRef.current.onRoundResult(payload as never))
       .on("broadcast", { event: "opponent-move-submitted" }, () => handlersRef.current.onOpponentMoveSubmitted())
       .on("broadcast", { event: "opponent-left" }, () => handlersRef.current.onOpponentLeft())
+      .on("broadcast", { event: "rematch-requested" }, ({ payload }) => handlersRef.current.onRematchRequested(payload as never))
+      .on("broadcast", { event: "rematch-started" }, () => handlersRef.current.onRematchStarted())
       .subscribe((status, err) => {
         // Broadcasts are silent on failure otherwise — this is the only
         // signal that the client ever actually joined the channel. Check

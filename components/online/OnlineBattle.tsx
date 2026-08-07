@@ -34,9 +34,11 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
   const [battle, setBattle] = useState<OnlineBattleState | null>(null);
   const [log, setLog] = useState<string[]>([]);
   const [moveLocked, setMoveLocked] = useState(false);
+  const [rematchRequestedBy, setRematchRequestedBy] = useState<RoomSlot | null>(null);
   const logRef = useRef<HTMLPreElement>(null);
   const mySlotRef = useRef<RoomSlot | null>(null);
   const lockedInRef = useRef(false);
+  const phaseRef = useRef<Phase>("setup");
   // Dedupes updates arriving from three sources (Realtime broadcast, the
   // submitting client's own HTTP response, and the polling backstop below) —
   // null means "battle not started yet locally", otherwise the highest
@@ -49,6 +51,9 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
   useEffect(() => {
     lockedInRef.current = myLockedIn;
   }, [myLockedIn]);
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
 
   function appendLog(lines: string[]) {
     setLog((prev) => [...prev, ...lines]);
@@ -115,7 +120,7 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
 
   useRoomChannel(roomCode, {
     onOpponentJoined: () => {
-      setPhase((p) => (p === "waiting" ? "picking" : p));
+      resetForRematch();
       setStatus("Opponent joined! Pick your team.");
     },
     onPlayerLockedIn: ({ slot }) => {
@@ -149,6 +154,12 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
       setTurnStatus("Opponent disconnected.");
       setTimeout(resetToSetup, 2000);
     },
+    onRematchRequested: ({ slot }) => {
+      setRematchRequestedBy(slot);
+    },
+    onRematchStarted: () => {
+      resetForRematch();
+    },
   });
 
   // Polling backstop: Realtime broadcast is the fast path, but this
@@ -156,7 +167,7 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
   // arrive — applyBattleStart/applyRoundResult dedupe against whichever
   // source (broadcast, own move response, or this poll) reports first.
   useEffect(() => {
-    if (!roomCode || battle?.over) return;
+    if (!roomCode) return;
 
     const interval = setInterval(async () => {
       try {
@@ -165,11 +176,22 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
         const data = await res.json();
         const roomStatus = data.status as string | undefined;
         const state = data.state as
-          | { team1?: TeamState; team2?: TeamState; turnCount: number; over: boolean; winner: RoomSlot | null; awaitingForcedSwitch: RoomSlot | null }
+          | {
+              team1?: TeamState;
+              team2?: TeamState;
+              turnCount: number;
+              over: boolean;
+              winner: RoomSlot | null;
+              awaitingForcedSwitch: RoomSlot | null;
+              rematchRequestedBy?: RoomSlot | null;
+            }
           | undefined;
 
         if (roomStatus === "picking") {
-          setPhase((p) => (p === "waiting" ? "picking" : p));
+          // Covers both "opponent just joined" (from waiting) and "rematch
+          // accepted" (from battling/over) — resetForRematch is idempotent
+          // either way, so no need to distinguish which.
+          if (phaseRef.current !== "picking") resetForRematch();
         } else if (roomStatus === "battling" && state?.team1 && state?.team2) {
           if (lastTurnRef.current === null) {
             applyBattleStart(state.team1, state.team2);
@@ -183,6 +205,9 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
               awaitingForcedSwitch: state.awaitingForcedSwitch,
             });
           }
+        } else if (roomStatus === "over") {
+          const requestedBy = state?.rematchRequestedBy ?? null;
+          setRematchRequestedBy((prev) => (prev === requestedBy ? prev : requestedBy));
         }
       } catch {
         // transient network hiccup — next poll tick will retry
@@ -190,11 +215,11 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
     }, POLL_INTERVAL_MS);
 
     return () => clearInterval(interval);
-    // applyBattleStart/applyRoundResult only close over refs and setState
-    // setters (both stable across renders), never over stale state, so
-    // omitting them here is intentional, not a staleness bug.
+    // applyBattleStart/applyRoundResult/resetForRematch only close over refs
+    // and setState setters (all stable across renders), never over stale
+    // state, so omitting them here is intentional, not a staleness bug.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomCode, battle?.over]);
+  }, [roomCode]);
 
   function resetToSetup() {
     setRoomCode(null);
@@ -207,6 +232,24 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
     setStatus("");
     setTurnStatus("");
     setRoomCodeInput("");
+    setRematchRequestedBy(null);
+    lastTurnRef.current = null;
+  }
+
+  // Drops back into the picking phase for the *same* room/room code — used
+  // both when a rematch is accepted and (idempotently) whenever the poll
+  // backstop notices the room is in "picking" but this client hasn't caught
+  // up yet. Deliberately mirrors step 5's initial picking-phase state so the
+  // reused TeamPicker/lock-in flow behaves identically to a fresh room.
+  function resetForRematch() {
+    setBattle(null);
+    setLog([]);
+    setMoveLocked(false);
+    setMyLockedIn(false);
+    setTurnStatus("");
+    setStatus("");
+    setRematchRequestedBy(null);
+    setPhase("picking");
     lastTurnRef.current = null;
   }
 
@@ -293,6 +336,22 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
         log: data.log,
       });
     }
+  }
+
+  async function requestRematch() {
+    if (!roomCode) return;
+    const res = await fetch(`/api/rooms/${roomCode}/rematch/request`, { method: "POST" });
+    const data = await res.json();
+    if (data.error) return setStatus(`⚠️ ${data.error}`);
+    setRematchRequestedBy(mySlot);
+  }
+
+  async function acceptRematch() {
+    if (!roomCode) return;
+    const res = await fetch(`/api/rooms/${roomCode}/rematch/accept`, { method: "POST" });
+    const data = await res.json();
+    if (data.error) return setStatus(`⚠️ ${data.error}`);
+    resetForRematch();
   }
 
   if (!roomCode) {
@@ -414,6 +473,23 @@ export default function OnlineBattle({ inventory }: OnlineBattleProps) {
         <div className="online-status">{blockedByOpponentSwitch ? "Opponent is choosing a new Pokémon..." : turnStatus}</div>
         <pre className="battle-log" ref={logRef}>{log.join("\n")}</pre>
       </div>
+
+      {battle.over && (
+        <div className="card rematch-panel">
+          {rematchRequestedBy === null && (
+            <button className="btn-primary" onClick={requestRematch}>🔁 Request Rematch</button>
+          )}
+          {rematchRequestedBy === mySlot && (
+            <div className="online-status">Rematch requested — waiting for your opponent to accept...</div>
+          )}
+          {rematchRequestedBy !== null && rematchRequestedBy !== mySlot && (
+            <>
+              <div className="online-status">Your opponent wants a rematch!</div>
+              <button className="btn-primary" onClick={acceptRematch}>✅ Accept Rematch</button>
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 }

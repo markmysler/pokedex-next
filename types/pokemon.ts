@@ -115,6 +115,10 @@ export interface RoomState {
   turnCount: number;
   over: boolean;
   winner: RoomSlot | null;
+  // Set once a player requests a rematch (only meaningful once status is
+  // "over"); cleared when the room resets back to "picking" — either by an
+  // accept or by finishing a fresh battle (see upgrades/06-rematch.md).
+  rematchRequestedBy?: RoomSlot | null;
 }
 
 export interface BattleRoom {
