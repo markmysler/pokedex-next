@@ -1,0 +1,20 @@
+# Generated as a starting point for `supabase init` / the GitHub integration.
+# Run `supabase link --project-ref <your-ref>` after creating the Supabase
+# project to fill in project_id correctly for local CLI use — not required
+# for the GitHub integration to apply migrations.
+project_id = "pokedex-next"
+
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322
+major_version = 15
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323

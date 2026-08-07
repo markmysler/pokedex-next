@@ -1,0 +1,6495 @@
+{
+  "001": {
+    "number": "001",
+    "name": "Bulbasaur",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 45,
+    "atk": 49,
+    "def": 49,
+    "spatk": 65,
+    "spdef": 65,
+    "spd": 45,
+    "total": 318,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Razor Leaf",
+        "type": "Grass",
+        "power": 55,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Solar Beam",
+        "type": "Grass",
+        "power": 120,
+        "category": "Special",
+        "mana_cost": 45
+      }
+    ]
+  },
+  "002": {
+    "number": "002",
+    "name": "Ivysaur",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 60,
+    "atk": 62,
+    "def": 63,
+    "spatk": 80,
+    "spdef": 80,
+    "spd": 60,
+    "total": 405,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "003": {
+    "number": "003",
+    "name": "Venusaur",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 80,
+    "atk": 82,
+    "def": 83,
+    "spatk": 100,
+    "spdef": 100,
+    "spd": 80,
+    "total": 525,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "004": {
+    "number": "004",
+    "name": "Charmander",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 39,
+    "atk": 52,
+    "def": 43,
+    "spatk": 60,
+    "spdef": 50,
+    "spd": 65,
+    "total": 309,
+    "moves": [
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flamethrower",
+        "type": "Fire",
+        "power": 90,
+        "category": "Special",
+        "mana_cost": 30
+      },
+      {
+        "name": "Fire Blast",
+        "type": "Fire",
+        "power": 110,
+        "category": "Special",
+        "mana_cost": 30
+      }
+    ]
+  },
+  "005": {
+    "number": "005",
+    "name": "Charmeleon",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 58,
+    "atk": 64,
+    "def": 58,
+    "spatk": 80,
+    "spdef": 65,
+    "spd": 80,
+    "total": 405,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "006": {
+    "number": "006",
+    "name": "Charizard",
+    "type1": "Fire",
+    "type2": "Flying",
+    "hp": 78,
+    "atk": 84,
+    "def": 78,
+    "spatk": 109,
+    "spdef": 85,
+    "spd": 100,
+    "total": 534,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "007": {
+    "number": "007",
+    "name": "Squirtle",
+    "type1": "Water",
+    "type2": null,
+    "hp": 44,
+    "atk": 48,
+    "def": 65,
+    "spatk": 50,
+    "spdef": 64,
+    "spd": 43,
+    "total": 314,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Hydro Pump",
+        "type": "Water",
+        "power": 110,
+        "category": "Special",
+        "mana_cost": 30
+      }
+    ]
+  },
+  "008": {
+    "number": "008",
+    "name": "Wartortle",
+    "type1": "Water",
+    "type2": null,
+    "hp": 59,
+    "atk": 63,
+    "def": 80,
+    "spatk": 65,
+    "spdef": 80,
+    "spd": 58,
+    "total": 405,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "009": {
+    "number": "009",
+    "name": "Blastoise",
+    "type1": "Water",
+    "type2": null,
+    "hp": 79,
+    "atk": 83,
+    "def": 100,
+    "spatk": 85,
+    "spdef": 105,
+    "spd": 78,
+    "total": 530,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "010": {
+    "number": "010",
+    "name": "Caterpie",
+    "type1": "Bug",
+    "type2": null,
+    "hp": 45,
+    "atk": 30,
+    "def": 35,
+    "spatk": 20,
+    "spdef": 20,
+    "spd": 45,
+    "total": 195,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "011": {
+    "number": "011",
+    "name": "Metapod",
+    "type1": "Bug",
+    "type2": null,
+    "hp": 50,
+    "atk": 20,
+    "def": 55,
+    "spatk": 25,
+    "spdef": 25,
+    "spd": 30,
+    "total": 205,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "012": {
+    "number": "012",
+    "name": "Butterfree",
+    "type1": "Bug",
+    "type2": "Flying",
+    "hp": 60,
+    "atk": 45,
+    "def": 50,
+    "spatk": 90,
+    "spdef": 80,
+    "spd": 70,
+    "total": 395,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "013": {
+    "number": "013",
+    "name": "Weedle",
+    "type1": "Bug",
+    "type2": "Poison",
+    "hp": 40,
+    "atk": 35,
+    "def": 30,
+    "spatk": 20,
+    "spdef": 20,
+    "spd": 50,
+    "total": 195,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "014": {
+    "number": "014",
+    "name": "Kakuna",
+    "type1": "Bug",
+    "type2": "Poison",
+    "hp": 45,
+    "atk": 25,
+    "def": 50,
+    "spatk": 25,
+    "spdef": 25,
+    "spd": 35,
+    "total": 205,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "015": {
+    "number": "015",
+    "name": "Beedrill",
+    "type1": "Bug",
+    "type2": "Poison",
+    "hp": 65,
+    "atk": 90,
+    "def": 40,
+    "spatk": 45,
+    "spdef": 80,
+    "spd": 75,
+    "total": 395,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "016": {
+    "number": "016",
+    "name": "Pidgey",
+    "type1": "Normal",
+    "type2": "Flying",
+    "hp": 40,
+    "atk": 45,
+    "def": 40,
+    "spatk": 35,
+    "spdef": 35,
+    "spd": 56,
+    "total": 251,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "017": {
+    "number": "017",
+    "name": "Pidgeotto",
+    "type1": "Normal",
+    "type2": "Flying",
+    "hp": 63,
+    "atk": 60,
+    "def": 55,
+    "spatk": 50,
+    "spdef": 50,
+    "spd": 71,
+    "total": 349,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "018": {
+    "number": "018",
+    "name": "Pidgeot",
+    "type1": "Normal",
+    "type2": "Flying",
+    "hp": 83,
+    "atk": 80,
+    "def": 75,
+    "spatk": 70,
+    "spdef": 70,
+    "spd": 101,
+    "total": 479,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "019": {
+    "number": "019",
+    "name": "Rattata",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 30,
+    "atk": 56,
+    "def": 35,
+    "spatk": 25,
+    "spdef": 35,
+    "spd": 72,
+    "total": 253,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "020": {
+    "number": "020",
+    "name": "Raticate",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 55,
+    "atk": 81,
+    "def": 60,
+    "spatk": 50,
+    "spdef": 70,
+    "spd": 97,
+    "total": 413,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "021": {
+    "number": "021",
+    "name": "Spearow",
+    "type1": "Normal",
+    "type2": "Flying",
+    "hp": 40,
+    "atk": 60,
+    "def": 30,
+    "spatk": 31,
+    "spdef": 31,
+    "spd": 70,
+    "total": 262,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "022": {
+    "number": "022",
+    "name": "Fearow",
+    "type1": "Normal",
+    "type2": "Flying",
+    "hp": 65,
+    "atk": 90,
+    "def": 65,
+    "spatk": 61,
+    "spdef": 61,
+    "spd": 100,
+    "total": 442,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "023": {
+    "number": "023",
+    "name": "Ekans",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 35,
+    "atk": 60,
+    "def": 44,
+    "spatk": 40,
+    "spdef": 54,
+    "spd": 55,
+    "total": 288,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "024": {
+    "number": "024",
+    "name": "Arbok",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 60,
+    "atk": 95,
+    "def": 69,
+    "spatk": 65,
+    "spdef": 79,
+    "spd": 80,
+    "total": 448,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "025": {
+    "number": "025",
+    "name": "Pikachu",
+    "type1": "Electric",
+    "type2": null,
+    "hp": 35,
+    "atk": 55,
+    "def": 40,
+    "spatk": 50,
+    "spdef": 50,
+    "spd": 90,
+    "total": 320,
+    "moves": [
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Thunderbolt",
+        "type": "Electric",
+        "power": 90,
+        "category": "Special",
+        "mana_cost": 30
+      },
+      {
+        "name": "Thunder",
+        "type": "Electric",
+        "power": 110,
+        "category": "Special",
+        "mana_cost": 30
+      }
+    ]
+  },
+  "026": {
+    "number": "026",
+    "name": "Raichu",
+    "type1": "Electric",
+    "type2": null,
+    "hp": 60,
+    "atk": 90,
+    "def": 55,
+    "spatk": 90,
+    "spdef": 80,
+    "spd": 110,
+    "total": 485,
+    "moves": [
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Spark",
+        "type": "Electric",
+        "power": 65,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "027": {
+    "number": "027",
+    "name": "Sandshrew",
+    "type1": "Ground",
+    "type2": null,
+    "hp": 50,
+    "atk": 75,
+    "def": 85,
+    "spatk": 20,
+    "spdef": 30,
+    "spd": 40,
+    "total": 300,
+    "moves": [
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "028": {
+    "number": "028",
+    "name": "Sandslash",
+    "type1": "Ground",
+    "type2": null,
+    "hp": 75,
+    "atk": 100,
+    "def": 110,
+    "spatk": 45,
+    "spdef": 55,
+    "spd": 65,
+    "total": 450,
+    "moves": [
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "029": {
+    "number": "029",
+    "name": "Nidoran-f",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 55,
+    "atk": 47,
+    "def": 52,
+    "spatk": 40,
+    "spdef": 40,
+    "spd": 41,
+    "total": 275,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "030": {
+    "number": "030",
+    "name": "Nidorina",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 70,
+    "atk": 62,
+    "def": 67,
+    "spatk": 55,
+    "spdef": 55,
+    "spd": 56,
+    "total": 365,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "031": {
+    "number": "031",
+    "name": "Nidoqueen",
+    "type1": "Poison",
+    "type2": "Ground",
+    "hp": 90,
+    "atk": 92,
+    "def": 87,
+    "spatk": 75,
+    "spdef": 85,
+    "spd": 76,
+    "total": 505,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "032": {
+    "number": "032",
+    "name": "Nidoran-m",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 46,
+    "atk": 57,
+    "def": 40,
+    "spatk": 40,
+    "spdef": 40,
+    "spd": 50,
+    "total": 273,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "033": {
+    "number": "033",
+    "name": "Nidorino",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 61,
+    "atk": 72,
+    "def": 57,
+    "spatk": 55,
+    "spdef": 55,
+    "spd": 65,
+    "total": 365,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "034": {
+    "number": "034",
+    "name": "Nidoking",
+    "type1": "Poison",
+    "type2": "Ground",
+    "hp": 81,
+    "atk": 102,
+    "def": 77,
+    "spatk": 85,
+    "spdef": 75,
+    "spd": 85,
+    "total": 505,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "035": {
+    "number": "035",
+    "name": "Clefairy",
+    "type1": "Fairy",
+    "type2": null,
+    "hp": 70,
+    "atk": 45,
+    "def": 48,
+    "spatk": 60,
+    "spdef": 65,
+    "spd": 35,
+    "total": 323,
+    "moves": [
+      {
+        "name": "Fairy Wind",
+        "type": "Fairy",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Dazzling Gleam",
+        "type": "Fairy",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "036": {
+    "number": "036",
+    "name": "Clefable",
+    "type1": "Fairy",
+    "type2": null,
+    "hp": 95,
+    "atk": 70,
+    "def": 73,
+    "spatk": 95,
+    "spdef": 90,
+    "spd": 60,
+    "total": 483,
+    "moves": [
+      {
+        "name": "Fairy Wind",
+        "type": "Fairy",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Dazzling Gleam",
+        "type": "Fairy",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "037": {
+    "number": "037",
+    "name": "Vulpix",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 38,
+    "atk": 41,
+    "def": 40,
+    "spatk": 50,
+    "spdef": 65,
+    "spd": 65,
+    "total": 299,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "038": {
+    "number": "038",
+    "name": "Ninetales",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 73,
+    "atk": 76,
+    "def": 75,
+    "spatk": 81,
+    "spdef": 100,
+    "spd": 100,
+    "total": 505,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "039": {
+    "number": "039",
+    "name": "Jigglypuff",
+    "type1": "Normal",
+    "type2": "Fairy",
+    "hp": 115,
+    "atk": 45,
+    "def": 20,
+    "spatk": 45,
+    "spdef": 25,
+    "spd": 20,
+    "total": 270,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Fairy Wind",
+        "type": "Fairy",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Dazzling Gleam",
+        "type": "Fairy",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "040": {
+    "number": "040",
+    "name": "Wigglytuff",
+    "type1": "Normal",
+    "type2": "Fairy",
+    "hp": 140,
+    "atk": 70,
+    "def": 45,
+    "spatk": 85,
+    "spdef": 50,
+    "spd": 45,
+    "total": 435,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Fairy Wind",
+        "type": "Fairy",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Dazzling Gleam",
+        "type": "Fairy",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "041": {
+    "number": "041",
+    "name": "Zubat",
+    "type1": "Poison",
+    "type2": "Flying",
+    "hp": 40,
+    "atk": 45,
+    "def": 35,
+    "spatk": 30,
+    "spdef": 40,
+    "spd": 55,
+    "total": 245,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "042": {
+    "number": "042",
+    "name": "Golbat",
+    "type1": "Poison",
+    "type2": "Flying",
+    "hp": 75,
+    "atk": 80,
+    "def": 70,
+    "spatk": 65,
+    "spdef": 75,
+    "spd": 90,
+    "total": 455,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "043": {
+    "number": "043",
+    "name": "Oddish",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 45,
+    "atk": 50,
+    "def": 55,
+    "spatk": 75,
+    "spdef": 65,
+    "spd": 30,
+    "total": 320,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "044": {
+    "number": "044",
+    "name": "Gloom",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 60,
+    "atk": 65,
+    "def": 70,
+    "spatk": 85,
+    "spdef": 75,
+    "spd": 40,
+    "total": 395,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "045": {
+    "number": "045",
+    "name": "Vileplume",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 75,
+    "atk": 80,
+    "def": 85,
+    "spatk": 110,
+    "spdef": 90,
+    "spd": 50,
+    "total": 490,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "046": {
+    "number": "046",
+    "name": "Paras",
+    "type1": "Bug",
+    "type2": "Grass",
+    "hp": 35,
+    "atk": 70,
+    "def": 55,
+    "spatk": 45,
+    "spdef": 55,
+    "spd": 25,
+    "total": 285,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "047": {
+    "number": "047",
+    "name": "Parasect",
+    "type1": "Bug",
+    "type2": "Grass",
+    "hp": 60,
+    "atk": 95,
+    "def": 80,
+    "spatk": 60,
+    "spdef": 80,
+    "spd": 30,
+    "total": 405,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "048": {
+    "number": "048",
+    "name": "Venonat",
+    "type1": "Bug",
+    "type2": "Poison",
+    "hp": 60,
+    "atk": 55,
+    "def": 50,
+    "spatk": 40,
+    "spdef": 55,
+    "spd": 45,
+    "total": 305,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "049": {
+    "number": "049",
+    "name": "Venomoth",
+    "type1": "Bug",
+    "type2": "Poison",
+    "hp": 70,
+    "atk": 65,
+    "def": 60,
+    "spatk": 90,
+    "spdef": 75,
+    "spd": 90,
+    "total": 450,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "050": {
+    "number": "050",
+    "name": "Diglett",
+    "type1": "Ground",
+    "type2": null,
+    "hp": 10,
+    "atk": 55,
+    "def": 25,
+    "spatk": 35,
+    "spdef": 45,
+    "spd": 95,
+    "total": 265,
+    "moves": [
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "051": {
+    "number": "051",
+    "name": "Dugtrio",
+    "type1": "Ground",
+    "type2": null,
+    "hp": 35,
+    "atk": 100,
+    "def": 50,
+    "spatk": 50,
+    "spdef": 70,
+    "spd": 120,
+    "total": 425,
+    "moves": [
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "052": {
+    "number": "052",
+    "name": "Meowth",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 40,
+    "atk": 45,
+    "def": 35,
+    "spatk": 40,
+    "spdef": 40,
+    "spd": 90,
+    "total": 290,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "053": {
+    "number": "053",
+    "name": "Persian",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 65,
+    "atk": 70,
+    "def": 60,
+    "spatk": 65,
+    "spdef": 65,
+    "spd": 115,
+    "total": 440,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "054": {
+    "number": "054",
+    "name": "Psyduck",
+    "type1": "Water",
+    "type2": null,
+    "hp": 50,
+    "atk": 52,
+    "def": 48,
+    "spatk": 65,
+    "spdef": 50,
+    "spd": 55,
+    "total": 320,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "055": {
+    "number": "055",
+    "name": "Golduck",
+    "type1": "Water",
+    "type2": null,
+    "hp": 80,
+    "atk": 82,
+    "def": 78,
+    "spatk": 95,
+    "spdef": 80,
+    "spd": 85,
+    "total": 500,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "056": {
+    "number": "056",
+    "name": "Mankey",
+    "type1": "Fighting",
+    "type2": null,
+    "hp": 40,
+    "atk": 80,
+    "def": 35,
+    "spatk": 35,
+    "spdef": 45,
+    "spd": 70,
+    "total": 305,
+    "moves": [
+      {
+        "name": "Karate Chop",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Low Kick",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "057": {
+    "number": "057",
+    "name": "Primeape",
+    "type1": "Fighting",
+    "type2": null,
+    "hp": 65,
+    "atk": 105,
+    "def": 60,
+    "spatk": 60,
+    "spdef": 70,
+    "spd": 95,
+    "total": 455,
+    "moves": [
+      {
+        "name": "Karate Chop",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Low Kick",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "058": {
+    "number": "058",
+    "name": "Growlithe",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 55,
+    "atk": 70,
+    "def": 45,
+    "spatk": 70,
+    "spdef": 50,
+    "spd": 60,
+    "total": 350,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "059": {
+    "number": "059",
+    "name": "Arcanine",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 90,
+    "atk": 110,
+    "def": 80,
+    "spatk": 100,
+    "spdef": 80,
+    "spd": 95,
+    "total": 555,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "060": {
+    "number": "060",
+    "name": "Poliwag",
+    "type1": "Water",
+    "type2": null,
+    "hp": 40,
+    "atk": 50,
+    "def": 40,
+    "spatk": 40,
+    "spdef": 40,
+    "spd": 90,
+    "total": 300,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "061": {
+    "number": "061",
+    "name": "Poliwhirl",
+    "type1": "Water",
+    "type2": null,
+    "hp": 65,
+    "atk": 65,
+    "def": 65,
+    "spatk": 50,
+    "spdef": 50,
+    "spd": 90,
+    "total": 385,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "062": {
+    "number": "062",
+    "name": "Poliwrath",
+    "type1": "Water",
+    "type2": "Fighting",
+    "hp": 90,
+    "atk": 95,
+    "def": 95,
+    "spatk": 70,
+    "spdef": 90,
+    "spd": 70,
+    "total": 510,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Karate Chop",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Low Kick",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "063": {
+    "number": "063",
+    "name": "Abra",
+    "type1": "Psychic",
+    "type2": null,
+    "hp": 25,
+    "atk": 20,
+    "def": 15,
+    "spatk": 105,
+    "spdef": 55,
+    "spd": 90,
+    "total": 310,
+    "moves": [
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "064": {
+    "number": "064",
+    "name": "Kadabra",
+    "type1": "Psychic",
+    "type2": null,
+    "hp": 40,
+    "atk": 35,
+    "def": 30,
+    "spatk": 120,
+    "spdef": 70,
+    "spd": 105,
+    "total": 400,
+    "moves": [
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "065": {
+    "number": "065",
+    "name": "Alakazam",
+    "type1": "Psychic",
+    "type2": null,
+    "hp": 55,
+    "atk": 50,
+    "def": 45,
+    "spatk": 135,
+    "spdef": 95,
+    "spd": 120,
+    "total": 500,
+    "moves": [
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "066": {
+    "number": "066",
+    "name": "Machop",
+    "type1": "Fighting",
+    "type2": null,
+    "hp": 70,
+    "atk": 80,
+    "def": 50,
+    "spatk": 35,
+    "spdef": 35,
+    "spd": 35,
+    "total": 305,
+    "moves": [
+      {
+        "name": "Karate Chop",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Low Kick",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "067": {
+    "number": "067",
+    "name": "Machoke",
+    "type1": "Fighting",
+    "type2": null,
+    "hp": 80,
+    "atk": 100,
+    "def": 70,
+    "spatk": 50,
+    "spdef": 60,
+    "spd": 45,
+    "total": 405,
+    "moves": [
+      {
+        "name": "Karate Chop",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Low Kick",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "068": {
+    "number": "068",
+    "name": "Machamp",
+    "type1": "Fighting",
+    "type2": null,
+    "hp": 90,
+    "atk": 130,
+    "def": 80,
+    "spatk": 65,
+    "spdef": 85,
+    "spd": 55,
+    "total": 505,
+    "moves": [
+      {
+        "name": "Karate Chop",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Low Kick",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "069": {
+    "number": "069",
+    "name": "Bellsprout",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 50,
+    "atk": 75,
+    "def": 35,
+    "spatk": 70,
+    "spdef": 30,
+    "spd": 40,
+    "total": 300,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "070": {
+    "number": "070",
+    "name": "Weepinbell",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 65,
+    "atk": 90,
+    "def": 50,
+    "spatk": 85,
+    "spdef": 45,
+    "spd": 55,
+    "total": 390,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "071": {
+    "number": "071",
+    "name": "Victreebel",
+    "type1": "Grass",
+    "type2": "Poison",
+    "hp": 80,
+    "atk": 105,
+    "def": 65,
+    "spatk": 100,
+    "spdef": 70,
+    "spd": 70,
+    "total": 490,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "072": {
+    "number": "072",
+    "name": "Tentacool",
+    "type1": "Water",
+    "type2": "Poison",
+    "hp": 40,
+    "atk": 40,
+    "def": 35,
+    "spatk": 50,
+    "spdef": 100,
+    "spd": 70,
+    "total": 335,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "073": {
+    "number": "073",
+    "name": "Tentacruel",
+    "type1": "Water",
+    "type2": "Poison",
+    "hp": 80,
+    "atk": 70,
+    "def": 65,
+    "spatk": 80,
+    "spdef": 120,
+    "spd": 100,
+    "total": 515,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "074": {
+    "number": "074",
+    "name": "Geodude",
+    "type1": "Rock",
+    "type2": "Ground",
+    "hp": 40,
+    "atk": 80,
+    "def": 100,
+    "spatk": 30,
+    "spdef": 30,
+    "spd": 20,
+    "total": 300,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "075": {
+    "number": "075",
+    "name": "Graveler",
+    "type1": "Rock",
+    "type2": "Ground",
+    "hp": 55,
+    "atk": 95,
+    "def": 115,
+    "spatk": 45,
+    "spdef": 45,
+    "spd": 35,
+    "total": 390,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "076": {
+    "number": "076",
+    "name": "Golem",
+    "type1": "Rock",
+    "type2": "Ground",
+    "hp": 80,
+    "atk": 120,
+    "def": 130,
+    "spatk": 55,
+    "spdef": 65,
+    "spd": 45,
+    "total": 495,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "077": {
+    "number": "077",
+    "name": "Ponyta",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 50,
+    "atk": 85,
+    "def": 55,
+    "spatk": 65,
+    "spdef": 65,
+    "spd": 90,
+    "total": 410,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "078": {
+    "number": "078",
+    "name": "Rapidash",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 65,
+    "atk": 100,
+    "def": 70,
+    "spatk": 80,
+    "spdef": 80,
+    "spd": 105,
+    "total": 500,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "079": {
+    "number": "079",
+    "name": "Slowpoke",
+    "type1": "Water",
+    "type2": "Psychic",
+    "hp": 90,
+    "atk": 65,
+    "def": 65,
+    "spatk": 40,
+    "spdef": 40,
+    "spd": 15,
+    "total": 315,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "080": {
+    "number": "080",
+    "name": "Slowbro",
+    "type1": "Water",
+    "type2": "Psychic",
+    "hp": 95,
+    "atk": 75,
+    "def": 110,
+    "spatk": 100,
+    "spdef": 80,
+    "spd": 30,
+    "total": 490,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "081": {
+    "number": "081",
+    "name": "Magnemite",
+    "type1": "Electric",
+    "type2": "Steel",
+    "hp": 25,
+    "atk": 35,
+    "def": 70,
+    "spatk": 95,
+    "spdef": 55,
+    "spd": 45,
+    "total": 325,
+    "moves": [
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Spark",
+        "type": "Electric",
+        "power": 65,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Metal Claw",
+        "type": "Steel",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flash Cannon",
+        "type": "Steel",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "082": {
+    "number": "082",
+    "name": "Magneton",
+    "type1": "Electric",
+    "type2": "Steel",
+    "hp": 50,
+    "atk": 60,
+    "def": 95,
+    "spatk": 120,
+    "spdef": 70,
+    "spd": 70,
+    "total": 465,
+    "moves": [
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Spark",
+        "type": "Electric",
+        "power": 65,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Metal Claw",
+        "type": "Steel",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flash Cannon",
+        "type": "Steel",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "083": {
+    "number": "083",
+    "name": "Farfetchd",
+    "type1": "Normal",
+    "type2": "Flying",
+    "hp": 52,
+    "atk": 90,
+    "def": 55,
+    "spatk": 58,
+    "spdef": 62,
+    "spd": 60,
+    "total": 377,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "084": {
+    "number": "084",
+    "name": "Doduo",
+    "type1": "Normal",
+    "type2": "Flying",
+    "hp": 35,
+    "atk": 85,
+    "def": 45,
+    "spatk": 35,
+    "spdef": 35,
+    "spd": 75,
+    "total": 310,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "085": {
+    "number": "085",
+    "name": "Dodrio",
+    "type1": "Normal",
+    "type2": "Flying",
+    "hp": 60,
+    "atk": 110,
+    "def": 70,
+    "spatk": 60,
+    "spdef": 60,
+    "spd": 110,
+    "total": 470,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "086": {
+    "number": "086",
+    "name": "Seel",
+    "type1": "Water",
+    "type2": null,
+    "hp": 65,
+    "atk": 45,
+    "def": 55,
+    "spatk": 45,
+    "spdef": 70,
+    "spd": 45,
+    "total": 325,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "087": {
+    "number": "087",
+    "name": "Dewgong",
+    "type1": "Water",
+    "type2": "Ice",
+    "hp": 90,
+    "atk": 70,
+    "def": 80,
+    "spatk": 70,
+    "spdef": 95,
+    "spd": 70,
+    "total": 475,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Powder Snow",
+        "type": "Ice",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Ice Beam",
+        "type": "Ice",
+        "power": 90,
+        "category": "Special",
+        "mana_cost": 30
+      }
+    ]
+  },
+  "088": {
+    "number": "088",
+    "name": "Grimer",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 80,
+    "atk": 80,
+    "def": 50,
+    "spatk": 40,
+    "spdef": 50,
+    "spd": 25,
+    "total": 325,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "089": {
+    "number": "089",
+    "name": "Muk",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 105,
+    "atk": 105,
+    "def": 75,
+    "spatk": 65,
+    "spdef": 100,
+    "spd": 50,
+    "total": 500,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "090": {
+    "number": "090",
+    "name": "Shellder",
+    "type1": "Water",
+    "type2": null,
+    "hp": 30,
+    "atk": 65,
+    "def": 100,
+    "spatk": 45,
+    "spdef": 25,
+    "spd": 40,
+    "total": 305,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "091": {
+    "number": "091",
+    "name": "Cloyster",
+    "type1": "Water",
+    "type2": "Ice",
+    "hp": 50,
+    "atk": 95,
+    "def": 180,
+    "spatk": 85,
+    "spdef": 45,
+    "spd": 70,
+    "total": 525,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Powder Snow",
+        "type": "Ice",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Ice Beam",
+        "type": "Ice",
+        "power": 90,
+        "category": "Special",
+        "mana_cost": 30
+      }
+    ]
+  },
+  "092": {
+    "number": "092",
+    "name": "Gastly",
+    "type1": "Ghost",
+    "type2": "Poison",
+    "hp": 30,
+    "atk": 35,
+    "def": 30,
+    "spatk": 100,
+    "spdef": 35,
+    "spd": 80,
+    "total": 310,
+    "moves": [
+      {
+        "name": "Lick",
+        "type": "Ghost",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Shadow Ball",
+        "type": "Ghost",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "093": {
+    "number": "093",
+    "name": "Haunter",
+    "type1": "Ghost",
+    "type2": "Poison",
+    "hp": 45,
+    "atk": 50,
+    "def": 45,
+    "spatk": 115,
+    "spdef": 55,
+    "spd": 95,
+    "total": 405,
+    "moves": [
+      {
+        "name": "Lick",
+        "type": "Ghost",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Shadow Ball",
+        "type": "Ghost",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "094": {
+    "number": "094",
+    "name": "Gengar",
+    "type1": "Ghost",
+    "type2": "Poison",
+    "hp": 60,
+    "atk": 65,
+    "def": 60,
+    "spatk": 130,
+    "spdef": 75,
+    "spd": 110,
+    "total": 500,
+    "moves": [
+      {
+        "name": "Lick",
+        "type": "Ghost",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Shadow Ball",
+        "type": "Ghost",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "095": {
+    "number": "095",
+    "name": "Onix",
+    "type1": "Rock",
+    "type2": "Ground",
+    "hp": 35,
+    "atk": 45,
+    "def": 160,
+    "spatk": 30,
+    "spdef": 45,
+    "spd": 70,
+    "total": 385,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "096": {
+    "number": "096",
+    "name": "Drowzee",
+    "type1": "Psychic",
+    "type2": null,
+    "hp": 60,
+    "atk": 48,
+    "def": 45,
+    "spatk": 43,
+    "spdef": 90,
+    "spd": 42,
+    "total": 328,
+    "moves": [
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "097": {
+    "number": "097",
+    "name": "Hypno",
+    "type1": "Psychic",
+    "type2": null,
+    "hp": 85,
+    "atk": 73,
+    "def": 70,
+    "spatk": 73,
+    "spdef": 115,
+    "spd": 67,
+    "total": 483,
+    "moves": [
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "098": {
+    "number": "098",
+    "name": "Krabby",
+    "type1": "Water",
+    "type2": null,
+    "hp": 30,
+    "atk": 105,
+    "def": 90,
+    "spatk": 25,
+    "spdef": 25,
+    "spd": 50,
+    "total": 325,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "099": {
+    "number": "099",
+    "name": "Kingler",
+    "type1": "Water",
+    "type2": null,
+    "hp": 55,
+    "atk": 130,
+    "def": 115,
+    "spatk": 50,
+    "spdef": 50,
+    "spd": 75,
+    "total": 475,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "100": {
+    "number": "100",
+    "name": "Voltorb",
+    "type1": "Electric",
+    "type2": null,
+    "hp": 40,
+    "atk": 30,
+    "def": 50,
+    "spatk": 55,
+    "spdef": 55,
+    "spd": 100,
+    "total": 330,
+    "moves": [
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Spark",
+        "type": "Electric",
+        "power": 65,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "101": {
+    "number": "101",
+    "name": "Electrode",
+    "type1": "Electric",
+    "type2": null,
+    "hp": 60,
+    "atk": 50,
+    "def": 70,
+    "spatk": 80,
+    "spdef": 80,
+    "spd": 150,
+    "total": 490,
+    "moves": [
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Spark",
+        "type": "Electric",
+        "power": 65,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "102": {
+    "number": "102",
+    "name": "Exeggcute",
+    "type1": "Grass",
+    "type2": "Psychic",
+    "hp": 60,
+    "atk": 40,
+    "def": 80,
+    "spatk": 60,
+    "spdef": 45,
+    "spd": 40,
+    "total": 325,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "103": {
+    "number": "103",
+    "name": "Exeggutor",
+    "type1": "Grass",
+    "type2": "Psychic",
+    "hp": 95,
+    "atk": 95,
+    "def": 85,
+    "spatk": 125,
+    "spdef": 75,
+    "spd": 55,
+    "total": 530,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "104": {
+    "number": "104",
+    "name": "Cubone",
+    "type1": "Ground",
+    "type2": null,
+    "hp": 50,
+    "atk": 50,
+    "def": 95,
+    "spatk": 40,
+    "spdef": 50,
+    "spd": 35,
+    "total": 320,
+    "moves": [
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "105": {
+    "number": "105",
+    "name": "Marowak",
+    "type1": "Ground",
+    "type2": null,
+    "hp": 60,
+    "atk": 80,
+    "def": 110,
+    "spatk": 50,
+    "spdef": 80,
+    "spd": 45,
+    "total": 425,
+    "moves": [
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "106": {
+    "number": "106",
+    "name": "Hitmonlee",
+    "type1": "Fighting",
+    "type2": null,
+    "hp": 50,
+    "atk": 120,
+    "def": 53,
+    "spatk": 35,
+    "spdef": 110,
+    "spd": 87,
+    "total": 455,
+    "moves": [
+      {
+        "name": "Karate Chop",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Low Kick",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "107": {
+    "number": "107",
+    "name": "Hitmonchan",
+    "type1": "Fighting",
+    "type2": null,
+    "hp": 50,
+    "atk": 105,
+    "def": 79,
+    "spatk": 35,
+    "spdef": 110,
+    "spd": 76,
+    "total": 455,
+    "moves": [
+      {
+        "name": "Karate Chop",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Low Kick",
+        "type": "Fighting",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "108": {
+    "number": "108",
+    "name": "Lickitung",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 90,
+    "atk": 55,
+    "def": 75,
+    "spatk": 60,
+    "spdef": 75,
+    "spd": 30,
+    "total": 385,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "109": {
+    "number": "109",
+    "name": "Koffing",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 40,
+    "atk": 65,
+    "def": 95,
+    "spatk": 60,
+    "spdef": 45,
+    "spd": 35,
+    "total": 340,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "110": {
+    "number": "110",
+    "name": "Weezing",
+    "type1": "Poison",
+    "type2": null,
+    "hp": 65,
+    "atk": 90,
+    "def": 120,
+    "spatk": 85,
+    "spdef": 70,
+    "spd": 60,
+    "total": 490,
+    "moves": [
+      {
+        "name": "Poison Sting",
+        "type": "Poison",
+        "power": 30,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Acid",
+        "type": "Poison",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "111": {
+    "number": "111",
+    "name": "Rhyhorn",
+    "type1": "Ground",
+    "type2": "Rock",
+    "hp": 80,
+    "atk": 85,
+    "def": 95,
+    "spatk": 30,
+    "spdef": 30,
+    "spd": 25,
+    "total": 345,
+    "moves": [
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "112": {
+    "number": "112",
+    "name": "Rhydon",
+    "type1": "Ground",
+    "type2": "Rock",
+    "hp": 105,
+    "atk": 130,
+    "def": 120,
+    "spatk": 45,
+    "spdef": 45,
+    "spd": 40,
+    "total": 485,
+    "moves": [
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "mana_cost": 0
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "113": {
+    "number": "113",
+    "name": "Chansey",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 250,
+    "atk": 5,
+    "def": 5,
+    "spatk": 35,
+    "spdef": 105,
+    "spd": 50,
+    "total": 450,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "114": {
+    "number": "114",
+    "name": "Tangela",
+    "type1": "Grass",
+    "type2": null,
+    "hp": 65,
+    "atk": 55,
+    "def": 115,
+    "spatk": 100,
+    "spdef": 40,
+    "spd": 60,
+    "total": 435,
+    "moves": [
+      {
+        "name": "Vine Whip",
+        "type": "Grass",
+        "power": 45,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Mega Drain",
+        "type": "Grass",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "115": {
+    "number": "115",
+    "name": "Kangaskhan",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 105,
+    "atk": 95,
+    "def": 80,
+    "spatk": 40,
+    "spdef": 80,
+    "spd": 90,
+    "total": 490,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "116": {
+    "number": "116",
+    "name": "Horsea",
+    "type1": "Water",
+    "type2": null,
+    "hp": 30,
+    "atk": 40,
+    "def": 70,
+    "spatk": 70,
+    "spdef": 25,
+    "spd": 60,
+    "total": 295,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "117": {
+    "number": "117",
+    "name": "Seadra",
+    "type1": "Water",
+    "type2": null,
+    "hp": 55,
+    "atk": 65,
+    "def": 95,
+    "spatk": 95,
+    "spdef": 45,
+    "spd": 85,
+    "total": 440,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "118": {
+    "number": "118",
+    "name": "Goldeen",
+    "type1": "Water",
+    "type2": null,
+    "hp": 45,
+    "atk": 67,
+    "def": 60,
+    "spatk": 35,
+    "spdef": 50,
+    "spd": 63,
+    "total": 320,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "119": {
+    "number": "119",
+    "name": "Seaking",
+    "type1": "Water",
+    "type2": null,
+    "hp": 80,
+    "atk": 92,
+    "def": 65,
+    "spatk": 65,
+    "spdef": 80,
+    "spd": 68,
+    "total": 450,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "120": {
+    "number": "120",
+    "name": "Staryu",
+    "type1": "Water",
+    "type2": null,
+    "hp": 30,
+    "atk": 45,
+    "def": 55,
+    "spatk": 70,
+    "spdef": 55,
+    "spd": 85,
+    "total": 340,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "121": {
+    "number": "121",
+    "name": "Starmie",
+    "type1": "Water",
+    "type2": "Psychic",
+    "hp": 60,
+    "atk": 75,
+    "def": 85,
+    "spatk": 100,
+    "spdef": 85,
+    "spd": 115,
+    "total": 520,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "122": {
+    "number": "122",
+    "name": "Mr-mime",
+    "type1": "Psychic",
+    "type2": "Fairy",
+    "hp": 40,
+    "atk": 45,
+    "def": 65,
+    "spatk": 100,
+    "spdef": 120,
+    "spd": 90,
+    "total": 460,
+    "moves": [
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Fairy Wind",
+        "type": "Fairy",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Dazzling Gleam",
+        "type": "Fairy",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "123": {
+    "number": "123",
+    "name": "Scyther",
+    "type1": "Bug",
+    "type2": "Flying",
+    "hp": 70,
+    "atk": 110,
+    "def": 80,
+    "spatk": 55,
+    "spdef": 80,
+    "spd": 105,
+    "total": 500,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "124": {
+    "number": "124",
+    "name": "Jynx",
+    "type1": "Ice",
+    "type2": "Psychic",
+    "hp": 65,
+    "atk": 50,
+    "def": 35,
+    "spatk": 115,
+    "spdef": 95,
+    "spd": 95,
+    "total": 455,
+    "moves": [
+      {
+        "name": "Powder Snow",
+        "type": "Ice",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Ice Beam",
+        "type": "Ice",
+        "power": 90,
+        "category": "Special",
+        "mana_cost": 30
+      },
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "125": {
+    "number": "125",
+    "name": "Electabuzz",
+    "type1": "Electric",
+    "type2": null,
+    "hp": 65,
+    "atk": 83,
+    "def": 57,
+    "spatk": 95,
+    "spdef": 85,
+    "spd": 105,
+    "total": 490,
+    "moves": [
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Spark",
+        "type": "Electric",
+        "power": 65,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "126": {
+    "number": "126",
+    "name": "Magmar",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 65,
+    "atk": 95,
+    "def": 57,
+    "spatk": 100,
+    "spdef": 85,
+    "spd": 93,
+    "total": 495,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "127": {
+    "number": "127",
+    "name": "Pinsir",
+    "type1": "Bug",
+    "type2": null,
+    "hp": 65,
+    "atk": 125,
+    "def": 100,
+    "spatk": 55,
+    "spdef": 70,
+    "spd": 85,
+    "total": 500,
+    "moves": [
+      {
+        "name": "Leech Life",
+        "type": "Bug",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Signal Beam",
+        "type": "Bug",
+        "power": 75,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "128": {
+    "number": "128",
+    "name": "Tauros",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 75,
+    "atk": 100,
+    "def": 95,
+    "spatk": 40,
+    "spdef": 70,
+    "spd": 110,
+    "total": 490,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "129": {
+    "number": "129",
+    "name": "Magikarp",
+    "type1": "Water",
+    "type2": null,
+    "hp": 20,
+    "atk": 10,
+    "def": 55,
+    "spatk": 15,
+    "spdef": 20,
+    "spd": 80,
+    "total": 200,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "130": {
+    "number": "130",
+    "name": "Gyarados",
+    "type1": "Water",
+    "type2": "Flying",
+    "hp": 95,
+    "atk": 125,
+    "def": 79,
+    "spatk": 60,
+    "spdef": 100,
+    "spd": 81,
+    "total": 540,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "131": {
+    "number": "131",
+    "name": "Lapras",
+    "type1": "Water",
+    "type2": "Ice",
+    "hp": 130,
+    "atk": 85,
+    "def": 80,
+    "spatk": 85,
+    "spdef": 95,
+    "spd": 60,
+    "total": 535,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Powder Snow",
+        "type": "Ice",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Ice Beam",
+        "type": "Ice",
+        "power": 90,
+        "category": "Special",
+        "mana_cost": 30
+      }
+    ]
+  },
+  "132": {
+    "number": "132",
+    "name": "Ditto",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 48,
+    "atk": 48,
+    "def": 48,
+    "spatk": 48,
+    "spdef": 48,
+    "spd": 48,
+    "total": 288,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "133": {
+    "number": "133",
+    "name": "Eevee",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 55,
+    "atk": 55,
+    "def": 50,
+    "spatk": 45,
+    "spdef": 65,
+    "spd": 55,
+    "total": 325,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "134": {
+    "number": "134",
+    "name": "Vaporeon",
+    "type1": "Water",
+    "type2": null,
+    "hp": 130,
+    "atk": 65,
+    "def": 60,
+    "spatk": 110,
+    "spdef": 95,
+    "spd": 65,
+    "total": 525,
+    "moves": [
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "135": {
+    "number": "135",
+    "name": "Jolteon",
+    "type1": "Electric",
+    "type2": null,
+    "hp": 65,
+    "atk": 65,
+    "def": 60,
+    "spatk": 110,
+    "spdef": 95,
+    "spd": 130,
+    "total": 525,
+    "moves": [
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Spark",
+        "type": "Electric",
+        "power": 65,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "136": {
+    "number": "136",
+    "name": "Flareon",
+    "type1": "Fire",
+    "type2": null,
+    "hp": 65,
+    "atk": 130,
+    "def": 60,
+    "spatk": 95,
+    "spdef": 110,
+    "spd": 65,
+    "total": 525,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "137": {
+    "number": "137",
+    "name": "Porygon",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 65,
+    "atk": 60,
+    "def": 70,
+    "spatk": 85,
+    "spdef": 75,
+    "spd": 40,
+    "total": 395,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "138": {
+    "number": "138",
+    "name": "Omanyte",
+    "type1": "Rock",
+    "type2": "Water",
+    "hp": 35,
+    "atk": 40,
+    "def": 100,
+    "spatk": 90,
+    "spdef": 55,
+    "spd": 35,
+    "total": 355,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "139": {
+    "number": "139",
+    "name": "Omastar",
+    "type1": "Rock",
+    "type2": "Water",
+    "hp": 70,
+    "atk": 60,
+    "def": 125,
+    "spatk": 115,
+    "spdef": 70,
+    "spd": 55,
+    "total": 495,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "140": {
+    "number": "140",
+    "name": "Kabuto",
+    "type1": "Rock",
+    "type2": "Water",
+    "hp": 30,
+    "atk": 80,
+    "def": 90,
+    "spatk": 55,
+    "spdef": 45,
+    "spd": 55,
+    "total": 355,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "141": {
+    "number": "141",
+    "name": "Kabutops",
+    "type1": "Rock",
+    "type2": "Water",
+    "hp": 60,
+    "atk": 115,
+    "def": 105,
+    "spatk": 65,
+    "spdef": 70,
+    "spd": 80,
+    "total": 495,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Water Gun",
+        "type": "Water",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Bubble Beam",
+        "type": "Water",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "142": {
+    "number": "142",
+    "name": "Aerodactyl",
+    "type1": "Rock",
+    "type2": "Flying",
+    "hp": 80,
+    "atk": 105,
+    "def": 65,
+    "spatk": 60,
+    "spdef": 75,
+    "spd": 130,
+    "total": 515,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "143": {
+    "number": "143",
+    "name": "Snorlax",
+    "type1": "Normal",
+    "type2": null,
+    "hp": 160,
+    "atk": 110,
+    "def": 65,
+    "spatk": 65,
+    "spdef": 110,
+    "spd": 30,
+    "total": 540,
+    "moves": [
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Body Slam",
+        "type": "Normal",
+        "power": 85,
+        "category": "Physical",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "144": {
+    "number": "144",
+    "name": "Articuno",
+    "type1": "Ice",
+    "type2": "Flying",
+    "hp": 90,
+    "atk": 85,
+    "def": 100,
+    "spatk": 95,
+    "spdef": 125,
+    "spd": 85,
+    "total": 580,
+    "moves": [
+      {
+        "name": "Powder Snow",
+        "type": "Ice",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Ice Beam",
+        "type": "Ice",
+        "power": 90,
+        "category": "Special",
+        "mana_cost": 30
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "145": {
+    "number": "145",
+    "name": "Zapdos",
+    "type1": "Electric",
+    "type2": "Flying",
+    "hp": 90,
+    "atk": 90,
+    "def": 85,
+    "spatk": 125,
+    "spdef": 90,
+    "spd": 100,
+    "total": 580,
+    "moves": [
+      {
+        "name": "Thunder Shock",
+        "type": "Electric",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Spark",
+        "type": "Electric",
+        "power": 65,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "146": {
+    "number": "146",
+    "name": "Moltres",
+    "type1": "Fire",
+    "type2": "Flying",
+    "hp": 90,
+    "atk": 100,
+    "def": 90,
+    "spatk": 125,
+    "spdef": 85,
+    "spd": 90,
+    "total": 580,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "147": {
+    "number": "147",
+    "name": "Dratini",
+    "type1": "Dragon",
+    "type2": null,
+    "hp": 41,
+    "atk": 64,
+    "def": 45,
+    "spatk": 50,
+    "spdef": 50,
+    "spd": 50,
+    "total": 300,
+    "moves": [
+      {
+        "name": "Dragon Rage",
+        "type": "Dragon",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Dragon Claw",
+        "type": "Dragon",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "148": {
+    "number": "148",
+    "name": "Dragonair",
+    "type1": "Dragon",
+    "type2": null,
+    "hp": 61,
+    "atk": 84,
+    "def": 65,
+    "spatk": 70,
+    "spdef": 70,
+    "spd": 70,
+    "total": 420,
+    "moves": [
+      {
+        "name": "Dragon Rage",
+        "type": "Dragon",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Dragon Claw",
+        "type": "Dragon",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "149": {
+    "number": "149",
+    "name": "Dragonite",
+    "type1": "Dragon",
+    "type2": "Flying",
+    "hp": 91,
+    "atk": 134,
+    "def": 95,
+    "spatk": 100,
+    "spdef": 100,
+    "spd": 80,
+    "total": 600,
+    "moves": [
+      {
+        "name": "Dragon Rage",
+        "type": "Dragon",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Dragon Claw",
+        "type": "Dragon",
+        "power": 80,
+        "category": "Physical",
+        "mana_cost": 20
+      },
+      {
+        "name": "Peck",
+        "type": "Flying",
+        "power": 35,
+        "category": "Physical",
+        "mana_cost": 0
+      },
+      {
+        "name": "Gust",
+        "type": "Flying",
+        "power": 40,
+        "category": "Special",
+        "mana_cost": 10
+      }
+    ]
+  },
+  "150": {
+    "number": "150",
+    "name": "Mewtwo",
+    "type1": "Psychic",
+    "type2": null,
+    "hp": 106,
+    "atk": 110,
+    "def": 90,
+    "spatk": 154,
+    "spdef": 90,
+    "spd": 130,
+    "total": 680,
+    "moves": [
+      {
+        "name": "Swift",
+        "type": "Normal",
+        "power": 60,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Psychic",
+        "type": "Psychic",
+        "power": 90,
+        "category": "Special",
+        "mana_cost": 30
+      },
+      {
+        "name": "Shadow Ball",
+        "type": "Ghost",
+        "power": 80,
+        "category": "Special",
+        "mana_cost": 20
+      }
+    ]
+  },
+  "151": {
+    "number": "151",
+    "name": "Mew",
+    "type1": "Psychic",
+    "type2": null,
+    "hp": 100,
+    "atk": 100,
+    "def": 100,
+    "spatk": 100,
+    "spdef": 100,
+    "spd": 100,
+    "total": 600,
+    "moves": [
+      {
+        "name": "Confusion",
+        "type": "Psychic",
+        "power": 50,
+        "category": "Special",
+        "mana_cost": 10
+      },
+      {
+        "name": "Psybeam",
+        "type": "Psychic",
+        "power": 65,
+        "category": "Special",
+        "mana_cost": 20
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "mana_cost": 10
+      }
+    ]
+  }
+}
