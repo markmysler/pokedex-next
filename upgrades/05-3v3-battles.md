@@ -33,9 +33,17 @@ New: `waiting_for_players → picking → battling`.
 
 ## End state
 
-- [ ] Two players can create/join a room, each independently pick 3 owned instances, and neither can see the other's picks until both have locked in, at which point both teams reveal simultaneously.
-- [ ] A full 3v3 battle can be played to completion: attacking, a forced switch on faint, and at least one voluntary mid-battle switch all work and stay in sync between both clients.
-- [ ] Server rejects an attack that costs more mana than the active Pokémon has, a switch to a fainted/already-active/not-owned member, and any action submitted out of turn.
-- [ ] Lock-in with an instance id you don't own is rejected server-side.
-- [ ] Battle ends only when a team's all 3 members are fainted, not when just the active one faints.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] Two players can create/join a room, each independently pick 3 owned instances, and neither can see the other's picks until both have locked in, at which point both teams reveal simultaneously.
+- [x] A full 3v3 battle can be played to completion: attacking, a forced switch on faint, and at least one voluntary mid-battle switch all work and stay in sync between both clients.
+- [x] Server rejects an attack that costs more mana than the active Pokémon has, a switch to a fainted/already-active/not-owned member, and any action submitted out of turn.
+- [x] Lock-in with an instance id you don't own is rejected server-side.
+- [x] Battle ends only when a team's all 3 members are fainted, not when just the active one faints.
+- [x] `npm run build` / `npm run lint` clean.
+
+Validated live against the production Supabase project via two disposable
+test accounts (created and deleted via the Auth admin API) driving the real
+Route Handlers end-to-end: room create/join/picking-phase secrecy, ownership
+checks on lock-in, a full battle to team-wipe with a forced switch, a
+voluntary mid-battle switch resolving before the opponent's attack, the
+insufficient-mana rejection, and post-battle lootbox/match_results rows for
+both players.
