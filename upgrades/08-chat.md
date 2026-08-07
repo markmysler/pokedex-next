@@ -1,8 +1,8 @@
-# Step 6: In-match chat
+# Step 8: In-match chat
 
 ## Why last
 
-Fully additive and independent of every other step — doesn't touch the battle data model, room lifecycle, or auth beyond needing a logged-in display name to label messages. Left last as polish since nothing else depends on it.
+Fully additive and independent of every other step — doesn't touch the battle data model, room lifecycle, collection system, or auth beyond needing a logged-in display name to label messages. Left last as polish since nothing else depends on it.
 
 ## What changes
 
@@ -16,12 +16,12 @@ None. Messages live only in each client's local component state for the duration
 
 ### Client
 - New `components/online/ChatPanel.tsx` — text input + scrolling message list, similar shape to the existing battle log `<pre>` in `OnlineBattle.tsx`.
-- Wire into `OnlineBattle.tsx` alongside the existing battle UI, visible for the duration of the room (setup, picking, and battling phases — not just during active combat).
+- Wire into `app/(app)/online/page.tsx` (step 4) alongside the existing battle UI, visible for the duration of the room (setup, picking, and battling phases — not just during active combat).
 
 ## End state
 
 - [ ] Messages sent by one player appear in the other player's chat panel in real time without a page reload.
 - [ ] Messages are labeled with the sender's `display_name` (from step 1's `profiles` table), not a raw user ID.
 - [ ] Chat messages are not persisted anywhere — confirm no new table/row is created in Supabase when messages are sent.
-- [ ] Leaving or closing the room clears the chat panel; rejoining (including via rematch, step 4) starts with an empty panel.
+- [ ] Leaving or closing the room clears the chat panel; rejoining (including via rematch, step 6) starts with an empty panel.
 - [ ] `npm run build` / `npm run lint` clean.
