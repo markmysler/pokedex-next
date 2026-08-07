@@ -21,9 +21,19 @@ Step 3 already introduced a minimal `match_results` table (just enough to power 
 
 ## End state
 
-- [ ] Completing an online battle records `room_code` and both teams' snapshots on its `match_results` row(s); bot battles keep working as they did since step 3 (no room code).
-- [ ] A rematch (step 6) produces a second, independent `match_results` row per player rather than overwriting the first.
-- [ ] `/history` shows real per-match detail for the logged-in user only; a different account's matches never appear.
-- [ ] `/leaderboard` shows aggregate wins across all accounts and updates after a new match completes.
-- [ ] No email addresses or other private account info are exposed via the leaderboard — only `display_name`.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] Completing an online battle records `room_code` and both teams' snapshots on its `match_results` row(s); bot battles keep working as they did since step 3 (no room code).
+- [x] A rematch (step 6) produces a second, independent `match_results` row per player rather than overwriting the first.
+- [x] `/history` shows real per-match detail for the logged-in user only; a different account's matches never appear.
+- [x] `/leaderboard` shows aggregate wins across all accounts and updates after a new match completes.
+- [x] No email addresses or other private account info are exposed via the leaderboard — only `display_name`.
+- [x] `npm run build` / `npm run lint` clean.
+
+Validated live against the production Supabase project via two disposable
+test accounts: a 3v3 battle plus a bot battle plus a rematch produced three
+correctly-shaped `match_results` rows (online rows carrying `room_code` and
+a 3-entry `team_snapshot`, the bot row with neither, the rematch as a
+genuinely separate row); `/api/history` resolved opponents to display names
+and stayed scoped to the caller (each account's response never contained
+the other's user id); `/api/leaderboard` reflected both accounts' win
+counts with entries containing only `userId`/`displayName`/`wins` — no
+email anywhere in the response.
