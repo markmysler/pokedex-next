@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import type { Pokedex, FighterState, RoomSlot } from "@/types/pokemon";
+import { useEffect, useRef, useState } from "react";
+import type { Pokedex, FighterState, RoomSlot, RoomState } from "@/types/pokemon";
 import FighterCard from "@/components/battle/FighterCard";
 import MoveButton from "@/components/battle/MoveButton";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
@@ -18,6 +18,8 @@ interface OnlineBattleState {
   winner: RoomSlot | null;
 }
 
+const POLL_INTERVAL_MS = 2500;
+
 export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
   const [fighterChoice, setFighterChoice] = useState(order[0]);
   const [roomCodeInput, setRoomCodeInput] = useState("");
@@ -29,6 +31,16 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
   const [log, setLog] = useState<string[]>([]);
   const [moveLocked, setMoveLocked] = useState(false);
   const logRef = useRef<HTMLPreElement>(null);
+  const mySlotRef = useRef<RoomSlot | null>(null);
+  // Dedupes updates arriving from three sources (Realtime broadcast, the
+  // submitting client's own HTTP response, and the polling backstop below) —
+  // null means "battle not started yet locally", otherwise the highest
+  // turnCount already applied.
+  const lastTurnRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    mySlotRef.current = mySlot;
+  }, [mySlot]);
 
   function appendLog(lines: string[]) {
     setLog((prev) => [...prev, ...lines]);
@@ -46,31 +58,56 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
     setTurnStatus("👇 Select an Attack Move below. Higher power moves cost more Mana!");
   }
 
+  function applyBattleStart(fighter1: FighterState, fighter2: FighterState) {
+    if (lastTurnRef.current !== null) return; // already started, ignore late duplicate
+    lastTurnRef.current = 0;
+    setBattle({ fighter1, fighter2, over: false, winner: null });
+    setMoveLocked(false);
+    setStatus("");
+    if (mySlotRef.current) startLogFor(fighter1, fighter2, mySlotRef.current);
+  }
+
+  function applyRoundResult(payload: {
+    turnCount: number;
+    fighter1: FighterState;
+    fighter2: FighterState;
+    over: boolean;
+    winner: RoomSlot | null;
+    log?: string[];
+  }) {
+    if (lastTurnRef.current !== null && payload.turnCount <= lastTurnRef.current) return; // already applied
+    lastTurnRef.current = payload.turnCount;
+
+    setBattle({ fighter1: payload.fighter1, fighter2: payload.fighter2, over: payload.over, winner: payload.winner });
+    setMoveLocked(false);
+    appendLog([
+      `\n--- 🥊 Round ${payload.turnCount} (Mana Restored +15 MP) ---`,
+      ...(payload.log ?? ["(synced from server)"]),
+    ]);
+
+    if (payload.over) {
+      const won = payload.winner === mySlotRef.current;
+      appendLog([won ? "\n🏆 VICTORY! Your opponent's Pokémon fainted!" : "\n💀 DEFEAT! Your Pokémon fainted!"]);
+      setTurnStatus(won ? "🏆 You won the battle!" : "💀 You lost the battle.");
+    } else {
+      setTurnStatus("👇 Select your next Attack Move!");
+    }
+  }
+
   useRoomChannel(roomCode, {
     onBattleStart: (payload) => {
       const p = payload as { fighter1: FighterState; fighter2: FighterState };
-      setBattle({ fighter1: p.fighter1, fighter2: p.fighter2, over: false, winner: null });
-      setMoveLocked(false);
-      setStatus("");
-      if (mySlot) startLogFor(p.fighter1, p.fighter2, mySlot);
+      applyBattleStart(p.fighter1, p.fighter2);
     },
     onRoundResult: (payload: RoundResultPayload) => {
-      const fighter1 = payload.fighter1 as FighterState;
-      const fighter2 = payload.fighter2 as FighterState;
-      setBattle({ fighter1, fighter2, over: payload.over, winner: payload.winner });
-      setMoveLocked(false);
-      appendLog([`\n--- 🥊 Round ${payload.turnCount} (Mana Restored +15 MP) ---`, ...payload.log]);
-
-      if (payload.over) {
-        setMySlot((slot) => {
-          const won = payload.winner === slot;
-          appendLog([won ? "\n🏆 VICTORY! Your opponent's Pokémon fainted!" : "\n💀 DEFEAT! Your Pokémon fainted!"]);
-          setTurnStatus(won ? "🏆 You won the battle!" : "💀 You lost the battle.");
-          return slot;
-        });
-      } else {
-        setTurnStatus("👇 Select your next Attack Move!");
-      }
+      applyRoundResult({
+        turnCount: payload.turnCount,
+        fighter1: payload.fighter1 as FighterState,
+        fighter2: payload.fighter2 as FighterState,
+        over: payload.over,
+        winner: payload.winner,
+        log: payload.log,
+      });
     },
     onOpponentMoveSubmitted: () => {
       setMoveLocked((locked) => {
@@ -85,6 +122,44 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
     },
   });
 
+  // Polling backstop: Realtime broadcast is the fast path, but this
+  // guarantees the game can't get permanently stuck if a broadcast doesn't
+  // arrive — applyBattleStart/applyRoundResult dedupe against whichever
+  // source (broadcast, own move response, or this poll) reports first.
+  useEffect(() => {
+    if (!roomCode || battle?.over) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/rooms/${roomCode}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const state = data.state as RoomState | undefined;
+        if (!state || !state.fighter1 || !state.fighter2) return;
+
+        if (lastTurnRef.current === null) {
+          applyBattleStart(state.fighter1, state.fighter2);
+        } else if (state.turnCount > lastTurnRef.current) {
+          applyRoundResult({
+            turnCount: state.turnCount,
+            fighter1: state.fighter1,
+            fighter2: state.fighter2,
+            over: state.over,
+            winner: state.winner,
+          });
+        }
+      } catch {
+        // transient network hiccup — next poll tick will retry
+      }
+    }, POLL_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+    // applyBattleStart/applyRoundResult only close over refs and setState
+    // setters (both stable across renders), never over stale state, so
+    // omitting them here is intentional, not a staleness bug.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomCode, battle?.over]);
+
   function resetToSetup() {
     setRoomCode(null);
     setMySlot(null);
@@ -94,6 +169,7 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
     setStatus("");
     setTurnStatus("");
     setRoomCodeInput("");
+    lastTurnRef.current = null;
   }
 
   async function createRoom() {
@@ -105,8 +181,9 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
     const data = await res.json();
     if (data.error) return setStatus(`⚠️ ${data.error}`);
 
-    setRoomCode(data.roomCode);
     setMySlot(1);
+    mySlotRef.current = 1;
+    setRoomCode(data.roomCode);
     setStatus(`Room created! Share code ${data.roomCode} with your opponent. Waiting for them to join...`);
   }
 
@@ -122,12 +199,12 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
     const data = await res.json();
     if (data.error) return setStatus(`⚠️ ${data.error}`);
 
-    setRoomCode(data.roomCode);
     setMySlot(2);
+    mySlotRef.current = 2;
+    setRoomCode(data.roomCode);
     setStatus(`Joined room ${data.roomCode}. Starting battle...`);
     if (data.state) {
-      setBattle({ fighter1: data.state.fighter1, fighter2: data.state.fighter2, over: false, winner: null });
-      startLogFor(data.state.fighter1, data.state.fighter2, 2);
+      applyBattleStart(data.state.fighter1, data.state.fighter2);
     }
   }
 
@@ -152,6 +229,19 @@ export default function OnlineBattle({ pokedex, order }: OnlineBattleProps) {
     if (data.error) {
       setMoveLocked(false);
       setTurnStatus(`⚠️ ${data.error}`);
+      return;
+    }
+    // Apply directly instead of waiting on the broadcast — the other
+    // player still gets it via Realtime (or the poll backstop above).
+    if (data.resolved) {
+      applyRoundResult({
+        turnCount: data.turnCount,
+        fighter1: data.fighter1,
+        fighter2: data.fighter2,
+        over: data.over,
+        winner: data.winner,
+        log: data.log,
+      });
     }
   }
 

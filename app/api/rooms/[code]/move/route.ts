@@ -85,14 +85,19 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
     await supabase.from("battle_rooms").update({ status: "over" }).eq("code", roomCode);
   }
 
-  await broadcastToRoom(roomCode, "round-result", {
+  const roundResultPayload = {
     log: result.log,
     turnCount: nextTurn,
     fighter1: fighter1State,
     fighter2: fighter2State,
     over: result.over,
     winner: result.winner,
-  });
+  };
 
-  return NextResponse.json({ ok: true, resolved: true });
+  // Push to the other player via Realtime (best-effort, never throws — see
+  // broadcastToRoom). The submitting player doesn't depend on this at all:
+  // they get the same payload directly in this response below.
+  await broadcastToRoom(roomCode, "round-result", roundResultPayload);
+
+  return NextResponse.json({ ok: true, resolved: true, ...roundResultPayload });
 }

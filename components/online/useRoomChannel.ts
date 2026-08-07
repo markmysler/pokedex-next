@@ -41,7 +41,16 @@ export function useRoomChannel(roomCode: string | null, handlers: RoomChannelHan
       .on("broadcast", { event: "round-result" }, ({ payload }) => handlersRef.current.onRoundResult(payload as never))
       .on("broadcast", { event: "opponent-move-submitted" }, () => handlersRef.current.onOpponentMoveSubmitted())
       .on("broadcast", { event: "opponent-left" }, () => handlersRef.current.onOpponentLeft())
-      .subscribe();
+      .subscribe((status, err) => {
+        // Broadcasts are silent on failure otherwise — this is the only
+        // signal that the client ever actually joined the channel. Check
+        // the browser console if round updates aren't arriving.
+        if (status === "SUBSCRIBED") {
+          console.log(`[room:${roomCode}] subscribed to realtime channel`);
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+          console.error(`[room:${roomCode}] realtime subscription ${status}`, err);
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);
