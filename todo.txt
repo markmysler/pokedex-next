@@ -1,0 +1,9 @@
+TODO - future features
+
+- UI upgrades: the Pokemon list in the left sidebar is not UX friendly, needs a redesign.
+- Auth using Supabase (email/password) instead of the current anonymous per-browser cookie.
+- Match history and stats for online battles.
+- 3v3 battles instead of 1v1.
+- Rematch option after an online battle ends (ask whether to keep the same Pokemon or pick different ones).
+- In-match chat: send messages to the opposing player during an online battle.
+- Don't reveal either player's chosen Pokemon to the other before both have joined/locked in, so they can't be picked as a counter.
