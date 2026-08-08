@@ -556,6 +556,8 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
           bleedTurns={you.bleedTurns}
           blindTurns={you.blindTurns}
           poisonTurns={you.poisonTurns}
+          burnTurns={you.burnTurns}
+          freezeTurns={you.freezeTurns}
           movesCaption={myForcedSwitch ? "Choose your next Pokémon:" : "Select Attack Move:"}
           team={youTeamState.members}
           activeIndex={youTeamState.activeIndex}
@@ -591,6 +593,8 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
           bleedTurns={opp.bleedTurns}
           blindTurns={opp.blindTurns}
           poisonTurns={opp.poisonTurns}
+          burnTurns={opp.burnTurns}
+          freezeTurns={opp.freezeTurns}
           movesCaption=""
           team={oppTeamState.members}
           activeIndex={oppTeamState.activeIndex}

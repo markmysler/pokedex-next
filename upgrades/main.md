@@ -22,6 +22,7 @@ archived plans.
 | 16 | Status-badge tooltip hover area | [16-status-tooltip-hover-area.md](16-status-tooltip-hover-area.md) | — |
 | 17 | Persistent notifications (battle invites + everything else that was toast-only) | [17-persistent-notifications.md](17-persistent-notifications.md) | — |
 | 18 | Show the actual opponent display name everywhere match history is shown | [18-match-history-opponent-names.md](18-match-history-opponent-names.md) | — |
+| 19 | Burn and Freeze status effects (Fire/Ice-type moves) | [19-burn-and-freeze-status-effects.md](19-burn-and-freeze-status-effects.md) | — |
 
 ## Why this order
 
@@ -79,6 +80,15 @@ From the 2026-08-08 planning conversation:
   never resolving a name. Fixed by having the Dashboard reuse
   `getMatchHistoryForUser()` (sliced to its most recent 5) instead of
   duplicating the resolution logic a second time, badly.
+- **Burn and Freeze (step 19, added after 16-18 shipped) reuse the
+  existing status-effect machinery from v2's step 10** (bleed/blind/
+  poison) rather than inventing a parallel system — same turn-counter
+  shape, same `STATUS_INFLICT_CAP`/`STATUS_DURATION`, same
+  `applyStatusTick()` decay point, same badge/tooltip UI pattern. Burn is
+  a damage tick like bleed/poison (gated by `Fire`-type moves, immune on
+  `Water` targets, doubled tick on `Grass` targets). Freeze is a new
+  mechanic — a temporary atk/def/spd debuff on the frozen fighter itself,
+  not a damage tick — gated by `Ice`-type moves, immune on `Fire` targets.
 
 ## Working through a step
 

@@ -92,6 +92,10 @@ export interface FighterState {
   bleedTurns: number;
   blindTurns: number;
   poisonTurns: number;
+  // Burn/Freeze (upgrades/19-burn-and-freeze-status-effects.md) — same
+  // turn-counter shape as the three above, just two more kinds.
+  burnTurns: number;
+  freezeTurns: number;
 }
 
 export type RoomSlot = 1 | 2;

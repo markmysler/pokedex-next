@@ -30,8 +30,29 @@ const STATUS_DURATION = 3;
 const BLEED_TICK_RATIO = 0.05;
 const POISON_TICK_RATIO = 0.05;
 const BLIND_MISS_CHANCE = 0.25;
+// Burn/Freeze (upgrades/19-burn-and-freeze-status-effects.md) — burn is a
+// damage tick like bleed/poison, doubled against a Grass-type target
+// ("extra effect", mirroring a super-effective hit but on the status's own
+// damage rather than the move's). Freeze isn't a tick at all: while active
+// it knocks 30% off the frozen fighter's own atk/def/spd, checked wherever
+// those stats get read (executeMove's atkStat/defStat, and the speed roll
+// that decides turn order).
+const BURN_TICK_RATIO = 0.05;
+const BURN_TICK_RATIO_VS_GRASS = 0.1;
+const FREEZE_STAT_MULT = 0.7;
 
-export type StatusKind = "bleed" | "blind" | "poison";
+export type StatusKind = "bleed" | "blind" | "poison" | "burn" | "freeze";
+
+function hasType(pokemon: { type1: PokemonType; type2: PokemonType | null }, type: PokemonType): boolean {
+  return pokemon.type1 === type || pokemon.type2 === type;
+}
+
+// Applied at the point atk/def/spd are actually read, not stored back onto
+// the Pokemon's base stats — a frozen fighter's own numbers are unchanged,
+// only what battleEngine derives from them this instant.
+function freezeAdjusted(stat: number, state: FighterState): number {
+  return state.freezeTurns > 0 ? stat * FREEZE_STAT_MULT : stat;
+}
 
 function rollDodgeChance(attackerSpd: number, defenderSpd: number): number {
   return clamp((defenderSpd - attackerSpd) / (attackerSpd + defenderSpd + 100), 0, DODGE_CAP);
@@ -64,6 +85,19 @@ function applyStatusTick(state: FighterState): string[] {
     state.poisonTurns -= 1;
     const remaining = state.poisonTurns > 0 ? ` (${state.poisonTurns} turn${state.poisonTurns === 1 ? "" : "s"} left)` : " — poison wore off.";
     log.push(`  -> ☠️ ${state.pokemon.name} takes ${dmg} poison damage!${remaining}`);
+  }
+  if (state.hp > 0 && state.burnTurns > 0) {
+    const ratio = hasType(state.pokemon, "Grass") ? BURN_TICK_RATIO_VS_GRASS : BURN_TICK_RATIO;
+    const dmg = Math.max(1, Math.round(state.maxHp * ratio));
+    state.hp = Math.max(0, state.hp - dmg);
+    state.burnTurns -= 1;
+    const remaining = state.burnTurns > 0 ? ` (${state.burnTurns} turn${state.burnTurns === 1 ? "" : "s"} left)` : " — the burn wore off.";
+    log.push(`  -> 🔥 ${state.pokemon.name} takes ${dmg} burn damage!${remaining}`);
+  }
+  if (state.hp > 0 && state.freezeTurns > 0) {
+    state.freezeTurns -= 1;
+    const remaining = state.freezeTurns > 0 ? ` (${state.freezeTurns} turn${state.freezeTurns === 1 ? "" : "s"} left)` : " — it thawed out.";
+    log.push(`  -> ❄️ ${state.pokemon.name} is frozen, sapping its Attack, Defense and Speed!${remaining}`);
   }
   return log;
 }
@@ -111,8 +145,8 @@ export function executeMove(
   const mult = getTypeMultiplier(move.type, defender.type1, defender.type2);
 
   const isSpecial = move.category === "Special";
-  const atkStat = Math.max(10, isSpecial ? attacker.spatk : attacker.atk);
-  const defStat = Math.max(10, isSpecial ? defender.spdef : defender.def);
+  const atkStat = Math.max(10, freezeAdjusted(isSpecial ? attacker.spatk : attacker.atk, attackerState));
+  const defStat = Math.max(10, freezeAdjusted(isSpecial ? defender.spdef : defender.def, defenderState));
 
   const rawDmg = ((2 * 50) / 5 + 2) * (atkStat / Math.max(1, defStat)) * move.power / 50 + 2;
   const rng = randUniform(0.85, 1.15);
@@ -146,6 +180,21 @@ export function executeMove(
       defenderState.poisonTurns = STATUS_DURATION;
       statusInflicted.push("poison");
       log.push(`  -> ☠️ ${defender.name} is poisoned!`);
+    }
+    // Fire/Ice-typed moves roll independently too, each with a type-based
+    // immunity a Water/Fire-type target respectively is naturally immune to
+    // (upgrades/19-burn-and-freeze-status-effects.md) -- checked before the
+    // roll, same shape as any other type immunity, just for the status
+    // rather than the hit itself.
+    if (move.type === "Fire" && !hasType(defender, "Water") && Math.random() < inflictChance) {
+      defenderState.burnTurns = STATUS_DURATION;
+      statusInflicted.push("burn");
+      log.push(`  -> 🔥 ${defender.name} is burned!`);
+    }
+    if (move.type === "Ice" && !hasType(defender, "Fire") && Math.random() < inflictChance) {
+      defenderState.freezeTurns = STATUS_DURATION;
+      statusInflicted.push("freeze");
+      log.push(`  -> ❄️ ${defender.name} is frozen!`);
     }
   }
 
@@ -198,8 +247,8 @@ export function resolveRound(
   fighter1State.mp = Math.min(fighter1State.maxMp, fighter1State.mp + 15);
   fighter2State.mp = Math.min(fighter2State.maxMp, fighter2State.mp + 15);
 
-  const p1Speed = fighter1State.pokemon.spd + randInt(-2, 2);
-  const p2Speed = fighter2State.pokemon.spd + randInt(-2, 2);
+  const p1Speed = freezeAdjusted(fighter1State.pokemon.spd, fighter1State) + randInt(-2, 2);
+  const p2Speed = freezeAdjusted(fighter2State.pokemon.spd, fighter2State) + randInt(-2, 2);
 
   const order: Array<[FighterState, FighterState, Move, RoomSlot]> =
     p1Speed >= p2Speed
@@ -240,7 +289,7 @@ export function resolveRound(
 
 export function buildFighterState(pokemon: FighterState["pokemon"]): FighterState {
   const maxHp = Math.max(50, Math.round(pokemon.hp * 2.5));
-  return { hp: maxHp, maxHp, mp: 100, maxMp: 100, pokemon, bleedTurns: 0, blindTurns: 0, poisonTurns: 0 };
+  return { hp: maxHp, maxHp, mp: 100, maxMp: 100, pokemon, bleedTurns: 0, blindTurns: 0, poisonTurns: 0, burnTurns: 0, freezeTurns: 0 };
 }
 
 // --- 3v3 online battles (upgrades/05-3v3-battles.md) — the 1v1 functions
@@ -305,8 +354,8 @@ export function resolveTeamRound(
   active1.mp = Math.min(active1.maxMp, active1.mp + 15);
   active2.mp = Math.min(active2.maxMp, active2.mp + 15);
 
-  const p1Speed = active1.pokemon.spd + randInt(-2, 2);
-  const p2Speed = active2.pokemon.spd + randInt(-2, 2);
+  const p1Speed = freezeAdjusted(active1.pokemon.spd, active1) + randInt(-2, 2);
+  const p2Speed = freezeAdjusted(active2.pokemon.spd, active2) + randInt(-2, 2);
   const order: RoomSlot[] = p1Speed >= p2Speed ? [1, 2] : [2, 1];
 
   let awaitingForcedSwitch: RoomSlot | null = null;

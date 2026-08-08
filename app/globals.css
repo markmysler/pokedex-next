@@ -320,6 +320,8 @@ input, #search-input, select, textarea, .pokemon-list {
 .status-badge.bleed { background: #C0392B; }
 .status-badge.blind { background: #7D6608; }
 .status-badge.poison { background: #7D3C98; }
+.status-badge.burn { background: #D35400; }
+.status-badge.freeze { background: #2E86C1; }
 .status-badges.compact { gap: 2px; margin-top: 2px; }
 .status-badges.compact .status-badge { font-size: 8px; padding: 1px 4px; border-radius: 6px; }
 

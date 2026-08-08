@@ -14,6 +14,8 @@ interface TeamMemberDisplay {
   bleedTurns?: number;
   blindTurns?: number;
   poisonTurns?: number;
+  burnTurns?: number;
+  freezeTurns?: number;
 }
 
 interface FighterCardProps {
@@ -29,6 +31,8 @@ interface FighterCardProps {
   bleedTurns?: number;
   blindTurns?: number;
   poisonTurns?: number;
+  burnTurns?: number;
+  freezeTurns?: number;
   movesCaption: string;
   children?: React.ReactNode;
   // 3v3 only (upgrades/05-3v3-battles.md) — the full 3-member team, so the
@@ -43,17 +47,34 @@ interface FighterCardProps {
 // (components/nav/SideNav.tsx) -- no tooltip library, just the mechanics
 // from lib/battleEngine.ts spelled out so a hover explains what the badge
 // actually does, not just its name (upgrades/10-battle-depth.md).
-const STATUS_TOOLTIPS: Record<"bleed" | "blind" | "poison", string> = {
+const STATUS_TOOLTIPS: Record<"bleed" | "blind" | "poison" | "burn" | "freeze", string> = {
   bleed: "Bleeding: loses 5% of max HP at the start of each of its turns. Inflicted by physical-category hits; lasts 3 turns.",
   blind: "Blinded: 25% chance to miss with its own attack each turn. Inflicted by special-category hits; lasts 3 turns.",
   poison: "Poisoned: loses 5% of max HP at the start of each of its turns. Inflicted by Poison-type moves; lasts 3 turns. Can stack with Bleeding since it's gated by move type, not category.",
+  burn: "Burning: loses 5% of max HP at the start of each of its turns (10% against Grass-type Pokemon). Inflicted by Fire-type moves; lasts 3 turns. Can't be inflicted on Water-type Pokemon.",
+  freeze: "Frozen: Attack, Special Attack, Defense, Special Defense and Speed all reduced by 30% while active. Inflicted by Ice-type moves; lasts 3 turns. Can't be inflicted on Fire-type Pokemon.",
 };
 
 // Small badge row shared by the active card and bench members
-// (upgrades/10-battle-depth.md) — status persists on the bench, so both
-// need to show it, just at different sizes.
-function StatusBadges({ bleedTurns, blindTurns, poisonTurns, compact }: { bleedTurns?: number; blindTurns?: number; poisonTurns?: number; compact?: boolean }) {
-  if (!bleedTurns && !blindTurns && !poisonTurns) return null;
+// (upgrades/10-battle-depth.md, extended by
+// upgrades/19-burn-and-freeze-status-effects.md) — status persists on the
+// bench, so both need to show it, just at different sizes.
+function StatusBadges({
+  bleedTurns,
+  blindTurns,
+  poisonTurns,
+  burnTurns,
+  freezeTurns,
+  compact,
+}: {
+  bleedTurns?: number;
+  blindTurns?: number;
+  poisonTurns?: number;
+  burnTurns?: number;
+  freezeTurns?: number;
+  compact?: boolean;
+}) {
+  if (!bleedTurns && !blindTurns && !poisonTurns && !burnTurns && !freezeTurns) return null;
   // <span>, not <div> -- this renders inside a bench <button> in compact
   // mode, and <div> isn't valid phrasing content inside a <button>.
   return (
@@ -61,6 +82,8 @@ function StatusBadges({ bleedTurns, blindTurns, poisonTurns, compact }: { bleedT
       {Boolean(bleedTurns) && <span className="status-badge bleed" title={STATUS_TOOLTIPS.bleed}>🩸 Bleeding ({bleedTurns})</span>}
       {Boolean(blindTurns) && <span className="status-badge blind" title={STATUS_TOOLTIPS.blind}>🌀 Blinded ({blindTurns})</span>}
       {Boolean(poisonTurns) && <span className="status-badge poison" title={STATUS_TOOLTIPS.poison}>☠️ Poisoned ({poisonTurns})</span>}
+      {Boolean(burnTurns) && <span className="status-badge burn" title={STATUS_TOOLTIPS.burn}>🔥 Burning ({burnTurns})</span>}
+      {Boolean(freezeTurns) && <span className="status-badge freeze" title={STATUS_TOOLTIPS.freeze}>❄️ Frozen ({freezeTurns})</span>}
     </span>
   );
 }
@@ -75,6 +98,8 @@ export default function FighterCard({
   bleedTurns,
   blindTurns,
   poisonTurns,
+  burnTurns,
+  freezeTurns,
   movesCaption,
   children,
   team,
@@ -92,7 +117,7 @@ export default function FighterCard({
       {pokemon.nickname && <div className="fighter-species-line">#{pokemon.number} {pokemon.name}</div>}
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
       {shiny && <span className="shiny-badge">✨ Shiny</span>}
-      <StatusBadges bleedTurns={bleedTurns} blindTurns={blindTurns} poisonTurns={poisonTurns} />
+      <StatusBadges bleedTurns={bleedTurns} blindTurns={blindTurns} poisonTurns={poisonTurns} burnTurns={burnTurns} freezeTurns={freezeTurns} />
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
 
       <div className="hp-label">HP: {Math.max(0, hp)} / {maxHp}</div>
@@ -128,7 +153,14 @@ export default function FighterCard({
                 <span className="bench-name">{benchShiny ? "✨ " : ""}{displayName(member.pokemon)}</span>
                 <span className="bench-hp">{fainted ? "💀 Fainted" : `${Math.max(0, member.hp)}/${member.maxHp} HP`}</span>
                 {!fainted && (
-                  <StatusBadges bleedTurns={member.bleedTurns} blindTurns={member.blindTurns} poisonTurns={member.poisonTurns} compact />
+                  <StatusBadges
+                    bleedTurns={member.bleedTurns}
+                    blindTurns={member.blindTurns}
+                    poisonTurns={member.poisonTurns}
+                    burnTurns={member.burnTurns}
+                    freezeTurns={member.freezeTurns}
+                    compact
+                  />
                 )}
               </button>
             );
