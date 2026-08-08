@@ -138,9 +138,9 @@ From the 2026-08-07 planning conversation (steps 1-5):
   and accept whenever they're next online, not something requiring both
   players present at once. Default assumption, flagged for revisiting once
   built: no cap on how many Pokémon either side can offer beyond "at least
-  one," starters are tradeable (mirrors today's discard behavior, which
-  already lets starters be discarded with no special protection), and a
-  trade is accept/decline only — no counter-offer negotiation in this pass.
+  one," and a trade is accept/decline only — no counter-offer negotiation
+  in this pass. (Originally this also said starters mirrored discard's
+  lack of protection and were tradeable — reversed later, see below.)
 
 From the 2026-08-08 planning conversation (steps 6-11):
 
@@ -189,10 +189,12 @@ From the second 2026-08-08 planning conversation (steps 13-15):
   `team_snapshot` too** — today only online matches do. Step 13 closes
   that gap going forward; no backfill for matches recorded before it
   ships, same precedent as step 3's shiny rollout.
-- **Trade-up is additive, not a replacement for discard.** Discard keeps
-  working exactly as it does today (including for starters, which
-  trade-up explicitly excludes). Flagged explicitly as a judgment call in
-  case the intent was actually to retire discard once trade-up ships.
+- **Trade-up is additive, not a replacement for discard.** Discard kept
+  working exactly as it did before this step (at the time, that included
+  starters — trade-up was the first mechanism to exclude them; discard and
+  friend trading caught up to that same exclusion in a later change, see
+  below). Flagged explicitly as a judgment call in case the intent was
+  actually to retire discard once trade-up ships.
 - **Trade-up gets a confirmation dialog before committing** — the one
   irreversible action in the app that didn't already have one, worth it
   specifically because 5 Pokémon are destroyed at once for an unknown
@@ -201,6 +203,29 @@ From the second 2026-08-08 planning conversation (steps 13-15):
   (factored into `lib/inventory.ts`) rather than duplicating it, and the
   reveal dialog resets between queued items via a React `key` change
   (remount), not manual internal state-reset logic.
+
+Post-plan fixes and reversals, requested directly after all 15 steps
+shipped (not numbered steps of their own — small enough to fold in here):
+
+- **Starters can no longer be discarded or traded, reversing this plan's
+  original "starters are tradeable" assumption.** Trade-up (step 14) was
+  the first mechanism to exclude starters; discard and friend trading
+  didn't, an inconsistency that became apparent once trade-up's exclusion
+  was visible next to it. Now enforced identically everywhere a Pokémon
+  can leave an account: `DELETE /api/inventory/pokemon/[id]`,
+  `POST /api/friends/[id]/trade` (either side), and `accept_trade()`'s own
+  re-validation at accept time — see the addendum in
+  [12-friend-chat-trading.md](12-friend-chat-trading.md) for the live
+  validation.
+- A UI-polish pass fixed a near-invisible text contrast bug (a renamed
+  Pokémon's species subline lost its own color and inherited the parent
+  card's white-on-green when selected, instead of being explicitly
+  overridden), added hover tooltips explaining the bleed/blind/poison
+  status effects (step 10) in battle, removed a redundant +/- stepper next
+  to the batch lootbox-opening quantity input (step 15) since the number
+  input already has its own controls, and replaced the plain-text
+  "offered X for Y" summary on a pending friend trade with the actual
+  Pokémon cards (sprite, name, type, total stats) for both sides.
 
 ## Working through a step
 

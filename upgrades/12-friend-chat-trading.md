@@ -88,9 +88,28 @@ create table trade_offers (
   `status`, no ownership change.
 - Default assumptions carried over from `upgrades/main.md`, flagged for
   revisiting once built: no cap on how many Pokémon either side can offer
-  beyond "at least one," starters are tradeable, and there's no
-  counter-offer negotiation — a trade is accept/decline as proposed, or
-  a fresh offer replacing it.
+  beyond "at least one," and there's no counter-offer negotiation — a
+  trade is accept/decline as proposed, or a fresh offer replacing it.
+- **Reversed after shipping (2026-08-08): starters are no longer
+  tradeable.** This step originally shipped with starters tradeable (see
+  above, and the same assumption in `upgrades/main.md`'s original "Key
+  decisions" list) — explicitly revisited at the user's request once the
+  discard/trade-up asymmetry became apparent (trade-up already excluded
+  starters, discard and friend trading didn't). Now enforced at every
+  layer: `POST /api/friends/[id]/trade` rejects a starter on either side
+  of a proposed trade, `accept_trade()` independently re-validates
+  `is_starter = false` for both the offered and requested ids at accept
+  time (same "never trust a pre-check" principle the function's own
+  ownership re-check already used), and `DELETE
+  /api/inventory/pokemon/[id]` rejects discarding a starter too — so
+  starters can now only ever leave an account by never leaving at all.
+  Live-validated: discarding a starter is rejected and the row is
+  confirmed untouched in Supabase; a starter on either side of a proposed
+  trade is rejected with a starter-specific error; a trade offering a
+  starter that somehow reached `accept_trade()` directly (bypassing the
+  route-level check) is still rejected there too; and a normal
+  non-starter trade still proposes, accepts, and swaps ownership exactly
+  as this step originally validated.
 
 ### Client: trade UI
 - A "Propose Trade" action on the friend chat page opens a trade builder:
@@ -188,3 +207,25 @@ create table trade_offers (
   above); the trade-builder session itself doesn't live-patch mid-session.
   Worth revisiting if it turns out to matter in practice, not treated as a
   blocker for this step.
+
+### Addendum (2026-08-08): starters made untradeable
+
+Reversed the "starters are tradeable" assumption above at the user's
+request — see the note under "Trading" for the reasoning. Live-validated
+against the migrated Supabase project with 2 disposable accounts (13
+checks, all passing):
+- Discarding a starter is rejected with a starter-specific error, and the
+  row is confirmed to still exist in Supabase afterward.
+- Discarding a non-starter still works exactly as before, including the
+  released counter still incrementing by 1.
+- Proposing a trade with a starter as the offered Pokémon is rejected.
+- Proposing a trade requesting the friend's starter is rejected.
+- Neither rejected proposal moved any Pokémon.
+- `accept_trade()`'s own re-validation was exercised directly, not just
+  through the route: inserted a `trade_offers` row containing a starter
+  by going straight through the admin client (bypassing the route-level
+  pre-check entirely), then called `accept_trade()` on it — rejected, and
+  the starter was confirmed to not have moved.
+- A normal non-starter trade still proposes, accepts, and swaps ownership
+  correctly end to end, confirming this change didn't regress the trade
+  flow already validated above.
