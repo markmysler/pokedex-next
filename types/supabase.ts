@@ -293,6 +293,10 @@ export interface Database {
         Args: { p_user_id: string };
         Returns: undefined;
       };
+      trade_up_pokemon: {
+        Args: { p_user_id: string; p_instance_ids: string[] };
+        Returns: string;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

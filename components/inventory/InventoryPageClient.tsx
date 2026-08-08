@@ -6,10 +6,13 @@ import PokemonInstanceCard from "./PokemonInstanceCard";
 import PokemonFilterBar from "@/components/pokemon/PokemonFilterBar";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
+import Modal from "@/components/ui/Modal";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName } from "@/lib/pokemonDisplay";
 import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
 import LootboxRevealDialog from "./LootboxRevealDialog";
+
+const TRADEUP_COUNT = 5;
 
 interface InventoryPageClientProps {
   initialPokemon: OwnedPokemon[];
@@ -43,6 +46,12 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   const [nicknameInput, setNicknameInput] = useState("");
   const [renaming, setRenaming] = useState(false);
   const [renameError, setRenameError] = useState<string | null>(null);
+
+  const [tradeUpMode, setTradeUpMode] = useState(false);
+  const [tradeUpSelected, setTradeUpSelected] = useState<Set<string>>(new Set());
+  const [showTradeUpConfirm, setShowTradeUpConfirm] = useState(false);
+  const [tradeUpSubmitting, setTradeUpSubmitting] = useState(false);
+  const [tradeUpError, setTradeUpError] = useState<string | null>(null);
 
   const filtered = useMemo(
     () => filterAndSortPokemon(pokemon, { search, typeFilter, sortBy }),
@@ -105,6 +114,47 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
     setRevealPokemon(data.pokemon as OwnedPokemon);
   }
 
+  function toggleTradeUpMode() {
+    setTradeUpMode((prev) => !prev);
+    setTradeUpSelected(new Set());
+    setTradeUpError(null);
+  }
+
+  function toggleTradeUpPick(p: OwnedPokemon) {
+    if (p.isStarter) return;
+    setTradeUpSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(p.id)) {
+        next.delete(p.id);
+      } else if (next.size < TRADEUP_COUNT) {
+        next.add(p.id);
+      }
+      return next;
+    });
+  }
+
+  async function confirmTradeUp() {
+    setTradeUpSubmitting(true);
+    setTradeUpError(null);
+    const ids = Array.from(tradeUpSelected);
+    const res = await fetch("/api/inventory/tradeup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pokemonInstanceIds: ids }),
+    });
+    const data = await res.json();
+    setTradeUpSubmitting(false);
+    if (data.error) {
+      setTradeUpError(data.error);
+      return;
+    }
+    setPokemon((prev) => prev.filter((p) => !tradeUpSelected.has(p.id)));
+    setLootboxes((prev) => [...prev, { id: data.lootboxId, openedAt: null, createdAt: new Date().toISOString() }]);
+    setShowTradeUpConfirm(false);
+    setTradeUpMode(false);
+    setTradeUpSelected(new Set());
+  }
+
   return (
     <div className="page">
       <h1 className="page-title">🎒 Inventory</h1>
@@ -147,8 +197,13 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
           <button className={viewMode === "grid" ? "active" : ""} onClick={() => setViewMode("grid")}>▦ Grid</button>
           <button className={viewMode === "list" ? "active" : ""} onClick={() => setViewMode("list")}>☰ List</button>
         </div>
+        <button className={tradeUpMode ? "btn-primary" : "btn-secondary"} onClick={toggleTradeUpMode}>
+          🔥 Trade Up
+        </button>
         <div className="count-label">Showing: {filtered.length} of {pokemon.length}</div>
       </div>
+
+      {tradeUpError && <p className="auth-error">{tradeUpError}</p>}
 
       <div className="inventory-layout">
         <div className={viewMode === "grid" ? "pokemon-grid" : "pokemon-list"}>
@@ -158,13 +213,14 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
               key={p.id}
               pokemon={p}
               variant={viewMode}
-              selected={p.id === selectedId}
-              onSelect={() => selectPokemon(p.id)}
+              selected={tradeUpMode ? tradeUpSelected.has(p.id) : p.id === selectedId}
+              onSelect={() => (tradeUpMode ? toggleTradeUpPick(p) : selectPokemon(p.id))}
+              disabled={tradeUpMode && p.isStarter}
             />
           ))}
         </div>
 
-        {selected && (
+        {selected && !tradeUpMode && (
           <div className="card inventory-detail">
             <div id="card-header">
               {renamingId === selected.id ? (
@@ -225,6 +281,40 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
           </div>
         )}
       </div>
+
+      {tradeUpMode && (
+        <div className="card tradeup-bar">
+          <span className="tradeup-count">{tradeUpSelected.size}/{TRADEUP_COUNT} selected</span>
+          <button
+            className="btn-primary"
+            disabled={tradeUpSelected.size !== TRADEUP_COUNT}
+            onClick={() => setShowTradeUpConfirm(true)}
+          >
+            🔥 Trade Up
+          </button>
+        </div>
+      )}
+
+      {showTradeUpConfirm && (
+        <Modal onClose={() => (tradeUpSubmitting ? null : setShowTradeUpConfirm(false))}>
+          <h2>🔥 Confirm Trade Up</h2>
+          <p>These 5 Pokémon will be permanently released in exchange for 1 lootbox. This can&apos;t be undone.</p>
+          <ul className="tradeup-confirm-list">
+            {pokemon.filter((p) => tradeUpSelected.has(p.id)).map((p) => (
+              <li key={p.id}>{displayName(p)} — #{p.number} {p.name} (Total {p.total})</li>
+            ))}
+          </ul>
+          {tradeUpError && <p className="auth-error">{tradeUpError}</p>}
+          <div className="trade-builder-actions">
+            <button className="btn-primary" disabled={tradeUpSubmitting} onClick={confirmTradeUp}>
+              {tradeUpSubmitting ? "Trading Up…" : "Confirm"}
+            </button>
+            <button className="btn-secondary" disabled={tradeUpSubmitting} onClick={() => setShowTradeUpConfirm(false)}>
+              Cancel
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

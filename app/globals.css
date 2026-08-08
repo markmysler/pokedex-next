@@ -488,6 +488,22 @@ body {
   .inventory-layout { grid-template-columns: 1fr; }
 }
 
+/* TRADE-UP (upgrades/14-pokemon-tradeup.md) */
+.tradeup-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 10px 14px;
+}
+.tradeup-count { font-weight: bold; }
+.tradeup-confirm-list { list-style: none; margin: 10px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.tradeup-confirm-list li { padding: 6px 8px; background: var(--input-bg); border-radius: 6px; font-size: 13px; }
+
 .pokemon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -510,6 +526,8 @@ body {
 }
 .pokemon-grid-card:hover { border-color: #2FA572; }
 .pokemon-grid-card.selected { background: #2FA572; color: white; }
+.pokemon-grid-card.disabled, .pokemon-row.disabled { opacity: 0.4; cursor: not-allowed; }
+.pokemon-grid-card.disabled:hover { border-color: var(--border-color); }
 .grid-card-sprite { width: 64px; height: 64px; object-fit: contain; }
 .grid-card-name { font-size: 12px; font-weight: bold; }
 .grid-card-species { font-size: 10px; color: var(--text-secondary); }

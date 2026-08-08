@@ -13,23 +13,28 @@ interface PokemonInstanceCardProps {
   // order, renders the ".team-picker-order" badge when provided. Undefined
   // everywhere else (Inventory), so that usage is unaffected.
   pickOrder?: number;
+  // Trade-up mode only (upgrades/14-pokemon-tradeup.md) -- renders dimmed
+  // and ignores clicks, so starters are visibly *why* unavailable rather
+  // than looking like a bug (they're just not in the filtered list).
+  disabled?: boolean;
 }
 
-export default function PokemonInstanceCard({ pokemon, variant, selected, onSelect, pickOrder }: PokemonInstanceCardProps) {
+export default function PokemonInstanceCard({ pokemon, variant, selected, onSelect, pickOrder, disabled }: PokemonInstanceCardProps) {
   const shiny = isShinyInstance(pokemon);
   const name = displayName(pokemon);
+  const handleClick = disabled ? undefined : onSelect;
 
   if (variant === "list") {
     const label = pokemon.nickname ? `${pokemon.nickname} (#${pokemon.number} ${pokemon.name})` : `#${pokemon.number}  ${pokemon.name}`;
     return (
-      <div className={`pokemon-row${selected ? " selected" : ""}`} onClick={onSelect}>
+      <div className={`pokemon-row${selected ? " selected" : ""}${disabled ? " disabled" : ""}`} onClick={handleClick}>
         {`${label.padEnd(28)} Total ${pokemon.total}${pokemon.isStarter ? " ⭐" : ""}${shiny ? " ✨" : ""}`}
       </div>
     );
   }
 
   return (
-    <div className={`pokemon-grid-card${selected ? " selected" : ""}`} onClick={onSelect}>
+    <div className={`pokemon-grid-card${selected ? " selected" : ""}${disabled ? " disabled" : ""}`} onClick={handleClick}>
       {pickOrder !== undefined && <div className="team-picker-order">#{pickOrder}</div>}
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="grid-card-sprite" />
       <div className="grid-card-name">{name}</div>
