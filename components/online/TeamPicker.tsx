@@ -1,21 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { OwnedPokemon } from "@/types/pokemon";
-import TypeBadges from "@/components/TypeBadges";
-import Sprite from "@/components/Sprite";
+import PokemonInstanceCard from "@/components/inventory/PokemonInstanceCard";
+import PokemonFilterBar from "@/components/pokemon/PokemonFilterBar";
+import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
 
 const TEAM_SIZE = 3;
 
 interface TeamPickerProps {
   inventory: OwnedPokemon[];
+  typesList: string[];
   onSubmit: (ids: string[]) => Promise<void>;
 }
 
-export default function TeamPicker({ inventory, onSubmit }: TeamPickerProps) {
+export default function TeamPicker({ inventory, typesList, onSubmit }: TeamPickerProps) {
   const [selected, setSelected] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All Types");
+  // Strongest-first is the most useful default once there are hundreds of
+  // Pokemon to pick a team from -- Inventory keeps its own "unsorted"
+  // default instead (upgrades/09-team-picker-parity.md).
+  const [sortBy, setSortBy] = useState<SortKey>("total-desc");
+
+  const filtered = useMemo(
+    () => filterAndSortPokemon(inventory, { search, typeFilter, sortBy }),
+    [inventory, search, typeFilter, sortBy]
+  );
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -42,27 +55,35 @@ export default function TeamPicker({ inventory, onSubmit }: TeamPickerProps) {
       <h3>🎯 Pick Your Team ({selected.length}/{TEAM_SIZE})</h3>
       <p className="online-status">Choose 3 Pokémon. Your opponent won&apos;t see your picks until you both lock in.</p>
 
+      <PokemonFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        typeFilter={typeFilter}
+        onTypeFilterChange={setTypeFilter}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        typesList={typesList}
+      />
+
       <div className="pokemon-grid team-picker-grid">
-        {inventory.map((p) => {
+        {filtered.map((p) => {
           const isSelected = selected.includes(p.id);
           const pickIndex = selected.indexOf(p.id);
           return (
-            <div
+            <PokemonInstanceCard
               key={p.id}
-              className={`pokemon-grid-card${isSelected ? " selected" : ""}`}
-              onClick={() => !submitting && toggle(p.id)}
-            >
-              {isSelected && <div className="team-picker-order">#{pickIndex + 1}</div>}
-              <Sprite name={p.name} form="normal" className="grid-card-sprite" />
-              <div className="grid-card-name">#{p.number} {p.name}</div>
-              <TypeBadges type1={p.type1} type2={p.type2} center small />
-              <div className="grid-card-total">Total {p.total}</div>
-            </div>
+              pokemon={p}
+              variant="grid"
+              selected={isSelected}
+              onSelect={() => !submitting && toggle(p.id)}
+              pickOrder={isSelected ? pickIndex + 1 : undefined}
+            />
           );
         })}
       </div>
 
       {inventory.length === 0 && <p>You don&apos;t own any Pokémon yet.</p>}
+      {inventory.length > 0 && filtered.length === 0 && <p>No Pokémon match your filters.</p>}
 
       <div className="online-status">{error}</div>
       <button className="btn-primary" disabled={selected.length !== TEAM_SIZE || submitting} onClick={submit}>

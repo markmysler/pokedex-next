@@ -9,9 +9,13 @@ interface PokemonInstanceCardProps {
   variant: "grid" | "list";
   selected: boolean;
   onSelect: () => void;
+  // Team-picker only (upgrades/09-team-picker-parity.md) -- 1-based pick
+  // order, renders the ".team-picker-order" badge when provided. Undefined
+  // everywhere else (Inventory), so that usage is unaffected.
+  pickOrder?: number;
 }
 
-export default function PokemonInstanceCard({ pokemon, variant, selected, onSelect }: PokemonInstanceCardProps) {
+export default function PokemonInstanceCard({ pokemon, variant, selected, onSelect, pickOrder }: PokemonInstanceCardProps) {
   const shiny = isShinyInstance(pokemon);
   const name = displayName(pokemon);
 
@@ -26,6 +30,7 @@ export default function PokemonInstanceCard({ pokemon, variant, selected, onSele
 
   return (
     <div className={`pokemon-grid-card${selected ? " selected" : ""}`} onClick={onSelect}>
+      {pickOrder !== undefined && <div className="team-picker-order">#{pickOrder}</div>}
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="grid-card-sprite" />
       <div className="grid-card-name">{name}</div>
       {pokemon.nickname && <div className="grid-card-species">#{pokemon.number} {pokemon.name}</div>}

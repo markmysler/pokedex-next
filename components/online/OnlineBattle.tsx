@@ -13,6 +13,7 @@ import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
 interface OnlineBattleProps {
   inventory: OwnedPokemon[];
   displayName: string;
+  typesList: string[];
 }
 
 type Phase = "setup" | "waiting" | "picking" | "battling";
@@ -27,7 +28,7 @@ interface OnlineBattleState {
 
 const POLL_INTERVAL_MS = 2500;
 
-export default function OnlineBattle({ inventory, displayName }: OnlineBattleProps) {
+export default function OnlineBattle({ inventory, displayName, typesList }: OnlineBattleProps) {
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [mySlot, setMySlot] = useState<RoomSlot | null>(null);
@@ -486,7 +487,7 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
             <div className="online-status">{status || "Waiting for your opponent to lock in their team..."}</div>
           </div>
         ) : (
-          <TeamPicker inventory={inventory} onSubmit={lockIn} />
+          <TeamPicker inventory={inventory} typesList={typesList} onSubmit={lockIn} />
         )}
         <ChatPanel messages={chatMessages} onSend={sendChat} />
       </>

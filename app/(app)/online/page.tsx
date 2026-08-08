@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
+import { typesList } from "@/lib/pokedex";
 import OnlineBattle from "@/components/online/OnlineBattle";
 
 export default async function OnlinePage() {
@@ -18,7 +19,7 @@ export default async function OnlinePage() {
   return (
     <div className="page">
       <h1 className="page-title">🌐 Online Battle</h1>
-      <OnlineBattle inventory={pokemon} displayName={displayName} />
+      <OnlineBattle inventory={pokemon} displayName={displayName} typesList={typesList} />
     </div>
   );
 }

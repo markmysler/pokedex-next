@@ -77,15 +77,64 @@ separate change.
 
 ## End state
 
-- [ ] `TeamPicker` (used by bot 3v3 and online 3v3 team selection) has
+- [x] `TeamPicker` (used by bot 3v3 and online 3v3 team selection) has
       search, type filter, and sort — verify picking a specific Pokémon out
       of a large inventory by name/number/nickname actually works.
-- [ ] Shiny Pokémon show the shiny sprite + badge in `TeamPicker`, matching
+- [x] Shiny Pokémon show the shiny sprite + badge in `TeamPicker`, matching
       every other owned-instance surface.
-- [ ] `InventoryPageClient` behaves exactly as before (search, type filter)
+- [x] `InventoryPageClient` behaves exactly as before (search, type filter)
       plus a new sort control, using the same shared `PokemonFilterBar`.
-- [ ] Selecting Pokémon for a team survives changing the search/filter/sort
+- [x] Selecting Pokémon for a team survives changing the search/filter/sort
       mid-pick (already-selected picks aren't lost or hidden).
-- [ ] Nicknames (step 8) show correctly in `TeamPicker`'s cards, inherited
+- [x] Nicknames (step 8) show correctly in `TeamPicker`'s cards, inherited
       from the shared `PokemonInstanceCard`, not re-implemented here.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean. No migration needed for
+  this step, so validation ran directly against the live Supabase project
+  with no push-and-wait step.
+- One deliberate deviation from the plan's literal type sketch: `SortKey`
+  gained a 5th value, `"unsorted"`, beyond the four listed
+  (`total-desc`/`total-asc`/`name-asc`/`number-asc`). The plan's own prose
+  requires Inventory to keep its "unsorted/insertion order" default
+  unchanged while `TeamPicker` defaults to `"total-desc"` — the listed key
+  set has no way to express "no sort," so an explicit `"unsorted"` option
+  (a no-op in `filterAndSortPokemon`'s switch) was added to satisfy that
+  requirement rather than picking an arbitrary substitute default.
+- `typesList` is threaded as a prop from each server page
+  (`app/(app)/battle/page.tsx`, `app/(app)/online/page.tsx`) through
+  `BattleArena`/`OnlineBattle` into `TeamPicker`, rather than having
+  `TeamPicker` import `lib/pokedex.ts` directly — every other client
+  component gets Pokédex data via props today, and importing it directly
+  would have pulled the ~130KB `pokedex.json` into the client bundle for
+  the first time. Matches the existing convention instead of introducing a
+  new one.
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server, using 1 disposable test account with 3 directly-seeded
+  `pokemon_instances` rows spanning a wide total-stat range (weak/mid/very
+  strong), one nicknamed ("Sparky"), one shiny-qualifying (stats/moveset
+  rolled far above species base, computed via the same z-score formula
+  `lib/shiny.ts` uses) — 14 checks, all passing: `/battle`'s `TeamPicker`
+  defaults its sort dropdown to "Total (high to low)" and the real SSR'd
+  card order actually reflects that (strongest first, not just the default
+  option selected); the nickname shows as the primary label via the shared
+  `PokemonInstanceCard`; the shiny badge renders in `TeamPicker`, which it
+  never did before this step; `/inventory`'s sort dropdown still defaults
+  to "Default order" and its real SSR'd order is unchanged
+  (insertion/`created_at`-desc, not total-sorted) — confirming the shared
+  refactor didn't alter Inventory's existing behavior; the existing
+  grid/list view toggle and count label are untouched; `/online` renders
+  cleanly with `TeamPicker`'s new `typesList` prop wired through.
+- Not independently verified via a real browser (no browser automation
+  tool available in this environment): actually typing into the search box
+  and watching the grid filter live, or toggling the sort/type dropdowns
+  post-hydration and confirming already-selected team picks survive. The
+  underlying `filterAndSortPokemon()` logic was exercised for real by the
+  SSR order checks above (both defaults produce the correct order via the
+  real function, not a mock), and the selection-state code was reviewed by
+  hand — `selected: string[]` is keyed by id and built from `inventory`
+  directly, entirely independent of the `filtered` array used only for
+  rendering, so filtering cannot lose or hide an existing pick. This is the
+  same category of gap flagged in steps 5 and 8's validation notes.

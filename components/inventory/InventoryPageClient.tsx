@@ -3,10 +3,12 @@
 import { useMemo, useState } from "react";
 import type { Lootbox, OwnedPokemon } from "@/types/pokemon";
 import PokemonInstanceCard from "./PokemonInstanceCard";
+import PokemonFilterBar from "@/components/pokemon/PokemonFilterBar";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName } from "@/lib/pokemonDisplay";
+import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
 import LootboxRevealDialog from "./LootboxRevealDialog";
 
 interface InventoryPageClientProps {
@@ -29,6 +31,9 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   const [lootboxes, setLootboxes] = useState(initialLootboxes);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
+  // "unsorted" keeps Inventory's existing insertion-order default
+  // (upgrades/09-team-picker-parity.md) — TeamPicker defaults differently.
+  const [sortBy, setSortBy] = useState<SortKey>("unsorted");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedId, setSelectedId] = useState<string | null>(initialPokemon[0]?.id ?? null);
   const [openingId, setOpeningId] = useState<string | null>(null);
@@ -39,14 +44,10 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   const [renaming, setRenaming] = useState(false);
   const [renameError, setRenameError] = useState<string | null>(null);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return pokemon.filter((p) => {
-      if (q && !p.name.toLowerCase().includes(q) && !p.number.includes(q)) return false;
-      if (typeFilter !== "All Types" && p.type1 !== typeFilter && p.type2 !== typeFilter) return false;
-      return true;
-    });
-  }, [pokemon, search, typeFilter]);
+  const filtered = useMemo(
+    () => filterAndSortPokemon(pokemon, { search, typeFilter, sortBy }),
+    [pokemon, search, typeFilter, sortBy]
+  );
 
   const selected = pokemon.find((p) => p.id === selectedId) ?? null;
 
@@ -132,22 +133,16 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
 
       {error && <p className="auth-error">{error}</p>}
 
+      <PokemonFilterBar
+        search={search}
+        onSearchChange={setSearch}
+        typeFilter={typeFilter}
+        onTypeFilterChange={setTypeFilter}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        typesList={typesList}
+      />
       <div className="card inventory-toolbar">
-        <input
-          id="search-input"
-          type="text"
-          placeholder="🔍 Search Name or #..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <div className="filter-col">
-          <label>Type Filter:</label>
-          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-            {typesList.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
         <div className="view-toggle">
           <button className={viewMode === "grid" ? "active" : ""} onClick={() => setViewMode("grid")}>▦ Grid</button>
           <button className={viewMode === "list" ? "active" : ""} onClick={() => setViewMode("list")}>☰ List</button>

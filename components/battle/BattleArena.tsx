@@ -12,6 +12,7 @@ import LootboxRevealDialog from "@/components/inventory/LootboxRevealDialog";
 
 interface BattleArenaProps {
   inventory: OwnedPokemon[];
+  typesList: string[];
 }
 
 type Phase = "picking" | "battling";
@@ -105,7 +106,7 @@ function firstAliveBenchIndex(team: TeamState): 0 | 1 | 2 | null {
   return i === -1 ? null : (i as 0 | 1 | 2);
 }
 
-export default function BattleArena({ inventory }: BattleArenaProps) {
+export default function BattleArena({ inventory, typesList }: BattleArenaProps) {
   const [phase, setPhase] = useState<Phase>("picking");
   const [myTeam, setMyTeam] = useState<OwnedPokemon[] | null>(null);
   const [battle, setBattle] = useState<LocalBattleState | null>(null);
@@ -291,7 +292,7 @@ export default function BattleArena({ inventory }: BattleArenaProps) {
   }
 
   if (phase === "picking" || !battle) {
-    return <TeamPicker inventory={inventory} onSubmit={startBattle} />;
+    return <TeamPicker inventory={inventory} typesList={typesList} onSubmit={startBattle} />;
   }
 
   const you = battle.team1.members[battle.team1.activeIndex];
