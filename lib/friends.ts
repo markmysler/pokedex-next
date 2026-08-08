@@ -62,3 +62,27 @@ export async function getFriendsForUser(supabase: SupabaseClient<Database>, user
 
   return { friends, incoming, outgoing };
 }
+
+export interface FriendshipCheck {
+  friendshipId: string;
+  otherUserId: string;
+  status: "pending" | "accepted";
+}
+
+// Shared by every friend-chat/trading Route Handler (upgrades/12-friend-chat-trading.md)
+// that takes a friendshipId in the URL — confirms the caller is actually one
+// of the two parties on that friendship (not just any authenticated user)
+// before doing anything else. Returns null for "not found" and "not a
+// party to it" alike, so callers can't distinguish the two from the error
+// message (same non-leaking shape as the rest of this app's ownership checks).
+export async function getFriendshipForUser(
+  supabase: SupabaseClient<Database>,
+  friendshipId: string,
+  userId: string
+): Promise<FriendshipCheck | null> {
+  const { data, error } = await supabase.from("friendships").select("*").eq("id", friendshipId).maybeSingle();
+  if (error || !data) return null;
+  if (data.requester_id !== userId && data.addressee_id !== userId) return null;
+  const otherUserId = data.requester_id === userId ? data.addressee_id : data.requester_id;
+  return { friendshipId: data.id, otherUserId, status: data.status };
+}

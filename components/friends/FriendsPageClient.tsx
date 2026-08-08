@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { FriendsData } from "@/lib/friends";
 
 interface FriendsPageClientProps {
@@ -141,6 +142,9 @@ export default function FriendsPageClient({ myFriendCode, initial }: FriendsPage
               <button className="btn-primary" disabled={busyId === f.userId} onClick={() => battle(f.userId)}>
                 ⚔️ Battle
               </button>
+              <Link href={`/friends/${f.friendshipId}`} className="btn-secondary">
+                💬 Chat
+              </Link>
               <button className="btn-secondary" disabled={busyId === f.friendshipId} onClick={() => remove(f.friendshipId)}>
                 Remove
               </button>

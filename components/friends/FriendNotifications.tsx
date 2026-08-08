@@ -45,6 +45,28 @@ export default function FriendNotifications({ userId }: FriendNotificationsProps
           20000
         );
       })
+      .on("broadcast", { event: "friend-message" }, ({ payload }) => {
+        const p = payload as { friendshipId: string; senderDisplayName: string; text: string };
+        pushRef.current(
+          <FriendMessageToast friendshipId={p.friendshipId} senderDisplayName={p.senderDisplayName} text={p.text} router={router} />
+        );
+      })
+      .on("broadcast", { event: "trade-offer" }, ({ payload }) => {
+        const p = payload as { friendshipId: string; fromDisplayName: string };
+        pushRef.current(
+          <FriendMessageToast
+            friendshipId={p.friendshipId}
+            senderDisplayName={p.fromDisplayName}
+            text="proposed a trade!"
+            icon="🔄"
+            router={router}
+          />
+        );
+      })
+      .on("broadcast", { event: "trade-resolved" }, ({ payload }) => {
+        const p = payload as { friendshipId: string; status: string };
+        pushRef.current(<span>🔄 A trade was {p.status}.</span>);
+      })
       .subscribe();
 
     return () => {
@@ -77,6 +99,29 @@ function BattleInviteToast({ fromDisplayName, roomCode, router, pushRef }: Battl
     <span className="toast-invite">
       ⚔️ <strong>{fromDisplayName}</strong> invited you to battle!
       <button className="btn-primary toast-action" onClick={accept}>Accept</button>
+    </span>
+  );
+}
+
+interface FriendMessageToastProps {
+  friendshipId: string;
+  senderDisplayName: string;
+  text: string;
+  icon?: string;
+  router: ReturnType<typeof useRouter>;
+}
+
+// Surfaces a friend DM (or a new trade offer, reusing the same shape) from
+// anywhere in the app, not just an open chat window — same "toast/badge
+// when the recipient's chat window isn't open" requirement step 5's friend
+// requests already established (upgrades/12-friend-chat-trading.md).
+function FriendMessageToast({ friendshipId, senderDisplayName, text, icon = "💬", router }: FriendMessageToastProps) {
+  return (
+    <span className="toast-invite">
+      {icon} <strong>{senderDisplayName}</strong>: {text}
+      <button className="btn-primary toast-action" onClick={() => router.push(`/friends/${friendshipId}`)}>
+        Open
+      </button>
     </span>
   );
 }

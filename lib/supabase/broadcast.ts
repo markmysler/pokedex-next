@@ -9,6 +9,10 @@ export function userChannelName(userId: string): string {
   return `user:${userId}`;
 }
 
+export function friendshipChannelName(friendshipId: string): string {
+  return `friendship:${friendshipId}`;
+}
+
 // One-off broadcast from a Route Handler — uses the REST endpoint, no
 // WebSocket subscription needed (supabase-js >= 2.107.0's channel.httpSend()).
 //
@@ -47,6 +51,25 @@ export async function broadcastToUser(userId: string, event: string, payload: un
     }
   } catch (err) {
     console.error(`broadcastToUser(${userId}, ${event}) threw:`, err);
+  } finally {
+    supabase.removeChannel(channel);
+  }
+}
+
+// Same mechanism again, friendship-scoped — used by friend DMs
+// (upgrades/12-friend-chat-trading.md) for instant delivery to a friend who
+// currently has that chat window open. Never throws, same reasoning as the
+// two above.
+export async function broadcastToFriendship(friendshipId: string, event: string, payload: unknown) {
+  const supabase = getSupabaseServerClient();
+  const channel = supabase.channel(friendshipChannelName(friendshipId));
+  try {
+    const result = await channel.httpSend(event, payload as Record<string, unknown>);
+    if (!("success" in result) || !result.success) {
+      console.error(`broadcastToFriendship(${friendshipId}, ${event}) failed:`, result);
+    }
+  } catch (err) {
+    console.error(`broadcastToFriendship(${friendshipId}, ${event}) threw:`, err);
   } finally {
     supabase.removeChannel(channel);
   }

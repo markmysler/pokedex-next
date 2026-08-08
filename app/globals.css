@@ -256,6 +256,7 @@ body {
 
 /* 3v3 TEAM PICKER + BENCH (upgrades/05-3v3-battles.md) */
 .team-picker-grid { max-height: 50vh; overflow-y: auto; }
+.trade-picker-grid { max-height: 40vh; overflow-y: auto; }
 .team-picker-order {
   position: absolute;
   top: 6px;
@@ -648,6 +649,20 @@ body {
 }
 .friend-row:last-child { border-bottom: none; }
 .friend-row-actions { display: flex; gap: 8px; }
+
+.trade-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+}
+.trade-row:last-child { border-bottom: none; }
+.trade-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.trade-builder { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
+.trade-builder-actions { display: flex; gap: 8px; }
 .nav-link-badge {
   background: #E74C3C;
   color: white;

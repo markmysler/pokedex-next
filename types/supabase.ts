@@ -214,6 +214,63 @@ export interface Database {
         };
         Relationships: [];
       };
+      friend_messages: {
+        Row: {
+          id: string;
+          friendship_id: string;
+          sender_id: string;
+          text: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          friendship_id: string;
+          sender_id: string;
+          text: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          friendship_id?: string;
+          sender_id?: string;
+          text?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      trade_offers: {
+        Row: {
+          id: string;
+          friendship_id: string;
+          offered_by: string;
+          offered_instance_ids: Json;
+          requested_instance_ids: Json;
+          status: "pending" | "accepted" | "declined" | "cancelled";
+          created_at: string;
+          resolved_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          friendship_id: string;
+          offered_by: string;
+          offered_instance_ids: Json;
+          requested_instance_ids: Json;
+          status?: "pending" | "accepted" | "declined" | "cancelled";
+          created_at?: string;
+          resolved_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          friendship_id?: string;
+          offered_by?: string;
+          offered_instance_ids?: Json;
+          requested_instance_ids?: Json;
+          status?: "pending" | "accepted" | "declined" | "cancelled";
+          created_at?: string;
+          resolved_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -224,6 +281,10 @@ export interface Database {
       finalize_round: {
         Args: { p_code: string; p_new_state: Json };
         Returns: Json;
+      };
+      accept_trade: {
+        Args: { p_trade_id: string; p_accepting_user_id: string };
+        Returns: undefined;
       };
     };
     Enums: Record<string, never>;
