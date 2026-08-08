@@ -8,7 +8,8 @@ covers what comes next: extending 3v3 to bot battles, a proper win/loss +
 lootbox reveal experience, a shiny-Pokémon rarity tier, a friends system
 with battle invites/chat/trading, security hardening, a fairer leaderboard,
 per-Pokémon nicknames, a team picker that scales to hundreds of owned
-Pokémon, real battle depth (dodge/bleed/blind), and sound — all built with
+Pokémon, real battle depth (dodge/bleed/blind), sound, richer Dashboard
+stats, a trade-up burn mechanic, and batch lootbox opening — all built with
 the app's existing hand-rolled CSS conventions (`.card`, `.btn-primary`,
 etc.), no Tailwind/shadcn adoption.
 
@@ -17,6 +18,7 @@ against before moving to the next step — same format as the archived plan.
 Steps 1-5 shipped from the original version of this plan; steps 6-11 were
 added 2026-08-08 at the user's request, before step 6 (friend chat +
 trading) — that step was renumbered to 12 to make room and comes last.
+Steps 13-15 were added later the same day, appended after step 12.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
@@ -32,6 +34,9 @@ trading) — that step was renumbered to 12 to make room and comes last.
 | 10 | Battle depth (dodge, bleed, blind, dual-role stats) | [10-battle-depth.md](10-battle-depth.md) | — |
 | 11 | Sound effects (synthesized, no audio files) | [11-sound-effects.md](11-sound-effects.md) | 10 |
 | 12 | Friend chat + trading | [12-friend-chat-trading.md](12-friend-chat-trading.md) | 5, 9 |
+| 13 | Richer Dashboard statistics | [13-dashboard-stats.md](13-dashboard-stats.md) | — |
+| 14 | Trade-up (burn 5 Pokémon for 1 lootbox) | [14-pokemon-tradeup.md](14-pokemon-tradeup.md) | 9, 13 |
+| 15 | Open multiple lootboxes at once | [15-lootbox-batch-opening.md](15-lootbox-batch-opening.md) | — |
 
 ## Why this order
 
@@ -71,6 +76,17 @@ after steps 1-5 shipped:
   builder reuses step 9's shared Pokémon-picker components, so it has to
   come after them; nothing else in steps 6-11 depends on friends existing
   either way.
+
+**Steps 13-15**, added after step 12 in a later conversation:
+- Dashboard stats (13) before trade-up (14): trade-up increments the same
+  `pokemon_released_count` counter discard does, and that counter is
+  introduced by step 13 — trade-up would have nothing to increment if it
+  came first. Trade-up also depends on step 9's shared picker for its
+  multi-select-5 UI, same reasoning as step 12.
+- Batch lootbox opening (15) has no hard dependency on trade-up, but makes
+  the most sense after it — trading up is what's most likely to leave
+  someone holding several lootboxes at once, which is exactly the
+  situation this step improves.
 
 ## Key decisions already made
 
@@ -156,6 +172,30 @@ From the 2026-08-08 planning conversation (steps 6-11):
   — hundreds of DOM nodes is already how `InventoryPageClient` handles
   scale today; windowing is a later, isolated addition if it's ever
   actually needed, not a prerequisite to ship search/filter/sort.
+
+From the second 2026-08-08 planning conversation (steps 13-15):
+
+- **"Pokémon released" is one counter shared by discard and trade-up**,
+  not two separate stats — a `profiles.pokemon_released_count` column
+  incremented by both, since `pokemon_instances` rows are hard-deleted and
+  have no history to count retroactively. Named generically on purpose so
+  it stays accurate regardless of which release mechanism was used.
+- **"Most used Pokémon in battle" needs bot matches to start recording
+  `team_snapshot` too** — today only online matches do. Step 13 closes
+  that gap going forward; no backfill for matches recorded before it
+  ships, same precedent as step 3's shiny rollout.
+- **Trade-up is additive, not a replacement for discard.** Discard keeps
+  working exactly as it does today (including for starters, which
+  trade-up explicitly excludes). Flagged explicitly as a judgment call in
+  case the intent was actually to retire discard once trade-up ships.
+- **Trade-up gets a confirmation dialog before committing** — the one
+  irreversible action in the app that didn't already have one, worth it
+  specifically because 5 Pokémon are destroyed at once for an unknown
+  reward.
+- **Batch lootbox-opening reuses the single-open roll/persist logic**
+  (factored into `lib/inventory.ts`) rather than duplicating it, and the
+  reveal dialog resets between queued items via a React `key` change
+  (remount), not manual internal state-reset logic.
 
 ## Working through a step
 
