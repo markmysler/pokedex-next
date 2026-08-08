@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
-import { getPokemon, pokedexOrder } from "@/lib/pokedex";
-import { rollInstance, toOwnedPokemon } from "@/lib/collection";
-import type { Json } from "@/types/supabase";
+import { rollAndPersistLootboxPokemon } from "@/lib/inventory";
 
 export async function POST(_request: Request, ctx: RouteContext<"/api/inventory/lootboxes/[id]/open">) {
   const { id } = await ctx.params;
@@ -38,35 +36,10 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/inventory/
     return NextResponse.json({ error: "Lootbox already opened" }, { status: 409 });
   }
 
-  // Species can be anything, including one already owned — duplicates are
-  // intentional (see upgrades/02-collection-system.md).
-  const randomNumber = pokedexOrder[Math.floor(Math.random() * pokedexOrder.length)];
-  const species = getPokemon(randomNumber);
-  if (!species) return NextResponse.json({ error: "Internal error rolling species" }, { status: 500 });
-
-  const rolled = rollInstance(species);
-
-  const { data: instanceRow, error: insertError } = await supabase
-    .from("pokemon_instances")
-    .insert({
-      user_id: user.id,
-      pokemon_number: species.number,
-      hp: rolled.hp,
-      atk: rolled.atk,
-      def: rolled.def,
-      spatk: rolled.spatk,
-      spdef: rolled.spdef,
-      spd: rolled.spd,
-      total: rolled.total,
-      moves: rolled.moves as unknown as Json,
-      is_starter: false,
-    })
-    .select("*")
-    .single();
-
-  if (insertError || !instanceRow) {
-    return NextResponse.json({ error: insertError?.message ?? "Failed to create Pokemon instance" }, { status: 500 });
+  try {
+    const pokemon = await rollAndPersistLootboxPokemon(supabase, user.id);
+    return NextResponse.json({ pokemon });
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to open lootbox" }, { status: 500 });
   }
-
-  return NextResponse.json({ pokemon: toOwnedPokemon(instanceRow, species) });
 }

@@ -541,6 +541,10 @@ body {
 .nickname-edit-form input { flex: 1; min-width: 120px; }
 .detail-species-line { font-size: 12px; color: var(--text-secondary); margin: -6px 0 0 0; }
 .lootbox-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.lootbox-batch-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lootbox-qty-stepper { display: flex; align-items: center; gap: 6px; }
+.lootbox-qty-stepper button { width: 30px; height: 30px; padding: 0; font-size: 16px; }
+.lootbox-qty-stepper input { width: 56px; text-align: center; padding: 6px 4px; }
 .move-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
 .move-list li { padding: 4px 8px; background: var(--input-bg); border-radius: 6px; }
 

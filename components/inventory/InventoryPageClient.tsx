@@ -41,7 +41,9 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   const [selectedId, setSelectedId] = useState<string | null>(initialPokemon[0]?.id ?? null);
   const [openingId, setOpeningId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [revealPokemon, setRevealPokemon] = useState<OwnedPokemon | null>(null);
+  const [revealQueue, setRevealQueue] = useState<OwnedPokemon[]>([]);
+  const [openQty, setOpenQty] = useState(1);
+  const [openingMany, setOpeningMany] = useState(false);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [nicknameInput, setNicknameInput] = useState("");
   const [renaming, setRenaming] = useState(false);
@@ -111,7 +113,32 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
     // The card-pack reveal (upgrades/04-lootbox-opening.md) shows this same
     // already-persisted result — opening the dialog is wiring, not a new
     // fetch, and the roll above has already happened by this point.
-    setRevealPokemon(data.pokemon as OwnedPokemon);
+    setRevealQueue([data.pokemon as OwnedPokemon]);
+  }
+
+  async function handleOpenMany(qty: number) {
+    setError(null);
+    setOpeningMany(true);
+    const res = await fetch("/api/inventory/lootboxes/open-many", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ count: qty }),
+    });
+    const data = await res.json();
+    setOpeningMany(false);
+    if (data.error) return setError(data.error);
+    const opened = data.pokemon as OwnedPokemon[];
+    // The batch endpoint only claims (and reports) however many were
+    // actually still available — trust its returned count, not the
+    // requested qty, to decide how many lootboxes to drop locally.
+    setLootboxes((prev) => prev.slice(opened.length));
+    setPokemon((prev) => [...opened, ...prev]);
+    if (opened.length > 0) setSelectedId(opened[0].id);
+    setOpenQty(1);
+    // Queued reveal: LootboxRevealDialog is keyed on revealQueue[0].id below,
+    // so shifting the queue on close forces a full remount, resetting the
+    // dialog's internal phase back to "drumroll" for the next box for free.
+    setRevealQueue(opened);
   }
 
   function toggleTradeUpMode() {
@@ -159,25 +186,67 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
     <div className="page">
       <h1 className="page-title">🎒 Inventory</h1>
 
-      {revealPokemon && (
-        <LootboxRevealDialog pokemon={revealPokemon} onClose={() => setRevealPokemon(null)} />
+      {revealQueue.length > 0 && (
+        <LootboxRevealDialog
+          key={revealQueue[0].id}
+          pokemon={revealQueue[0]}
+          hasNext={revealQueue.length > 1}
+          onClose={() => setRevealQueue((q) => q.slice(1))}
+        />
       )}
 
       {lootboxes.length > 0 && (
         <div className="card">
           <h2>📦 Unopened Lootboxes ({lootboxes.length})</h2>
-          <div className="lootbox-row">
-            {lootboxes.map((box) => (
+          {lootboxes.length === 1 ? (
+            <div className="lootbox-row">
               <button
-                key={box.id}
                 className="btn-primary"
-                onClick={() => handleOpen(box.id)}
-                disabled={openingId === box.id}
+                onClick={() => handleOpen(lootboxes[0].id)}
+                disabled={openingId === lootboxes[0].id}
               >
-                {openingId === box.id ? "Opening…" : "📦 Open Lootbox"}
+                {openingId === lootboxes[0].id ? "Opening…" : "📦 Open Lootbox"}
               </button>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className="lootbox-batch-row">
+              <p>You have {lootboxes.length} unopened lootboxes.</p>
+              <div className="lootbox-qty-stepper">
+                <button
+                  className="btn-secondary"
+                  onClick={() => setOpenQty((q) => Math.max(1, q - 1))}
+                  disabled={openingMany || openQty <= 1}
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  max={lootboxes.length}
+                  value={openQty}
+                  onChange={(e) => {
+                    const n = Number(e.target.value);
+                    if (Number.isInteger(n)) setOpenQty(Math.min(Math.max(1, n), lootboxes.length));
+                  }}
+                  disabled={openingMany}
+                />
+                <button
+                  className="btn-secondary"
+                  onClick={() => setOpenQty((q) => Math.min(lootboxes.length, q + 1))}
+                  disabled={openingMany || openQty >= lootboxes.length}
+                >
+                  +
+                </button>
+              </div>
+              <button
+                className="btn-primary"
+                onClick={() => handleOpenMany(Math.min(Math.max(1, openQty), lootboxes.length))}
+                disabled={openingMany}
+              >
+                {openingMany ? "Opening…" : `📦 Open ${openQty} Lootbox${openQty === 1 ? "" : "es"}`}
+              </button>
+            </div>
+          )}
         </div>
       )}
 

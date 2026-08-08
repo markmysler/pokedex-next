@@ -15,6 +15,11 @@ interface LootboxRevealDialogProps {
   // suspense below is a fixed client-side delay, not a loading state.
   pokemon: OwnedPokemon;
   onClose: () => void;
+  // Batch reveals only (upgrades/15-lootbox-batch-opening.md) -- when true,
+  // the terminal button reads "Next" instead of "Continue," but still calls
+  // the same onClose; the parent (InventoryPageClient) decides what "close"
+  // means (advance the queue vs. actually closing the dialog).
+  hasNext?: boolean;
 }
 
 type Phase = "drumroll" | "sprite" | "stats" | "moves" | "done";
@@ -32,7 +37,7 @@ const STAT_INFO: Array<{ label: string; key: "hp" | "atk" | "def" | "spatk" | "s
   { label: "Speed", key: "spd", color: "#FA92B2" },
 ];
 
-export default function LootboxRevealDialog({ pokemon, onClose }: LootboxRevealDialogProps) {
+export default function LootboxRevealDialog({ pokemon, onClose, hasNext }: LootboxRevealDialogProps) {
   const [phase, setPhase] = useState<Phase>("drumroll");
   const [statsRevealed, setStatsRevealed] = useState(0);
   const [movesRevealed, setMovesRevealed] = useState(0);
@@ -155,7 +160,7 @@ export default function LootboxRevealDialog({ pokemon, onClose }: LootboxRevealD
 
         <div className="lootbox-reveal-actions">
           {fullyRevealed ? (
-            <button className="btn-primary" onClick={onClose}>Continue</button>
+            <button className="btn-primary" onClick={onClose}>{hasNext ? "➡️ Next" : "✅ Continue"}</button>
           ) : (
             <button className="btn-secondary" onClick={(e) => { e.stopPropagation(); skip(); }}>Skip</button>
           )}

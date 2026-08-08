@@ -297,6 +297,10 @@ export interface Database {
         Args: { p_user_id: string; p_instance_ids: string[] };
         Returns: string;
       };
+      claim_lootboxes: {
+        Args: { p_user_id: string; p_count: number };
+        Returns: Database["public"]["Tables"]["lootboxes"]["Row"][];
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

@@ -1,9 +1,9 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/supabase";
+import type { Database, Json } from "@/types/supabase";
 import type { Lootbox, OwnedPokemon } from "@/types/pokemon";
-import { getPokemon } from "@/lib/pokedex";
-import { toOwnedPokemon } from "@/lib/collection";
+import { getPokemon, pokedexOrder } from "@/lib/pokedex";
+import { rollInstance, toOwnedPokemon } from "@/lib/collection";
 
 // Shared by GET /api/inventory and the Server Components that need the same
 // data (app/(app)/inventory, /battle, /online) — one query, no duplicated
@@ -91,4 +91,46 @@ export async function getOwnedPokemonInstances(
     result.push(toOwnedPokemon(row, species));
   }
   return result;
+}
+
+// Rolls a random species + stats and persists it as a new owned instance —
+// the shared "opening a lootbox" logic both POST
+// /api/inventory/lootboxes/[id]/open and POST
+// /api/inventory/lootboxes/open-many (step 15) call, so there's one
+// implementation instead of two. Assumes the caller has already atomically
+// claimed the lootbox itself (marked opened_at) — this function only does
+// the roll-and-insert half.
+export async function rollAndPersistLootboxPokemon(
+  supabase: SupabaseClient<Database>,
+  userId: string
+): Promise<OwnedPokemon> {
+  // Species can be anything, including one already owned — duplicates are
+  // intentional (see upgrades/02-collection-system.md).
+  const randomNumber = pokedexOrder[Math.floor(Math.random() * pokedexOrder.length)];
+  const species = getPokemon(randomNumber);
+  if (!species) throw new Error("Internal error rolling species");
+
+  const rolled = rollInstance(species);
+
+  const { data: instanceRow, error } = await supabase
+    .from("pokemon_instances")
+    .insert({
+      user_id: userId,
+      pokemon_number: species.number,
+      hp: rolled.hp,
+      atk: rolled.atk,
+      def: rolled.def,
+      spatk: rolled.spatk,
+      spdef: rolled.spdef,
+      spd: rolled.spd,
+      total: rolled.total,
+      moves: rolled.moves as unknown as Json,
+      is_starter: false,
+    })
+    .select("*")
+    .single();
+
+  if (error || !instanceRow) throw new Error(error?.message ?? "Failed to create Pokemon instance");
+
+  return toOwnedPokemon(instanceRow, species);
 }
