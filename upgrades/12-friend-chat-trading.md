@@ -108,21 +108,83 @@ create table trade_offers (
 
 ## End state
 
-- [ ] Two friends can exchange chat messages that persist across a page
+- [x] Two friends can exchange chat messages that persist across a page
       reload and are visible to whichever friend logs in later — unlike
       battle chat, this survives.
-- [ ] A message triggers an instant update in an open chat window, and a
+- [x] A message triggers an instant update in an open chat window, and a
       toast/badge notification (via step 5's account-level channel) when
       the recipient's chat window isn't open.
-- [ ] A trade offer can include one or more Pokémon from each side.
-- [ ] Accepting a valid trade atomically transfers every involved
+- [x] A trade offer can include one or more Pokémon from each side.
+- [x] Accepting a valid trade atomically transfers every involved
       `pokemon_instances` row's `user_id` between the two accounts —
       verify directly in Supabase.
-- [ ] Accepting a trade where one of the offered/requested Pokémon was
+- [x] Accepting a trade where one of the offered/requested Pokémon was
       discarded or traded away since the offer was made is rejected
       outright, with neither side's inventory changed.
-- [ ] Declining or cancelling a trade leaves both inventories untouched.
-- [ ] Chat and trading are both impossible between two accounts that
+- [x] Declining or cancelling a trade leaves both inventories untouched.
+- [x] Chat and trading are both impossible between two accounts that
       aren't confirmed friends (verify a direct API call is rejected, not
       just that there's no UI entry point for it).
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- This step needed a real schema change (`friend_messages`, `trade_offers`,
+  `accept_trade()`) — pushed to `origin/main` (confirmed with the user
+  first) and let the Supabase GitHub integration apply it, same as steps 5
+  and 8. Confirmed applied by querying both live tables directly before
+  running any other checks; the integration took noticeably longer than
+  usual this time (several checks over ~8 minutes before the tables
+  appeared, vs. a single check for earlier steps).
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server pointed at the now-migrated live Supabase project,
+  using 3 disposable test accounts (two accepted friends, one stranger for
+  gating checks) — 27 checks, all passing:
+  - **Chat**: a message persists and is visible to both accounts across
+    separate `GET` calls (simulating a reload), correctly labeled
+    `mine`/not for each side.
+  - **Real live delivery**, not just a plausible-looking HTTP 200 — same
+    verification method step 5 used: opened two actual Supabase Realtime
+    WebSocket subscriptions (the friendship-scoped channel an open chat
+    window listens on, and the recipient's account-scoped channel the
+    toast system listens on) and confirmed a message sent via `POST`
+    actually arrived on *both* within ~2.5s.
+  - **Gating**: messaging or trading over a friendship that's still
+    `pending` (not yet accepted) is rejected with 403; a third account
+    that isn't a party to a friendship at all gets 404 attempting to
+    message, view its trade-builder inventory, or (implicitly, same code
+    path) trade on it — ownership failures and "not found" aren't
+    distinguishable from the response, consistent with this app's other
+    ownership checks.
+  - **Trade accept**: the offerer attempting to accept their own trade is
+    rejected (`accept_trade()`'s own-identity check); the correct
+    receiving friend accepting atomically flips both
+    `pokemon_instances.user_id` values, verified by querying the rows
+    directly, not just trusting the 200 response; `trade_offers.status`
+    and `resolved_at` update correctly.
+  - **Stale trade rejection**: proposed a trade, then deleted the offered
+    Pokémon directly (same end state a discard produces) before accepting
+    — the accept was rejected, the *other* (requested) Pokémon was
+    confirmed to NOT have moved, and the trade's status was confirmed to
+    still be `pending`, not silently resolved. This is the atomicity
+    guarantee `accept_trade()` exists for, verified directly rather than
+    assumed from the function reading correctly.
+  - **Decline/cancel**: both leave ownership completely untouched,
+    verified directly.
+- Not independently verified via a real browser (no browser automation
+  tool available in this environment): the trade builder's two-grid UI
+  (`PokemonMultiPicker` reused for both sides), the pending-trades section
+  rendering, and the "💬 Chat" toast's "Open" button actually navigating.
+  The underlying data each of these renders from was confirmed live above
+  (real messages, real trades, real WebSocket delivery), and the component
+  code was reviewed by hand — same category of gap flagged in steps 5, 8,
+  9, and 10's validation notes.
+- One deliberate simplification flagged, not a bug: after a trade
+  resolves, the friend-chat page's in-memory inventory grids (used to
+  build a *new* trade offer) don't auto-refresh to reflect the swap —
+  they're seeded once from the server on page load. A full page reload
+  picks up the new ownership correctly (confirmed via the DB-level checks
+  above); the trade-builder session itself doesn't live-patch mid-session.
+  Worth revisiting if it turns out to matter in practice, not treated as a
+  blocker for this step.
