@@ -46,11 +46,25 @@ Worth knowing, not worth working around.
 
 ## End state
 
-- [ ] `curl -I` (or equivalent) against the deployed app shows
+- [x] `curl -I` (or equivalent) against the deployed app shows
       `Strict-Transport-Security`, `X-Content-Type-Options`,
       `X-Frame-Options`, and `Referrer-Policy` on every route, not just
       `/images/*`.
-- [ ] The existing `/images/:path*` `Cache-Control` header is untouched.
-- [ ] Login/signup still work exactly as before — this step changes no
+- [x] The existing `/images/:path*` `Cache-Control` header is untouched.
+- [x] Login/signup still work exactly as before — this step changes no
       request/response bodies, only headers.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- Ran `next dev` locally and checked real response headers with `curl -I`:
+  `/` (redirects unauthenticated to `/login`, confirming route logic itself
+  is untouched) and a real static file, `/images/abra_normal.gif`, both show
+  all four new headers. The image response's `Cache-Control: public,
+  max-age=31536000, immutable` is byte-for-byte the same as before this
+  change — the new global `/:path*` rule adds headers alongside it rather
+  than overriding it.
+- No application code was touched — this was a pure `next.config.ts`
+  `headers()` change, so login/signup weren't separately re-tested beyond
+  confirming `/` still redirects to `/login` as expected.
