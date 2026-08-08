@@ -96,18 +96,72 @@ between the client picking 5 and the request landing.
 
 ## End state
 
-- [ ] Selecting exactly 5 non-starter owned Pokémon and confirming grants
+- [x] Selecting exactly 5 non-starter owned Pokémon and confirming grants
       exactly 1 new lootbox and permanently removes those 5 — verify all
       of this directly in Supabase, not just the UI.
-- [ ] Starters can't be selected for trade-up in the UI, and a direct API
+- [x] Starters can't be selected for trade-up in the UI, and a direct API
       call including a starter id is rejected server-side.
-- [ ] Submitting fewer or more than 5 ids is rejected.
-- [ ] Submitting an id you don't own (or that was already
+- [x] Submitting fewer or more than 5 ids is rejected.
+- [x] Submitting an id you don't own (or that was already
       discarded/traded elsewhere between picking and confirming) is
       rejected with nothing partially applied — no Pokémon deleted, no
       lootbox granted.
-- [ ] `profiles.pokemon_released_count` increases by exactly 5 per
+- [x] `profiles.pokemon_released_count` increases by exactly 5 per
       successful trade-up.
-- [ ] Discard (`DELETE /api/inventory/pokemon/[id]`) still works exactly
+- [x] Discard (`DELETE /api/inventory/pokemon/[id]`) still works exactly
       as before, unaffected by this step.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- This step needed a real schema change (`trade_up_pokemon()`) — pushed to
+  `origin/main` (confirmed with the user first) and let the Supabase GitHub
+  integration apply it, same as steps 5, 8, 12, and 13. Took about 4 minutes
+  to apply (a few polling checks); confirmed applied by calling the RPC
+  directly with dummy ids and getting the function's own "not eligible"
+  rejection rather than a "function not found" error, before running any
+  other checks.
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server pointed at the now-migrated live Supabase project, using
+  1 disposable test account — 18 checks, all passing:
+  - **Starters correctly excluded**: verified the account's real
+    auto-granted 3-starter team (from step 2's `handle_new_user()`) rather
+    than a synthetic starter, so the check exercises the actual signup
+    path. A direct `POST /api/inventory/tradeup` call with a starter id
+    mixed into an otherwise-valid batch of 5 is rejected, and the starter
+    row is confirmed still present afterward — not silently traded.
+  - **Count validation**: 4 ids and 6 ids are both rejected before ever
+    reaching the database.
+  - **Ownership validation**: a batch containing a nonexistent/not-owned id
+    is rejected, and the other (real, owned) candidates in that batch are
+    confirmed to still exist afterward — a bad id in the batch doesn't
+    burn the good ones.
+  - **Stale-id race, the core atomicity guarantee**: seeded 5 real
+    non-starter Pokémon, then discarded one of them directly in Supabase
+    (simulating it being traded/discarded by another request between the
+    client picking 5 and this request landing), then submitted the
+    original 5-id batch. Rejected as expected; confirmed directly in
+    Supabase that the other 4 were **not** deleted and **no** lootbox row
+    was created — nothing partially applied, matching `accept_trade`'s
+    (step 12) same guarantee.
+  - **Valid trade-up**: 5 real non-starter ids (4 survivors from the race
+    test + 1 spare) → success. Verified directly in Supabase: all 5 rows
+    gone from `pokemon_instances`, exactly 1 new unopened `lootboxes` row
+    exists with the id the API returned, `profiles.pokemon_released_count`
+    increased by exactly 5, and an untouched spare Pokémon not in the
+    batch was confirmed still owned (the delete didn't overreach).
+  - **Discard unaffected**: `DELETE /api/inventory/pokemon/[id]` on a
+    remaining Pokémon still succeeds and still increments
+    `pokemon_released_count` by exactly 1, confirming step 13's discard
+    path wasn't disturbed by adding this new burn path that touches the
+    same counter.
+- Not independently verified via a real browser (no browser automation
+  tool available in this environment): the Trade Up mode toggle, the 5-cap
+  selection UI with starters rendered dimmed, the sticky "X/5 selected"
+  bottom bar, and the confirmation modal's rendering. The underlying
+  behavior each of these drives was confirmed live above via the same
+  route the UI calls (`POST /api/inventory/tradeup`) — same category of
+  gap flagged in every prior step's validation notes. The starter-dimming
+  in particular is a simple prop (`disabled={tradeUpMode && p.isStarter}`)
+  reviewed by hand rather than exercised in a real browser.
