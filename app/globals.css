@@ -569,6 +569,10 @@ input, #search-input, select, textarea, .pokemon-list {
 }
 .modal-panel { position: relative; max-width: 420px; width: 100%; text-align: center; }
 .modal-panel-large { max-width: 640px; }
+
+/* WELCOME DIALOG (upgrades/main.md's post-plan onboarding addition) */
+.welcome-dialog-body { text-align: left; font-size: 13px; }
+.welcome-dialog-list { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 10px; line-height: 1.5; }
 .modal-close {
   position: absolute;
   top: 6px;

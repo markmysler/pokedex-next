@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import SideNav from "@/components/nav/SideNav";
 import { ToastProvider } from "@/components/ui/Toast";
 import FriendNotifications from "@/components/friends/FriendNotifications";
+import WelcomeDialog from "@/components/onboarding/WelcomeDialog";
 
 // Shared shell for every authenticated page (dashboard/inventory/pokedex/
 // battle/online/history/profile) — proxy.ts already redirects unauthenticated
@@ -34,6 +36,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           "use client" — see upgrades/05-friend-system.md. */}
       <ToastProvider>
         <FriendNotifications userId={user.id} />
+        <Suspense fallback={null}>
+          <WelcomeDialog />
+        </Suspense>
         <main className="app-main">{children}</main>
       </ToastProvider>
     </div>

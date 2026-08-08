@@ -34,8 +34,11 @@ export default function SignupPage() {
 
     if (data.session) {
       // Email confirmation is disabled on this project — signUp already
-      // returned a live session, so we're logged in immediately.
-      router.replace("/");
+      // returned a live session, so we're logged in immediately. The
+      // ?welcome=1 param (not a persisted "has seen onboarding" flag --
+      // this moment is already unambiguous) triggers WelcomeDialog once,
+      // right after account creation.
+      router.replace("/dashboard?welcome=1");
       router.refresh();
     } else {
       // Email confirmation is required — no session until the link is
