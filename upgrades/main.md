@@ -226,6 +226,15 @@ shipped (not numbered steps of their own — small enough to fold in here):
   input already has its own controls, and replaced the plain-text
   "offered X for Y" summary on a pending friend trade with the actual
   Pokémon cards (sprite, name, type, total stats) for both sides.
+- **New signups now get one lootbox alongside their 3 starters**, granted
+  atomically in the same `handle_new_user()` trigger transaction. A new
+  `WelcomeDialog` (triggered by a `?welcome=1` param the post-signup
+  redirect adds — not a persisted "has seen onboarding" flag, since the
+  moment of account creation is already unambiguous client-side, and a
+  dismiss strips the param so a refresh doesn't re-show it) explains how
+  lootbox stats are individually rolled per instance, what shiny Pokémon
+  are, and the three ways to earn more lootboxes (guaranteed on an online
+  win, a 25% chance on a bot win, or Trade Up burning 5 for 1).
 
 ## Working through a step
 
