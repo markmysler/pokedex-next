@@ -49,6 +49,8 @@ export default function PokemonMultiPicker({ inventory, typesList, selected, onT
             variant="grid"
             selected={selected.includes(p.id)}
             onSelect={() => onToggle(p.id)}
+            disabled={p.isStarter}
+            disabledReason={p.isStarter ? "Starters can't be traded" : undefined}
           />
         ))}
       </div>

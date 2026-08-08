@@ -36,9 +36,15 @@ export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id
 
   const myPokemon = await getOwnedPokemonInstances(supabase, user.id, offeredIds);
   if (!myPokemon) return NextResponse.json({ error: "You don't own all of the Pokemon you're offering" }, { status: 403 });
+  if (myPokemon.some((p) => p.isStarter)) {
+    return NextResponse.json({ error: "Starters can't be offered in a trade" }, { status: 400 });
+  }
 
   const theirPokemon = await getOwnedPokemonInstances(supabase, friendship.otherUserId, requestedIds);
   if (!theirPokemon) return NextResponse.json({ error: "Your friend doesn't own all of the Pokemon you're requesting" }, { status: 403 });
+  if (theirPokemon.some((p) => p.isStarter)) {
+    return NextResponse.json({ error: "Starters can't be requested in a trade" }, { status: 400 });
+  }
 
   const { data: trade, error: insertError } = await supabase
     .from("trade_offers")

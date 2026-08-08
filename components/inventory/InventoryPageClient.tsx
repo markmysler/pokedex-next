@@ -271,6 +271,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
               selected={tradeUpMode ? tradeUpSelected.has(p.id) : p.id === selectedId}
               onSelect={() => (tradeUpMode ? toggleTradeUpPick(p) : selectPokemon(p.id))}
               disabled={tradeUpMode && p.isStarter}
+              disabledReason={tradeUpMode && p.isStarter ? "Starters can't be traded up" : undefined}
             />
           ))}
         </div>
@@ -332,7 +333,14 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
                 ))}
               </ul>
             </div>
-            <button className="btn-secondary" onClick={() => handleDiscard(selected.id)}>🗑️ Discard</button>
+            <button
+              className="btn-secondary"
+              onClick={() => handleDiscard(selected.id)}
+              disabled={selected.isStarter}
+              title={selected.isStarter ? "Starters can't be discarded" : undefined}
+            >
+              🗑️ Discard
+            </button>
           </div>
         )}
       </div>
