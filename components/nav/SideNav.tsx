@@ -13,6 +13,7 @@ const LINKS = [
   { href: "/battle", label: "Battle", icon: "⚔️" },
   { href: "/online", label: "Online", icon: "🌐" },
   { href: "/friends", label: "Friends", icon: "🤝" },
+  { href: "/notifications", label: "Notifications", icon: "🔔" },
   { href: "/history", label: "History", icon: "📜" },
   { href: "/leaderboard", label: "Leaderboard", icon: "🏆" },
   { href: "/profile", label: "Profile", icon: "👤" },
@@ -21,9 +22,10 @@ const LINKS = [
 interface SideNavProps {
   displayName: string;
   pendingFriendRequestCount?: number;
+  unreadNotificationCount?: number;
 }
 
-export default function SideNav({ displayName, pendingFriendRequestCount = 0 }: SideNavProps) {
+export default function SideNav({ displayName, pendingFriendRequestCount = 0, unreadNotificationCount = 0 }: SideNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -60,6 +62,9 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0 }: 
               <span className="nav-link-icon">{link.icon}</span> {link.label}
               {link.href === "/friends" && pendingFriendRequestCount > 0 && (
                 <span className="nav-link-badge">{pendingFriendRequestCount}</span>
+              )}
+              {link.href === "/notifications" && unreadNotificationCount > 0 && (
+                <span className="nav-link-badge">{unreadNotificationCount}</span>
               )}
             </Link>
           ))}

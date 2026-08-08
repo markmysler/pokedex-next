@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToFriendship, broadcastToUser } from "@/lib/supabase/broadcast";
+import { createNotification } from "@/lib/notifications";
 
 // Accepting is a real, irreversible ownership transfer — the actual
 // validation (still pending? every id still owned by the expected account?)
@@ -23,7 +24,9 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/friends/tr
   if (rpcError) return NextResponse.json({ error: rpcError.message }, { status: 400 });
 
   await broadcastToFriendship(trade.friendship_id, "trade-resolved", { tradeId: id, status: "accepted" });
-  await broadcastToUser(trade.offered_by, "trade-resolved", { friendshipId: trade.friendship_id, tradeId: id, status: "accepted" });
+  const notifyPayload = { friendshipId: trade.friendship_id, tradeId: id, status: "accepted" };
+  await broadcastToUser(trade.offered_by, "trade-resolved", notifyPayload);
+  await createNotification(supabase, trade.offered_by, "trade-resolved", notifyPayload);
 
   return NextResponse.json({ ok: true });
 }

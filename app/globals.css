@@ -467,6 +467,25 @@ input, #search-input, select, textarea, .pokemon-list {
   font-size: 14px;
 }
 .leaderboard-row.me { border: 1px solid #2FA572; }
+
+/* NOTIFICATIONS (upgrades/17-persistent-notifications.md) */
+.notification-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.notification-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--input-bg);
+  font-size: 13px;
+}
+.notification-row.unread { border-left: 3px solid #2FA572; }
+.notification-row-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 200px; }
+.notification-row-date { font-size: 11px; color: var(--text-secondary); }
+.notification-row-unavailable { color: var(--text-secondary); font-style: italic; font-size: 12px; margin: 0; }
+.notification-action { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .leaderboard-rank { font-size: 16px; text-align: center; }
 .leaderboard-name { font-weight: bold; }
 .leaderboard-wins { color: var(--text-secondary); font-size: 13px; white-space: nowrap; }

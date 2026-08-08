@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToUser } from "@/lib/supabase/broadcast";
+import { createNotification } from "@/lib/notifications";
 
 // A UI shortcut over the existing room-code flow (original plan's step 5) —
 // not a parallel matchmaking system. The room itself was already created via
@@ -33,10 +34,9 @@ export async function POST(request: Request) {
 
   const { data: myProfile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).single();
 
-  await broadcastToUser(friendUserId, "battle-invite", {
-    fromDisplayName: myProfile?.display_name ?? "Someone",
-    roomCode,
-  });
+  const payload = { fromDisplayName: myProfile?.display_name ?? "Someone", roomCode };
+  await broadcastToUser(friendUserId, "battle-invite", payload);
+  await createNotification(supabase, friendUserId, "battle-invite", payload);
 
   return NextResponse.json({ ok: true });
 }

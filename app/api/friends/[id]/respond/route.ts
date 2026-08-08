@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToUser } from "@/lib/supabase/broadcast";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id]/respond">) {
   const { id } = await ctx.params;
@@ -27,7 +28,9 @@ export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id
     if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
 
     const { data: myProfile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).single();
-    await broadcastToUser(row.requester_id, "friend-request-accepted", { fromDisplayName: myProfile?.display_name ?? "Someone" });
+    const payload = { fromDisplayName: myProfile?.display_name ?? "Someone" };
+    await broadcastToUser(row.requester_id, "friend-request-accepted", payload);
+    await createNotification(supabase, row.requester_id, "friend-request-accepted", payload);
 
     return NextResponse.json({ ok: true, status: "accepted" });
   }

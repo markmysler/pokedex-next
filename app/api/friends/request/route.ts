@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToUser } from "@/lib/supabase/broadcast";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -52,7 +53,9 @@ export async function POST(request: Request) {
       .eq("id", existing.id);
     if (acceptError) return NextResponse.json({ error: acceptError.message }, { status: 500 });
 
-    await broadcastToUser(target.user_id, "friend-request-accepted", { fromDisplayName: myProfile?.display_name ?? "Someone" });
+    const acceptedPayload = { fromDisplayName: myProfile?.display_name ?? "Someone" };
+    await broadcastToUser(target.user_id, "friend-request-accepted", acceptedPayload);
+    await createNotification(supabase, target.user_id, "friend-request-accepted", acceptedPayload);
     return NextResponse.json({ ok: true, status: "accepted" });
   }
 
@@ -62,6 +65,8 @@ export async function POST(request: Request) {
   });
   if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
 
-  await broadcastToUser(target.user_id, "friend-request", { fromDisplayName: myProfile?.display_name ?? "Someone" });
+  const requestPayload = { fromDisplayName: myProfile?.display_name ?? "Someone" };
+  await broadcastToUser(target.user_id, "friend-request", requestPayload);
+  await createNotification(supabase, target.user_id, "friend-request", requestPayload);
   return NextResponse.json({ ok: true, status: "pending" });
 }

@@ -6,6 +6,7 @@ import SideNav from "@/components/nav/SideNav";
 import { ToastProvider } from "@/components/ui/Toast";
 import FriendNotifications from "@/components/friends/FriendNotifications";
 import WelcomeDialog from "@/components/onboarding/WelcomeDialog";
+import { getUnreadNotificationCount } from "@/lib/notifications";
 
 // Shared shell for every authenticated page (dashboard/inventory/pokedex/
 // battle/online/history/profile) — proxy.ts already redirects unauthenticated
@@ -16,20 +17,25 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect("/login");
 
   const supabase = getSupabaseServerClient();
-  const [{ data: profile }, { count: pendingFriendRequestCount }] = await Promise.all([
+  const [{ data: profile }, { count: pendingFriendRequestCount }, unreadNotificationCount] = await Promise.all([
     supabase.from("profiles").select("display_name").eq("user_id", user.id).single(),
     supabase
       .from("friendships")
       .select("id", { count: "exact", head: true })
       .eq("addressee_id", user.id)
       .eq("status", "pending"),
+    getUnreadNotificationCount(supabase, user.id),
   ]);
 
   const displayName = profile?.display_name ?? user.email ?? "Trainer";
 
   return (
     <div className="app-shell">
-      <SideNav displayName={displayName} pendingFriendRequestCount={pendingFriendRequestCount ?? 0} />
+      <SideNav
+        displayName={displayName}
+        pendingFriendRequestCount={pendingFriendRequestCount ?? 0}
+        unreadNotificationCount={unreadNotificationCount}
+      />
       {/* ToastProvider/FriendNotifications are Client Components mounted
           here (wrapping children) since this layout itself is a Server
           Component and the app-wide notification subscription needs

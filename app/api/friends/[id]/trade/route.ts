@@ -4,6 +4,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
 import { getOwnedPokemonInstances } from "@/lib/inventory";
 import { broadcastToFriendship, broadcastToUser } from "@/lib/supabase/broadcast";
+import { createNotification } from "@/lib/notifications";
 import type { Json } from "@/types/supabase";
 
 // A cheap pre-check here gives a fast, specific error message before even
@@ -62,7 +63,9 @@ export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id
   const fromDisplayName = myProfile?.display_name ?? "Someone";
 
   await broadcastToFriendship(id, "trade-offer", { tradeId: trade.id, fromDisplayName });
-  await broadcastToUser(friendship.otherUserId, "trade-offer", { friendshipId: id, tradeId: trade.id, fromDisplayName });
+  const notifyPayload = { friendshipId: id, tradeId: trade.id, fromDisplayName };
+  await broadcastToUser(friendship.otherUserId, "trade-offer", notifyPayload);
+  await createNotification(supabase, friendship.otherUserId, "trade-offer", notifyPayload);
 
   return NextResponse.json({ ok: true, tradeId: trade.id });
 }

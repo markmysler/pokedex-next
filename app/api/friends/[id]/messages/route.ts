@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
 import { broadcastToFriendship, broadcastToUser } from "@/lib/supabase/broadcast";
+import { createNotification } from "@/lib/notifications";
 
 const MAX_MESSAGE_LENGTH = 300;
 const HISTORY_LIMIT = 200;
@@ -82,7 +83,9 @@ export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id
   await broadcastToFriendship(id, "friend-message", { text, senderDisplayName, senderId: user.id });
   // ...plus a toast/badge even if they're elsewhere in the app, same
   // account-level channel step 5's friend requests/battle invites already use.
-  await broadcastToUser(friendship.otherUserId, "friend-message", { friendshipId: id, senderDisplayName, text });
+  const notifyPayload = { friendshipId: id, senderDisplayName, text };
+  await broadcastToUser(friendship.otherUserId, "friend-message", notifyPayload);
+  await createNotification(supabase, friendship.otherUserId, "friend-message", notifyPayload);
 
   return NextResponse.json({ ok: true });
 }

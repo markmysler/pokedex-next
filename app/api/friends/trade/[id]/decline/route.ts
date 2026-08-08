@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
 import { broadcastToFriendship, broadcastToUser } from "@/lib/supabase/broadcast";
+import { createNotification } from "@/lib/notifications";
 
 // Same endpoint for both outcomes -- "cancel" from the side that proposed
 // it, "decline" from the other side (upgrades/12-friend-chat-trading.md).
@@ -35,7 +36,9 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/friends/tr
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
 
   await broadcastToFriendship(trade.friendship_id, "trade-resolved", { tradeId: id, status });
-  await broadcastToUser(friendship.otherUserId, "trade-resolved", { friendshipId: trade.friendship_id, tradeId: id, status });
+  const notifyPayload = { friendshipId: trade.friendship_id, tradeId: id, status };
+  await broadcastToUser(friendship.otherUserId, "trade-resolved", notifyPayload);
+  await createNotification(supabase, friendship.otherUserId, "trade-resolved", notifyPayload);
 
   return NextResponse.json({ ok: true, status });
 }
