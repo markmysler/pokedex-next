@@ -1,4 +1,4 @@
-# Step 10: Battle depth — dodge, bleed, blind, and dual-role stats
+# Step 10: Battle depth — dodge, bleed, blind, poison, and dual-role stats
 
 ## Why here
 
@@ -49,6 +49,19 @@ spec to hit exactly)
   25% miss chance on top of normal dodge math, representing them
   flailing — decrements once per attack attempt, whether it hit or
   missed.
+- **Poison** (added mid-implementation, at the user's request — "similar to
+  bleed but for that class"): a third damage-over-time status, same shape
+  as bleed (3-turn duration, refresh-not-stack, `round(maxHp * 0.05)` tick
+  damage only while active), but gated by move **type** instead of
+  category — any move whose `type` is `"Poison"` (physical or special) can
+  inflict it, reusing whichever atk/def or spatk/spdef pairing already
+  applies to that move's own category for the inflict-chance roll (same
+  `clamp((atkStat - defStat) / (atkStat + defStat), 0, 0.3)` formula bleed
+  and blind already use). Because it's gated by type rather than category,
+  a *physical* Poison-type move rolls for bleed and poison independently on
+  the same hit — both can land together, which is intentional (they're
+  different mechanisms: one's a category effect, the other's a type
+  effect) rather than a conflict to resolve.
 - **Stat dual roles**, the actual point of this step:
   - `spd`: turn order (existing) **+** dodge chance (new).
   - `atk`/`spatk`: damage (existing) **+** bleed/blind inflict chance
@@ -61,10 +74,10 @@ spec to hit exactly)
     bleed's flat tick damage via `maxHp`.
 
 ### Engine changes (`lib/battleEngine.ts`)
-- `FighterState` (`types/pokemon.ts`) gains `bleedTurns: number` and
-  `blindTurns: number` (both default `0` in `buildFighterState`) — pure
-  per-battle state, never persisted, resets every battle exactly like
-  `hp`/`mp` already do.
+- `FighterState` (`types/pokemon.ts`) gains `bleedTurns: number`,
+  `blindTurns: number`, and `poisonTurns: number` (all default `0` in
+  `buildFighterState`) — pure per-battle state, never persisted, resets
+  every battle exactly like `hp`/`mp` already do.
 - `executeMove()`'s return type changes from `string[]` to a structured
   result (e.g. `{ log: string[]; hit: boolean; dealt: number }`) so
   callers know whether the attack actually landed, not just what got
@@ -86,27 +99,90 @@ spec to hit exactly)
 - `FighterCard.tsx`: small status indicators next to the HP/MP bars for
   the active Pokémon (and, since status persists on the bench, a compact
   indicator on bench members too) — e.g. `🩸 Bleeding (2)`, `🌀 Blinded
-  (1)`. New scoped CSS, no library.
+  (1)`, `☠️ Poisoned (3)`. New scoped CSS, no library.
 - Battle log lines for: a dodge, a bleed tick, a status being inflicted,
   a status expiring — so the log stays a complete, readable account of the
   round the way it already is today.
 
 ## End state
 
-- [ ] A dodge can occur and is logged/visible; capped so it's never
+- [x] A dodge can occur and is logged/visible; capped so it's never
       guaranteed or impossible regardless of the speed gap.
-- [ ] Bleed can be inflicted by a physical hit, ticks damage at the start
+- [x] Bleed can be inflicted by a physical hit, ticks damage at the start
       of the bled Pokémon's turns while active, persists (uneaten by
       ticks) while benched, and expires after its duration.
-- [ ] Blind can be inflicted by a special hit, adds a real miss chance to
+- [x] Blind can be inflicted by a special hit, adds a real miss chance to
       the blinded Pokémon's own attacks, and expires after its duration.
-- [ ] Existing damage/type-effectiveness math is unchanged for a
+- [x] Poison can be inflicted by a Poison-type hit (either category),
+      ticks damage the same way bleed does, persists while benched, and
+      expires after its duration — independent of bleed, so a physical
+      Poison-type hit can inflict both at once.
+- [x] Existing damage/type-effectiveness math is unchanged for a
       non-dodged, non-blinded hit — this is an additive layer, not a
       rebalance of the base formula.
-- [ ] Run a simulation (mirroring step 1's approach) across many bot
+- [x] Run a simulation (mirroring step 1's approach) across many bot
       battles confirming: battles still terminate in a bounded number of
-      rounds, dodge/bleed/blind rates roughly match the target formulas,
-      and no combination of statuses produces a stalemate.
-- [ ] Bot and online 3v3 battles both exhibit identical status-effect
+      rounds, dodge/bleed/blind/poison rates roughly match the target
+      formulas, and no combination of statuses produces a stalemate.
+- [x] Bot and online 3v3 battles both exhibit identical status-effect
       behavior — same shared engine, no mode-specific logic.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean. No migration needed — the
+  status counters live entirely in `battle_rooms.state` (already `jsonb`)
+  and in-memory `FighterState` for bot battles, so this validated directly
+  against the live Supabase project with no push-and-wait step.
+- **Simulation** (mirroring step 1's approach): ran 2,000 simulated 3v3
+  battles with randomized teams/movesets (including a mix of physical,
+  special, and Poison-type moves) and a simple random-legal-move AI, capped
+  at 300 rounds each. All 2,000 terminated normally (0 hit the cap —
+  no stalemates), averaging 26.8 rounds/battle. Observed rates:
+  ~7.3% miss rate (dodge + blind-forced-miss combined), ~2.7% bleed
+  inflict rate and ~2.5% blind inflict rate per attack attempt (roughly
+  consistent with each other once normalized by their ~50% move-category
+  eligibility), ~1.3% poison inflict rate (consistent once normalized by
+  Poison-type moves being a smaller slice of the test move pool), and 137
+  hits where a physical Poison-type move landed both bleed and poison on
+  the same attack, confirming the intended independent-stacking behavior.
+  Methodology note: this simulation is a faithful plain-JS transcription of
+  `lib/battleEngine.ts`'s algorithm (same constants, same order of
+  operations), not a direct import of the file — Node's native TypeScript
+  execution can't resolve the file's extensionless relative import
+  (`./typeData`) without a custom loader, and getting one working reliably
+  wasn't worth the time for a one-off validation script. The *actual*
+  committed file is what live validation below exercises directly.
+- **Live validation** (real HTTP requests against the actual deployed
+  code, disposable accounts, deleted after running): created a real room,
+  joined it, locked in two 3-Pokémon teams (high HP, deliberately varied
+  atk/def/spatk/spdef/spd, movesets mixing physical/special/Poison-type
+  moves), then played the battle to completion by repeatedly `POST`ing
+  `/api/rooms/[code]/move` for both accounts and handling forced switches
+  exactly like the real client does. 11/11 checks passed: the battle
+  terminated normally within the round cap; `bleedTurns`/`blindTurns`/
+  `poisonTurns` appear as real fields on the `FighterState` objects in the
+  live round-result payload (not just typed, actually present at runtime);
+  and real log lines were observed for a dodge (`💨 ... dodged the
+  attack!`), a bleed inflict (`🩸 ... is bleeding!`), a blind inflict (`🌀
+  ... is blinded!`), and a poison inflict (`☠️ ... is poisoned!`) — a
+  dodge didn't happen to occur on the first run (0 in ~54 attack attempts,
+  not surprising given the modest chance at the stat gaps used) but did on
+  an immediate second run (2 occurrences), so it was directly observed
+  live, not just inferred from the simulation.
+- **Bot vs. online identical behavior**: not separately live-tested (bot
+  battles run entirely client-side in `BattleArena.tsx`, no server
+  round-trip to drive via script), but this is directly verifiable by
+  reading the code rather than needing a live test — `BattleArena.tsx` and
+  `app/api/rooms/[code]/move/route.ts` both call the exact same
+  `resolveTeamRound` import from `lib/battleEngine.ts`, with no bot-specific
+  branching anywhere in the engine. The online live validation above
+  exercises that identical function.
+- Not independently verified via a real browser (no browser automation
+  tool available in this environment): actually watching the new
+  `StatusBadges` indicators render on `FighterCard.tsx` for both the active
+  fighter and bench members. The component code was reviewed by hand, and
+  the underlying data it renders from (`bleedTurns`/`blindTurns`/
+  `poisonTurns` on `FighterState`) was confirmed live above to actually be
+  present and accurate in real battle state. Same category of gap flagged
+  in steps 5, 8, and 9's validation notes.

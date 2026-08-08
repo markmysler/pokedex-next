@@ -31,7 +31,7 @@ Steps 13-15 were added later the same day, appended after step 12.
 | 7 | Leaderboard counts online wins only | [07-leaderboard-online-wins.md](07-leaderboard-online-wins.md) | — |
 | 8 | Per-instance Pokémon nicknames | [08-pokemon-nicknames.md](08-pokemon-nicknames.md) | — |
 | 9 | Team picker parity with Inventory (search/filter/sort, shared components, shiny badge) | [09-team-picker-parity.md](09-team-picker-parity.md) | 8 |
-| 10 | Battle depth (dodge, bleed, blind, dual-role stats) | [10-battle-depth.md](10-battle-depth.md) | — |
+| 10 | Battle depth (dodge, bleed, blind, poison, dual-role stats) | [10-battle-depth.md](10-battle-depth.md) | — |
 | 11 | Sound effects (synthesized, no audio files) | [11-sound-effects.md](11-sound-effects.md) | 10 |
 | 12 | Friend chat + trading | [12-friend-chat-trading.md](12-friend-chat-trading.md) | 5, 9 |
 | 13 | Richer Dashboard statistics | [13-dashboard-stats.md](13-dashboard-stats.md) | — |
@@ -164,10 +164,15 @@ From the 2026-08-08 planning conversation (steps 6-11):
   everything else in it. Accepted tradeoff: simple/retro sound, not
   realistic sound design.
 - **Battle depth is an additive layer on top of the existing damage
-  formula**, not a rebalance — dodge/bleed/blind are new rolls layered in
-  around the unchanged atk/def/spatk/spdef damage math, giving
+  formula**, not a rebalance — dodge/bleed/blind/poison are new rolls
+  layered in around the unchanged atk/def/spatk/spdef damage math, giving
   `spd`/`def`/`spdef` a second role each rather than replacing what they
   already do.
+- **Poison was added mid-implementation of step 10**, at the user's
+  request, as a third damage-over-time status alongside bleed — same
+  mechanics as bleed (duration, refresh-not-stack, tick formula) but gated
+  by move *type* (`"Poison"`) instead of move *category*, so it stacks
+  independently with bleed rather than replacing or conflicting with it.
 - **No pagination/virtualization for the team picker's larger card grid**
   — hundreds of DOM nodes is already how `InventoryPageClient` handles
   scale today; windowing is a later, isolated addition if it's ever

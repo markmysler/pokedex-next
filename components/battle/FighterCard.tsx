@@ -8,6 +8,12 @@ interface TeamMemberDisplay {
   pokemon: OwnedPokemon;
   hp: number;
   maxHp: number;
+  // Optional so this interface still structurally matches any older/simpler
+  // caller — real FighterState objects (the only thing ever passed in
+  // practice) always have these (upgrades/10-battle-depth.md).
+  bleedTurns?: number;
+  blindTurns?: number;
+  poisonTurns?: number;
 }
 
 interface FighterCardProps {
@@ -20,6 +26,9 @@ interface FighterCardProps {
   maxHp: number;
   mp: number;
   maxMp: number;
+  bleedTurns?: number;
+  blindTurns?: number;
+  poisonTurns?: number;
   movesCaption: string;
   children?: React.ReactNode;
   // 3v3 only (upgrades/05-3v3-battles.md) — the full 3-member team, so the
@@ -30,6 +39,22 @@ interface FighterCardProps {
   onSwitchTo?: (teamIndex: number) => void;
 }
 
+// Small badge row shared by the active card and bench members
+// (upgrades/10-battle-depth.md) — status persists on the bench, so both
+// need to show it, just at different sizes.
+function StatusBadges({ bleedTurns, blindTurns, poisonTurns, compact }: { bleedTurns?: number; blindTurns?: number; poisonTurns?: number; compact?: boolean }) {
+  if (!bleedTurns && !blindTurns && !poisonTurns) return null;
+  // <span>, not <div> -- this renders inside a bench <button> in compact
+  // mode, and <div> isn't valid phrasing content inside a <button>.
+  return (
+    <span className={compact ? "status-badges compact" : "status-badges"}>
+      {Boolean(bleedTurns) && <span className="status-badge bleed">🩸 Bleeding ({bleedTurns})</span>}
+      {Boolean(blindTurns) && <span className="status-badge blind">🌀 Blinded ({blindTurns})</span>}
+      {Boolean(poisonTurns) && <span className="status-badge poison">☠️ Poisoned ({poisonTurns})</span>}
+    </span>
+  );
+}
+
 export default function FighterCard({
   title,
   pokemon,
@@ -37,6 +62,9 @@ export default function FighterCard({
   maxHp,
   mp,
   maxMp,
+  bleedTurns,
+  blindTurns,
+  poisonTurns,
   movesCaption,
   children,
   team,
@@ -54,6 +82,7 @@ export default function FighterCard({
       {pokemon.nickname && <div className="fighter-species-line">#{pokemon.number} {pokemon.name}</div>}
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
       {shiny && <span className="shiny-badge">✨ Shiny</span>}
+      <StatusBadges bleedTurns={bleedTurns} blindTurns={blindTurns} poisonTurns={poisonTurns} />
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
 
       <div className="hp-label">HP: {Math.max(0, hp)} / {maxHp}</div>
@@ -88,6 +117,9 @@ export default function FighterCard({
                 <Sprite name={member.pokemon.name} form={benchShiny ? "shiny" : "normal"} className="bench-sprite" />
                 <span className="bench-name">{benchShiny ? "✨ " : ""}{displayName(member.pokemon)}</span>
                 <span className="bench-hp">{fainted ? "💀 Fainted" : `${Math.max(0, member.hp)}/${member.maxHp} HP`}</span>
+                {!fainted && (
+                  <StatusBadges bleedTurns={member.bleedTurns} blindTurns={member.blindTurns} poisonTurns={member.poisonTurns} compact />
+                )}
               </button>
             );
           })}

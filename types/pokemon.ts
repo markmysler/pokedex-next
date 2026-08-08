@@ -83,6 +83,15 @@ export interface FighterState {
   // lock-in), never a bare species lookup — typed as such so shiny status
   // (upgrades/03-shiny-pokemon.md) can be read directly off it.
   pokemon: OwnedPokemon;
+  // Status-effect layer (upgrades/10-battle-depth.md) — pure per-battle
+  // state, never persisted beyond a battle, reset every battle exactly like
+  // hp/mp. Turn counters, not booleans: 0 means "not affected," refreshed
+  // (not stacked) back to a fixed duration on re-inflict. Only ticks/decays
+  // while this fighter is the *active* member of its team; a benched
+  // Pokemon keeps its counters frozen until swapped back in.
+  bleedTurns: number;
+  blindTurns: number;
+  poisonTurns: number;
 }
 
 export type RoomSlot = 1 | 2;

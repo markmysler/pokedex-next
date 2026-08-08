@@ -334,6 +334,9 @@ export default function BattleArena({ inventory, typesList }: BattleArenaProps) 
           maxHp={you.maxHp}
           mp={you.mp}
           maxMp={you.maxMp}
+          bleedTurns={you.bleedTurns}
+          blindTurns={you.blindTurns}
+          poisonTurns={you.poisonTurns}
           movesCaption={myForcedSwitch ? "Choose your next Pokémon:" : "Select Attack Move:"}
           team={battle.team1.members}
           activeIndex={battle.team1.activeIndex}
@@ -366,6 +369,9 @@ export default function BattleArena({ inventory, typesList }: BattleArenaProps) 
           maxHp={opp.maxHp}
           mp={opp.mp}
           maxMp={opp.maxMp}
+          bleedTurns={opp.bleedTurns}
+          blindTurns={opp.blindTurns}
+          poisonTurns={opp.poisonTurns}
           movesCaption=""
           team={battle.team2.members}
           activeIndex={battle.team2.activeIndex}

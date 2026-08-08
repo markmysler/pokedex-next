@@ -533,6 +533,9 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
           maxHp={you.maxHp}
           mp={you.mp}
           maxMp={you.maxMp}
+          bleedTurns={you.bleedTurns}
+          blindTurns={you.blindTurns}
+          poisonTurns={you.poisonTurns}
           movesCaption={myForcedSwitch ? "Choose your next Pokémon:" : "Select Attack Move:"}
           team={youTeamState.members}
           activeIndex={youTeamState.activeIndex}
@@ -565,6 +568,9 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
           maxHp={opp.maxHp}
           mp={opp.mp}
           maxMp={opp.maxMp}
+          bleedTurns={opp.bleedTurns}
+          blindTurns={opp.blindTurns}
+          poisonTurns={opp.poisonTurns}
           movesCaption=""
           team={oppTeamState.members}
           activeIndex={oppTeamState.activeIndex}
