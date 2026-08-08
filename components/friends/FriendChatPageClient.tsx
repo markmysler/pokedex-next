@@ -6,7 +6,7 @@ import type { OwnedPokemon } from "@/types/pokemon";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import ChatPanel, { type ChatMessage } from "@/components/online/ChatPanel";
 import PokemonMultiPicker from "@/components/pokemon/PokemonMultiPicker";
-import { displayName } from "@/lib/pokemonDisplay";
+import PokemonInstanceCard from "@/components/inventory/PokemonInstanceCard";
 
 interface PendingTrade {
   id: string;
@@ -28,8 +28,20 @@ interface FriendChatPageClientProps {
   typesList: string[];
 }
 
-function summarizePick(pick: OwnedPokemon[]): string {
-  return pick.map((p) => displayName(p)).join(", ");
+// Purely informational in a pending-trade row -- no selection state, so
+// this is a no-op. PokemonInstanceCard's onSelect is required, not
+// optional, since every other caller (PokemonMultiPicker, TeamPicker) is
+// genuinely interactive.
+function noop() {}
+
+function TradeSideCards({ pokemon }: { pokemon: OwnedPokemon[] }) {
+  return (
+    <div className="trade-row-cards">
+      {pokemon.map((p) => (
+        <PokemonInstanceCard key={p.id} pokemon={p} variant="grid" selected={false} onSelect={noop} />
+      ))}
+    </div>
+  );
 }
 
 export default function FriendChatPageClient({
@@ -146,12 +158,19 @@ export default function FriendChatPageClient({
 
         {trades.map((t) => (
           <div key={t.id} className="trade-row">
-            <div className="trade-row-summary">
-              {t.isMine ? (
-                <span>You offered <strong>{summarizePick(t.offered)}</strong> for <strong>{summarizePick(t.requested)}</strong></span>
-              ) : (
-                <span>{friendDisplayName} offered <strong>{summarizePick(t.offered)}</strong> for your <strong>{summarizePick(t.requested)}</strong></span>
-              )}
+            <div className="trade-row-header">
+              {t.isMine ? "You proposed:" : `${friendDisplayName} proposed:`}
+            </div>
+            <div className="trade-row-pokemon">
+              <div className="trade-row-side">
+                <h4>{t.isMine ? "You give" : `${friendDisplayName} gives`}</h4>
+                <TradeSideCards pokemon={t.offered} />
+              </div>
+              <div className="trade-row-arrow">⇄</div>
+              <div className="trade-row-side">
+                <h4>{t.isMine ? `${friendDisplayName} gives` : "You give"}</h4>
+                <TradeSideCards pokemon={t.requested} />
+              </div>
             </div>
             <div className="trade-row-actions">
               {t.isMine ? (
