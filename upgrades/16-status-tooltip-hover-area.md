@@ -41,12 +41,35 @@ fixed `.status-badge` rule).
 
 ## End state
 
-- [ ] Hovering anywhere on a status pill — including the padding around
+- [x] Hovering anywhere on a status pill — including the padding around
       the label, not just the emoji glyph — shows its tooltip, for all
       three effects (Bleeding, Blinded, Poisoned).
-- [ ] Same holds for the compact bench-member badges, not just the active
+- [x] Same holds for the compact bench-member badges, not just the active
       fighter's.
-- [ ] Verified in both the local Battle page and the Online Battle page
+- [x] Verified in both the local Battle page and the Online Battle page
       (both render through the same shared `FighterCard`/`StatusBadges`,
       so one code change covers both — confirm it actually does).
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- No schema change, nothing to push/apply — pure CSS.
+- Fetched the actual served (non-minified in dev) stylesheet from a
+  running dev server and confirmed `.status-badge` compiles to
+  `display: inline-flex; align-items: center; ...` in the real bundle,
+  not just in the source file. `.status-badges.compact .status-badge`
+  (the bench-sized variant) inherits the same base rule — no separate
+  `display` override exists for it, confirmed by reading the cascade, so
+  both the active-fighter and bench badges get the fix from one change.
+  `FighterCard`/`StatusBadges` is the single shared component both
+  `BattleArena.tsx` (local) and `OnlineBattle.tsx` render through — no
+  separate implementation to check.
+- Not independently verified via a real browser (no browser automation
+  tool available in this environment): the actual mouse-hover experience
+  — confirming the tooltip visually appears when the pointer is over the
+  padded area specifically, not just that the CSS box now includes it.
+  `display: inline-flex` reliably including its own padding in the
+  hover/hit-test region is standard, well-established CSS behavior, not
+  something this fix is inventing — same category of gap flagged in
+  every prior step's validation notes.

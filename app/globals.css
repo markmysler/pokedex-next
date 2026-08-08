@@ -302,6 +302,13 @@ input, #search-input, select, textarea, .pokemon-list {
 
 .status-badges { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
 .status-badge {
+  /* inline-flex, not default inline (upgrades/16-status-tooltip-hover-area.md)
+     -- an inline element's hover/hit-test box for the title tooltip isn't
+     guaranteed to include its own padding consistently, so hovering the
+     padded area around the label (not just the emoji glyph) could miss
+     the tooltip. An explicit flex box gives it a real content box. */
+  display: inline-flex;
+  align-items: center;
   font-size: 10px;
   font-weight: bold;
   padding: 2px 6px;
