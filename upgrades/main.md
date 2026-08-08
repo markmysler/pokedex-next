@@ -23,6 +23,7 @@ archived plans.
 | 17 | Persistent notifications (battle invites + everything else that was toast-only) | [17-persistent-notifications.md](17-persistent-notifications.md) | — |
 | 18 | Show the actual opponent display name everywhere match history is shown | [18-match-history-opponent-names.md](18-match-history-opponent-names.md) | — |
 | 19 | Burn and Freeze status effects (Fire/Ice-type moves) | [19-burn-and-freeze-status-effects.md](19-burn-and-freeze-status-effects.md) | — |
+| 20 | Newly-opened lootbox Pokémon missing from the post-win Team Picker | [20-rematch-team-picker-missing-new-lootbox-pokemon.md](20-rematch-team-picker-missing-new-lootbox-pokemon.md) | — |
 
 ## Why this order
 

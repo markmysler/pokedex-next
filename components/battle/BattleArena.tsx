@@ -110,7 +110,14 @@ function firstAliveBenchIndex(team: TeamState): 0 | 1 | 2 | null {
   return i === -1 ? null : (i as 0 | 1 | 2);
 }
 
-export default function BattleArena({ inventory, typesList }: BattleArenaProps) {
+export default function BattleArena({ inventory: initialInventory, typesList }: BattleArenaProps) {
+  // Local copy, not just the prop directly -- `initialInventory` is a
+  // server-render snapshot from when the page first loaded. A lootbox
+  // opened mid-session (right after a win, via "Open it now" below)
+  // persists a real new pokemon_instances row with no navigation/reload, so
+  // without this the newly-caught Pokemon would never appear as a
+  // TeamPicker option when picking a team again via "Change Team".
+  const [inventory, setInventory] = useState(initialInventory);
   const [phase, setPhase] = useState<Phase>("picking");
   const [myTeam, setMyTeam] = useState<OwnedPokemon[] | null>(null);
   const [battle, setBattle] = useState<LocalBattleState | null>(null);
@@ -135,8 +142,10 @@ export default function BattleArena({ inventory, typesList }: BattleArenaProps) 
       appendLog([`⚠️ Couldn't open lootbox: ${data.error}`]);
       return;
     }
+    const opened = data.pokemon as OwnedPokemon;
     setResultDialog(null);
-    setRevealPokemon(data.pokemon as OwnedPokemon);
+    setRevealPokemon(opened);
+    setInventory((prev) => [...prev, opened]);
   }
 
   async function startBattle(ids: string[]) {

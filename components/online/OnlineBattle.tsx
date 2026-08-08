@@ -30,7 +30,14 @@ interface OnlineBattleState {
 
 const POLL_INTERVAL_MS = 2500;
 
-export default function OnlineBattle({ inventory, displayName, typesList }: OnlineBattleProps) {
+export default function OnlineBattle({ inventory: initialInventory, displayName, typesList }: OnlineBattleProps) {
+  // Local copy, not just the prop directly -- `initialInventory` is a
+  // server-render snapshot from when /online first loaded. A lootbox opened
+  // mid-session (e.g. right after a win, via the "Open it now" flow below)
+  // persists a real new pokemon_instances row without any navigation/
+  // reload, so without this the newly-caught Pokemon would never appear as
+  // a TeamPicker option on the rematch that follows.
+  const [inventory, setInventory] = useState(initialInventory);
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [mySlot, setMySlot] = useState<RoomSlot | null>(null);
@@ -352,8 +359,10 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
       appendLog([`⚠️ Couldn't open lootbox: ${data.error}`]);
       return;
     }
+    const opened = data.pokemon as OwnedPokemon;
     setResultDialog(null);
-    setRevealPokemon(data.pokemon as OwnedPokemon);
+    setRevealPokemon(opened);
+    setInventory((prev) => [...prev, opened]);
   }
 
   async function createRoom() {
