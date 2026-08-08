@@ -58,8 +58,8 @@ create table notifications (
 - `GET /api/notifications` — the current user's notifications, newest
   first, capped at some reasonable limit (50). For any `battle-invite`
   row, resolves whether the room is still actually joinable (`status =
-  'waiting'` and no `player2_id`) so the client doesn't offer to accept
-  an invite that's already stale — same staleness a toast's own
+  'waiting_for_players'` and no `player2_id`) so the client doesn't offer
+  to accept an invite that's already stale — same staleness a toast's own
   `accept()` handler surfaces reactively today, checked proactively here
   instead.
 - `POST /api/notifications/read-all` — marks every currently-unread
@@ -96,22 +96,81 @@ create table notifications (
 
 ## End state
 
-- [ ] Refreshing the page (or never having seen the toast) no longer
+- [x] Refreshing the page (or never having seen the toast) no longer
       loses a battle invite — it's still listed and still acceptable on
       `/notifications`, verified directly (not just trusting the UI):
       invite sent, recipient never looks, recipient loads `/notifications`
       fresh, invite is there.
-- [ ] Accepting a battle invite from the Notifications page actually
+- [x] Accepting a battle invite from the Notifications page actually
       joins the room and navigates in, same as accepting the toast does.
-- [ ] A stale battle invite (room already started, already full, or
+- [x] A stale battle invite (room already started, already full, or
       already left) shows as unavailable rather than a button that fails
       confusingly on click.
-- [ ] All six event kinds actually produce a row in `notifications` for
+- [x] All six event kinds actually produce a row in `notifications` for
       the recipient when they fire — verify directly in Supabase, not
       just via the toast still working.
-- [ ] The sidebar's unread-notifications badge count matches reality, and
+- [x] The sidebar's unread-notifications badge count matches reality, and
       opening `/notifications` clears it (all currently-listed
       notifications become read).
-- [ ] A user can't see another account's notifications via a direct API
+- [x] A user can't see another account's notifications via a direct API
       call.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- This step needed a real schema change (`notifications` table) — pushed
+  to `origin/main` (confirmed with the user first) and let the Supabase
+  GitHub integration apply it, same as every prior migration-bearing step.
+  Already applied by the time it was checked (a single check, no
+  polling needed).
+- **Bug caught and fixed during validation, not by code review**: the
+  first validation run showed a battle invite listed but with no "Accept"
+  button, on a room that had genuinely just been created and was still
+  open. Root cause: `getNotificationsForUser()`'s joinability check
+  compared `battle_rooms.status` against the literal string `"waiting"` —
+  copied from that column's schema-level *default value* in the original
+  auth migration, not the actual string the application code uses.
+  `POST /api/rooms` and `POST /api/rooms/[code]/join` both actually use
+  `"waiting_for_players"`, a different string, so the comparison never
+  matched and every invite looked stale regardless of the room's real
+  state. Fixed by matching the real string the room routes use; re-ran
+  validation to confirm the Accept button now appears for a genuinely
+  open room and correctly disappears (replaced by "no longer available")
+  once that same room is claimed by someone else.
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server pointed at the migrated live Supabase project, using 2
+  disposable test accounts — 25 checks, all passing:
+  - **All 6 event kinds** (friend-request, friend-request-accepted,
+    battle-invite, friend-message, trade-offer, trade-resolved) confirmed
+    to produce a `notifications` row for the recipient, checked directly
+    in Supabase after triggering each one for real through its actual
+    Route Handler (friend request, accept, room invite, chat message,
+    propose trade, accept trade).
+  - **The core scenario this step exists for**: sent a battle invite,
+    never triggered the recipient's live toast (no WebSocket subscription
+    opened for it, simulating "user was offline or refreshed"), then
+    fetched `/notifications` fresh and confirmed the invite was still
+    there with a working Accept button — joining through it actually made
+    the recipient `player2` in the real `battle_rooms` row, verified
+    directly.
+  - **Staleness**: after that same room was claimed, re-fetching
+    `/notifications` showed "This invite is no longer available" instead
+    of a dead button.
+  - **Unread badge**: confirmed present on an unrelated page (Dashboard)
+    while unread notifications existed, and confirmed `POST
+    /api/notifications/read-all` (the route `MarkAllReadOnMount` calls)
+    actually zeroes out unread count in Supabase.
+  - **Ownership**: a user's own `GET /api/notifications` call succeeds
+    and never contains the other test account's notification ids.
+- Not independently verified via a real browser (no browser automation
+  tool available in this environment): `MarkAllReadOnMount`'s actual
+  auto-fire-on-page-load behavior — a raw HTTP fetch retrieves only the
+  server-rendered HTML and never executes client-side JavaScript, so this
+  was validated by calling `POST /api/notifications/read-all` directly
+  instead (the same endpoint that effect calls), confirming the endpoint
+  itself works correctly; the effect's wiring (`useEffect` firing once on
+  mount) was reviewed by hand. Also unverified: the sidebar badge's exact
+  visual placement/rendering, and the accept button's disabled/loading
+  state during the request. Same category of gap flagged in every prior
+  step's validation notes.

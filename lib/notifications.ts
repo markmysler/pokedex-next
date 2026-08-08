@@ -69,7 +69,10 @@ export async function getNotificationsForUser(
   const joinableByCode = new Map<string, boolean>();
   if (roomCodes.length > 0) {
     const { data: rooms } = await supabase.from("battle_rooms").select("code, status, player2_id").in("code", roomCodes);
-    for (const r of rooms ?? []) joinableByCode.set(r.code, r.status === "waiting" && r.player2_id === null);
+    // "waiting_for_players", not "waiting" -- matches the actual status
+    // string POST /api/rooms/[code]/join checks (app/api/rooms/[code]/join/route.ts),
+    // not the migration's schema-level default column value.
+    for (const r of rooms ?? []) joinableByCode.set(r.code, r.status === "waiting_for_players" && r.player2_id === null);
   }
 
   return rows.map((r) => {
