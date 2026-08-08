@@ -1,8 +1,21 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
+import type { Json } from "@/types/supabase";
 
 const LOOTBOX_DROP_CHANCE = 0.25;
+
+interface TeamSnapshotEntry {
+  number: string;
+  name: string;
+}
+
+function isTeamSnapshot(value: unknown): value is TeamSnapshotEntry[] {
+  return (
+    Array.isArray(value) &&
+    value.every((m) => m && typeof m === "object" && typeof (m as TeamSnapshotEntry).number === "string" && typeof (m as TeamSnapshotEntry).name === "string")
+  );
+}
 
 // Called once after every local (vs bot) battle ends — the client only ever
 // reports whether it won, never whether a lootbox should drop. The 25%
@@ -13,6 +26,11 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   if (typeof body.won !== "boolean") return NextResponse.json({ error: "won must be a boolean" }, { status: 400 });
+  // Optional: absent on older clients or a failed report, not required for
+  // the battle result itself — see teamSnapshot() in
+  // app/api/rooms/[code]/move/route.ts for the online-mode equivalent this
+  // mirrors (upgrades/13-dashboard-stats.md).
+  const team = isTeamSnapshot(body.team) ? body.team : null;
 
   const supabase = getSupabaseServerClient();
 
@@ -37,6 +55,7 @@ export async function POST(request: Request) {
     opponent: "bot",
     mode: "bot",
     won: body.won,
+    team_snapshot: team as unknown as Json,
   });
   if (matchError) return NextResponse.json({ error: matchError.message }, { status: 500 });
 

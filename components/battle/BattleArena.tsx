@@ -55,12 +55,15 @@ function startLog(battle: LocalBattleState): string[] {
 // result dialog can say so truthfully instead of assuming "won = lootbox,"
 // and its "Open it now" (upgrades/04-lootbox-opening.md) can target this
 // exact lootbox.
-async function reportBotResult(won: boolean): Promise<{ lootboxGranted: boolean; lootboxId: string | null }> {
+async function reportBotResult(
+  won: boolean,
+  team: OwnedPokemon[]
+): Promise<{ lootboxGranted: boolean; lootboxId: string | null }> {
   try {
     const res = await fetch("/api/battles/bot-result", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ won }),
+      body: JSON.stringify({ won, team: team.map((p) => ({ number: p.number, name: p.name })) }),
     });
     const data = await res.json();
     return { lootboxGranted: Boolean(data.lootboxGranted), lootboxId: (data.lootboxId as string | null) ?? null };
@@ -226,7 +229,9 @@ export default function BattleArena({ inventory, typesList }: BattleArenaProps) 
       else playDefeatSound();
       // Server rolls the lootbox chance itself — this only ever reports
       // win/loss, never "and I should get a lootbox."
-      reportBotResult(won).then(({ lootboxGranted, lootboxId }) => setResultDialog({ won, lootboxGranted, lootboxId }));
+      if (myTeam) {
+        reportBotResult(won, myTeam).then(({ lootboxGranted, lootboxId }) => setResultDialog({ won, lootboxGranted, lootboxId }));
+      }
     }
 
     setBattle({

@@ -62,5 +62,10 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/inventor
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!data) return NextResponse.json({ error: "Pokemon not found" }, { status: 404 });
 
+  // Best-effort: the discard itself already succeeded above, so a failure
+  // to bump the counter shouldn't turn into a 500 for an action that
+  // actually completed (upgrades/13-dashboard-stats.md).
+  await supabase.rpc("increment_released_count", { p_user_id: user.id });
+
   return NextResponse.json({ ok: true });
 }

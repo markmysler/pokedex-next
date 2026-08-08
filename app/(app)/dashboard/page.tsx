@@ -2,10 +2,15 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
+import { getDashboardStats } from "@/lib/dashboardStats";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName } from "@/lib/pokemonDisplay";
+
+function pct(value: number | null): string {
+  return value === null ? "—" : `${value.toFixed(0)}%`;
+}
 
 // No persisted "active team" concept (see upgrades/04-app-shell-navigation.md)
 // — this shows the account's 3 highest-total owned Pokemon as a
@@ -16,22 +21,14 @@ export default async function DashboardPage() {
 
   const supabase = getSupabaseServerClient();
 
-  const [{ pokemon }, matchesRes, allMatchesRes] = await Promise.all([
+  const [{ pokemon }, matchesRes, stats] = await Promise.all([
     getInventoryForUser(supabase, user.id),
     supabase.from("match_results").select("*").eq("user_id", user.id).order("played_at", { ascending: false }).limit(5),
-    supabase.from("match_results").select("mode, won").eq("user_id", user.id),
+    getDashboardStats(supabase, user.id),
   ]);
 
   const topPokemon = [...pokemon].sort((a, b) => b.total - a.total).slice(0, 3);
   const recentMatches = matchesRes.data ?? [];
-  const allMatches = allMatchesRes.data ?? [];
-
-  const stats = {
-    botWins: allMatches.filter((m) => m.mode === "bot" && m.won).length,
-    botLosses: allMatches.filter((m) => m.mode === "bot" && !m.won).length,
-    onlineWins: allMatches.filter((m) => m.mode === "online" && m.won).length,
-    onlineLosses: allMatches.filter((m) => m.mode === "online" && !m.won).length,
-  };
 
   return (
     <div className="page">
@@ -72,6 +69,19 @@ export default async function DashboardPage() {
             <div><strong>{stats.botLosses}</strong> bot losses</div>
             <div><strong>{stats.onlineWins}</strong> online wins</div>
             <div><strong>{stats.onlineLosses}</strong> online losses</div>
+            <div><strong>{pct(stats.botWinPct)}</strong> bot win rate</div>
+            <div><strong>{pct(stats.onlineWinPct)}</strong> online win rate</div>
+          </div>
+        </div>
+
+        <div className="card">
+          <h2>Collection Stats</h2>
+          <div className="dashboard-stats-grid">
+            <div><strong>{stats.lootboxesOpened}</strong> lootboxes opened</div>
+            <div><strong>{stats.pokemonReleased}</strong> Pokémon released</div>
+            <div><strong>{stats.mostUsedPokemon ? `${stats.mostUsedPokemon.name} (${stats.mostUsedPokemon.count})` : "—"}</strong> most used</div>
+            <div><strong>{stats.mostOwnedPokemon ? `${stats.mostOwnedPokemon.name} (${stats.mostOwnedPokemon.count})` : "—"}</strong> most owned</div>
+            <div><strong>{stats.pokedexOwnedPct.toFixed(1)}%</strong> of Pokédex owned</div>
           </div>
         </div>
 

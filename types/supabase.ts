@@ -13,18 +13,21 @@ export interface Database {
           display_name: string;
           friend_code: string;
           created_at: string;
+          pokemon_released_count: number;
         };
         Insert: {
           user_id: string;
           display_name: string;
           friend_code: string;
           created_at?: string;
+          pokemon_released_count?: number;
         };
         Update: {
           user_id?: string;
           display_name?: string;
           friend_code?: string;
           created_at?: string;
+          pokemon_released_count?: number;
         };
         Relationships: [];
       };
@@ -284,6 +287,10 @@ export interface Database {
       };
       accept_trade: {
         Args: { p_trade_id: string; p_accepting_user_id: string };
+        Returns: undefined;
+      };
+      increment_released_count: {
+        Args: { p_user_id: string };
         Returns: undefined;
       };
     };
