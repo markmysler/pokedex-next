@@ -23,7 +23,7 @@ export default async function LeaderboardPage() {
               <li key={entry.userId} className={`leaderboard-row${entry.userId === user.id ? " me" : ""}`}>
                 <span className="leaderboard-rank">{MEDALS[i] ?? `#${i + 1}`}</span>
                 <span className="leaderboard-name">{entry.displayName}{entry.userId === user.id ? " (you)" : ""}</span>
-                <span className="leaderboard-wins">{entry.wins} win{entry.wins === 1 ? "" : "s"}</span>
+                <span className="leaderboard-wins">{entry.wins} online win{entry.wins === 1 ? "" : "s"}</span>
               </li>
             ))}
           </ol>

@@ -29,9 +29,31 @@ to satisfy "at least count bot wins separately" — it already is.
 
 ## End state
 
-- [ ] An account with many bot wins and zero online wins shows 0 wins on
+- [x] An account with many bot wins and zero online wins shows 0 wins on
       the leaderboard (verify directly, not just by reading the code).
-- [ ] An account with online wins ranks correctly among others, unaffected
+- [x] An account with online wins ranks correctly among others, unaffected
       by how many bot battles anyone has played.
-- [ ] The Dashboard's separate bot/online win-loss breakdown is unchanged.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] The Dashboard's separate bot/online win-loss breakdown is unchanged.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- No migration needed, so this could be validated directly against the live
+  Supabase project with no push-and-wait step. Ran a temporary script
+  (deleted after running) against a local dev server: created 2 disposable
+  accounts, seeded `match_results` rows directly (mirroring exactly what the
+  real bot-result/room routes insert) — one account with 3 bot wins and 0
+  online activity, the other with 2 online wins, 1 online loss, and 1 bot
+  win — then fetched `/leaderboard` as each via a real signed-in session.
+  12/12 checks passed: the bot-only farmer shows "0 online wins" (not 3, and
+  not omitted from the list either — still ranked, just at zero); the mixed
+  account shows exactly "2 online wins" (the bot win did not leak into the
+  count); the page label reads "N online win(s)" for both. A separate check
+  confirmed `/dashboard` still shows the bot and online win counts split out
+  correctly for an account with both, unaffected by this change.
+- One false failure during the first run, not a real bug: a plain substring
+  check against the rendered HTML missed because React's SSR output inserts
+  `<!-- -->` comment markers between adjacent JSX text expressions (e.g.
+  `{wins}<!-- --> online win<!-- -->s`) to preserve hydration boundaries —
+  stripped those before matching and reran clean.

@@ -18,7 +18,7 @@ export interface LeaderboardEntry {
 export async function getLeaderboard(supabase: SupabaseClient<Database>): Promise<LeaderboardEntry[]> {
   const [{ data: profiles, error: profilesError }, { data: wins, error: winsError }] = await Promise.all([
     supabase.from("profiles").select("user_id, display_name"),
-    supabase.from("match_results").select("user_id").eq("won", true),
+    supabase.from("match_results").select("user_id").eq("won", true).eq("mode", "online"),
   ]);
   if (profilesError) throw new Error(profilesError.message);
   if (winsError) throw new Error(winsError.message);
