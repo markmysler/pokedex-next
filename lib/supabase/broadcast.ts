@@ -5,6 +5,10 @@ export function roomChannelName(code: string): string {
   return `room:${code}`;
 }
 
+export function userChannelName(userId: string): string {
+  return `user:${userId}`;
+}
+
 // One-off broadcast from a Route Handler — uses the REST endpoint, no
 // WebSocket subscription needed (supabase-js >= 2.107.0's channel.httpSend()).
 //
@@ -23,6 +27,26 @@ export async function broadcastToRoom(code: string, event: string, payload: unkn
     }
   } catch (err) {
     console.error(`broadcastToRoom(${code}, ${event}) threw:`, err);
+  } finally {
+    supabase.removeChannel(channel);
+  }
+}
+
+// Same mechanism as broadcastToRoom, just account-scoped instead of
+// room-scoped — used by the friend system (upgrades/05-friend-system.md)
+// for app-wide live notifications (friend requests, acceptances, battle
+// invites) delivered to a specific user regardless of which page they're
+// on. Never throws, same reasoning as broadcastToRoom.
+export async function broadcastToUser(userId: string, event: string, payload: unknown) {
+  const supabase = getSupabaseServerClient();
+  const channel = supabase.channel(userChannelName(userId));
+  try {
+    const result = await channel.httpSend(event, payload as Record<string, unknown>);
+    if (!("success" in result) || !result.success) {
+      console.error(`broadcastToUser(${userId}, ${event}) failed:`, result);
+    }
+  } catch (err) {
+    console.error(`broadcastToUser(${userId}, ${event}) threw:`, err);
   } finally {
     supabase.removeChannel(channel);
   }

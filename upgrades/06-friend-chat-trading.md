@@ -1,9 +1,9 @@
-# Step 7: Friend chat + trading
+# Step 6: Friend chat + trading
 
 ## Why here
 
 Both features only make sense between two accounts that are already
-friends, so this depends entirely on step 6. Grouped into one step because
+friends, so this depends entirely on step 5. Grouped into one step because
 the trade-offer UI naturally lives inside the friend chat surface, not as
 a separate disconnected screen.
 
@@ -36,7 +36,7 @@ create table friend_messages (
     (`friendship:${friendshipId}`) for instant delivery to a friend who
     currently has the chat open — same shape as `room:${code}` for battles,
     just friendship-scoped.
-  - also calls step 6's `broadcastToUser()` on the recipient's account
+  - also calls step 5's `broadcastToUser()` on the recipient's account
     channel, so a toast/badge shows up even if they're elsewhere in the
     app, not just when the chat window is open.
 - Client: `app/(app)/friends/[id]/page.tsx`, reusing `ChatPanel.tsx`
@@ -107,7 +107,7 @@ create table trade_offers (
       reload and are visible to whichever friend logs in later — unlike
       battle chat, this survives.
 - [ ] A message triggers an instant update in an open chat window, and a
-      toast/badge notification (via step 6's account-level channel) when
+      toast/badge notification (via step 5's account-level channel) when
       the recipient's chat window isn't open.
 - [ ] A trade offer can include one or more Pokémon from each side.
 - [ ] Accepting a valid trade atomically transfers every involved

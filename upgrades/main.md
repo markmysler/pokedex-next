@@ -4,32 +4,25 @@ Second wave of upgrades, planned 2026-08-07 after the original 8-step plan
 ([archive/main.md](archive/main.md)) shipped in full: auth, the
 collection/lootbox system, bot battle rework, app shell/navigation, 3v3
 online battles, rematch, match history/leaderboard, and chat. This plan
-covers what comes next: a visual overhaul onto shadcn/ui, extending 3v3 to
-bot battles, a proper win/loss + lootbox reveal experience, a shiny-Pokémon
-rarity tier, and a friends system with battle invites, chat, and trading.
+covers what comes next: extending 3v3 to bot battles, a proper win/loss +
+lootbox reveal experience, a shiny-Pokémon rarity tier, and a friends system
+with battle invites, chat, and trading — all built with the app's existing
+hand-rolled CSS conventions (`.card`, `.btn-primary`, etc.), no
+Tailwind/shadcn adoption.
 
 Each step has its own file with what to build and an end state to validate
 against before moving to the next step — same format as the archived plan.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
-| 1 | Design system: Tailwind + shadcn/ui foundation | [01-design-system.md](01-design-system.md) | — |
-| 2 | Bot battles go 3v3 | [02-bot-3v3.md](02-bot-3v3.md) | 1 |
-| 3 | Battle result dialog (win/loss + lootbox reveal) | [03-battle-result-dialog.md](03-battle-result-dialog.md) | 1, 2 |
-| 4 | Shiny Pokémon | [04-shiny-pokemon.md](04-shiny-pokemon.md) | — (independent, but shown through steps 3 & 5's UI) |
-| 5 | Lootbox opening experience (card-pack reveal) | [05-lootbox-opening.md](05-lootbox-opening.md) | 1, 3, 4 |
-| 6 | Friend system (requests, presence, invite-to-battle) | [06-friend-system.md](06-friend-system.md) | 1 |
-| 7 | Friend chat + trading | [07-friend-chat-trading.md](07-friend-chat-trading.md) | 6 |
+| 1 | Bot battles go 3v3 | [01-bot-3v3.md](01-bot-3v3.md) | — |
+| 2 | Battle result dialog (win/loss + lootbox reveal) | [02-battle-result-dialog.md](02-battle-result-dialog.md) | 1 |
+| 3 | Shiny Pokémon | [03-shiny-pokemon.md](03-shiny-pokemon.md) | — (independent, but shown through steps 2 & 4's UI) |
+| 4 | Lootbox opening experience (card-pack reveal) | [04-lootbox-opening.md](04-lootbox-opening.md) | 2, 3 |
+| 5 | Friend system (requests, presence, invite-to-battle) | [05-friend-system.md](05-friend-system.md) | — |
+| 6 | Friend chat + trading | [06-friend-chat-trading.md](06-friend-chat-trading.md) | 5 |
 
 ## Why this order
-
-**Design system first.** This repo has zero Tailwind/shadcn setup today —
-adopting it touches every existing page. Every other step in this plan
-builds brand-new UI (a result dialog, a card-pack reveal animation, a
-friends list, a trade screen). Doing the migration first means that new UI
-gets built once, directly in shadcn — the alternative (build it all in
-today's plain CSS, then redo it later) is strictly more work for the same
-end state.
 
 **Bot battles go 3v3 before the result dialog.** Right now bot battles are
 1v1 (`components/battle/BattleArena.tsx`, deliberately scoped that way in
@@ -42,8 +35,8 @@ won/lost") instead of two.
 **Shiny is independent but feeds two other steps.** It's a pure read-time
 computation over data that already exists (`pokemon_instances` rows +
 static species/move data) — no migration, no new RNG roll, nothing else
-needs to be built first. It's ordered before step 5 because the lootbox
-card-pack reveal needs something to dramatically reveal, and before step 3
+needs to be built first. It's ordered before step 4 because the lootbox
+card-pack reveal needs something to dramatically reveal, and before step 2
 implicitly because the result dialog's lootbox-earned message benefits from
 being able to say "and it's shiny!" for a big win (not a hard blocker,
 just why it's listed before both).
@@ -56,16 +49,34 @@ flow has to exist first.
 
 From the 2026-08-07 planning conversation:
 
+- **No Tailwind/shadcn migration.** A first pass at a shadcn/ui re-skin was
+  built and validated (step 1 of an earlier draft of this plan) but rolled
+  back after review — the visual result wasn't what was wanted. Every new
+  UI in this plan (result dialog, lootbox reveal, friend list, trade
+  screen, toasts) is built with the app's existing plain-CSS conventions
+  instead: reuse `.card`/`.btn-primary`/`.btn-secondary` and
+  `app/globals.css`'s existing CSS custom properties (`--bg-*`, `--text-*`,
+  `--border-color`), add new scoped classes the same way existing
+  components do (e.g. `.pokemon-grid-card`, `.stat-bar-fill`), and animate
+  with plain CSS `@keyframes`/transitions rather than a library.
+- **Modals and toasts are small custom components, not a UI-kit import.**
+  Steps 2, 4, and 5 each need an overlay (a result/reveal dialog) or a
+  transient notification (friend request toasts) that don't exist in this
+  codebase yet. Build one shared `components/ui/Modal.tsx` (a simple
+  fixed-overlay + centered `.card` panel, closes on backdrop click or an
+  explicit close button — no focus-trap library, just the same
+  `position: fixed` pattern `SideNav.tsx`'s mobile menu already uses) and
+  one shared `components/ui/Toast.tsx`/`ToastProvider` (a small
+  bottom-corner stack, auto-dismissing) the first time either is needed,
+  then reuse both everywhere else that needs one.
 - **Shiny is computed, not stored.** No `is_shiny` column, no backfill
-  migration — see [04-shiny-pokemon.md](04-shiny-pokemon.md) for the exact
+  migration — see [03-shiny-pokemon.md](03-shiny-pokemon.md) for the exact
   formula. A side effect worth calling out: every Pokémon anyone already
   owns gets evaluated retroactively the moment this ships, so some existing
   inventories will suddenly show shinies that "always were," they just
   weren't labeled yet.
 - **Shiny considers both stats and moveset**, not stats alone — a combined
   percentile across both, each contributing equally.
-- **shadcn/ui migration is foundation-first**, done once up front rather
-  than bolted on at the end or built alongside old-style CSS.
 - **Friend requests and battle invites use an app-wide live notification**
   (a Realtime subscription kept open at the app-shell level, the same
   broadcast mechanism the battle rooms already use, just scoped per-account

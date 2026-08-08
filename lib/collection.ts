@@ -1,5 +1,6 @@
 import type { Move, OwnedPokemon, Pokemon, PokemonType, RolledStats } from "@/types/pokemon";
 import { allMoves, movesByType } from "./data/movePool";
+import { getPokemon, pokedexOrder } from "./pokedex";
 
 // Box-Muller transform — standard normal (mean 0, stddev 1).
 function randNormal(): number {
@@ -13,8 +14,10 @@ function randNormal(): number {
 // Mostly close to `center` (narrow spread), with rare wide outliers from the
 // normal distribution's tails — this is the one place both lootbox rolling
 // (lib/collection.ts) and bot leveling (added in step 3) share their "luck"
-// shape, just aimed at different centers.
-const STAT_SPREAD_RATIO = 0.12;
+// shape, just aimed at different centers. Exported so lib/shiny.ts can
+// reuse the exact same spread when modeling this same roll distribution,
+// instead of duplicating the number (upgrades/03-shiny-pokemon.md).
+export const STAT_SPREAD_RATIO = 0.12;
 const STAT_FLOOR_RATIO = 0.5;
 
 export function rollStatAround(center: number): number {
@@ -37,8 +40,10 @@ export function rollStats(pokemon: Pick<Pokemon, "hp" | "atk" | "def" | "spatk" 
   };
 }
 
-const SAME_TYPE_CHANCE = 0.85;
-const MOVE_SLOTS = 4;
+// Exported for the same reason as STAT_SPREAD_RATIO above — lib/shiny.ts
+// models this exact same pool mixture when scoring a rolled moveset.
+export const SAME_TYPE_CHANCE = 0.85;
+export const MOVE_SLOTS = 4;
 const MAX_ROLL_ATTEMPTS = 200;
 
 // ~85% of a rolled Pokemon's moves match one of its own type(s); ~15% can be
@@ -105,6 +110,17 @@ export function rollBotOpponent(species: Pokemon, playerLevel: number): OwnedPok
     moves: rollMoveset(species),
     isStarter: false,
   };
+}
+
+// Bot 3v3 battles (upgrades/01-bot-3v3.md) reuse rollBotOpponent() three
+// times, once per bot — each an independently random species, all leveled
+// to the same team-average total the player's picked team rolled in at.
+// No new leveling math: same rollBotOpponent() 1v1 bot battles always used.
+export function rollBotTeam(playerTeamAverageTotal: number): OwnedPokemon[] {
+  return Array.from({ length: 3 }, () => {
+    const number = pokedexOrder[Math.floor(Math.random() * pokedexOrder.length)];
+    return rollBotOpponent(getPokemon(number), playerTeamAverageTotal);
+  });
 }
 
 interface PokemonInstanceRow {

@@ -445,6 +445,10 @@ body {
 .caught-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 12px; background: var(--input-bg); color: var(--text-secondary); }
 .caught-badge.caught { background: #2FA572; color: white; }
 
+/* SHINY BADGE (upgrades/03-shiny-pokemon.md) — an owned instance whose
+   rolled stats+moveset landed in roughly the top 10% for its species */
+.shiny-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 12px; background: #FFD700; color: #1a1a1a; }
+
 /* INVENTORY / POKEDEX toolbars + grid/list views */
 .inventory-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
 .inventory-toolbar #search-input { flex: 1; min-width: 160px; padding: 8px 10px; font-size: 14px; }
@@ -498,3 +502,130 @@ body {
 .lootbox-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .move-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
 .move-list li { padding: 4px 8px; background: var(--input-bg); border-radius: 6px; }
+
+/* MODAL (upgrades/02-battle-result-dialog.md) — shared by any dialog/overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-panel { position: relative; max-width: 420px; width: 100%; text-align: center; }
+.modal-panel-large { max-width: 640px; }
+.modal-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.modal-close:hover { color: var(--text-primary); }
+
+.battle-result-dialog { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 6px; }
+.battle-result-dialog h2 { margin: 0; }
+.battle-result-lootbox { color: #FFD700; font-weight: bold; }
+.battle-result-no-lootbox { color: var(--text-secondary); }
+.battle-result-actions { display: flex; gap: 10px; }
+
+/* LOOTBOX REVEAL (upgrades/04-lootbox-opening.md) — the roll already
+   happened server-side; everything here is a cosmetic client-side reveal
+   of an already-decided result, never a second roll. */
+.lootbox-reveal { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 6px; min-height: 260px; justify-content: center; cursor: pointer; }
+.lootbox-drumroll { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+@keyframes lootbox-shake {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-8deg) scale(1.05); }
+  40% { transform: rotate(8deg) scale(1.05); }
+  60% { transform: rotate(-6deg) scale(1.02); }
+  80% { transform: rotate(6deg) scale(1.02); }
+}
+.lootbox-drumroll-icon { font-size: 64px; animation: lootbox-shake 0.5s ease-in-out infinite; }
+.lootbox-reveal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.lootbox-reveal-content.revealed { opacity: 1; transform: scale(1); }
+.lootbox-reveal-content h2 { margin: 4px 0 0 0; }
+.lootbox-reveal-sprite { width: 160px; height: 160px; object-fit: contain; image-rendering: pixelated; }
+.lootbox-stats { width: 100%; max-width: 320px; }
+.lootbox-stats .stat-bar-fill { transition: width 0.4s ease; }
+.lootbox-moves { width: 100%; max-width: 320px; }
+.lootbox-moves h3 { margin: 6px 0; text-align: center; }
+.lootbox-reveal-actions { margin-top: 8px; }
+
+/* TOASTS (upgrades/05-friend-system.md) — app-wide live notifications */
+.toast-stack {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 320px;
+}
+.toast-card {
+  position: relative;
+  padding: 10px 28px 10px 14px;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+.toast-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+}
+.toast-close:hover { color: var(--text-primary); }
+.toast-invite { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.toast-action { font-size: 11px; padding: 4px 10px; }
+
+/* FRIENDS PAGE (upgrades/05-friend-system.md) */
+.friend-code-display {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-align: center;
+  background: var(--input-bg);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 8px 0;
+}
+.friend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.friend-row:last-child { border-bottom: none; }
+.friend-row-actions { display: flex; gap: 8px; }
+.nav-link-badge {
+  background: #E74C3C;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 1px 6px;
+  margin-left: 6px;
+}

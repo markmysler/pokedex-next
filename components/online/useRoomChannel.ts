@@ -13,6 +13,11 @@ export interface RoundResultPayload {
   awaitingForcedSwitch: RoomSlot | null;
   over: boolean;
   winner: RoomSlot | null;
+  // Only meaningful when `over` is true — the winner's dialog reads this,
+  // the loser's dialog never mentions a lootbox regardless of its value.
+  lootboxGranted?: boolean;
+  // The winner's lootbox id, for "Open it now" (upgrades/04-lootbox-opening.md).
+  lootboxId?: string | null;
 }
 
 export interface ChatMessagePayload {

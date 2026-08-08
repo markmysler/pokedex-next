@@ -5,6 +5,8 @@ import type { Lootbox, OwnedPokemon } from "@/types/pokemon";
 import PokemonInstanceCard from "./PokemonInstanceCard";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
+import { isShinyInstance } from "@/lib/shiny";
+import LootboxRevealDialog from "./LootboxRevealDialog";
 
 interface InventoryPageClientProps {
   initialPokemon: OwnedPokemon[];
@@ -30,6 +32,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   const [selectedId, setSelectedId] = useState<string | null>(initialPokemon[0]?.id ?? null);
   const [openingId, setOpeningId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [revealPokemon, setRevealPokemon] = useState<OwnedPokemon | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -61,11 +64,19 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
     setLootboxes((prev) => prev.filter((l) => l.id !== id));
     setPokemon((prev) => [data.pokemon as OwnedPokemon, ...prev]);
     setSelectedId((data.pokemon as OwnedPokemon).id);
+    // The card-pack reveal (upgrades/04-lootbox-opening.md) shows this same
+    // already-persisted result — opening the dialog is wiring, not a new
+    // fetch, and the roll above has already happened by this point.
+    setRevealPokemon(data.pokemon as OwnedPokemon);
   }
 
   return (
     <div className="page">
       <h1 className="page-title">🎒 Inventory</h1>
+
+      {revealPokemon && (
+        <LootboxRevealDialog pokemon={revealPokemon} onClose={() => setRevealPokemon(null)} />
+      )}
 
       {lootboxes.length > 0 && (
         <div className="card">
@@ -129,8 +140,9 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
             <div id="card-header">
               <h2>#{selected.number} {selected.name}{selected.isStarter ? " ⭐" : ""}</h2>
               <TypeBadges type1={selected.type1} type2={selected.type2} />
+              {isShinyInstance(selected) && <span className="shiny-badge">✨ Shiny</span>}
             </div>
-            <Sprite name={selected.name} form="normal" className="sprite-img" />
+            <Sprite name={selected.name} form={isShinyInstance(selected) ? "shiny" : "normal"} className="sprite-img" />
             <div id="card-stats">
               <h3>📊 Stats (this Pokémon)</h3>
               {STAT_INFO.map(({ label, key, color }) => (

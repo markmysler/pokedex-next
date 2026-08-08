@@ -75,7 +75,11 @@ export interface FighterState {
   maxHp: number;
   mp: number;
   maxMp: number;
-  pokemon: Pokemon;
+  // Always an actually-owned instance at runtime (buildFighterState() is
+  // only ever called with OwnedPokemon — see BattleArena/OnlineBattle/
+  // lock-in), never a bare species lookup — typed as such so shiny status
+  // (upgrades/03-shiny-pokemon.md) can be read directly off it.
+  pokemon: OwnedPokemon;
 }
 
 export type RoomSlot = 1 | 2;

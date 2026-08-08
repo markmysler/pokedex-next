@@ -1,11 +1,12 @@
-# Step 6: Friend system (requests, presence, invite-to-battle)
+# Step 5: Friend system (requests, presence, invite-to-battle)
 
 ## Why here
 
-Depends on step 1 for its UI (friends list, request cards, toast
-notifications all built directly in shadcn). Independent of steps 2–5
-otherwise. Ordered before step 7 because trading and friend chat only make
-sense between accounts that are already friends.
+Independent of steps 1–4 — its UI (friends list, request cards, toast
+notifications) is plain markup styled with the app's existing CSS
+conventions, same as everything else in this plan. Ordered before step 6
+because trading and friend chat only make sense between accounts that are
+already friends.
 
 ## What changes
 
@@ -71,11 +72,16 @@ create table friendships (
   payload)` — same `channel.httpSend()` mechanism as the existing
   `broadcastToRoom()`, just channel-named `user:${userId}` instead of
   `room:${code}`.
+- New `components/ui/Toast.tsx` + a small `ToastProvider` (context +
+  bottom-corner stack, auto-dismissing) if it doesn't exist yet by the time
+  this step is built — see [main.md](main.md)'s "Key decisions already
+  made". A plain fixed-position stack of `.card`-styled notifications, not
+  a component-library import.
 - New client component, mounted once at the app-shell level (wrapping
   `app/(app)/layout.tsx`'s children, since the layout itself is a Server
   Component and this needs a `"use client"` subscription): subscribes to
   `user:${currentUserId}` for the whole authenticated session, and renders
-  incoming events as shadcn `Sonner` toasts — friend request received,
+  incoming events as toasts via `ToastProvider` — friend request received,
   friend request accepted, battle invite received. This is the same
   Realtime-subscription shape `useRoomChannel.ts` already uses, just
   account-scoped instead of room-scoped and living above individual pages

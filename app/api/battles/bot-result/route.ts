@@ -17,10 +17,19 @@ export async function POST(request: Request) {
   const supabase = getSupabaseServerClient();
 
   let lootboxGranted = false;
+  let lootboxId: string | null = null;
   if (body.won && Math.random() < LOOTBOX_DROP_CHANCE) {
-    const { error: lootboxError } = await supabase.from("lootboxes").insert({ user_id: user.id });
+    // Returns the new row's id so the battle result dialog's "Open it now"
+    // (upgrades/04-lootbox-opening.md) can open this exact lootbox directly
+    // instead of sending the player to Inventory to find it.
+    const { data: lootbox, error: lootboxError } = await supabase
+      .from("lootboxes")
+      .insert({ user_id: user.id })
+      .select("id")
+      .single();
     if (lootboxError) return NextResponse.json({ error: lootboxError.message }, { status: 500 });
     lootboxGranted = true;
+    lootboxId = lootbox.id;
   }
 
   const { error: matchError } = await supabase.from("match_results").insert({
@@ -31,5 +40,5 @@ export async function POST(request: Request) {
   });
   if (matchError) return NextResponse.json({ error: matchError.message }, { status: 500 });
 
-  return NextResponse.json({ ok: true, lootboxGranted });
+  return NextResponse.json({ ok: true, lootboxGranted, lootboxId });
 }

@@ -41,7 +41,7 @@ async function recordBattleEnd(
   winner: RoomSlot,
   team1: TeamState,
   team2: TeamState
-) {
+): Promise<{ lootboxId: string | null }> {
   await supabase.from("battle_rooms").update({ status: "over" }).eq("code", roomCode);
 
   const winnerId = winner === 1 ? room.player1_id : room.player2_id;
@@ -51,8 +51,14 @@ async function recordBattleEnd(
 
   // Winner gets a lootbox every time (100%, unconditional — unlike bot
   // battles' 25% roll). Both players get a match_results row so each
-  // account's own history/dashboard reflects the result.
-  if (winnerId) await supabase.from("lootboxes").insert({ user_id: winnerId });
+  // account's own history/dashboard reflects the result. The inserted row's
+  // id is returned so the winner's result dialog can offer "Open it now"
+  // (upgrades/04-lootbox-opening.md) directly on this exact lootbox.
+  let lootboxId: string | null = null;
+  if (winnerId) {
+    const { data: lootbox } = await supabase.from("lootboxes").insert({ user_id: winnerId }).select("id").single();
+    lootboxId = lootbox?.id ?? null;
+  }
   if (winnerId) {
     await supabase.from("match_results").insert({
       user_id: winnerId,
@@ -73,6 +79,8 @@ async function recordBattleEnd(
       team_snapshot: teamSnapshot(loserTeam) as unknown as Json,
     });
   }
+
+  return { lootboxId };
 }
 
 export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code]/move">) {
@@ -189,8 +197,9 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
   });
   if (finalizeError) return NextResponse.json({ error: finalizeError.message }, { status: 500 });
 
+  let lootboxId: string | null = null;
   if (result.over && result.winner) {
-    await recordBattleEnd(supabase, roomCode, room, result.winner, team1, team2);
+    ({ lootboxId } = await recordBattleEnd(supabase, roomCode, room, result.winner, team1, team2));
   }
 
   const roundResultPayload = {
@@ -201,6 +210,15 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
     awaitingForcedSwitch: result.awaitingForcedSwitch,
     over: result.over,
     winner: result.winner,
+    // Online winners get a lootbox unconditionally (see recordBattleEnd
+    // above) — surfaced explicitly rather than left for the client to
+    // assume, so the result dialog's "did I get one" logic is identical
+    // between bot and online battles (upgrades/02-battle-result-dialog.md).
+    lootboxGranted: Boolean(result.over && result.winner),
+    // Lets the winner's "Open it now" (upgrades/04-lootbox-opening.md) open
+    // this exact lootbox. Shared with both clients like the rest of this
+    // payload, but only the actual winner's UI ever reads/uses it.
+    lootboxId,
   };
 
   // Push to the other player via Realtime (best-effort, never throws — see

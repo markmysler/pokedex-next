@@ -4,6 +4,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
+import { isShinyInstance } from "@/lib/shiny";
 
 // No persisted "active team" concept (see upgrades/04-app-shell-navigation.md)
 // — this shows the account's 3 highest-total owned Pokemon as a
@@ -42,14 +43,18 @@ export default async function DashboardPage() {
             <p>You don&apos;t own any Pokémon yet.</p>
           ) : (
             <div className="dashboard-team">
-              {topPokemon.map((p) => (
-                <div key={p.id} className="dashboard-team-member">
-                  <Sprite name={p.name} form="normal" className="battle-sprite" />
-                  <div>#{p.number} {p.name}</div>
-                  <TypeBadges type1={p.type1} type2={p.type2} center small />
-                  <div className="total-stats">Total {p.total}</div>
-                </div>
-              ))}
+              {topPokemon.map((p) => {
+                const shiny = isShinyInstance(p);
+                return (
+                  <div key={p.id} className="dashboard-team-member">
+                    <Sprite name={p.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
+                    <div>#{p.number} {p.name}</div>
+                    <TypeBadges type1={p.type1} type2={p.type2} center small />
+                    {shiny && <span className="shiny-badge">✨ Shiny</span>}
+                    <div className="total-stats">Total {p.total}</div>
+                  </div>
+                );
+              })}
             </div>
           )}
           <p className="dashboard-note">

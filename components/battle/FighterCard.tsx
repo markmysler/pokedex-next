@@ -1,16 +1,17 @@
-import type { Pokemon } from "@/types/pokemon";
+import type { OwnedPokemon } from "@/types/pokemon";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
+import { isShinyInstance } from "@/lib/shiny";
 
 interface TeamMemberDisplay {
-  pokemon: Pokemon;
+  pokemon: OwnedPokemon;
   hp: number;
   maxHp: number;
 }
 
 interface FighterCardProps {
   title: string;
-  pokemon: Pokemon;
+  pokemon: OwnedPokemon;
   hp: number;
   maxHp: number;
   mp: number;
@@ -41,12 +42,14 @@ export default function FighterCard({
   const hpPct = Math.max(0, Math.min(1, hp / maxHp));
   const hpColor = hpPct > 0.5 ? "#2FA572" : hpPct > 0.2 ? "#F39C12" : "#E74C3C";
   const mpPct = Math.max(0, Math.min(1, mp / maxMp));
+  const shiny = isShinyInstance(pokemon);
 
   return (
     <div className="fighter-card">
       <h3>{title}</h3>
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
-      <Sprite name={pokemon.name} form="normal" className="battle-sprite" />
+      {shiny && <span className="shiny-badge">✨ Shiny</span>}
+      <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
 
       <div className="hp-label">HP: {Math.max(0, hp)} / {maxHp}</div>
       <div className="progress-bar small">
@@ -67,6 +70,7 @@ export default function FighterCard({
             if (i === activeIndex) return null;
             const fainted = member.hp <= 0;
             const clickable = Boolean(onSwitchTo) && !fainted;
+            const benchShiny = isShinyInstance(member.pokemon);
             return (
               <button
                 key={i}
@@ -76,8 +80,8 @@ export default function FighterCard({
                 onClick={() => clickable && onSwitchTo?.(i)}
                 title={fainted ? `${member.pokemon.name} (fainted)` : `Switch to ${member.pokemon.name}`}
               >
-                <Sprite name={member.pokemon.name} form="normal" className="bench-sprite" />
-                <span className="bench-name">{member.pokemon.name}</span>
+                <Sprite name={member.pokemon.name} form={benchShiny ? "shiny" : "normal"} className="bench-sprite" />
+                <span className="bench-name">{benchShiny ? "✨ " : ""}{member.pokemon.name}</span>
                 <span className="bench-hp">{fainted ? "💀 Fainted" : `${Math.max(0, member.hp)}/${member.maxHp} HP`}</span>
               </button>
             );

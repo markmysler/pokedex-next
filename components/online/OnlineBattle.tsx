@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import type { BattleAction, OwnedPokemon, RoomSlot, TeamState } from "@/types/pokemon";
 import FighterCard from "@/components/battle/FighterCard";
 import MoveButton from "@/components/battle/MoveButton";
+import BattleResultDialog from "@/components/battle/BattleResultDialog";
+import LootboxRevealDialog from "@/components/inventory/LootboxRevealDialog";
 import TeamPicker from "./TeamPicker";
 import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
@@ -38,6 +40,8 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
   const [moveLocked, setMoveLocked] = useState(false);
   const [rematchRequestedBy, setRematchRequestedBy] = useState<RoomSlot | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [resultDialog, setResultDialog] = useState<{ won: boolean; lootboxGranted: boolean; lootboxId: string | null } | null>(null);
+  const [revealPokemon, setRevealPokemon] = useState<OwnedPokemon | null>(null);
   const logRef = useRef<HTMLPreElement>(null);
   const mySlotRef = useRef<RoomSlot | null>(null);
   const lockedInRef = useRef(false);
@@ -57,6 +61,38 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
   useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
+
+  // Deep-link from a friend battle invite (upgrades/05-friend-system.md):
+  // the invite toast's "Accept" already called POST /api/rooms/[code]/join
+  // (or, for the inviter, the Friends page already called POST /api/rooms)
+  // before navigating here — this just picks up the resulting room code
+  // client-side instead of re-running the create/join screen. Reads
+  // window.location directly (not useSearchParams()) since this only needs
+  // to run once after a client-side navigation, not react to SSR.
+  //
+  // This has to be an effect, not render-time or a lazy useState initializer:
+  // window is unavailable during SSR/the initial hydration render, so
+  // hydrating this deep-link state has to happen after mount — the
+  // react-hooks/set-state-in-effect warning below is a known false positive
+  // for exactly this "adopt state from a browser-only source" case.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (!code) return;
+    const upperCode = code.toUpperCase();
+    const isHost = params.get("host") === "1";
+    mySlotRef.current = isHost ? 1 : 2;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMySlot(isHost ? 1 : 2);
+    setRoomCode(upperCode);
+    if (isHost) {
+      setPhase("waiting");
+      setStatus(`Room created! Share code ${upperCode} with your opponent. Waiting for them to join...`);
+    } else {
+      setPhase("picking");
+      setStatus("Joined room! Pick your team.");
+    }
+  }, []);
 
   function appendLog(lines: string[]) {
     setLog((prev) => [...prev, ...lines]);
@@ -94,6 +130,12 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
     winner: RoomSlot | null;
     awaitingForcedSwitch: RoomSlot | null;
     log?: string[];
+    lootboxGranted?: boolean;
+    // Only present via the broadcast/HTTP paths, not the poll backstop
+    // (which reads persisted RoomState, not this ephemeral payload) — see
+    // upgrades/04-lootbox-opening.md. "Open it now" just doesn't render in
+    // that fallback case; the player can still find it in Inventory.
+    lootboxId?: string | null;
   }) {
     if (lastTurnRef.current !== null && payload.turnCount <= lastTurnRef.current) return; // already applied
     lastTurnRef.current = payload.turnCount;
@@ -112,6 +154,12 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
       const won = payload.winner === mySlotRef.current;
       appendLog([won ? "\n🏆 VICTORY! The opponent's whole team fainted!" : "\n💀 DEFEAT! Your whole team fainted!"]);
       setTurnStatus(won ? "🏆 You won the battle!" : "💀 You lost the battle.");
+      // Trigger the result dialog from here, not a separate effect watching
+      // battle?.over — this function only runs once per real turnCount
+      // transition (dedup check above), so a naive effect would instead
+      // refire on every re-render after the player dismisses the dialog,
+      // since battle.over stays true for the rest of the session.
+      setResultDialog({ won, lootboxGranted: won && Boolean(payload.lootboxGranted), lootboxId: won ? (payload.lootboxId ?? null) : null });
     } else if (payload.awaitingForcedSwitch === mySlotRef.current) {
       setTurnStatus("💀 Your Pokémon fainted! Choose your next Pokémon below.");
     } else if (payload.awaitingForcedSwitch) {
@@ -144,6 +192,8 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
         winner: payload.winner,
         awaitingForcedSwitch: payload.awaitingForcedSwitch,
         log: payload.log,
+        lootboxGranted: payload.lootboxGranted,
+        lootboxId: payload.lootboxId,
       });
     },
     onOpponentMoveSubmitted: () => {
@@ -214,6 +264,11 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
               over: state.over,
               winner: state.winner,
               awaitingForcedSwitch: state.awaitingForcedSwitch,
+              // Persisted RoomState doesn't carry the ephemeral round-result
+              // payload's lootboxGranted field, but online wins are
+              // unconditional (100%, see recordBattleEnd) — so this is
+              // exactly as accurate as the broadcast/HTTP path's value.
+              lootboxGranted: Boolean(state.over && state.winner),
             });
           }
         } else if (roomStatus === "over") {
@@ -245,6 +300,8 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
     setRoomCodeInput("");
     setRematchRequestedBy(null);
     setChatMessages([]);
+    setResultDialog(null);
+    setRevealPokemon(null);
     lastTurnRef.current = null;
   }
 
@@ -262,8 +319,21 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
     setStatus("");
     setRematchRequestedBy(null);
     setChatMessages([]);
+    setResultDialog(null);
+    setRevealPokemon(null);
     setPhase("picking");
     lastTurnRef.current = null;
+  }
+
+  async function openLootboxNow(lootboxId: string) {
+    const res = await fetch(`/api/inventory/lootboxes/${lootboxId}/open`, { method: "POST" });
+    const data = await res.json();
+    if (data.error) {
+      appendLog([`⚠️ Couldn't open lootbox: ${data.error}`]);
+      return;
+    }
+    setResultDialog(null);
+    setRevealPokemon(data.pokemon as OwnedPokemon);
   }
 
   async function createRoom() {
@@ -347,6 +417,8 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
         winner: data.winner,
         awaitingForcedSwitch: data.awaitingForcedSwitch,
         log: data.log,
+        lootboxGranted: data.lootboxGranted,
+        lootboxId: data.lootboxId,
       });
     }
   }
@@ -435,6 +507,18 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
 
   return (
     <>
+      {resultDialog && (
+        <BattleResultDialog
+          won={resultDialog.won}
+          lootboxGranted={resultDialog.lootboxGranted}
+          onClose={() => setResultDialog(null)}
+          onOpenNow={resultDialog.lootboxId ? () => openLootboxNow(resultDialog.lootboxId!) : undefined}
+        />
+      )}
+      {revealPokemon && (
+        <LootboxRevealDialog pokemon={revealPokemon} onClose={() => setRevealPokemon(null)} />
+      )}
+
       <div className="card select-bar">
         <div>Room Code: <strong>{roomCode}</strong> — share this with your opponent</div>
         <button className="btn-secondary" onClick={leaveRoom}>Leave Room</button>

@@ -11,16 +11,19 @@ export interface Database {
         Row: {
           user_id: string;
           display_name: string;
+          friend_code: string;
           created_at: string;
         };
         Insert: {
           user_id: string;
           display_name: string;
+          friend_code: string;
           created_at?: string;
         };
         Update: {
           user_id?: string;
           display_name?: string;
+          friend_code?: string;
           created_at?: string;
         };
         Relationships: [];
@@ -178,6 +181,33 @@ export interface Database {
           played_at?: string;
           room_code?: string | null;
           team_snapshot?: Json | null;
+        };
+        Relationships: [];
+      };
+      friendships: {
+        Row: {
+          id: string;
+          requester_id: string;
+          addressee_id: string;
+          status: "pending" | "accepted";
+          created_at: string;
+          responded_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          requester_id: string;
+          addressee_id: string;
+          status?: "pending" | "accepted";
+          created_at?: string;
+          responded_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          requester_id?: string;
+          addressee_id?: string;
+          status?: "pending" | "accepted";
+          created_at?: string;
+          responded_at?: string | null;
         };
         Relationships: [];
       };
