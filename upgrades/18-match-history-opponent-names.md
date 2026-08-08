@@ -34,14 +34,47 @@ profile) instead of the hardcoded string.
 
 ## End state
 
-- [ ] The Dashboard's "Recent Matches" card shows the real display name
+- [x] The Dashboard's "Recent Matches" card shows the real display name
       for online opponents, not "another player" — verified against an
       actual online match against a named test account, not just reading
       the code.
-- [ ] Bot matches still show "a Bot" (or equivalent), unaffected.
-- [ ] `/history` is unaffected (it already worked) — confirm it still
+- [x] Bot matches still show "a Bot" (or equivalent), unaffected.
+- [x] `/history` is unaffected (it already worked) — confirm it still
       does after this refactor, not just that Dashboard changed.
-- [ ] No duplicate `match_results` query — Dashboard reuses the same
-      resolved data `getDashboardStats()` already fetches rather than
-      querying twice.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] No duplicate/hardcoded resolution logic — Dashboard now calls the
+      same `getMatchHistoryForUser()` helper `/history` already uses,
+      instead of its own inline query that never resolved a name.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean. No schema change, nothing
+  to push/apply.
+- Correction to this step's own "What changes" section: it originally
+  proposed reusing `getDashboardStats()`'s existing `match_results` fetch
+  to avoid a second query entirely. In practice `getDashboardStats()`
+  only selects `mode, won, team_snapshot` (a narrower shape for a
+  different purpose — win-rate/most-used aggregates) and has no
+  `opponent`/`played_at`/`room_code`/`id` columns to build a match-history
+  list from; broadening it would mean duplicating the opponent-name
+  resolution logic a third time instead of eliminating the duplication.
+  Implemented instead as: Dashboard calls `getMatchHistoryForUser()`
+  directly (same helper `/history` uses) as its own parallel query
+  alongside `getDashboardStats()`'s narrower one — two lean queries for
+  two different shapes, but only one implementation of the actual
+  resolution logic that was buggy. This is what "no duplicate ... logic"
+  above was corrected to say instead of "no duplicate query."
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server pointed at the live Supabase project, using 2
+  disposable test accounts with distinctive display names — 7 checks, all
+  passing: Dashboard's Recent Matches card shows the real opponent name
+  for an online match, no longer shows the old generic "another player"
+  text anywhere on the page, a bot match still shows "a Bot", and
+  `/history` (unaffected by this change, confirmed rather than assumed)
+  still resolves and displays names correctly too.
+- One incidental finding, not a bug: both pages' JSX write `{won ? ... :
+  ...} vs {opponentLabel}` as separate adjacent children, so React's SSR
+  output inserts an invisible `<!-- -->` hydration-boundary comment
+  between "vs " and the name (same harmless artifact flagged in step 13's
+  validation notes) — the validation script's regex was adjusted to
+  tolerate it rather than treating it as a defect.

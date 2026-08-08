@@ -3,10 +3,13 @@ import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
 import { getDashboardStats } from "@/lib/dashboardStats";
+import { getMatchHistoryForUser } from "@/lib/history";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName } from "@/lib/pokemonDisplay";
+
+const RECENT_MATCHES_LIMIT = 5;
 
 function pct(value: number | null): string {
   return value === null ? "—" : `${value.toFixed(0)}%`;
@@ -21,14 +24,18 @@ export default async function DashboardPage() {
 
   const supabase = getSupabaseServerClient();
 
-  const [{ pokemon }, matchesRes, stats] = await Promise.all([
+  const [{ pokemon }, matchHistory, stats] = await Promise.all([
     getInventoryForUser(supabase, user.id),
-    supabase.from("match_results").select("*").eq("user_id", user.id).order("played_at", { ascending: false }).limit(5),
+    // Reuses the same opponent-name resolution /history already uses
+    // (upgrades/18-match-history-opponent-names.md) — the "Recent
+    // Matches" card used to run its own inline query here and hardcode
+    // "another player" for every online match, never resolving a name.
+    getMatchHistoryForUser(supabase, user.id),
     getDashboardStats(supabase, user.id),
   ]);
 
   const topPokemon = [...pokemon].sort((a, b) => b.total - a.total).slice(0, 3);
-  const recentMatches = matchesRes.data ?? [];
+  const recentMatches = matchHistory.slice(0, RECENT_MATCHES_LIMIT);
 
   return (
     <div className="page">
@@ -93,8 +100,8 @@ export default async function DashboardPage() {
             <ul className="match-list">
               {recentMatches.map((m) => (
                 <li key={m.id} className={`match-row${m.won ? " win" : " loss"}`}>
-                  {m.won ? "🏆 Won" : "💀 Lost"} vs {m.mode === "bot" ? "a bot" : "another player"} —{" "}
-                  {new Date(m.played_at).toLocaleString()}
+                  {m.won ? "🏆 Won" : "💀 Lost"} vs {m.opponentLabel} —{" "}
+                  {new Date(m.playedAt).toLocaleString()}
                 </li>
               ))}
             </ul>
