@@ -11,8 +11,8 @@ export default async function BattlePage() {
   const { pokemon } = await getInventoryForUser(supabase, user.id);
 
   return (
-    <div className="page">
-      <h1 className="page-title">⚔️ Battle Arena</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <h1 className="text-2xl font-bold">⚔️ Battle Arena</h1>
       <BattleArena inventory={pokemon} />
     </div>
   );

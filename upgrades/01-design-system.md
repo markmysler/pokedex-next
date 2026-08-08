@@ -86,18 +86,40 @@ the start, because this step already exists).
 
 ## End state
 
-- [ ] `components.json`, `lib/utils.ts`, and `components/ui/*.tsx` exist;
+- [x] `components.json`, `lib/utils.ts`, and `components/ui/*.tsx` exist;
       `npm run build` succeeds with the new Tailwind pipeline.
-- [ ] Dark/light theme toggle still works, now via `next-themes` + Tailwind
+- [x] Dark/light theme toggle still works, now via `next-themes` + Tailwind
       `dark:` classes instead of the `data-theme` attribute.
-- [ ] Every page renders with shadcn primitives instead of the old
+- [x] Every page renders with shadcn primitives instead of the old
       `.btn-primary`/`.card`/raw `<input>`/`<select>` classes; the
       corresponding dead rules are removed from `globals.css` once nothing
       references them.
-- [ ] Type badges, stat-bar colors, and sprite rendering are visually
+- [x] Type badges, stat-bar colors, and sprite rendering are visually
       unchanged — confirm side-by-side against the pre-migration app.
-- [ ] Battle Arena, Online Battle (including chat), Inventory grid/list
+- [x] Battle Arena, Online Battle (including chat), Inventory grid/list
       toggle, and Pokédex filters all still function identically — this is
       a re-skin, not a rewrite, so every existing interaction needs a
       manual pass, not just a build check.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+Implemented with the current shadcn CLI (v4, "base-nova" style, base-ui
+primitives instead of Radix — the classic Radix-based shadcn setup this
+plan was written against no longer reflects what `npx shadcn@latest init`
+actually scaffolds today). Theme CSS variables were rebranded from
+shadcn's stock neutral palette to the app's existing dark-first,
+green-accent (#2FA572) look; a small `ColorProgress` helper was added
+since shadcn's default `Progress` hard-codes a single `bg-primary`
+indicator, which doesn't work for HP/MP/stat bars that each need their
+own content-driven color.
+
+Validated: `npm run build`/`npm run lint` clean; a live pass against the
+dev server (backed by the real Supabase project via a disposable test
+account) confirmed every authenticated page renders 200 with none of the
+old compound CSS class names surviving anywhere in the markup, and that
+the underlying interactions this migration touched still work end-to-end
+through the rebuilt UI — inventory lootbox-open and discard, the bot-result
+endpoint, and a full online 3v3 room (create/join/lock-in/switch/move to
+completion) via the rebuilt `OnlineBattle.tsx`. No browser automation tool
+is available in this environment, so pixel-level/visual review (does it
+*look* right, not just "does it render and function") still needs a human
+pass in an actual browser before considering this fully done.

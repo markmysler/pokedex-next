@@ -4,8 +4,9 @@ import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// No persisted "active team" concept (see upgrades/04-app-shell-navigation.md)
+// No persisted "active team" concept (see upgrades/archive/04-app-shell-navigation.md)
 // — this shows the account's 3 highest-total owned Pokemon as a
 // representative snapshot rather than a stored selection.
 export default async function DashboardPage() {
@@ -32,58 +33,79 @@ export default async function DashboardPage() {
   };
 
   return (
-    <div className="page">
-      <h1 className="page-title">🏠 Dashboard</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <h1 className="text-2xl font-bold">🏠 Dashboard</h1>
 
-      <div className="dashboard-grid">
-        <div className="card">
-          <h2>Your Team</h2>
-          {topPokemon.length === 0 ? (
-            <p>You don&apos;t own any Pokémon yet.</p>
-          ) : (
-            <div className="dashboard-team">
-              {topPokemon.map((p) => (
-                <div key={p.id} className="dashboard-team-member">
-                  <Sprite name={p.name} form="normal" className="battle-sprite" />
-                  <div>#{p.number} {p.name}</div>
-                  <TypeBadges type1={p.type1} type2={p.type2} center small />
-                  <div className="total-stats">Total {p.total}</div>
-                </div>
-              ))}
+      <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Team</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            {topPokemon.length === 0 ? (
+              <p className="text-sm text-muted-foreground">You don&apos;t own any Pokémon yet.</p>
+            ) : (
+              <div className="flex flex-wrap gap-3">
+                {topPokemon.map((p) => (
+                  <div key={p.id} className="flex w-24 flex-col items-center gap-1 text-center text-xs">
+                    <Sprite name={p.name} form="normal" className="size-16 object-contain" />
+                    <div>#{p.number} {p.name}</div>
+                    <TypeBadges type1={p.type1} type2={p.type2} center small />
+                    <div className="font-bold text-muted-foreground">Total {p.total}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Showing your {topPokemon.length} strongest Pokémon by total stats · {pokemon.length} owned total.{" "}
+              <Link href="/inventory" className="text-primary underline-offset-4 hover:underline">
+                View inventory →
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Battle Stats</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div><strong>{stats.botWins}</strong> bot wins</div>
+              <div><strong>{stats.botLosses}</strong> bot losses</div>
+              <div><strong>{stats.onlineWins}</strong> online wins</div>
+              <div><strong>{stats.onlineLosses}</strong> online losses</div>
             </div>
-          )}
-          <p className="dashboard-note">
-            Showing your {topPokemon.length} strongest Pokémon by total stats · {pokemon.length} owned total.{" "}
-            <Link href="/inventory">View inventory →</Link>
-          </p>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div className="card">
-          <h2>Battle Stats</h2>
-          <div className="dashboard-stats-grid">
-            <div><strong>{stats.botWins}</strong> bot wins</div>
-            <div><strong>{stats.botLosses}</strong> bot losses</div>
-            <div><strong>{stats.onlineWins}</strong> online wins</div>
-            <div><strong>{stats.onlineLosses}</strong> online losses</div>
-          </div>
-        </div>
-
-        <div className="card">
-          <h2>Recent Matches</h2>
-          {recentMatches.length === 0 ? (
-            <p>No matches played yet. <Link href="/battle">Battle a bot →</Link></p>
-          ) : (
-            <ul className="match-list">
-              {recentMatches.map((m) => (
-                <li key={m.id} className={`match-row${m.won ? " win" : " loss"}`}>
-                  {m.won ? "🏆 Won" : "💀 Lost"} vs {m.mode === "bot" ? "a bot" : "another player"} —{" "}
-                  {new Date(m.played_at).toLocaleString()}
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="dashboard-note"><Link href="/history">Full history →</Link></p>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Matches</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            {recentMatches.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No matches played yet. <Link href="/battle" className="text-primary underline-offset-4 hover:underline">Battle a bot →</Link>
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-1">
+                {recentMatches.map((m) => (
+                  <li
+                    key={m.id}
+                    className={`rounded-md bg-muted px-2 py-1.5 text-sm border-l-3 ${m.won ? "border-l-primary" : "border-l-destructive"}`}
+                  >
+                    {m.won ? "🏆 Won" : "💀 Lost"} vs {m.mode === "bot" ? "a bot" : "another player"} —{" "}
+                    {new Date(m.played_at).toLocaleString()}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="text-xs text-muted-foreground">
+              <Link href="/history" className="text-primary underline-offset-4 hover:underline">Full history →</Link>
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

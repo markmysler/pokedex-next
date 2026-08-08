@@ -16,8 +16,8 @@ export default async function OnlinePage() {
   const displayName = profile?.display_name ?? user.email ?? "Trainer";
 
   return (
-    <div className="page">
-      <h1 className="page-title">🌐 Online Battle</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <h1 className="text-2xl font-bold">🌐 Online Battle</h1>
       <OnlineBattle inventory={pokemon} displayName={displayName} />
     </div>
   );
