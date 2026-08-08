@@ -4,9 +4,9 @@
 
 Independent of steps 1–4 — its UI (friends list, request cards, toast
 notifications) is plain markup styled with the app's existing CSS
-conventions, same as everything else in this plan. Ordered before step 6
-because trading and friend chat only make sense between accounts that are
-already friends.
+conventions, same as everything else in this plan. Ordered before step 12
+(friend chat + trading) because trading and friend chat only make sense
+between accounts that are already friends.
 
 ## What changes
 

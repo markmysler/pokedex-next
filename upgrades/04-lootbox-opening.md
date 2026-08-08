@@ -39,8 +39,10 @@ through:
    `i` at roughly `i * 350–400ms`, each bar's own fill using a CSS
    `transition: width` on `.stat-bar-fill` rather than a hand-rolled timer
    per bar.
-4. **Moveset reveal** — after stats finish, the 4 rolled moves appear
-   (matching `PokemonDetail.tsx`'s move-list styling).
+4. **Moveset reveal** — after stats finish, the 4 rolled moves appear one
+   at a time (`i * 300ms`, same staggered shape as the stat bars, each move
+   fading/sliding in via CSS transition rather than all 4 dumping in at
+   once — matches `PokemonDetail.tsx`'s move-list styling otherwise).
 - A **Skip** control (tap anywhere, or an explicit button) jumps straight
   to the fully-revealed end state — don't force everyone through the full
   animation every single time, especially useful while testing.

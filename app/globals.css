@@ -565,6 +565,12 @@ body {
 .lootbox-stats .stat-bar-fill { transition: width 0.4s ease; }
 .lootbox-moves { width: 100%; max-width: 320px; }
 .lootbox-moves h3 { margin: 6px 0; text-align: center; }
+.lootbox-moves .move-list li {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.lootbox-moves .move-list li.move-revealed { opacity: 1; transform: translateY(0); }
 .lootbox-reveal-actions { margin-top: 8px; }
 
 /* TOASTS (upgrades/05-friend-system.md) — app-wide live notifications */

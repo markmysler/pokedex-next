@@ -16,10 +16,11 @@ interface LootboxRevealDialogProps {
   onClose: () => void;
 }
 
-type Phase = "drumroll" | "sprite" | "stats" | "moves";
+type Phase = "drumroll" | "sprite" | "stats" | "moves" | "done";
 
 const DRUMROLL_MS = 1200;
 const STAT_STEP_MS = 375;
+const MOVE_STEP_MS = 300;
 
 const STAT_INFO: Array<{ label: string; key: "hp" | "atk" | "def" | "spatk" | "spdef" | "spd"; color: string }> = [
   { label: "HP", key: "hp", color: "#FF5959" },
@@ -33,6 +34,7 @@ const STAT_INFO: Array<{ label: string; key: "hp" | "atk" | "def" | "spatk" | "s
 export default function LootboxRevealDialog({ pokemon, onClose }: LootboxRevealDialogProps) {
   const [phase, setPhase] = useState<Phase>("drumroll");
   const [statsRevealed, setStatsRevealed] = useState(0);
+  const [movesRevealed, setMovesRevealed] = useState(0);
   const shiny = isShinyInstance(pokemon);
 
   useEffect(() => {
@@ -59,12 +61,26 @@ export default function LootboxRevealDialog({ pokemon, onClose }: LootboxRevealD
     return () => clearTimeout(timer);
   }, [phase, statsRevealed]);
 
+  // Reveals one move at a time (fade/slide-in, see .lootbox-moves li in
+  // globals.css), same staggered-reveal shape as the stat bars above,
+  // rather than dumping all 4 in at once.
+  useEffect(() => {
+    if (phase !== "moves") return;
+    if (movesRevealed >= pokemon.moves.length) {
+      const timer = setTimeout(() => setPhase("done"), MOVE_STEP_MS);
+      return () => clearTimeout(timer);
+    }
+    const timer = setTimeout(() => setMovesRevealed((n) => n + 1), MOVE_STEP_MS);
+    return () => clearTimeout(timer);
+  }, [phase, movesRevealed, pokemon.moves.length]);
+
   function skip() {
-    setPhase("moves");
+    setPhase("done");
     setStatsRevealed(STAT_INFO.length);
+    setMovesRevealed(pokemon.moves.length);
   }
 
-  const fullyRevealed = phase === "moves";
+  const fullyRevealed = phase === "done";
 
   return (
     <Modal onClose={onClose} large>
@@ -104,12 +120,14 @@ export default function LootboxRevealDialog({ pokemon, onClose }: LootboxRevealD
             {fullyRevealed && <div className="total-stats">Total: {pokemon.total}</div>}
           </div>
 
-          {fullyRevealed && (
+          {(phase === "moves" || fullyRevealed) && (
             <div className="lootbox-moves">
               <h3>⚔️ Moves</h3>
               <ul className="move-list">
-                {pokemon.moves.map((m) => (
-                  <li key={m.name}>{m.name} — {m.type}, {m.power} Pwr, {m.mana_cost} MP</li>
+                {pokemon.moves.map((m, i) => (
+                  <li key={m.name} className={fullyRevealed || i < movesRevealed ? "move-revealed" : undefined}>
+                    {m.name} — {m.type}, {m.power} Pwr, {m.mana_cost} MP
+                  </li>
                 ))}
               </ul>
             </div>

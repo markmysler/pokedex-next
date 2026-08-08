@@ -1,11 +1,14 @@
-# Step 6: Friend chat + trading
+# Step 12: Friend chat + trading
 
 ## Why here
 
 Both features only make sense between two accounts that are already
-friends, so this depends entirely on step 5. Grouped into one step because
-the trade-offer UI naturally lives inside the friend chat surface, not as
-a separate disconnected screen.
+friends, so this depends entirely on step 5. Last in the plan simply
+because everything in steps 6-11 (security headers, leaderboard, nicknames,
+team-picker parity, battle depth, sound effects) was added later and has no
+dependency relationship with this step either way — trading benefits from
+step 9's shared Pokémon-picker components existing first (see below), so it
+sits after them.
 
 ## What changes
 
@@ -91,9 +94,11 @@ create table trade_offers (
 
 ### Client: trade UI
 - A "Propose Trade" action on the friend chat page opens a trade builder:
-  two multi-select grids (reusing `TeamPicker.tsx`'s selection-grid pattern,
-  generalized from its current fixed "exactly 3" rule to "at least 1, no
-  fixed max" for this context) — one for the caller's own inventory, one
+  two multi-select grids (reusing step 9's shared `PokemonInstanceCard` +
+  `PokemonFilterBar` + `filterAndSortPokemon()` — the same pieces
+  `TeamPicker.tsx` was refactored onto — generalized from `TeamPicker`'s
+  fixed "exactly 3" selection rule to "at least 1, no fixed max" for this
+  context) — one for the caller's own inventory, one
   read-only-except-selectable view of the friend's inventory (fetched
   specifically for this screen, showing only what's needed to pick from:
   id/species/stats — not full account data).
