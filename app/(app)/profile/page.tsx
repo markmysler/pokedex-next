@@ -9,9 +9,15 @@ export default async function ProfilePage() {
   const supabase = getSupabaseServerClient();
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name")
+    .select("display_name, friend_code")
     .eq("user_id", user.id)
     .single();
 
-  return <ProfilePageClient email={user.email ?? ""} initialDisplayName={profile?.display_name ?? ""} />;
+  return (
+    <ProfilePageClient
+      email={user.email ?? ""}
+      initialDisplayName={profile?.display_name ?? ""}
+      friendCode={profile?.friend_code ?? ""}
+    />
+  );
 }

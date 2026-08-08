@@ -106,19 +106,68 @@ create table friendships (
 
 ## End state
 
-- [ ] Every account has a stable, unique friend code, generated
+- [x] Every account has a stable, unique friend code, generated
       automatically and visible on the Profile page.
-- [ ] Sending a friend request by code, then accepting or declining it,
+- [x] Sending a friend request by code, then accepting or declining it,
       works and is reflected correctly for both accounts.
-- [ ] Requesting a friend who already has a pending request out to you
+- [x] Requesting a friend who already has a pending request out to you
       auto-accepts instead of creating a duplicate row.
-- [ ] A friend request and a friend-request-accepted event both surface as
+- [x] A friend request and a friend-request-accepted event both surface as
       a live toast from anywhere in the app, not just the Friends page —
       verify by triggering one while sitting on, say, the Pokédex page.
-- [ ] Only accepted friends can be sent a battle invite; inviting a
+- [x] Only accepted friends can be sent a battle invite; inviting a
       non-friend is rejected server-side.
-- [ ] Clicking "Battle" on a friend creates a real room via the existing
+- [x] Clicking "Battle" on a friend creates a real room via the existing
       `POST /api/rooms` and delivers a live invite; accepting it joins that
       exact room via the existing `POST /api/rooms/[code]/join` — no new
       parallel matchmaking system.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- This step needed a real schema change (`friendships` table +
+  `profiles.friend_code`) — unlike steps 1-4, there's no local Postgres/
+  Supabase CLI in this environment, so the only way to apply and validate
+  it was to push to `origin/main` (confirmed with the user first) and let
+  the Supabase GitHub integration apply the migration. Confirmed applied by
+  querying the live `friendships` table before running any other checks.
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server pointed at the now-migrated live Supabase project, using
+  5 disposable test accounts — 34 checks, all passing: unique friend codes
+  per account; self-friend and invalid-code requests rejected; request →
+  accept flow reflected correctly on both sides; duplicate/already-resolved/
+  already-friends requests rejected (409); decline actually deletes the row
+  (verified directly in the DB, not just via the API response); the
+  reverse-request auto-accept path produces exactly one `accepted` row
+  between two accounts, never two dangling pending ones; unfriend removes
+  the relationship for both sides; battle invites are rejected for
+  non-friends (403) and succeed for accepted friends, using the real
+  `POST /api/rooms` + `POST /api/rooms/[code]/join` flow (no parallel
+  system); `/friends`, `/profile`, and `/dashboard` all render 200 with no
+  error boundary and the Friends/Profile pages actually contain the
+  account's real friend code in the HTML.
+- Also specifically verified the "live toast from anywhere" claim isn't
+  just a plausible-looking HTTP 200 — wrote a second temporary script that
+  opens a **real Supabase Realtime WebSocket subscription** (via the
+  publishable key, exactly like `FriendNotifications.tsx` does client-side)
+  on `user:${userId}` for two separate accounts, then confirmed both the
+  `friend-request` broadcast (triggered by the request) and the
+  `friend-request-accepted` broadcast (triggered by accepting it) actually
+  arrived over that live subscription within ~2.5s, not just that the
+  server-side `broadcastToUser()` call didn't throw.
+- Found and fixed a real gap during validation, not just a test artifact:
+  the plan's own end-state item says the friend code must be visible on
+  the **Profile page**, but the initial implementation only showed it on
+  the new Friends page. Added it to `ProfilePageClient.tsx` too (confirmed
+  via a follow-up live check) — kept on Friends as well since that's where
+  someone is actually adding a friend.
+- Not verified (no browser automation tool available in this environment):
+  actually seeing a toast render on screen — its content/dismiss
+  interactions were reviewed by hand in the component code and the
+  underlying Realtime delivery was confirmed live (above), but the visual
+  `.toast-stack` rendering itself was not viewed in a browser. Also not
+  exercised: clicking a toast's "Accept" button through a real browser
+  (`OnlineBattle.tsx`'s `?code=`/`?host=` deep-link parsing was reviewed by
+  hand, and the server-side room creation/join it depends on was validated
+  live via direct API calls mirroring exactly what that click does).

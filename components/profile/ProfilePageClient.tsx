@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 interface ProfilePageClientProps {
   email: string;
   initialDisplayName: string;
+  friendCode: string;
 }
 
-export default function ProfilePageClient({ email, initialDisplayName }: ProfilePageClientProps) {
+export default function ProfilePageClient({ email, initialDisplayName, friendCode }: ProfilePageClientProps) {
   const router = useRouter();
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [saving, setSaving] = useState(false);
@@ -66,6 +67,12 @@ export default function ProfilePageClient({ email, initialDisplayName }: Profile
         </button>
         {saved && <p className="notes-status">Saved ✓</p>}
       </form>
+
+      <div className="card">
+        <h3>🔑 Your Friend Code</h3>
+        <p className="friend-code-display">{friendCode}</p>
+        <p className="online-status">Share this code with a friend so they can add you on the Friends page.</p>
+      </div>
     </div>
   );
 }
