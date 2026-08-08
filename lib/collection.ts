@@ -109,6 +109,7 @@ export function rollBotOpponent(species: Pokemon, playerLevel: number): OwnedPok
     total,
     moves: rollMoveset(species),
     isStarter: false,
+    nickname: null,
   };
 }
 
@@ -135,6 +136,7 @@ interface PokemonInstanceRow {
   total: number;
   moves: unknown;
   is_starter: boolean;
+  nickname: string | null;
 }
 
 // Joins a pokemon_instances DB row with its species' static display fields
@@ -155,5 +157,6 @@ export function toOwnedPokemon(row: PokemonInstanceRow, species: Pick<Pokemon, "
     total: row.total,
     moves: row.moves as Move[],
     isStarter: row.is_starter,
+    nickname: row.nickname,
   };
 }

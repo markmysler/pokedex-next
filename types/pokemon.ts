@@ -62,6 +62,9 @@ export interface OwnedPokemon extends RolledStats {
   type1: PokemonType;
   type2: PokemonType | null;
   isStarter: boolean;
+  // Owner-set name for this specific instance (upgrades/08-pokemon-nicknames.md).
+  // null means "no nickname" -- see lib/pokemonDisplay.ts's displayName().
+  nickname: string | null;
 }
 
 export interface Lootbox {

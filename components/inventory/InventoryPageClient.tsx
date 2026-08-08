@@ -6,6 +6,7 @@ import PokemonInstanceCard from "./PokemonInstanceCard";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
 import { isShinyInstance } from "@/lib/shiny";
+import { displayName } from "@/lib/pokemonDisplay";
 import LootboxRevealDialog from "./LootboxRevealDialog";
 
 interface InventoryPageClientProps {
@@ -33,6 +34,10 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   const [openingId, setOpeningId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [revealPokemon, setRevealPokemon] = useState<OwnedPokemon | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [nicknameInput, setNicknameInput] = useState("");
+  const [renaming, setRenaming] = useState(false);
+  const [renameError, setRenameError] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -44,6 +49,35 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   }, [pokemon, search, typeFilter]);
 
   const selected = pokemon.find((p) => p.id === selectedId) ?? null;
+
+  function selectPokemon(id: string) {
+    setSelectedId(id);
+    setRenamingId(null);
+    setRenameError(null);
+  }
+
+  function startRenaming(p: OwnedPokemon) {
+    setRenamingId(p.id);
+    setNicknameInput(p.nickname ?? "");
+    setRenameError(null);
+  }
+
+  async function handleRenameSave(e: React.FormEvent) {
+    e.preventDefault();
+    if (!renamingId) return;
+    setRenaming(true);
+    setRenameError(null);
+    const res = await fetch(`/api/inventory/pokemon/${renamingId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname: nicknameInput }),
+    });
+    const data = await res.json();
+    setRenaming(false);
+    if (data.error) return setRenameError(data.error);
+    setPokemon((prev) => prev.map((p) => (p.id === renamingId ? { ...p, nickname: data.nickname } : p)));
+    setRenamingId(null);
+  }
 
   async function handleDiscard(id: string) {
     setError(null);
@@ -130,7 +164,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
               pokemon={p}
               variant={viewMode}
               selected={p.id === selectedId}
-              onSelect={() => setSelectedId(p.id)}
+              onSelect={() => selectPokemon(p.id)}
             />
           ))}
         </div>
@@ -138,7 +172,32 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
         {selected && (
           <div className="card inventory-detail">
             <div id="card-header">
-              <h2>#{selected.number} {selected.name}{selected.isStarter ? " ⭐" : ""}</h2>
+              {renamingId === selected.id ? (
+                <form className="nickname-edit-form" onSubmit={handleRenameSave}>
+                  <input
+                    value={nicknameInput}
+                    onChange={(e) => setNicknameInput(e.target.value)}
+                    maxLength={24}
+                    placeholder={selected.name}
+                    autoFocus
+                  />
+                  <button className="btn-primary" type="submit" disabled={renaming}>
+                    {renaming ? "Saving…" : "Save"}
+                  </button>
+                  <button className="btn-secondary" type="button" onClick={() => setRenamingId(null)}>
+                    Cancel
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <h2>
+                    {displayName(selected)}{selected.isStarter ? " ⭐" : ""}{" "}
+                    <button className="btn-secondary rename-btn" onClick={() => startRenaming(selected)}>✏️ Rename</button>
+                  </h2>
+                  {selected.nickname && <p className="detail-species-line">#{selected.number} {selected.name}</p>}
+                </>
+              )}
+              {renameError && <p className="auth-error">{renameError}</p>}
               <TypeBadges type1={selected.type1} type2={selected.type2} />
               {isShinyInstance(selected) && <span className="shiny-badge">✨ Shiny</span>}
             </div>

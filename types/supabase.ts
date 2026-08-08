@@ -64,6 +64,7 @@ export interface Database {
           moves: Json;
           is_starter: boolean;
           created_at: string;
+          nickname: string | null;
         };
         Insert: {
           id?: string;
@@ -79,6 +80,7 @@ export interface Database {
           moves: Json;
           is_starter?: boolean;
           created_at?: string;
+          nickname?: string | null;
         };
         Update: {
           id?: string;
@@ -94,6 +96,7 @@ export interface Database {
           moves?: Json;
           is_starter?: boolean;
           created_at?: string;
+          nickname?: string | null;
         };
         Relationships: [];
       };

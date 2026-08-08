@@ -327,7 +327,7 @@ export default function BattleArena({ inventory }: BattleArenaProps) {
 
       <div className="arena-frame">
         <FighterCard
-          title={`You: #${you.pokemon.number} ${you.pokemon.name}`}
+          title="You: "
           pokemon={you.pokemon}
           hp={you.hp}
           maxHp={you.maxHp}
@@ -359,7 +359,7 @@ export default function BattleArena({ inventory }: BattleArenaProps) {
         </FighterCard>
 
         <FighterCard
-          title={`#${opp.pokemon.number} ${opp.pokemon.name}`}
+          title=""
           pokemon={opp.pokemon}
           hp={opp.hp}
           maxHp={opp.maxHp}

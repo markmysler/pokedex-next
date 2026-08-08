@@ -240,6 +240,7 @@ body {
   gap: 4px;
 }
 .fighter-card h3 { margin: 4px 0; }
+.fighter-species-line { font-size: 11px; color: var(--text-secondary); margin: -4px 0 4px 0; }
 .battle-sprite { width: 85px; height: 85px; object-fit: contain; }
 .hp-label, .mp-label { font-size: 12px; font-weight: bold; margin: 0; }
 .mp-label { color: #00BCFF; }
@@ -494,11 +495,16 @@ body {
 .pokemon-grid-card.selected { background: #2FA572; color: white; }
 .grid-card-sprite { width: 64px; height: 64px; object-fit: contain; }
 .grid-card-name { font-size: 12px; font-weight: bold; }
+.grid-card-species { font-size: 10px; color: var(--text-secondary); }
 .grid-card-total { font-size: 11px; }
 
 .inventory-layout .pokemon-list { max-height: 70vh; }
 
 .inventory-detail { display: flex; flex-direction: column; gap: 10px; }
+.rename-btn { font-size: 11px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+.nickname-edit-form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.nickname-edit-form input { flex: 1; min-width: 120px; }
+.detail-species-line { font-size: 12px; color: var(--text-secondary); margin: -6px 0 0 0; }
 .lootbox-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .move-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
 .move-list li { padding: 4px 8px; background: var(--input-bg); border-radius: 6px; }

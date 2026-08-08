@@ -2,6 +2,7 @@ import type { OwnedPokemon } from "@/types/pokemon";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
 import { isShinyInstance } from "@/lib/shiny";
+import { displayName } from "@/lib/pokemonDisplay";
 
 interface TeamMemberDisplay {
   pokemon: OwnedPokemon;
@@ -10,6 +11,9 @@ interface TeamMemberDisplay {
 }
 
 interface FighterCardProps {
+  // A prefix ("You: ", "Opponent: ", or "") — the rest of the title is
+  // derived from `pokemon` here (nickname if set, else species name), so
+  // callers don't each need to know about displayName().
   title: string;
   pokemon: OwnedPokemon;
   hp: number;
@@ -46,7 +50,8 @@ export default function FighterCard({
 
   return (
     <div className="fighter-card">
-      <h3>{title}</h3>
+      <h3>{title}{displayName(pokemon)}</h3>
+      {pokemon.nickname && <div className="fighter-species-line">#{pokemon.number} {pokemon.name}</div>}
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
       {shiny && <span className="shiny-badge">✨ Shiny</span>}
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
@@ -78,10 +83,10 @@ export default function FighterCard({
                 className={`bench-member${fainted ? " fainted" : ""}`}
                 disabled={!clickable}
                 onClick={() => clickable && onSwitchTo?.(i)}
-                title={fainted ? `${member.pokemon.name} (fainted)` : `Switch to ${member.pokemon.name}`}
+                title={fainted ? `${displayName(member.pokemon)} (fainted)` : `Switch to ${displayName(member.pokemon)}`}
               >
                 <Sprite name={member.pokemon.name} form={benchShiny ? "shiny" : "normal"} className="bench-sprite" />
-                <span className="bench-name">{benchShiny ? "✨ " : ""}{member.pokemon.name}</span>
+                <span className="bench-name">{benchShiny ? "✨ " : ""}{displayName(member.pokemon)}</span>
                 <span className="bench-hp">{fainted ? "💀 Fainted" : `${Math.max(0, member.hp)}/${member.maxHp} HP`}</span>
               </button>
             );

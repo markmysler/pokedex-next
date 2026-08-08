@@ -526,7 +526,7 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
 
       <div className="arena-frame">
         <FighterCard
-          title={`You: #${you.pokemon.number} ${you.pokemon.name}`}
+          title="You: "
           pokemon={you.pokemon}
           hp={you.hp}
           maxHp={you.maxHp}
@@ -558,7 +558,7 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
         </FighterCard>
 
         <FighterCard
-          title={`Opponent: #${opp.pokemon.number} ${opp.pokemon.name}`}
+          title="Opponent: "
           pokemon={opp.pokemon}
           hp={opp.hp}
           maxHp={opp.maxHp}
