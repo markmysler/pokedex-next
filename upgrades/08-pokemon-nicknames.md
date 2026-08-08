@@ -73,15 +73,47 @@ preview, which stay read-only display surfaces:
 
 ## End state
 
-- [ ] A Pokémon can be renamed from the Inventory detail panel; the new
+- [x] A Pokémon can be renamed from the Inventory detail panel; the new
       name persists across a reload.
-- [ ] The nickname (when set) shows as the primary label in: inventory
+- [x] The nickname (when set) shows as the primary label in: inventory
       grid, inventory list, inventory detail panel, both battle arenas
       (active + bench), and the dashboard team preview — with the species
       name/number still visible as secondary context.
-- [ ] An un-nicknamed Pokémon still shows exactly as it does today (species
+- [x] An un-nicknamed Pokémon still shows exactly as it does today (species
       name only, no empty/redundant secondary line).
-- [ ] Renaming to blank/whitespace clears the nickname (stored as `null`,
+- [x] Renaming to blank/whitespace clears the nickname (stored as `null`,
       falls back to species name), not stored as an empty string.
-- [ ] A rename request for a Pokémon you don't own is rejected server-side.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] A rename request for a Pokémon you don't own is rejected server-side.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- This step needed a real schema change (`pokemon_instances.nickname`) —
+  pushed to `origin/main` (confirmed with the user first) and let the
+  Supabase GitHub integration apply it, same as step 5. Confirmed applied
+  by querying the live table directly before running any other checks.
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server pointed at the now-migrated live Supabase project, using
+  2 disposable test accounts and 2 directly-inserted `pokemon_instances`
+  rows (Mewtwo to be nicknamed, Mew left as an un-nicknamed control) — 16
+  checks, all passing: `PATCH` rename succeeds and persists in the DB
+  (verified directly, not just via the API response); a reload
+  (`GET /inventory`) shows the nickname as the grid card's primary label
+  with `#150 Mewtwo` kept as a secondary line; the un-nicknamed control
+  shows only its species name, with no redundant secondary line rendered
+  for it; whitespace-only input clears the nickname to `null` in the DB,
+  not `""`; a non-owner's rename attempt is rejected with 404 and doesn't
+  touch the row; a 25-character nickname is rejected with 400; the
+  Dashboard's top-3 team preview correctly shows the nickname as primary
+  label with the species line secondary when that instance is one of the
+  account's top 3 by total stats.
+- Not independently verified via a real browser (no browser automation
+  tool available in this environment): the two battle arenas'
+  (`FighterCard.tsx`) active-title and bench-member nickname display. Both
+  were refactored to share the same `displayName()` helper and
+  `#{number} {name}` secondary-line pattern already confirmed working on
+  Inventory and Dashboard above, and the component code was reviewed by
+  hand — but no live battle was actually played through a browser to watch
+  a nicknamed Pokémon's name during combat, consistent with the same
+  browser-automation gap noted in step 5's validation.
