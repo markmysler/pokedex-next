@@ -112,7 +112,11 @@ body {
   .side-nav.open { transform: translateX(0); }
 }
 
-#search-input, select, textarea, .pokemon-list {
+/* Base theme styling for every text/number input, not just the ones with a
+   more specific selector below -- without this, an input with no explicit
+   rule (e.g. the rename field, the lootbox quantity stepper) falls back to
+   the browser's default white background regardless of theme. */
+input, #search-input, select, textarea, .pokemon-list {
   background: var(--input-bg);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
@@ -304,6 +308,7 @@ body {
   border-radius: 8px;
   color: white;
   white-space: nowrap;
+  cursor: help;
 }
 .status-badge.bleed { background: #C0392B; }
 .status-badge.blind { background: #7D6608; }
@@ -531,6 +536,11 @@ body {
 .grid-card-sprite { width: 64px; height: 64px; object-fit: contain; }
 .grid-card-name { font-size: 12px; font-weight: bold; }
 .grid-card-species { font-size: 10px; color: var(--text-secondary); }
+/* .grid-card-species's own color would otherwise win over the parent's
+   inherited white and render near-invisible on the green selected
+   background (~1.1:1 contrast) -- explicit override, not inheritance,
+   restores it to readable. */
+.pokemon-grid-card.selected .grid-card-species { color: white; }
 .grid-card-total { font-size: 11px; }
 
 .inventory-layout .pokemon-list { max-height: 70vh; }
@@ -542,8 +552,6 @@ body {
 .detail-species-line { font-size: 12px; color: var(--text-secondary); margin: -6px 0 0 0; }
 .lootbox-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .lootbox-batch-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.lootbox-qty-stepper { display: flex; align-items: center; gap: 6px; }
-.lootbox-qty-stepper button { width: 30px; height: 30px; padding: 0; font-size: 16px; }
 .lootbox-qty-stepper input { width: 56px; text-align: center; padding: 6px 4px; }
 .move-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
 .move-list li { padding: 4px 8px; background: var(--input-bg); border-radius: 6px; }

@@ -212,13 +212,6 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
             <div className="lootbox-batch-row">
               <p>You have {lootboxes.length} unopened lootboxes.</p>
               <div className="lootbox-qty-stepper">
-                <button
-                  className="btn-secondary"
-                  onClick={() => setOpenQty((q) => Math.max(1, q - 1))}
-                  disabled={openingMany || openQty <= 1}
-                >
-                  −
-                </button>
                 <input
                   type="number"
                   min={1}
@@ -230,13 +223,6 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
                   }}
                   disabled={openingMany}
                 />
-                <button
-                  className="btn-secondary"
-                  onClick={() => setOpenQty((q) => Math.min(lootboxes.length, q + 1))}
-                  disabled={openingMany || openQty >= lootboxes.length}
-                >
-                  +
-                </button>
               </div>
               <button
                 className="btn-primary"

@@ -39,6 +39,16 @@ interface FighterCardProps {
   onSwitchTo?: (teamIndex: number) => void;
 }
 
+// Native `title` tooltips, same as .account-name's existing pattern
+// (components/nav/SideNav.tsx) -- no tooltip library, just the mechanics
+// from lib/battleEngine.ts spelled out so a hover explains what the badge
+// actually does, not just its name (upgrades/10-battle-depth.md).
+const STATUS_TOOLTIPS: Record<"bleed" | "blind" | "poison", string> = {
+  bleed: "Bleeding: loses 5% of max HP at the start of each of its turns. Inflicted by physical-category hits; lasts 3 turns.",
+  blind: "Blinded: 25% chance to miss with its own attack each turn. Inflicted by special-category hits; lasts 3 turns.",
+  poison: "Poisoned: loses 5% of max HP at the start of each of its turns. Inflicted by Poison-type moves; lasts 3 turns. Can stack with Bleeding since it's gated by move type, not category.",
+};
+
 // Small badge row shared by the active card and bench members
 // (upgrades/10-battle-depth.md) — status persists on the bench, so both
 // need to show it, just at different sizes.
@@ -48,9 +58,9 @@ function StatusBadges({ bleedTurns, blindTurns, poisonTurns, compact }: { bleedT
   // mode, and <div> isn't valid phrasing content inside a <button>.
   return (
     <span className={compact ? "status-badges compact" : "status-badges"}>
-      {Boolean(bleedTurns) && <span className="status-badge bleed">🩸 Bleeding ({bleedTurns})</span>}
-      {Boolean(blindTurns) && <span className="status-badge blind">🌀 Blinded ({blindTurns})</span>}
-      {Boolean(poisonTurns) && <span className="status-badge poison">☠️ Poisoned ({poisonTurns})</span>}
+      {Boolean(bleedTurns) && <span className="status-badge bleed" title={STATUS_TOOLTIPS.bleed}>🩸 Bleeding ({bleedTurns})</span>}
+      {Boolean(blindTurns) && <span className="status-badge blind" title={STATUS_TOOLTIPS.blind}>🌀 Blinded ({blindTurns})</span>}
+      {Boolean(poisonTurns) && <span className="status-badge poison" title={STATUS_TOOLTIPS.poison}>☠️ Poisoned ({poisonTurns})</span>}
     </span>
   );
 }
