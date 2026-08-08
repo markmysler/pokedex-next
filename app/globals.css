@@ -148,6 +148,7 @@ body {
 .pokemon-row.selected { background: #2FA572; color: white; }
 
 .theme-row { display: flex; align-items: center; gap: 8px; padding-top: 6px; font-size: 12px; }
+.sound-toggle { padding: 2px 10px; font-size: 14px; line-height: 1.4; }
 
 /* PAGE (shared layout wrapper used by every app-shell page) */
 .page { padding: 15px; display: flex; flex-direction: column; gap: 10px; }

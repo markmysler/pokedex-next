@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SignOutButton from "@/components/auth/SignOutButton";
+import { setMuted } from "@/lib/sound";
 
 const LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: "🏠" },
@@ -26,6 +27,9 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0 }: 
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  // Same precedent as theme above: not persisted, always starts on (sound
+  // audible) on a fresh load (upgrades/11-sound-effects.md).
+  const [soundOn, setSoundOn] = useState(true);
 
   // Moved here from the old PokedexApp.tsx (retired in step 4) — the side
   // nav is the one thing rendered on every page, so it's the natural home
@@ -68,6 +72,22 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0 }: 
             <span className="slider" />
           </label>
           <span>{theme === "dark" ? "Dark" : "Light"}</span>
+        </div>
+
+        <div className="theme-row">
+          <span>Sound:</span>
+          <button
+            type="button"
+            className="btn-secondary sound-toggle"
+            onClick={() => {
+              const next = !soundOn;
+              setMuted(!next);
+              setSoundOn(next);
+            }}
+            aria-label={soundOn ? "Mute sound" : "Unmute sound"}
+          >
+            {soundOn ? "🔊" : "🔇"}
+          </button>
         </div>
 
         <div className="account-row">

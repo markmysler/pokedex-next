@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import type { RoomSlot } from "@/types/pokemon";
+import type { BattleEvent } from "@/lib/battleEngine";
 
 export interface RoundResultPayload {
   log: string[];
@@ -13,6 +14,11 @@ export interface RoundResultPayload {
   awaitingForcedSwitch: RoomSlot | null;
   over: boolean;
   winner: RoomSlot | null;
+  // Structured per-action data (upgrades/10-battle-depth.md) — undefined on
+  // the forced-switch micro-turn, which has no attack to report. Consumed
+  // by upgrades/11-sound-effects.md to trigger the right sound per event
+  // instead of parsing `log` strings.
+  events?: BattleEvent[];
   // Only meaningful when `over` is true — the winner's dialog reads this,
   // the loser's dialog never mentions a lootbox regardless of its value.
   lootboxGranted?: boolean;

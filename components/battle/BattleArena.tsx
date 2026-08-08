@@ -9,6 +9,7 @@ import FighterCard from "./FighterCard";
 import MoveButton from "./MoveButton";
 import BattleResultDialog from "./BattleResultDialog";
 import LootboxRevealDialog from "@/components/inventory/LootboxRevealDialog";
+import { playAttackSound, playDodgeSound, playFaintSound, playVictorySound, playDefeatSound } from "@/lib/sound";
 
 interface BattleArenaProps {
   inventory: OwnedPokemon[];
@@ -209,10 +210,20 @@ export default function BattleArena({ inventory, typesList }: BattleArenaProps) 
 
     appendLog([`\n--- 🥊 Round ${nextTurn} ---`, ...result.log]);
 
+    // One sound per structured event (upgrades/10-battle-depth.md's `events`
+    // array) rather than parsing the log strings above.
+    for (const ev of result.events) {
+      if (ev.hit) playAttackSound(ev.moveType);
+      else playDodgeSound();
+      if (ev.fainted) playFaintSound();
+    }
+
     if (result.over) {
       setAutoRunning(false);
       const won = result.winner === 1;
       appendLog([won ? "\n🏆 VICTORY! The opponent's whole team fainted!" : "\n💀 DEFEAT! Your whole team fainted!"]);
+      if (won) playVictorySound();
+      else playDefeatSound();
       // Server rolls the lootbox chance itself — this only ever reports
       // win/loss, never "and I should get a lootbox."
       reportBotResult(won).then(({ lootboxGranted, lootboxId }) => setResultDialog({ won, lootboxGranted, lootboxId }));

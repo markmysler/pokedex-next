@@ -210,6 +210,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
     awaitingForcedSwitch: result.awaitingForcedSwitch,
     over: result.over,
     winner: result.winner,
+    events: result.events,
     // Online winners get a lootbox unconditionally (see recordBattleEnd
     // above) — surfaced explicitly rather than left for the client to
     // assume, so the result dialog's "did I get one" logic is identical

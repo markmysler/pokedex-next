@@ -71,12 +71,12 @@ oversight.
 
 ## End state
 
-- [ ] A mute toggle exists in `SideNav.tsx` and actually silences every
+- [x] A mute toggle exists in `SideNav.tsx` and actually silences every
       sound listed above when on.
-- [ ] Every trigger point listed above calls the correct `play*()`
+- [x] Every trigger point listed above calls the correct `play*()`
       function — verified by code review at each call site (see
       Validation note below).
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
 
 ### On validating this step
 There's no way to actually *hear* output or run a real `AudioContext` in
@@ -94,3 +94,55 @@ this plan:
   the user to make once they can actually hear it in a browser — flag this
   explicitly rather than claiming it's "done" in a way build/lint can't
   back up.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- Closed a small gap found while wiring this step: step 10's structured
+  `events` array existed on `TeamRoundResult` at the engine level, but
+  wasn't actually threaded through the online room's HTTP response or
+  Realtime broadcast payload — `app/api/rooms/[code]/move/route.ts`'s
+  `roundResultPayload` and `useRoomChannel.ts`'s `RoundResultPayload` type
+  both needed an `events` field added before `OnlineBattle.tsx` could
+  consume it. The poll-backstop resync path (reads persisted `RoomState`,
+  which never stored ephemeral per-round data) still has no `events` —
+  sounds simply don't fire on that fallback path, same degradation `log`
+  already had there before this step.
+- Ran the exact validation approach this step's own "On validating this
+  step" section prescribes (temporary script, deleted after running): a
+  minimal fake `AudioContext`/`OscillatorNode`/`GainNode`/`AudioParam` that
+  records every call and throws on the same conditions the real Web Audio
+  API would (non-finite frequency/time, a non-positive value passed to
+  `exponentialRampToValueAtTime`, calling `.stop()` twice) — imported and
+  ran the *actual* `lib/sound.ts` file directly (via
+  `node --experimental-strip-types`, since the file's only internal import
+  is a type-only one that gets erased, unlike `lib/battleEngine.ts` in step
+  10's validation, which needed a transcription). 60/60 checks passed:
+  `playAttackSound()` for all 18 Pokémon types runs clean and actually
+  schedules tones (not silently a no-op); every other named effect
+  (`playDodgeSound`, `playFaintSound`, `playVictorySound`,
+  `playDefeatSound`, `playLootboxDrumrollSound`,
+  `playLootboxRevealSound`) does the same; a shiny lootbox reveal
+  schedules strictly more tones than a non-shiny one (the extra flourish
+  actually fires, not just present in the code); muting silences every
+  effect completely and unmuting restores it; `toggleMuted()`/`isMuted()`
+  track state correctly; `playTone()`'s `sweepToFreq` and `delayMs`
+  options produce the right underlying Web Audio calls when present and
+  are correctly omitted when not.
+- Every wiring call site (`BattleArena.tsx`, `OnlineBattle.tsx`,
+  `LootboxRevealDialog.tsx`) was verified by direct code review, per this
+  step's own prescribed methodology — one addition beyond the plan's
+  literal wiring list: `LootboxRevealDialog.tsx`'s `skip()` path can jump
+  straight from `"drumroll"` to `"done"` without ever passing through the
+  `"sprite"` phase the reveal chime is normally keyed to, so a guard
+  (`revealSoundPlayedRef`) was added to fire the reveal sound from `skip()`
+  too when that happens, rather than silently losing it on a skipped
+  reveal.
+- **Not verified, and cannot be verified in this environment**: whether
+  any of this actually *sounds* good, whether the mute toggle is easy to
+  find, whether the timing feels right, or even that a real browser's
+  `AudioContext` accepts every parameter combination without a runtime
+  warning (e.g. very low/high frequencies clamping oddly). This is
+  explicitly a call for the user to make once they can hear it in a
+  browser — flagged here rather than claimed as "done" in a way build/lint
+  or the fake-context script can't actually back up.

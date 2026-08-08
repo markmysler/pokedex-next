@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { OwnedPokemon } from "@/types/pokemon";
 import Modal from "@/components/ui/Modal";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
 import { isShinyInstance } from "@/lib/shiny";
+import { playLootboxDrumrollSound, playLootboxRevealSound } from "@/lib/sound";
 
 interface LootboxRevealDialogProps {
   // The already-rolled, already-persisted result — see
@@ -36,6 +37,16 @@ export default function LootboxRevealDialog({ pokemon, onClose }: LootboxRevealD
   const [statsRevealed, setStatsRevealed] = useState(0);
   const [movesRevealed, setMovesRevealed] = useState(0);
   const shiny = isShinyInstance(pokemon);
+  // Guards against playing the reveal chime twice -- the "sprite" phase
+  // effect below normally plays it, but skip() can jump straight from
+  // "drumroll" to "done" without ever passing through "sprite".
+  const revealSoundPlayedRef = useRef(false);
+
+  // Fires once on mount -- phase starts as "drumroll", so this is "entering
+  // the drumroll phase" (upgrades/11-sound-effects.md).
+  useEffect(() => {
+    playLootboxDrumrollSound();
+  }, []);
 
   useEffect(() => {
     if (phase !== "drumroll") return;
@@ -45,9 +56,13 @@ export default function LootboxRevealDialog({ pokemon, onClose }: LootboxRevealD
 
   useEffect(() => {
     if (phase !== "sprite") return;
+    if (!revealSoundPlayedRef.current) {
+      revealSoundPlayedRef.current = true;
+      playLootboxRevealSound(shiny);
+    }
     const timer = setTimeout(() => setPhase("stats"), STAT_STEP_MS);
     return () => clearTimeout(timer);
-  }, [phase]);
+  }, [phase, shiny]);
 
   // Reveals one stat bar at a time, roughly i * 350-400ms apart, then hands
   // off to the moves phase once the last bar has had time to finish filling.
@@ -75,6 +90,10 @@ export default function LootboxRevealDialog({ pokemon, onClose }: LootboxRevealD
   }, [phase, movesRevealed, pokemon.moves.length]);
 
   function skip() {
+    if (!revealSoundPlayedRef.current) {
+      revealSoundPlayedRef.current = true;
+      playLootboxRevealSound(shiny);
+    }
     setPhase("done");
     setStatsRevealed(STAT_INFO.length);
     setMovesRevealed(pokemon.moves.length);

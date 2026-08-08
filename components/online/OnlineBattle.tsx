@@ -9,6 +9,8 @@ import LootboxRevealDialog from "@/components/inventory/LootboxRevealDialog";
 import TeamPicker from "./TeamPicker";
 import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
+import type { BattleEvent } from "@/lib/battleEngine";
+import { playAttackSound, playDodgeSound, playFaintSound, playVictorySound, playDefeatSound } from "@/lib/sound";
 
 interface OnlineBattleProps {
   inventory: OwnedPokemon[];
@@ -131,6 +133,11 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
     winner: RoomSlot | null;
     awaitingForcedSwitch: RoomSlot | null;
     log?: string[];
+    // Same "only present via the broadcast/HTTP paths" caveat as
+    // lootboxId below — the poll backstop reads persisted RoomState, which
+    // has no ephemeral per-round data. Sounds simply don't fire for that
+    // resync path, same degradation as `log`'s fallback line already has.
+    events?: BattleEvent[];
     lootboxGranted?: boolean;
     // Only present via the broadcast/HTTP paths, not the poll backstop
     // (which reads persisted RoomState, not this ephemeral payload) — see
@@ -151,9 +158,20 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
     setMoveLocked(false);
     appendLog([`\n--- 🥊 Round ${payload.turnCount} ---`, ...(payload.log ?? ["(synced from server)"])]);
 
+    // One sound per structured event (upgrades/10-battle-depth.md's `events`
+    // array) rather than parsing the log strings above — undefined via the
+    // poll backstop, which just means no sounds fire for that resync path.
+    for (const ev of payload.events ?? []) {
+      if (ev.hit) playAttackSound(ev.moveType);
+      else playDodgeSound();
+      if (ev.fainted) playFaintSound();
+    }
+
     if (payload.over) {
       const won = payload.winner === mySlotRef.current;
       appendLog([won ? "\n🏆 VICTORY! The opponent's whole team fainted!" : "\n💀 DEFEAT! Your whole team fainted!"]);
+      if (won) playVictorySound();
+      else playDefeatSound();
       setTurnStatus(won ? "🏆 You won the battle!" : "💀 You lost the battle.");
       // Trigger the result dialog from here, not a separate effect watching
       // battle?.over — this function only runs once per real turnCount
@@ -193,6 +211,7 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
         winner: payload.winner,
         awaitingForcedSwitch: payload.awaitingForcedSwitch,
         log: payload.log,
+        events: payload.events,
         lootboxGranted: payload.lootboxGranted,
         lootboxId: payload.lootboxId,
       });
@@ -418,6 +437,7 @@ export default function OnlineBattle({ inventory, displayName, typesList }: Onli
         winner: data.winner,
         awaitingForcedSwitch: data.awaitingForcedSwitch,
         log: data.log,
+        events: data.events,
         lootboxGranted: data.lootboxGranted,
         lootboxId: data.lootboxId,
       });
