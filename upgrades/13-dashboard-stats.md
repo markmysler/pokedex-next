@@ -77,13 +77,67 @@ already used, no new component library.
 
 ## End state
 
-- [ ] Battle Stats shows bot and online win percentages, correctly
+- [x] Battle Stats shows bot and online win percentages, correctly
       handling zero-matches-played as "—" rather than a division error.
-- [ ] Collection Stats shows lootboxes opened, Pokémon released, most-used
+- [x] Collection Stats shows lootboxes opened, Pokémon released, most-used
       Pokémon (counting both bot and online matches), most-owned Pokémon,
       and % of Pokédex owned.
-- [ ] Discarding a Pokémon increments the released counter by exactly 1;
+- [x] Discarding a Pokémon increments the released counter by exactly 1;
       verify directly in Supabase, not just via the dashboard number.
-- [ ] A bot battle's team now appears in `match_results.team_snapshot`,
+- [x] A bot battle's team now appears in `match_results.team_snapshot`,
       matching online matches' existing shape.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- This step needed a real schema change (`profiles.pokemon_released_count`
+  + `increment_released_count()`) — pushed to `origin/main` (confirmed with
+  the user first) and let the Supabase GitHub integration apply it, same as
+  steps 5, 8, and 12. Confirmed applied by querying the new column directly
+  before running any other checks; applied quickly this time (a single
+  check, no repeated polling needed).
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server pointed at the now-migrated live Supabase project, using
+  2 disposable test accounts — 25 checks, all passing:
+  - **Win rates**: account A (2 bot wins, 1 bot loss reported via
+    `POST /api/battles/bot-result`) renders `67%` bot win rate; its 0 online
+    matches render as `—`, not `0%`/`NaN%`. Account B (a genuinely
+    zero-matches-played account) renders `—` for both bot and online win
+    rate.
+  - **Team snapshots**: all 3 of account A's bot-result calls produced a
+    `match_results.team_snapshot` row in the exact same `{number, name}[]`
+    shape online matches already used — verified directly in Supabase, not
+    just via a 200 response. The Pokémon appearing in 2 of the 3 snapshots
+    correctly became the rendered "most used" entry.
+  - **Released counter**: seeded 3 owned Pokémon, discarded 2 one at a time
+    via `DELETE /api/inventory/pokemon/[id]`, and confirmed directly in
+    Supabase that `profiles.pokemon_released_count` increased by exactly 1
+    per discard (not 0, not 2) — both after the first discard and again
+    after the second, ruling out a double-increment or a reset.
+  - **Most-owned / % of Pokédex owned**: verified against Supabase ground
+    truth, not a hardcoded guess — cross-checked the rendered "most owned"
+    name/count and Pokédex-ownership percentage against the actual
+    `pokemon_instances` rows for the account.
+  - **Discovered while validating, not a bug**: every new signup's
+    `handle_new_user()` trigger (from step 2) grants a fixed 3-Pokémon
+    starter team (Bulbasaur/Charmander/Squirtle) atomically — so a "fresh"
+    test account is never actually empty. The zero-matches-played account
+    (B) still owns those 3 starters and correctly shows a non-"—" most-owned
+    entry and a non-zero % of Pokédex owned; only the win-rate fields (which
+    depend on *matches*, not *ownership*) are "—" for it. The other account
+    (A) had its auto-granted starter deleted directly in Supabase before
+    seeding controlled test data, so its most-owned/most-used assertions
+    could be exact rather than tied against an unpredictable starter roll.
+  - **React SSR hydration comment, not a bug**: the % of Pokédex owned is
+    written in JSX as two sibling children (`{pct.toFixed(1)}%`), so
+    Next.js's server-rendered HTML inserts an invisible `<!-- -->` marker
+    between the number and the `%` sign to preserve the hydration boundary.
+    Visually invisible, confirmed harmless — the validation script's string
+    match was adjusted to tolerate it rather than treating it as a defect.
+- Not independently verified via a real browser (no browser automation tool
+  available in this environment): visual layout/spacing of the two stats
+  grids on the Dashboard page. The underlying data was confirmed live above
+  (real match/discard/lootbox state, real rendered numbers extracted from
+  the actual server-rendered HTML) — same category of gap flagged in every
+  prior step's validation notes.
