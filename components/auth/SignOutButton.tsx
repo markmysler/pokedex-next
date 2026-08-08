@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
-import { Button } from "@/components/ui/button";
 
 export default function SignOutButton() {
   const router = useRouter();
@@ -18,8 +17,8 @@ export default function SignOutButton() {
   }
 
   return (
-    <Button variant="secondary" size="sm" onClick={handleSignOut} disabled={pending}>
+    <button className="btn-secondary auth-signout" onClick={handleSignOut} disabled={pending}>
       {pending ? "Logging out…" : "Log out"}
-    </Button>
+    </button>
   );
 }

@@ -7,9 +7,6 @@ import MoveButton from "@/components/battle/MoveButton";
 import TeamPicker from "./TeamPicker";
 import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 interface OnlineBattleProps {
   inventory: OwnedPokemon[];
@@ -372,40 +369,33 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
 
   if (!roomCode) {
     return (
-      <Card className="max-w-md">
-        <CardHeader>
-          <CardTitle>🌐 Online Battle (3v3)</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <Button onClick={createRoom}>Create Room</Button>
-          <div className="flex gap-2">
-            <Input
-              className="text-center tracking-widest uppercase"
-              value={roomCodeInput}
-              onChange={(e) => setRoomCodeInput(e.target.value)}
-              maxLength={6}
-              placeholder="Enter room code"
-            />
-            <Button variant="secondary" onClick={joinRoom}>Join Room</Button>
-          </div>
-          <div className="min-h-4.5 text-sm whitespace-pre-wrap text-muted-foreground">{status}</div>
-        </CardContent>
-      </Card>
+      <div className="card" id="online-setup">
+        <h3>🌐 Online Battle (3v3)</h3>
+        <div className="online-actions">
+          <button className="btn-primary" onClick={createRoom}>Create Room</button>
+        </div>
+        <div className="online-join-row">
+          <input
+            value={roomCodeInput}
+            onChange={(e) => setRoomCodeInput(e.target.value)}
+            maxLength={6}
+            placeholder="Enter room code"
+          />
+          <button className="btn-secondary" onClick={joinRoom}>Join Room</button>
+        </div>
+        <div className="online-status">{status}</div>
+      </div>
     );
   }
 
   if (phase === "waiting") {
     return (
       <>
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>🌐 Room Code: {roomCode}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            <div className="min-h-4.5 text-sm whitespace-pre-wrap text-muted-foreground">{status}</div>
-            <Button variant="secondary" onClick={leaveRoom}>Cancel</Button>
-          </CardContent>
-        </Card>
+        <div className="card" id="online-setup">
+          <h3>🌐 Room Code: {roomCode}</h3>
+          <div className="online-status">{status}</div>
+          <button className="btn-secondary" onClick={leaveRoom}>Cancel</button>
+        </div>
         <ChatPanel messages={chatMessages} onSend={sendChat} />
       </>
     );
@@ -414,23 +404,15 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
   if (phase === "picking") {
     return (
       <>
-        <Card>
-          <CardContent className="flex items-center justify-between gap-4">
-            <div>Room Code: <strong>{roomCode}</strong></div>
-            <Button variant="secondary" onClick={leaveRoom}>Leave Room</Button>
-          </CardContent>
-        </Card>
+        <div className="card select-bar">
+          <div>Room Code: <strong>{roomCode}</strong></div>
+          <button className="btn-secondary" onClick={leaveRoom}>Leave Room</button>
+        </div>
         {myLockedIn ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>✅ Team Locked In</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm whitespace-pre-wrap text-muted-foreground">
-                {status || "Waiting for your opponent to lock in their team..."}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="card">
+            <h3>✅ Team Locked In</h3>
+            <div className="online-status">{status || "Waiting for your opponent to lock in their team..."}</div>
+          </div>
         ) : (
           <TeamPicker inventory={inventory} onSubmit={lockIn} />
         )}
@@ -453,14 +435,12 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
 
   return (
     <>
-      <Card>
-        <CardContent className="flex items-center justify-between gap-4">
-          <div>Room Code: <strong>{roomCode}</strong> — share this with your opponent</div>
-          <Button variant="secondary" onClick={leaveRoom}>Leave Room</Button>
-        </CardContent>
-      </Card>
+      <div className="card select-bar">
+        <div>Room Code: <strong>{roomCode}</strong> — share this with your opponent</div>
+        <button className="btn-secondary" onClick={leaveRoom}>Leave Room</button>
+      </div>
 
-      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+      <div className="arena-frame">
         <FighterCard
           title={`You: #${you.pokemon.number} ${you.pokemon.name}`}
           pokemon={you.pokemon}
@@ -474,10 +454,10 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
           onSwitchTo={canSwitchNow ? (i) => submitAction({ type: "switch", teamIndex: i as 0 | 1 | 2 }) : undefined}
         >
           {!myForcedSwitch && (
-            <div className="grid w-full grid-cols-2 gap-1.5">
+            <div className="moves-grid">
               {[0, 1, 2, 3].map((i) => {
                 const move = you.pokemon.moves[i];
-                if (!move) return <Button key={i} variant="secondary" disabled>--</Button>;
+                if (!move) return <button key={i} className="move-btn" disabled>--</button>;
                 const insufficientMana = you.mp < (move.mana_cost ?? 10);
                 return (
                   <MoveButton
@@ -506,34 +486,26 @@ export default function OnlineBattle({ inventory, displayName }: OnlineBattlePro
         />
       </div>
 
-      <Card>
-        <CardContent className="flex flex-col gap-2">
-          <div className="text-sm text-muted-foreground">
-            {blockedByOpponentSwitch ? "Opponent is choosing a new Pokémon..." : turnStatus}
-          </div>
-          <pre className="min-h-55 max-h-80 overflow-y-auto rounded-lg bg-input p-2.5 font-mono text-xs whitespace-pre-wrap" ref={logRef}>
-            {log.join("\n")}
-          </pre>
-        </CardContent>
-      </Card>
+      <div className="card log-container">
+        <div className="online-status">{blockedByOpponentSwitch ? "Opponent is choosing a new Pokémon..." : turnStatus}</div>
+        <pre className="battle-log" ref={logRef}>{log.join("\n")}</pre>
+      </div>
 
       {battle.over && (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 text-center">
-            {rematchRequestedBy === null && (
-              <Button onClick={requestRematch}>🔁 Request Rematch</Button>
-            )}
-            {rematchRequestedBy === mySlot && (
-              <div className="text-sm text-muted-foreground">Rematch requested — waiting for your opponent to accept...</div>
-            )}
-            {rematchRequestedBy !== null && rematchRequestedBy !== mySlot && (
-              <>
-                <div className="text-sm text-muted-foreground">Your opponent wants a rematch!</div>
-                <Button onClick={acceptRematch}>✅ Accept Rematch</Button>
-              </>
-            )}
-          </CardContent>
-        </Card>
+        <div className="card rematch-panel">
+          {rematchRequestedBy === null && (
+            <button className="btn-primary" onClick={requestRematch}>🔁 Request Rematch</button>
+          )}
+          {rematchRequestedBy === mySlot && (
+            <div className="online-status">Rematch requested — waiting for your opponent to accept...</div>
+          )}
+          {rematchRequestedBy !== null && rematchRequestedBy !== mySlot && (
+            <>
+              <div className="online-status">Your opponent wants a rematch!</div>
+              <button className="btn-primary" onClick={acceptRematch}>✅ Accept Rematch</button>
+            </>
+          )}
+        </div>
       )}
 
       <ChatPanel messages={chatMessages} onSend={sendChat} />

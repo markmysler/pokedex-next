@@ -21,9 +21,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const displayName = profile?.display_name ?? user.email ?? "Trainer";
 
   return (
-    <div className="flex min-h-screen">
+    <div className="app-shell">
       <SideNav displayName={displayName} />
-      <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
+      <main className="app-main">{children}</main>
     </div>
   );
 }

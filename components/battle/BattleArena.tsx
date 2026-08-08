@@ -7,10 +7,6 @@ import { rollBotOpponent } from "@/lib/collection";
 import { getPokemon, pokedexOrder } from "@/lib/pokedex";
 import FighterCard from "./FighterCard";
 import MoveButton from "./MoveButton";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface BattleArenaProps {
   inventory: OwnedPokemon[];
@@ -170,13 +166,9 @@ export default function BattleArena({ inventory }: BattleArenaProps) {
 
   if (!selected || !battle) {
     return (
-      <Card>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            You don&apos;t own any Pokémon yet. This shouldn&apos;t normally happen — every account starts with 3 starters.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="card">
+        <p>You don&apos;t own any Pokémon yet. This shouldn&apos;t normally happen — every account starts with 3 starters.</p>
+      </div>
     );
   }
 
@@ -184,30 +176,25 @@ export default function BattleArena({ inventory }: BattleArenaProps) {
 
   return (
     <>
-      <Card>
-        <CardContent className="flex items-center justify-between gap-4">
-          <div className="flex flex-1 flex-col gap-1 text-xs font-bold">
-            <Label>Your Fighter:</Label>
-            <Select value={f1Id ?? ""} onValueChange={(v) => v && onChangeF1(v)}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {inventory.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>#{p.number} {p.name} (Total {p.total})</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <div className="text-xl font-bold text-[#FFD700]">⚡ VS ⚡</div>
-          </div>
-          <div className="flex flex-1 flex-col gap-1 text-xs font-bold">
-            <Label>Opponent:</Label>
-            <div className="text-xs text-muted-foreground">🎲 Randomly generated, matched to your level</div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="card select-bar">
+        <div className="fighter-select">
+          <label>Your Fighter:</label>
+          <select value={f1Id ?? ""} onChange={(e) => onChangeF1(e.target.value)}>
+            {inventory.map((p) => (
+              <option key={p.id} value={p.id}>#{p.number} {p.name} (Total {p.total})</option>
+            ))}
+          </select>
+        </div>
+        <div className="vs-badge">
+          <div className="vs-text">⚡ VS ⚡</div>
+        </div>
+        <div className="fighter-select">
+          <label>Opponent:</label>
+          <div className="online-status">🎲 Randomly generated, matched to your level</div>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+      <div className="arena-frame">
         <FighterCard
           title={`#${battle.f1.pokemon.number} ${battle.f1.pokemon.name}`}
           pokemon={battle.f1.pokemon}
@@ -217,10 +204,10 @@ export default function BattleArena({ inventory }: BattleArenaProps) {
           maxMp={battle.f1.maxMp}
           movesCaption="Select Attack Move:"
         >
-          <div className="grid w-full grid-cols-2 gap-1.5">
+          <div className="moves-grid">
             {[0, 1, 2, 3].map((i) => {
               const move = battle.f1.pokemon.moves[i];
-              if (!move) return <Button key={i} variant="secondary" disabled>--</Button>;
+              if (!move) return <button key={i} className="move-btn" disabled>--</button>;
               const insufficientMana = battle.f1.mp < (move.mana_cost ?? 10);
               return (
                 <MoveButton
@@ -244,26 +231,19 @@ export default function BattleArena({ inventory }: BattleArenaProps) {
           maxMp={battle.f2.maxMp}
           movesCaption="AI Arsenal:"
         >
-          <div className="text-center text-xs text-muted-foreground">{p2MovesLabel}</div>
+          <div className="ai-arsenal">{p2MovesLabel}</div>
         </FighterCard>
       </div>
 
-      <Card>
-        <CardContent className="flex flex-col gap-2">
-          <div className="flex justify-between">
-            <Button onClick={toggleAutoBattle}>
-              {autoRunning ? "⏸️ Pause Battle" : "⚡ Auto Battle"}
-            </Button>
-            <Button variant="secondary" onClick={() => selected && reset(selected)}>🔄 Reset Battle</Button>
-          </div>
-          <pre
-            ref={logRef}
-            className="min-h-55 max-h-80 flex-1 overflow-y-auto rounded-lg bg-input p-2.5 font-mono text-xs whitespace-pre-wrap"
-          >
-            {log.join("\n")}
-          </pre>
-        </CardContent>
-      </Card>
+      <div className="card log-container">
+        <div className="action-row">
+          <button className="btn-primary" onClick={toggleAutoBattle}>
+            {autoRunning ? "⏸️ Pause Battle" : "⚡ Auto Battle"}
+          </button>
+          <button className="btn-secondary" onClick={() => selected && reset(selected)}>🔄 Reset Battle</button>
+        </div>
+        <pre className="battle-log" ref={logRef}>{log.join("\n")}</pre>
+      </div>
     </>
   );
 }
