@@ -82,20 +82,68 @@ box's reveal, not the queue.
 
 ## End state
 
-- [ ] With exactly 1 unopened lootbox, the Inventory page looks and works
+- [x] With exactly 1 unopened lootbox, the Inventory page looks and works
       exactly as it does today (no stepper shown).
-- [ ] With more than 1, a quantity stepper appears, clamped to the actual
+- [x] With more than 1, a quantity stepper appears, clamped to the actual
       number available; opening N runs the reveal sequence N times in a
       row, each showing "➡️ Next" except the last, which shows "✅
       Continue"/closes.
-- [ ] Skipping an individual reveal's animation still works mid-queue and
+- [x] Skipping an individual reveal's animation still works mid-queue and
       doesn't skip the *next* box's animation too.
-- [ ] All N newly-rolled Pokémon are correctly reflected in Inventory
+- [x] All N newly-rolled Pokémon are correctly reflected in Inventory
       (grid/list/detail) by the time the queue finishes, matching exactly
       what the batch endpoint returned — confirm via network inspection,
       same "never re-rolls" guarantee step 4 established for single opens.
-- [ ] Requesting more lootboxes than currently available is rejected (or
+- [x] Requesting more lootboxes than currently available is rejected (or
       clamped) rather than erroring confusingly.
-- [ ] Two concurrent batch-open requests (e.g. two tabs) never double-claim
+- [x] Two concurrent batch-open requests (e.g. two tabs) never double-claim
       the same lootbox.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+### Validation notes (2026-08-08)
+
+- `npm run build` and `npm run lint` both clean.
+- This step needed a real schema change (`claim_lootboxes()`) — pushed to
+  `origin/main` (confirmed with the user first) and let the Supabase GitHub
+  integration apply it, same as steps 5, 8, 12, 13, and 14. Confirmed
+  applied by calling the RPC directly for a nonexistent user and getting an
+  empty array back (a real, successful call) rather than a "function not
+  found" error, before running any other checks.
+- Ran a temporary end-to-end validation (deleted after running) against a
+  local dev server pointed at the now-migrated live Supabase project, using
+  2 disposable test accounts — 17 checks, all passing:
+  - **Single-lootbox path unaffected**: `POST
+    /api/inventory/lootboxes/[id]/open` (unchanged endpoint, now backed by
+    the shared `rollAndPersistLootboxPokemon()` helper instead of its own
+    inline roll logic) still succeeds and still claims exactly that one box.
+  - **N of M**: seeded 7 unopened lootboxes, opened 4 via
+    `open-many` — verified directly in Supabase that exactly 4 are now
+    `opened_at`-stamped, exactly 3 remain unopened, and the 4
+    `pokemon_instances` rows actually created match the batch response's
+    ids exactly (the "never re-rolls" guarantee, checked against the
+    database rather than trusting the response).
+  - **Over-request clamping**: with 3 lootboxes left, requesting 10 returns
+    200 with exactly 3 Pokémon (not an error, not 10) — matches the plan's
+    "rolls a Pokemon for however many were actually claimed" behavior.
+  - **Invalid counts rejected**: `count: 0` and `count: -1` are both
+    rejected before touching the database.
+  - **Concurrency — the core guarantee this step's `FOR UPDATE SKIP
+    LOCKED` exists for**: seeded 10 lootboxes for one account, then fired
+    two `open-many({count: 6})` requests genuinely concurrently
+    (`Promise.all`, simulating two open tabs both clicking "Open 6" at
+    once). Both succeeded; the two responses' claimed counts summed to
+    exactly 10 (not 12, not fewer — nothing lost or double-counted); all 10
+    lootbox rows ended up `opened_at`-stamped exactly once each; the
+    account gained exactly 10 new `pokemon_instances` rows total (not 10
+    each); and the two responses' returned Pokémon ids were confirmed
+    disjoint — no lootbox was ever claimed by both requests.
+- Not independently verified via a real browser (no browser automation
+  tool available in this environment): the quantity stepper's `-`/`+`/
+  number-input UI, the queued reveal dialog actually walking through
+  multiple boxes in sequence with "➡️ Next" on all but the last, and
+  mid-queue skip behavior not bleeding into the next box's animation. The
+  underlying data each of these renders from was confirmed live above (real
+  batch-claimed lootboxes, real rolled Pokémon, in the exact order/count
+  the server returned); the reveal queue's remount-per-box mechanism
+  (`key={revealQueue[0].id}`) was reviewed by hand — same category of gap
+  flagged in every prior step's validation notes.
