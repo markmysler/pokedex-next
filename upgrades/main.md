@@ -1,32 +1,25 @@
-# Upgrade Path (v3)
+# Upgrade Path (v4)
 
-Third wave of upgrades, requested 2026-08-08 after the v2 plan
-([archive/v2/main.md](archive/v2/main.md), itself built on the original
-8-step plan at [archive/main.md](archive/main.md)) shipped in full,
-including its own post-plan fixes (starters made untradeable, a UI-polish
-pass, and the welcome-lootbox/onboarding dialog — see the bottom of
-[archive/v2/main.md](archive/v2/main.md) for those). This wave started as
-three smaller, independent requests (a tooltip hover-area bug, a real
-persistent-notifications feature, a match-history display bug), picked up
-two more small independent items (19, 20) after those three shipped, and
-has now picked up a much larger one: **steps 21-29 are a full rework of
-the attack/move system** (damage-only moves today → damage + buff + debuff
-+ drain + redirect), requested 2026-08-08 right after step 20 shipped.
-Unlike every step before it, **21-29 are planning-only as of this
-writing — none of it is implemented yet.** See "The attack-system rework
-(steps 21-29)" below before starting any of them.
+Fourth wave: a single large item, **a full rework of the attack/move
+system** (damage-only moves today → damage + buff + debuff + drain +
+redirect), requested 2026-08-08 right after the v3 plan
+([archive/v3/main.md](archive/v3/main.md) — 5 steps, all shipped: a
+tooltip hover-area bug, persistent notifications, a match-history display
+bug, Burn/Freeze status effects, and a stale-inventory Team Picker bug)
+shipped in full. v3 itself followed the v2 plan
+([archive/v2/main.md](archive/v2/main.md), 15 steps, all shipped), which
+followed the original 8-step plan ([archive/main.md](archive/main.md)).
+
+**Steps 21-29 are planning-only as of this writing — none of it is
+implemented yet.** See "The attack-system rework" below before starting
+any of them.
 
 Each step has its own file with what to build and an end state to
-validate against before moving to the next step — same format as both
-archived plans.
+validate against before moving to the next step — same format as every
+archived plan.
 
 | # | Step | File | Depends on | Status |
 |---|------|------|------------|--------|
-| 16 | Status-badge tooltip hover area | [16-status-tooltip-hover-area.md](16-status-tooltip-hover-area.md) | — | Shipped |
-| 17 | Persistent notifications (battle invites + everything else that was toast-only) | [17-persistent-notifications.md](17-persistent-notifications.md) | — | Shipped |
-| 18 | Show the actual opponent display name everywhere match history is shown | [18-match-history-opponent-names.md](18-match-history-opponent-names.md) | — | Shipped |
-| 19 | Burn and Freeze status effects (Fire/Ice-type moves) | [19-burn-and-freeze-status-effects.md](19-burn-and-freeze-status-effects.md) | — | Shipped |
-| 20 | Newly-opened lootbox Pokémon missing from the post-win Team Picker | [20-rematch-team-picker-missing-new-lootbox-pokemon.md](20-rematch-team-picker-missing-new-lootbox-pokemon.md) | — | Shipped |
 | 21 | Move data model rework (damage/buff/debuff/drain/redirect) | [21-move-kind-data-model.md](21-move-kind-data-model.md) | — | **Planned** |
 | 22 | Author the buff/debuff/drain/redirect move pool | [22-buff-debuff-drain-redirect-move-pool.md](22-buff-debuff-drain-redirect-move-pool.md) | 21 | **Planned** |
 | 23 | Guaranteed 2-damage + 2-support move-slot rolling | [23-guaranteed-move-slot-rolling.md](23-guaranteed-move-slot-rolling.md) | 22 | **Planned** |
@@ -37,15 +30,7 @@ archived plans.
 | 28 | Move-kind UI (badges/tooltips) + ally-target picker for buffs | [28-move-ui-and-ally-targeting.md](28-move-ui-and-ally-targeting.md) | 24, 25, 26 | **Planned** |
 | 29 | Existing-instance policy + roster-wide roll validation | [29-existing-instance-policy-and-validation.md](29-existing-instance-policy-and-validation.md) | 23, 24, 25, 26, 28 | **Planned** |
 
-## Why this order (steps 16-20)
-
-All five are independent of each other and of every prior step — ordered
-smallest-and-most-mechanical first (16), then the one genuinely new
-feature (17), then a small display-only fix (18), then two more
-independent items (19, 20) picked up afterward. None blocks any other;
-they could ship in any order.
-
-## The attack-system rework (steps 21-29)
+## The attack-system rework
 
 Today every move is pure damage: `{ name, type, power, category:
 "Physical" | "Special", mana_cost }`. The request: add four new move
@@ -67,7 +52,7 @@ already-owned Pokémon), so it's split into 9 steps instead of one, each
 independently buildable and validatable, roughly mirroring how the
 original 8-step and v2's 15-step plans were sized.
 
-### Why this order (steps 21-29)
+## Why this order
 
 Mostly a straight dependency chain, not free ordering:
 - **21 (types) must come first** — every later step's code needs the new
@@ -97,67 +82,8 @@ Mostly a straight dependency chain, not free ordering:
 
 ## Key decisions already made
 
-From the 2026-08-08 planning conversation:
-
-- **Status-badge tooltips already use `title` on the whole badge element**
-  (added in v2's post-plan UI-polish pass) — the bug is that hovering only
-  reliably triggers over the emoji glyph itself, not the padded area
-  around the label text, in at least one tested browser. Root-caused to
-  `.status-badge` being a default `display: inline` element, whose
-  hover/hit-test box for `title` tooltips isn't guaranteed to include its
-  own padding consistently across engines — fixed by giving it an
-  explicit `inline-flex` box instead, not by touching the `title` text
-  itself.
-- **Persisted notifications reuse the existing broadcast events almost
-  verbatim, not a new event taxonomy.** Every place that already calls
-  `broadcastToUser()` for a toast (friend request, friend request
-  accepted, battle invite, friend message, trade offer, trade resolved)
-  gets one new insert into a generic `notifications` table alongside the
-  existing broadcast call — same `kind`, same `payload` shape the toast
-  already receives. The live toast behavior for someone actively in the
-  app is unchanged; the new table is what makes the same events
-  recoverable after a refresh or while offline.
-- **Only battle invites get a real "Accept" action directly on the
-  Notifications page.** Every other notification kind already has a
-  proper persisted, browsable home elsewhere (incoming friend requests on
-  `/friends`, trade offers and messages on `/friends/[id]`) — the
-  Notifications page links out to those rather than duplicating their
-  accept/decline UI. Battle invites are the one kind with no other home:
-  a `battle_rooms` row today doesn't record *who* was invited, so without
-  this table an invite that scrolls past as a toast is unrecoverable
-  except by the host re-sending it.
-- **A battle-invite notification checks room freshness at render time**
-  (still `status = 'waiting'` and unclaimed) before offering "Accept" —
-  same staleness a stale toast's own `accept()` handler already surfaces
-  as an error today, just checked proactively instead of failing on
-  click.
-- **Opening the Notifications page marks everything currently listed as
-  read** (one bulk update), rather than a per-item "mark read" control —
-  simplest semantics ("you've now seen these"), matching how visiting
-  `/friends` already implicitly "handles" incoming friend requests today.
-- **The match-history opponent-name bug is a duplication bug, not a
-  missing feature.** `lib/history.ts`'s `getMatchHistoryForUser()`
-  already resolves online opponents' real display names correctly for the
-  `/history` page (step 7 of the v2 plan) — the Dashboard's separate
-  "Recent Matches" card queries `match_results` directly with its own
-  inline logic and hardcodes `"another player"` for every online match,
-  never resolving a name. Fixed by having the Dashboard reuse
-  `getMatchHistoryForUser()` (sliced to its most recent 5) instead of
-  duplicating the resolution logic a second time, badly.
-- **Burn and Freeze (step 19, added after 16-18 shipped) reuse the
-  existing status-effect machinery from v2's step 10** (bleed/blind/
-  poison) rather than inventing a parallel system — same turn-counter
-  shape, same `STATUS_INFLICT_CAP`/`STATUS_DURATION`, same
-  `applyStatusTick()` decay point, same badge/tooltip UI pattern. Burn is
-  a damage tick like bleed/poison (gated by `Fire`-type moves, immune on
-  `Water` targets, doubled tick on `Grass` targets). Freeze is a new
-  mechanic — a temporary atk/def/spd debuff on the frozen fighter itself,
-  not a damage tick — gated by `Ice`-type moves, immune on `Fire` targets.
-
-### Attack-system rework (steps 21-29), from the 2026-08-08 planning conversation
-
-Research findings that shaped the plan (see each step file for the full
-detail, this is the summary):
+From the 2026-08-08 planning conversation, research findings that shaped
+the plan (see each step file for the full detail, this is the summary):
 
 - **`pokedex.json`'s per-species `moves` field is not what players
   actually get.** Every Pokemon instance (starter grant or lootbox roll)
