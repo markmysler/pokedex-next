@@ -1,5 +1,17 @@
-import type { BattleAction, FighterState, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
+import type { BattleAction, DamageMove, FighterState, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
 import { getTypeMultiplier } from "./typeData";
+
+// Every move in today's pool is a DamageMove (upgrades/21-move-kind-data
+// -model.md) -- executeMove() still only knows how to run one. Actually
+// executing the other kinds is steps 24-26's job; this just narrows the
+// type so the damage path keeps compiling and behaving identically. Should
+// never actually throw until a later step starts handing out non-damage
+// moves before its own execution branch exists.
+function assertDamageMove(move: Move): asserts move is DamageMove {
+  if (move.kind !== "damage") {
+    throw new Error(`${move.kind} moves aren't executable yet (see upgrades/24-26)`);
+  }
+}
 
 function randInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -121,7 +133,7 @@ interface ExecuteMoveOptions {
 export function executeMove(
   attackerState: FighterState,
   defenderState: FighterState,
-  move: Move,
+  move: DamageMove,
   opts?: ExecuteMoveOptions
 ): MoveResult {
   const attacker = attackerState.pokemon;
@@ -204,7 +216,7 @@ export function executeMove(
 // Rolls blind's self-miss (and decrements blindTurns once per attack
 // attempt, whether it hits or misses) and dodge, then delegates to
 // executeMove with the outcome already decided.
-function resolveAttack(atkState: FighterState, defState: FighterState, move: Move): MoveResult {
+function resolveAttack(atkState: FighterState, defState: FighterState, move: DamageMove): MoveResult {
   let blindMiss = false;
   if (atkState.blindTurns > 0) {
     blindMiss = Math.random() < BLIND_MISS_CHANCE;
@@ -241,6 +253,9 @@ export function resolveRound(
   move1: Move,
   move2: Move
 ): RoundResult {
+  assertDamageMove(move1);
+  assertDamageMove(move2);
+
   const log: string[] = [];
   const events: BattleEvent[] = [];
 
@@ -250,7 +265,7 @@ export function resolveRound(
   const p1Speed = freezeAdjusted(fighter1State.pokemon.spd, fighter1State) + randInt(-2, 2);
   const p2Speed = freezeAdjusted(fighter2State.pokemon.spd, fighter2State) + randInt(-2, 2);
 
-  const order: Array<[FighterState, FighterState, Move, RoomSlot]> =
+  const order: Array<[FighterState, FighterState, DamageMove, RoomSlot]> =
     p1Speed >= p2Speed
       ? [
           [fighter1State, fighter2State, move1, 1],
@@ -289,7 +304,24 @@ export function resolveRound(
 
 export function buildFighterState(pokemon: FighterState["pokemon"]): FighterState {
   const maxHp = Math.max(50, Math.round(pokemon.hp * 2.5));
-  return { hp: maxHp, maxHp, mp: 100, maxMp: 100, pokemon, bleedTurns: 0, blindTurns: 0, poisonTurns: 0, burnTurns: 0, freezeTurns: 0 };
+  return {
+    hp: maxHp,
+    maxHp,
+    mp: 100,
+    maxMp: 100,
+    pokemon,
+    bleedTurns: 0,
+    blindTurns: 0,
+    poisonTurns: 0,
+    burnTurns: 0,
+    freezeTurns: 0,
+    atkMod: 1,
+    atkModTurns: 0,
+    defMod: 1,
+    defModTurns: 0,
+    shieldPoints: 0,
+    redirectTurns: 0,
+  };
 }
 
 // --- 3v3 online battles (upgrades/05-3v3-battles.md) — the 1v1 functions
@@ -393,6 +425,7 @@ export function resolveTeamRound(
 
     const move = atkState.pokemon.moves[action.moveIndex];
     if (!move) continue; // validated by the caller before reaching here
+    assertDamageMove(move);
 
     const result = resolveAttack(atkState, defState, move);
     log.push(...result.log);

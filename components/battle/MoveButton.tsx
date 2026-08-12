@@ -1,5 +1,6 @@
 import type { Move } from "@/types/pokemon";
 import { TYPE_COLORS } from "@/lib/typeData";
+import { movePower } from "@/lib/pokemonDisplay";
 
 interface MoveButtonProps {
   move: Move;
@@ -9,9 +10,10 @@ interface MoveButtonProps {
 }
 
 export default function MoveButton({ move, disabled, insufficientMana, onClick }: MoveButtonProps) {
+  const power = movePower(move);
   const label = insufficientMana
     ? `⚠️ ${move.name} (${move.mana_cost} MP)`
-    : `${move.name} (${move.power} Pwr | ${move.mana_cost} MP)`;
+    : `${move.name} (${power !== null ? `${power} Pwr | ` : ""}${move.mana_cost} MP)`;
 
   return (
     <button

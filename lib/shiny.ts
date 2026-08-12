@@ -2,6 +2,7 @@ import type { Move, OwnedPokemon, Pokemon, PokemonType } from "@/types/pokemon";
 import { getPokemon } from "./pokedex";
 import { allMoves, movesByType } from "./data/movePool";
 import { MOVE_SLOTS, SAME_TYPE_CHANCE, STAT_SPREAD_RATIO } from "./collection";
+import { movePower } from "./pokemonDisplay";
 
 // A specific owned instance (not a species) is shiny if its rolled stats
 // *and* rolled moveset both land in roughly the top 10% of what that
@@ -20,8 +21,8 @@ interface MovePowerStats {
 }
 
 function movePowerStats(moves: Move[]): MovePowerStats {
-  const mean = moves.reduce((sum, m) => sum + m.power, 0) / moves.length;
-  const variance = moves.reduce((sum, m) => sum + (m.power - mean) ** 2, 0) / moves.length;
+  const mean = moves.reduce((sum, m) => sum + (movePower(m) ?? 0), 0) / moves.length;
+  const variance = moves.reduce((sum, m) => sum + ((movePower(m) ?? 0) - mean) ** 2, 0) / moves.length;
   return { mean, variance };
 }
 
@@ -77,7 +78,7 @@ function statZScore(instance: OwnedPokemon, species: Pokemon): number {
 function moveZScore(instance: OwnedPokemon, species: Pokemon): number {
   if (instance.moves.length === 0) return 0;
   const { mean, variance } = moveMixtureStats(species.type1, species.type2);
-  const avgPower = instance.moves.reduce((sum, m) => sum + m.power, 0) / instance.moves.length;
+  const avgPower = instance.moves.reduce((sum, m) => sum + (movePower(m) ?? 0), 0) / instance.moves.length;
   const standardError = Math.sqrt(variance / MOVE_SLOTS);
   if (standardError <= 0) return 0;
   return (avgPower - mean) / standardError;

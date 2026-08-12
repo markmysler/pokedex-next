@@ -5,13 +5,68 @@ export type PokemonType =
 
 export type MoveCategory = "Physical" | "Special";
 
-export interface Move {
+// Move kinds (upgrades/21-move-kind-data-model.md) — a discriminated union
+// instead of one flat shape, since power/category only make sense for
+// "damage" and every other kind carries its own effect payload instead.
+export type MoveKind = "damage" | "buff" | "debuff" | "drain" | "redirect";
+// Which stats a buff/debuff modifier scales: "atk" scales atk+spatk
+// together, "def" scales def+spdef together (see upgrades/main.md's key
+// decision) -- meaningful regardless of whether the affected Pokemon's
+// remaining moves are Physical- or Special-category.
+export type StatModKey = "atk" | "def";
+
+interface BaseMove {
   name: string;
   type: PokemonType;
-  power: number;
-  category: MoveCategory;
   mana_cost: number;
+  kind: MoveKind;
 }
+
+export interface DamageMove extends BaseMove {
+  kind: "damage";
+  category: MoveCategory;
+  power: number;
+}
+
+export type BuffEffect =
+  | { effect: "statUp"; stat: StatModKey; multiplier: number; turns: number }
+  | { effect: "heal"; percentOfMaxHp: number } // instant, not a turn-counter
+  | { effect: "restoreMana"; amount: number } // instant
+  | { effect: "shield"; amount: number } // adds to shieldPoints, no duration
+  | { effect: "cleanse" }; // clears bleed/blind/poison/burn/freeze turns
+
+export interface BuffMove extends BaseMove {
+  kind: "buff";
+  buff: BuffEffect;
+}
+
+export type DebuffEffect =
+  | { effect: "statDown"; stat: StatModKey; multiplier: number; turns: number }
+  | { effect: "drainMana"; amount: number } // instant, subtracts from target's mp
+  | { effect: "removeShield" } // instant, zeroes target's shieldPoints
+  | { effect: "inflictStatus"; status: "bleed" | "blind" | "poison" | "burn" | "freeze" }; // guaranteed, bypasses the normal chance roll
+
+export interface DebuffMove extends BaseMove {
+  kind: "debuff";
+  debuff: DebuffEffect;
+}
+
+export interface DrainMove extends BaseMove {
+  kind: "drain";
+  category: MoveCategory; // still deals damage using the existing formula
+  power: number;
+  drain: { resource: "hp" | "mp"; percentOfDamageDealt: number }; // e.g. 50 = heal/restore 50% of the damage this hit dealt
+}
+
+export interface RedirectMove extends BaseMove {
+  kind: "redirect";
+  turns: number; // how many of the target's own future attacks get redirected
+}
+
+// Every move an instance can roll is exactly one of these kinds -- see
+// upgrades/21-move-kind-data-model.md. Code that only knows how to run a
+// DamageMove must narrow on `kind` before reading power/category/etc.
+export type Move = DamageMove | BuffMove | DebuffMove | DrainMove | RedirectMove;
 
 export interface Pokemon {
   number: string;
@@ -96,6 +151,26 @@ export interface FighterState {
   // turn-counter shape as the three above, just two more kinds.
   burnTurns: number;
   freezeTurns: number;
+
+  // Buff/debuff stat modifiers (upgrades/24-battle-engine-buffs-and-debuffs.md)
+  // -- one signed pair per stat, shared by buffs (multiplier > 1) and
+  // debuffs (multiplier < 1). Defaults: 1 / 0 (no effect). atkMod scales
+  // atk+spatk together; defMod scales def+spdef together.
+  atkMod: number;
+  atkModTurns: number;
+  defMod: number;
+  defModTurns: number;
+
+  // Shield (upgrades/24-battle-engine-buffs-and-debuffs.md) -- flat absorb
+  // pool, consumed by incoming damage before HP is touched. No duration; it
+  // just runs out or doesn't.
+  shieldPoints: number;
+
+  // Redirect (upgrades/26-battle-engine-redirect-self.md,
+  // 27-battle-engine-redirect-allies.md) -- while > 0, this fighter's own
+  // attacks resolve against a target chosen from *their own* side instead
+  // of the opponent's, decided engine-side (never a player choice).
+  redirectTurns: number;
 }
 
 export type RoomSlot = 1 | 2;

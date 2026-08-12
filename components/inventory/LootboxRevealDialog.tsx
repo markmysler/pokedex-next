@@ -6,6 +6,7 @@ import Modal from "@/components/ui/Modal";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
 import { isShinyInstance } from "@/lib/shiny";
+import { movePower } from "@/lib/pokemonDisplay";
 import { playLootboxDrumrollSound, playLootboxRevealSound } from "@/lib/sound";
 
 interface LootboxRevealDialogProps {
@@ -148,11 +149,14 @@ export default function LootboxRevealDialog({ pokemon, onClose, hasNext }: Lootb
             <div className="lootbox-moves">
               <h3>⚔️ Moves</h3>
               <ul className="move-list">
-                {pokemon.moves.map((m, i) => (
-                  <li key={m.name} className={fullyRevealed || i < movesRevealed ? "move-revealed" : undefined}>
-                    {m.name} — {m.type}, {m.power} Pwr, {m.mana_cost} MP
-                  </li>
-                ))}
+                {pokemon.moves.map((m, i) => {
+                  const power = movePower(m);
+                  return (
+                    <li key={m.name} className={fullyRevealed || i < movesRevealed ? "move-revealed" : undefined}>
+                      {m.name} — {m.type}, {power !== null ? `${power} Pwr, ` : ""}{m.mana_cost} MP
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

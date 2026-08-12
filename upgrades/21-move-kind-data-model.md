@@ -1,8 +1,7 @@
 # Step 21: Move data model rework — damage/buff/debuff/drain/redirect
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain.
+**Status: shipped**, 2026-08-12. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
 
 ## Why here
 
@@ -144,19 +143,38 @@ redirectTurns: 0`) — same pattern as `bleedTurns: 0` etc. today.
 
 ## End state
 
-- [ ] `types/pokemon.ts` has the new `Move` discriminated union and the
+- [x] `types/pokemon.ts` has the new `Move` discriminated union and the
       six new `FighterState` fields, as specified above (or a
       close/justified variant decided during implementation).
-- [ ] Every existing entry in `lib/data/movePool.ts` compiles as a valid
+- [x] Every existing entry in `lib/data/movePool.ts` compiles as a valid
       `DamageMove` (`kind: "damage"` added, no other values changed).
-- [ ] `buildFighterState()` initializes all six new fields to their
+      (The actual data lives in `lib/data/pokedex.json` — `movePool.ts`
+      just derives its catalog from it — so the mechanical `kind: "damage"`
+      tag was added to all 604 move entries there, one script pass, no
+      other field touched.)
+- [x] `buildFighterState()` initializes all six new fields to their
       defaults.
-- [ ] `npm run build` / `npm run lint` clean — this is the real test of
+- [x] `npm run build` / `npm run lint` clean — this is the real test of
       this step, since a discriminated union change will surface every
       place that assumed `Move` was flat and needs a narrowing `switch` or
       cast added to keep compiling (expected in `lib/battleEngine.ts`,
       `components/battle/MoveButton.tsx`, anywhere else `.power`/
       `.category` is read directly).
-- [ ] A full existing online battle (1v1 local and 3v3 online) still plays
+      (Implementation note: `battleEngine.ts`'s `executeMove()`/
+      `resolveAttack()` now take `DamageMove` instead of `Move`, narrowed
+      via a small `assertDamageMove()` type guard at each call site that
+      previously read a raw `Move` off a moveset — throws if a non-damage
+      kind ever reaches it, which can't happen yet since the pool is still
+      100% damage moves. Display-only reads of `.power` in
+      `MoveButton.tsx`, `InventoryPageClient.tsx`, `LootboxRevealDialog.tsx`
+      and `lib/shiny.ts` go through a new `movePower()` helper in
+      `lib/pokemonDisplay.ts` that returns `null` for kinds without power
+      instead of a cast.)
+- [x] A full existing online battle (1v1 local and 3v3 online) still plays
       correctly end-to-end with damage-only moves — regression check that
       this purely-typological step didn't change any runtime behavior.
+      (Verified by scripting `resolveRound`/`resolveTeamRound` against
+      real rolled Pokemon to completion — both finished normally with a
+      winner, all six new `FighterState` fields defaulted correctly, and
+      no `assertDamageMove` throw. Also confirmed `npm run dev` boots
+      clean and every battle-adjacent route responds normally.)

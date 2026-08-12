@@ -8,7 +8,7 @@ import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
 import Modal from "@/components/ui/Modal";
 import { isShinyInstance } from "@/lib/shiny";
-import { displayName } from "@/lib/pokemonDisplay";
+import { displayName, movePower } from "@/lib/pokemonDisplay";
 import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
 import LootboxRevealDialog from "./LootboxRevealDialog";
 
@@ -328,9 +328,12 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
             <div id="card-moves">
               <h3>⚔️ Moves</h3>
               <ul className="move-list">
-                {selected.moves.map((m) => (
-                  <li key={m.name}>{m.name} — {m.type}, {m.power} Pwr, {m.mana_cost} MP</li>
-                ))}
+                {selected.moves.map((m) => {
+                  const power = movePower(m);
+                  return (
+                    <li key={m.name}>{m.name} — {m.type}, {power !== null ? `${power} Pwr, ` : ""}{m.mana_cost} MP</li>
+                  );
+                })}
               </ul>
             </div>
             <button

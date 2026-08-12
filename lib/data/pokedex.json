@@ -17,28 +17,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Vine Whip",
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Razor Leaf",
         "type": "Grass",
         "power": 55,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Solar Beam",
         "type": "Grass",
         "power": 120,
         "category": "Special",
-        "mana_cost": 45
+        "mana_cost": 45,
+        "kind": "damage"
       }
     ]
   },
@@ -60,28 +64,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -103,28 +111,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -146,28 +158,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Ember",
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flamethrower",
         "type": "Fire",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       },
       {
         "name": "Fire Blast",
         "type": "Fire",
         "power": 110,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       }
     ]
   },
@@ -189,28 +205,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -232,28 +252,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -275,28 +299,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Water Gun",
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Hydro Pump",
         "type": "Water",
         "power": 110,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       }
     ]
   },
@@ -318,28 +346,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -361,28 +393,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -404,28 +440,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -447,28 +487,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -490,28 +534,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -533,28 +581,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -576,28 +628,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -619,28 +675,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -662,28 +722,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -705,28 +769,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -748,28 +816,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -791,28 +863,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -834,28 +910,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -877,28 +957,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -920,28 +1004,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -963,28 +1051,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1006,28 +1098,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1049,28 +1145,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Thunder Shock",
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Thunderbolt",
         "type": "Electric",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       },
       {
         "name": "Thunder",
         "type": "Electric",
         "power": 110,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       }
     ]
   },
@@ -1092,28 +1192,32 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Spark",
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1135,28 +1239,32 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1178,28 +1286,32 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1221,28 +1333,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1264,28 +1380,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1307,28 +1427,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mud-Slap",
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -1350,28 +1474,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1393,28 +1521,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1436,28 +1568,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mud-Slap",
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -1479,28 +1615,32 @@
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Dazzling Gleam",
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1522,28 +1662,32 @@
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Dazzling Gleam",
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1565,28 +1709,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1608,28 +1756,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1651,28 +1803,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Fairy Wind",
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Dazzling Gleam",
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -1694,28 +1850,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Fairy Wind",
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Dazzling Gleam",
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -1737,28 +1897,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1780,28 +1944,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1823,28 +1991,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1866,28 +2038,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1909,28 +2085,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1952,28 +2132,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Vine Whip",
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -1995,28 +2179,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Vine Whip",
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2038,28 +2226,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2081,28 +2273,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2124,28 +2320,32 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2167,28 +2367,32 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2210,28 +2414,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -2253,28 +2461,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -2296,28 +2508,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2339,28 +2555,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2382,28 +2602,32 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Low Kick",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2425,28 +2649,32 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Low Kick",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2468,28 +2696,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2511,28 +2743,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2554,28 +2790,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2597,28 +2837,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2640,28 +2884,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Karate Chop",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Low Kick",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2683,28 +2931,32 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2726,28 +2978,32 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2769,28 +3025,32 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2812,28 +3072,32 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Low Kick",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2855,28 +3119,32 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Low Kick",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2898,28 +3166,32 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Low Kick",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2941,28 +3213,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -2984,28 +3260,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3027,28 +3307,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3070,28 +3354,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3113,28 +3401,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3156,28 +3448,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Mud-Slap",
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -3199,28 +3495,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Mud-Slap",
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -3242,28 +3542,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Mud-Slap",
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -3285,28 +3589,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3328,28 +3636,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3371,28 +3683,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Confusion",
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -3414,28 +3730,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Confusion",
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -3457,28 +3777,32 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Spark",
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Metal Claw",
         "type": "Steel",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flash Cannon",
         "type": "Steel",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -3500,28 +3824,32 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Spark",
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Metal Claw",
         "type": "Steel",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flash Cannon",
         "type": "Steel",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -3543,28 +3871,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3586,28 +3918,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3629,28 +3965,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3672,28 +4012,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3715,28 +4059,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Powder Snow",
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Ice Beam",
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       }
     ]
   },
@@ -3758,28 +4106,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3801,28 +4153,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3844,28 +4200,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3887,28 +4247,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Powder Snow",
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Ice Beam",
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       }
     ]
   },
@@ -3930,28 +4294,32 @@
         "type": "Ghost",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Shadow Ball",
         "type": "Ghost",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -3973,28 +4341,32 @@
         "type": "Ghost",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Shadow Ball",
         "type": "Ghost",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4016,28 +4388,32 @@
         "type": "Ghost",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Shadow Ball",
         "type": "Ghost",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Poison Sting",
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4059,28 +4435,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Mud-Slap",
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -4102,28 +4482,32 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4145,28 +4529,32 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4188,28 +4576,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4231,28 +4623,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4274,28 +4670,32 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Spark",
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4317,28 +4717,32 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Spark",
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4360,28 +4764,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Confusion",
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -4403,28 +4811,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Confusion",
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -4446,28 +4858,32 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4489,28 +4905,32 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4532,28 +4952,32 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Low Kick",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4575,28 +4999,32 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Low Kick",
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4618,28 +5046,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -4661,28 +5093,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4704,28 +5140,32 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Acid",
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4747,28 +5187,32 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Rock Throw",
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -4790,28 +5234,32 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Dig",
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Rock Throw",
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -4833,28 +5281,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -4876,28 +5328,32 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Mega Drain",
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -4919,28 +5375,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -4962,28 +5422,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5005,28 +5469,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5048,28 +5516,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5091,28 +5563,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5134,28 +5610,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5177,28 +5657,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Confusion",
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5220,28 +5704,32 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Fairy Wind",
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Dazzling Gleam",
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5263,28 +5751,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5306,28 +5798,32 @@
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Ice Beam",
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       },
       {
         "name": "Confusion",
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5349,28 +5845,32 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Spark",
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5392,28 +5892,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5435,28 +5939,32 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Signal Beam",
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5478,28 +5986,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5521,28 +6033,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5564,28 +6080,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5607,28 +6127,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Powder Snow",
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Ice Beam",
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       }
     ]
   },
@@ -5650,28 +6174,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5693,28 +6221,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5736,28 +6268,32 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5779,28 +6315,32 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Spark",
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5822,28 +6362,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -5865,28 +6409,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5908,28 +6456,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Water Gun",
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5951,28 +6503,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Water Gun",
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -5994,28 +6550,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Water Gun",
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -6037,28 +6597,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Water Gun",
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Bubble Beam",
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -6080,28 +6644,32 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Rock Slide",
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -6123,28 +6691,32 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Quick Attack",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Body Slam",
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -6166,28 +6738,32 @@
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Ice Beam",
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -6209,28 +6785,32 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Spark",
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -6252,28 +6832,32 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Flame Wheel",
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -6295,28 +6879,32 @@
         "type": "Dragon",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Dragon Claw",
         "type": "Dragon",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -6338,28 +6926,32 @@
         "type": "Dragon",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Dragon Claw",
         "type": "Dragon",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -6381,28 +6973,32 @@
         "type": "Dragon",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Dragon Claw",
         "type": "Dragon",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Peck",
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0
+        "mana_cost": 0,
+        "kind": "damage"
       },
       {
         "name": "Gust",
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   },
@@ -6424,28 +7020,32 @@
         "type": "Normal",
         "power": 60,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Psychic",
         "type": "Psychic",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30
+        "mana_cost": 30,
+        "kind": "damage"
       },
       {
         "name": "Shadow Ball",
         "type": "Ghost",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       }
     ]
   },
@@ -6467,28 +7067,32 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Psybeam",
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20
+        "mana_cost": 20,
+        "kind": "damage"
       },
       {
         "name": "Tackle",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       },
       {
         "name": "Scratch",
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10
+        "mana_cost": 10,
+        "kind": "damage"
       }
     ]
   }
