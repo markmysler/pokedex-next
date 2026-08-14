@@ -1,13 +1,12 @@
 # Step 27: Battle engine — extend redirect to allies (higher-risk stretch)
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain. Depends on step 26
-(self-redirect must exist first). **This step is explicitly optional** —
-step 26 alone already delivers "redirect ... to itself" from the
-original request; this step is what additionally delivers "... to one of
-its allies." Consider shipping and playing with step 26 first before
-deciding whether this step is worth its risk.
+**Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
+
+This was the optional stretch on top of step 26's self-only redirect —
+implemented per explicit go-ahead. In 3v3, redirect now rolls among the
+attacker's own living team members (including bench). 1v1 is unaffected
+(no bench concept, stays always-self as step 26 specified permanently).
 
 ## Why here, and why separate from step 26
 
@@ -87,25 +86,44 @@ something the opponent did.
 
 ## End state
 
-- [ ] Redirect can select either the afflicted fighter itself or a living
+- [x] Redirect can select either the afflicted fighter itself or a living
       teammate (including a benched one) — verified across enough trials
       to see both outcomes occur, in 3v3 only (1v1 confirmed still always
-      self, per step 26, unaffected by this step).
-- [ ] A benched ally hit by redirect actually loses HP (first-ever case
+      self, per step 26, unaffected by this step). (500 trials against a
+      harmless opponent (so only the redirected team's own attack could
+      move its HP): self=173, bench-ally=327, roughly the expected 1/3
+      split across 3 living team members. 1v1 regression-checked
+      separately: still deterministically self, matching step 26.)
+- [x] A benched ally hit by redirect actually loses HP (first-ever case
       of bench damage in this codebase — verify the `hp` value on the
       bench member's `FighterState` object actually changes, not just
-      that no error is thrown).
-- [ ] A benched ally fainting from redirect does **not** trigger
+      that no error is thrown). (Confirmed the exact bench index's `hp`
+      dropped while the active member's `hp` stayed exactly at its
+      pre-round value.)
+- [x] A benched ally fainting from redirect does **not** trigger
       `awaitingForcedSwitch` for that team (the active member is
       unaffected and can act normally next turn) — but correctly
       contributes to `isTeamWiped()` if it was that team's last living
-      member.
-- [ ] A fainted-from-redirect bench member shows correctly as fainted
+      member. (Bench faint with the active still alive: `awaitingForced
+      Switch` stayed `null`, `over` stayed `false`. Bench faint that
+      completed a full wipe -- team already down to its last living member
+      before the hit, which redirect deterministically self-selects:
+      `over=true`, `winner` correctly the opposing team.)
+- [x] A fainted-from-redirect bench member shows correctly as fainted
       (💀, disabled) in the bench row UI, exactly like a member fainted
       the normal way — regression check that `FighterCard.tsx`'s existing
-      `hp <= 0` check needed no changes to handle this new path.
-- [ ] Team-wipe via redirect friendly-fire correctly ends the battle with
+      `hp <= 0` check needed no changes to handle this new path. (Read
+      `components/battle/FighterCard.tsx` directly: its bench row derives
+      `fainted`/`clickable`/the 💀 label purely from `member.hp <= 0`, no
+      assumption about how HP reached zero. No UI changes made or needed.)
+- [x] Team-wipe via redirect friendly-fire correctly ends the battle with
       the *opposing* team as the winner (a team can lose entirely to its
       own confused attacks — verify the winner is computed correctly,
-      not inverted).
-- [ ] `npm run build` / `npm run lint` clean.
+      not inverted). (Team reduced to its last living member (self-hit
+      guaranteed at that point) → wipe → `over=true`, `winner=2` (the
+      untouched opposing team), never inverted.)
+- [x] `npm run build` / `npm run lint` clean.
+
+Also verified: 100 full battles (50x 1v1, 50x 3v3) using freshly-rolled
+instances' real movesets, randomly picking among all 4 slots each turn —
+0 crashes.

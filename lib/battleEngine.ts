@@ -188,6 +188,13 @@ export interface MoveResult {
 interface ExecuteMoveOptions {
   forceMiss?: boolean;
   missReason?: "dodge" | "blind";
+  // Set by resolveTeamRound() (upgrades/27-battle-engine-redirect-allies
+  // .md) when the target was chosen by a redirect roll, so executeDamage()
+  // can log distinct "hurt itself" vs "hit its own ally" phrasing instead
+  // of the normal attack-on-opponent line. 1v1's resolveRound() never sets
+  // this -- its self-hit is still detected via reference equality, same as
+  // step 26 (redirect in 1v1 is always self, there's no ally concept).
+  redirectKind?: "self" | "ally";
 }
 
 // Power/category only exist on damage (and, from step 25, drain) moves —
@@ -229,7 +236,7 @@ export function executeMove(
     return { log: [header, missLine], hit: false, dealt: 0, statusInflicted: [] };
   }
 
-  if (move.kind === "damage" || move.kind === "drain") return executeDamage(attackerState, defenderState, move, header);
+  if (move.kind === "damage" || move.kind === "drain") return executeDamage(attackerState, defenderState, move, header, opts?.redirectKind);
   if (move.kind === "buff") return executeBuff(attackerState, move, header);
   if (move.kind === "debuff") return executeDebuff(defenderState, move, header);
   return executeRedirect(defenderState, move, header);
@@ -239,7 +246,7 @@ export function executeMove(
 // -moves.md) -- a drain move is a damage move with one extra effect
 // attached, not a different damage model. Same atkStat/defStat/type-mult/
 // RNG-roll math and shield-aware applyDamage() either way.
-function executeDamage(attackerState: FighterState, defenderState: FighterState, move: DamageMove | DrainMove, header: string): MoveResult {
+function executeDamage(attackerState: FighterState, defenderState: FighterState, move: DamageMove | DrainMove, header: string, redirectKind?: "self" | "ally"): MoveResult {
   const attacker = attackerState.pokemon;
   const defender = defenderState.pokemon;
   const mult = getTypeMultiplier(move.type, defender.type1, defender.type2);
@@ -258,11 +265,15 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
   // -battle-engine-redirect-self.md) is the same object for attacker and
   // defender -- called out explicitly in the log instead of the default
   // phrasing, which would otherwise read like a copy-paste bug ("Pikachu
-  // used Tackle... Pikachu HP: ...").
-  const selfHit = attackerState === defenderState;
+  // used Tackle... Pikachu HP: ..."). Landing on a living ally instead
+  // (upgrades/27-battle-engine-redirect-allies.md) gets its own distinct
+  // "friendly fire" phrasing so it doesn't read like the opponent did it.
+  const selfHit = redirectKind === "self" || attackerState === defenderState;
+  const allyHit = redirectKind === "ally";
   const log = [
     `${header} ${effectivenessText(mult)}`,
     ...(selfHit ? [`  -> 🌀 ${attacker.name} is confused! It hurt itself in its confusion!`] : []),
+    ...(allyHit ? [`  -> 🌀 ${attacker.name} is confused and attacks its own ally, ${defender.name}!`] : []),
     damageLogLine(defender.name, attacker.name, dmg, absorbed, defenderState.hp, attackerState.mp),
   ];
 
@@ -442,7 +453,7 @@ function executeRedirect(defenderState: FighterState, move: RedirectMove, header
 // Rolls blind's self-miss (and decrements blindTurns once per attack
 // attempt, whether it hits or misses) and dodge, then delegates to
 // executeMove with the outcome already decided.
-function resolveAttack(atkState: FighterState, defState: FighterState, move: Move): MoveResult {
+function resolveAttack(atkState: FighterState, defState: FighterState, move: Move, redirectKind?: "self" | "ally"): MoveResult {
   let blindMiss = false;
   if (atkState.blindTurns > 0) {
     blindMiss = Math.random() < BLIND_MISS_CHANCE;
@@ -451,9 +462,9 @@ function resolveAttack(atkState: FighterState, defState: FighterState, move: Mov
   const dodged = !blindMiss && Math.random() < rollDodgeChance(atkState.pokemon.spd, defState.pokemon.spd);
 
   if (blindMiss || dodged) {
-    return executeMove(atkState, defState, move, { forceMiss: true, missReason: blindMiss ? "blind" : "dodge" });
+    return executeMove(atkState, defState, move, { forceMiss: true, missReason: blindMiss ? "blind" : "dodge", redirectKind });
   }
-  return executeMove(atkState, defState, move);
+  return executeMove(atkState, defState, move, { redirectKind });
 }
 
 export interface BattleEvent {
@@ -569,6 +580,17 @@ function isTeamWiped(team: TeamState): boolean {
   return team.members.every((m) => m.hp <= 0);
 }
 
+// Redirect target selection (upgrades/27-battle-engine-redirect-allies.md)
+// -- rolls among the attacker's own living team members, including
+// themselves (step 26's self-only behavior is the size-1-living-member
+// special case of this, not a separate code path). 1v1 has no team/bench
+// concept, so resolveRound() never calls this -- it keeps step 26's
+// always-self behavior permanently.
+function pickRedirectTarget(atkTeam: TeamState): FighterState {
+  const livingMembers = atkTeam.members.filter((m) => m.hp > 0);
+  return livingMembers[Math.floor(Math.random() * livingMembers.length)];
+}
+
 export interface TeamRoundResult {
   log: string[];
   over: boolean;
@@ -583,11 +605,20 @@ interface FaintOutcome {
   awaitingForcedSwitch: RoomSlot | null;
 }
 
-// Shared by both "attacker fainted from its own status tick" and "defender
-// fainted from a hit" — same team-wipe/forced-switch bookkeeping either way.
-function handleFaint(faintedSlot: RoomSlot, faintedTeam: TeamState, faintedName: string, log: string[]): FaintOutcome {
+// Shared by "attacker fainted from its own status tick," "defender fainted
+// from a hit," and (upgrades/27-battle-engine-redirect-allies.md) "a
+// benched ally fainted from friendly-fire redirect" — same team-wipe
+// computation every time. `isActive` (default true, matching every
+// pre-step-27 call site's actual behavior) is the only thing that differs:
+// a benched member fainting doesn't force a switch, since the team's
+// active member is unaffected and can still act this round.
+function handleFaint(faintedSlot: RoomSlot, faintedTeam: TeamState, faintedName: string, log: string[], isActive = true): FaintOutcome {
   if (isTeamWiped(faintedTeam)) {
     return { over: true, winner: faintedSlot === 1 ? 2 : 1, awaitingForcedSwitch: null };
+  }
+  if (!isActive) {
+    log.push(`  -> ${faintedName} fainted!`);
+    return { over: false, winner: null, awaitingForcedSwitch: null };
   }
   log.push(`  -> ${faintedName} fainted! Player ${faintedSlot} must send out another Pokémon.`);
   return { over: false, winner: null, awaitingForcedSwitch: faintedSlot };
@@ -655,12 +686,17 @@ export function resolveTeamRound(
     const move = atkState.pokemon.moves[action.moveIndex];
     if (!move) continue; // validated by the caller before reaching here
 
-    // Redirect (upgrades/26-battle-engine-redirect-self.md): while active,
-    // this fighter's own attack lands on themselves instead of the
-    // opponent's active member. Ally-redirect is step 27's job.
-    const target = atkState.redirectTurns > 0 ? atkState : defState;
+    // Redirect (upgrades/26-battle-engine-redirect-self.md, extended to
+    // allies in upgrades/27-battle-engine-redirect-allies.md): while
+    // active, this fighter's own attack lands on a random living member of
+    // their *own* team (including a benched one, including themselves)
+    // instead of the opponent's active member.
+    const redirectTarget = atkState.redirectTurns > 0 ? pickRedirectTarget(atkTeam) : null;
+    const target = redirectTarget ?? defState;
+    const redirectKind: "self" | "ally" | undefined =
+      redirectTarget === null ? undefined : redirectTarget === atkState ? "self" : "ally";
 
-    const result = resolveAttack(atkState, target, move);
+    const result = resolveAttack(atkState, target, move, redirectKind);
     log.push(...result.log);
     events.push({
       slot,
@@ -672,14 +708,17 @@ export function resolveTeamRound(
     });
 
     if (target.hp <= 0) {
-      // A self-hit faint is the attacker's own side going down, not the
-      // defender's -- reuse the exact same handleFaint() bookkeeping
-      // (team-wipe/forced-switch), just pointed at whichever side actually
-      // took the hit.
-      const isSelfHit = target === atkState;
-      const faintedSlot: RoomSlot = isSelfHit ? slot : slot === 1 ? 2 : 1;
-      const faintedTeam = isSelfHit ? atkTeam : defTeam;
-      const outcome = handleFaint(faintedSlot, faintedTeam, target.pokemon.name, log);
+      // A self/ally-redirect faint is the attacker's own side going down,
+      // not the defender's -- reuse the exact same handleFaint()
+      // bookkeeping (team-wipe computation is identical either way),
+      // pointed at whichever side actually took the hit. A benched ally
+      // faint (target isn't its team's active member) doesn't force a
+      // switch -- the active member is untouched and can still act.
+      const isOwnTeam = redirectKind !== undefined;
+      const faintedSlot: RoomSlot = isOwnTeam ? slot : slot === 1 ? 2 : 1;
+      const faintedTeam = isOwnTeam ? atkTeam : defTeam;
+      const isActive = target === activeMember(faintedTeam);
+      const outcome = handleFaint(faintedSlot, faintedTeam, target.pokemon.name, log, isActive);
       over = outcome.over;
       winner = outcome.winner;
       if (outcome.awaitingForcedSwitch) awaitingForcedSwitch = outcome.awaitingForcedSwitch;
