@@ -1,10 +1,11 @@
 # Step 29: Existing-instance policy + roster-wide roll validation
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain. Depends on steps 23,
-24, 25, 26, and 28 (needs the whole system built to validate against and
-to make an informed final call on the policy question below).
+**Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
+
+The user explicitly chose the backfill alternative over the default
+"leave existing instances alone" recommendation (confirmed live, not
+assumed) — see "What changed" below for what actually ran.
 
 ## Why here
 
@@ -70,19 +71,56 @@ never committed) that:
   firing on the final living member of a team) that a narrower per-kind
   test wouldn't surface.
 
+## What actually happened
+
+Asked the user explicitly rather than assuming the default; they chose
+the backfill alternative. A dry run against production (via the service
+key, read-only) found:
+
+- **84 total `pokemon_instances` rows**: 36 starters, 48 non-starters.
+- **All 48 non-starters** were pre-step-21 legacy data — 4 damage moves
+  each, *none* tagged with `kind` at all (the same underlying issue as
+  the starter bug fixed earlier this session, just for lootbox-rolled
+  instances instead of starters).
+- Starters were excluded from the backfill's scope entirely (fixed/
+  permanent by design — never rolled via `rollMoveset()`, explicitly
+  promised to players as permanent in `WelcomeDialog.tsx`).
+
+Presented the exact dry-run count and full change list to the user
+before writing anything; got their explicit go-ahead naming the
+production write specifically. Executed: for each of the 48, kept moves
+1-2 as-is (tagging them `kind: "damage"` since they were missing it) and
+replaced moves 3-4 with two freshly-rolled support moves via the real
+`rollMoveset()` (perfect parity with production rolling logic, run via
+`tsx` importing the actual project modules, not a reimplementation).
+48/48 succeeded, 0 failures. Re-ran the dry-run script afterward and
+confirmed 0 remaining candidates — every non-starter instance now has a
+proper 2-damage+2-support moveset.
+
 ## End state
 
-- [ ] The existing-instance policy question has been explicitly confirmed
+- [x] The existing-instance policy question has been explicitly confirmed
       with the user (not assumed) and implemented accordingly — either
       "no change" (the default) or a scoped, dry-run-first backfill.
-- [ ] 1,000+ simulated rolls across all 18 types confirm the 2-damage+2-
-      support guarantee holds with zero exceptions.
-- [ ] No `PokemonType` ever fails to complete a 4-move roll.
-- [ ] Several full battles (1v1 local, 3v3 local vs-bot, 3v3 online) play
+      (Backfill chosen; dry run → explicit production-write confirmation
+      → executed → re-verified, per the process above.)
+- [x] 1,000+ simulated rolls across all 18 types confirm the 2-damage+2-
+      support guarantee holds with zero exceptions. (2,160 rolls across
+      all 18 types, both mono- and dual-type combinations: 0 shortfalls,
+      0 violations. 85%-own-type weighting re-confirmed on a deep-pool
+      type over 3,000 rolls: damage 0.861, support 0.881.)
+- [x] No `PokemonType` ever fails to complete a 4-move roll. (All 18
+      types, 20 mono-type trials each: 0 failures.)
+- [x] Several full battles (1v1 local, 3v3 local vs-bot, 3v3 online) play
       to completion with real mixed movesets and no runtime error,
       covering at least one real use of every one of the 5 move kinds
-      across the battles combined.
-- [ ] `main.md`'s step 20 table is updated to mark steps 21-29 "Shipped"
+      across the battles combined. (40 1v1 + 25 3v3-vs-bot-shaped + 25
+      3v3-online-shaped battles, random species/rosters/moves including
+      randomized `buffTargetTeamIndex`: 0 crashes across all 90. All 5
+      kinds — damage, buff, debuff, drain, redirect — confirmed exercised
+      at least once across the run.)
+- [x] `main.md`'s step 20 table is updated to mark steps 21-29 "Shipped"
       (or whichever subset actually shipped, if step 27 or the backfill
       alternative was deliberately skipped) once this step's checks pass.
-- [ ] `npm run build` / `npm run lint` clean.
+      (Steps 21-29 all shipped, including step 27 and the backfill.)
+- [x] `npm run build` / `npm run lint` clean.
