@@ -10,12 +10,12 @@ shipped in full. v3 itself followed the v2 plan
 ([archive/v2/main.md](archive/v2/main.md), 15 steps, all shipped), which
 followed the original 8-step plan ([archive/main.md](archive/main.md)).
 
-**Steps 21-24 shipped (2026-08-12, 2026-08-14 x3); steps 25-29 remain
+**Steps 21-25 shipped (2026-08-12, 2026-08-14 x4); steps 26-29 remain
 planning-only.** See "The attack-system rework" below before starting any
-of the remaining steps. **Interim note:** buff/debuff support moves are
-now fully playable (step 24), but drain and redirect support moves — also
-guaranteed onto every newly-rolled instance since step 23 — still throw
-if selected in a real battle until steps 25/26 land.
+of the remaining steps. **Interim note:** buff/debuff/drain support moves
+are now fully playable (steps 24/25). Redirect is the only support kind
+still not executable — guaranteed onto every newly-rolled instance since
+step 23, but throws if selected in a real battle until step 26 lands.
 
 Each step has its own file with what to build and an end state to
 validate against before moving to the next step — same format as every
@@ -27,7 +27,7 @@ archived plan.
 | 22 | Author the buff/debuff/drain/redirect move pool | [22-buff-debuff-drain-redirect-move-pool.md](22-buff-debuff-drain-redirect-move-pool.md) | 21 | **Shipped** |
 | 23 | Guaranteed 2-damage + 2-support move-slot rolling | [23-guaranteed-move-slot-rolling.md](23-guaranteed-move-slot-rolling.md) | 22 | **Shipped** |
 | 24 | Battle engine: buff & debuff execution | [24-battle-engine-buffs-and-debuffs.md](24-battle-engine-buffs-and-debuffs.md) | 21, 22 | **Shipped** |
-| 25 | Battle engine: drain (life/mana steal) execution | [25-battle-engine-drain-moves.md](25-battle-engine-drain-moves.md) | 21, 22 | **Planned** |
+| 25 | Battle engine: drain (life/mana steal) execution | [25-battle-engine-drain-moves.md](25-battle-engine-drain-moves.md) | 21, 22 | **Shipped** |
 | 26 | Battle engine: redirect, self-hit only | [26-battle-engine-redirect-self.md](26-battle-engine-redirect-self.md) | 21, 22 | **Planned** |
 | 27 | Battle engine: redirect, extend to allies (higher-risk stretch) | [27-battle-engine-redirect-allies.md](27-battle-engine-redirect-allies.md) | 26 | **Planned** |
 | 28 | Move-kind UI (badges/tooltips) + ally-target picker for buffs | [28-move-ui-and-ally-targeting.md](28-move-ui-and-ally-targeting.md) | 24, 25, 26 | **Planned** |

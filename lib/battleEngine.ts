@@ -1,4 +1,4 @@
-import type { BattleAction, BuffMove, DamageMove, DebuffMove, FighterState, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
+import type { BattleAction, BuffMove, DamageMove, DebuffMove, DrainMove, FighterState, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
 import { getTypeMultiplier } from "./typeData";
 
 function randInt(min: number, max: number): number {
@@ -195,15 +195,16 @@ function moveHeader(casterName: string, move: Move, costStr: string): string {
 // 21; the only new thing on a landed damage hit is rolling for status
 // inflict (upgrades/10) and shield absorption (upgrades/24). Buff/debuff
 // execution added in upgrades/24-battle-engine-buffs-and-debuffs.md; drain
-// (upgrades/25) and redirect (upgrades/26) aren't executable yet.
+// added in upgrades/25-battle-engine-drain-moves.md. Redirect (upgrades/26)
+// isn't executable yet.
 export function executeMove(
   attackerState: FighterState,
   defenderState: FighterState,
   move: Move,
   opts?: ExecuteMoveOptions
 ): MoveResult {
-  if (move.kind === "drain" || move.kind === "redirect") {
-    throw new Error(`${move.kind} moves aren't executable yet (see upgrades/25-26)`);
+  if (move.kind === "redirect") {
+    throw new Error(`${move.kind} moves aren't executable yet (see upgrades/26)`);
   }
 
   const attacker = attackerState.pokemon;
@@ -224,12 +225,16 @@ export function executeMove(
     return { log: [header, missLine], hit: false, dealt: 0, statusInflicted: [] };
   }
 
-  if (move.kind === "damage") return executeDamage(attackerState, defenderState, move, header);
+  if (move.kind === "damage" || move.kind === "drain") return executeDamage(attackerState, defenderState, move, header);
   if (move.kind === "buff") return executeBuff(attackerState, move, header);
   return executeDebuff(defenderState, move, header);
 }
 
-function executeDamage(attackerState: FighterState, defenderState: FighterState, move: DamageMove, header: string): MoveResult {
+// Shared by DamageMove and DrainMove (upgrades/25-battle-engine-drain
+// -moves.md) -- a drain move is a damage move with one extra effect
+// attached, not a different damage model. Same atkStat/defStat/type-mult/
+// RNG-roll math and shield-aware applyDamage() either way.
+function executeDamage(attackerState: FighterState, defenderState: FighterState, move: DamageMove | DrainMove, header: string): MoveResult {
   const attacker = attackerState.pokemon;
   const defender = defenderState.pokemon;
   const mult = getTypeMultiplier(move.type, defender.type1, defender.type2);
@@ -285,6 +290,24 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
       defenderState.freezeTurns = STATUS_DURATION;
       statusInflicted.push("freeze");
       log.push(statusInflictLogLine("freeze", defender.name));
+    }
+  }
+
+  if (move.kind === "drain") {
+    // Based on the *raw* damage the move would have dealt (pre-shield
+    // absorption), not what actually landed on HP -- a shield protects the
+    // defender's own HP, it doesn't reduce how much the attacker draws off
+    // the hit. Same reasoning for overkill: the full raw damage counts even
+    // if it's far more than the defender's remaining HP. One-sided: the
+    // defender doesn't separately lose the drained amount beyond the
+    // damage already applied above.
+    const healAmount = Math.round(dmg * (move.drain.percentOfDamageDealt / 100));
+    if (move.drain.resource === "hp") {
+      attackerState.hp = Math.min(attackerState.maxHp, attackerState.hp + healAmount);
+      log.push(`  -> 🩸 ${attacker.name} drained ${healAmount} HP! (${attackerState.hp}/${attackerState.maxHp})`);
+    } else {
+      attackerState.mp = Math.min(attackerState.maxMp, attackerState.mp + healAmount);
+      log.push(`  -> 🔷 ${attacker.name} drained ${healAmount} MP! (${attackerState.mp}/${attackerState.maxMp})`);
     }
   }
 

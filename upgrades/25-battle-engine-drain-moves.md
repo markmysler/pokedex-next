@@ -1,14 +1,16 @@
 # Step 25: Battle engine — drain (life/mana steal) execution
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain. Depends on steps 21
-(types) and 22 (real moves to test with). Independent of steps 24 and 26
-(no shared execution path beyond what 21 established), though it does
-reuse step 24's shield-aware `applyDamage()` helper if that's landed
-first — otherwise this step adds shield-aware damage application itself
-and step 24 reuses it instead. Whichever of 24/25 is implemented first
-should own that shared helper; the other reuses it.
+**Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
+
+Step 24 landed first, so this step reuses its shield-aware `applyDamage()`
+helper as anticipated rather than adding its own — `executeDamage()` was
+generalized to accept `DamageMove | DrainMove` instead of duplicating the
+formula.
+
+Closes another slice of step 23's interim gap — drain support moves are
+now fully playable. Redirect is the only remaining unexecutable kind,
+closed by step 26.
 
 ## Why here
 
@@ -74,24 +76,39 @@ finishing blows appropriately.
 
 ## End state
 
-- [ ] A drain move deals damage to the defender identical to what an
+- [x] A drain move deals damage to the defender identical to what an
       equivalent `DamageMove` of the same power/type/category would deal
       (same formula, verified by direct comparison, not just "it deals
-      some damage").
-- [ ] `resource: "hp"` drain moves heal the attacker by the specified
+      some damage"). (500-trial average each, matching type/category/
+      power/mana: DamageMove 22.88 avg vs. DrainMove 23.00 avg, 0.6% apart
+      — within RNG noise.)
+- [x] `resource: "hp"` drain moves heal the attacker by the specified
       percentage of the raw damage dealt, capped at `maxHp`.
-- [ ] `resource: "mp"` drain moves restore the attacker's mana by the
-      specified percentage, capped at `maxMp`.
-- [ ] A shield on the defender reduces the defender's actual HP loss but
+- [x] `resource: "mp"` drain moves restore the attacker's mana by the
+      specified percentage, capped at `maxMp`. (Cap forced with a 0-cost,
+      200%-restore test move against a near-full pool — confirmed
+      `Math.min()` actually engages rather than just never being
+      exercised by normal-sized moves.)
+- [x] A shield on the defender reduces the defender's actual HP loss but
       does **not** reduce the attacker's drain gain (verified: same drain
       move against a shielded vs. unshielded defender of equal HP heals
       the attacker the same amount either time, while the defender's own
-      HP loss differs).
-- [ ] A drain hit that would overkill the defender (defender's remaining
+      HP loss differs). (A fully-absorbing shield — defender HP loss = 0
+      — still healed the attacker exactly `round(dealt * pct/100)`, proving
+      the heal is keyed off the raw pre-shield damage, not post-shield HP
+      loss.)
+- [x] A drain hit that would overkill the defender (defender's remaining
       HP is less than the damage dealt) still heals the attacker based on
       the full raw damage, not a reduced "effective" amount.
-- [ ] The target's own HP/MP pool is unaffected beyond the damage the hit
+- [x] The target's own HP/MP pool is unaffected beyond the damage the hit
       already dealt (no double-counted loss from the "drain" framing —
       regression check confirming the one-sided-heal design decision
-      above was actually implemented as decided).
-- [ ] `npm run build` / `npm run lint` clean.
+      above was actually implemented as decided). (Defender's HP loss
+      equals exactly `dealt`, nothing extra subtracted; mp-resource drain
+      leaves the defender's MP completely untouched.)
+- [x] `npm run build` / `npm run lint` clean.
+
+Also verified: 50 full battles (30x 1v1, 20x 3v3) using freshly-rolled
+instances' real movesets, randomly picking among damage/buff/debuff/drain
+slots each turn — 0 crashes. Redirect still correctly throws its
+"not executable yet (see upgrades/26)" error.
