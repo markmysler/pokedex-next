@@ -1,9 +1,7 @@
 # Step 22: Author the buff/debuff/drain/redirect move pool
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain. Depends on step 21
-(needs the new `Move` types to exist).
+**Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
 
 ## Why here
 
@@ -91,18 +89,37 @@ implementation, not prescribed field-by-field here.
 
 ## End state
 
-- [ ] `lib/data/movePool.ts` exports `buffMoves`, `debuffMoves`,
+- [x] `lib/data/movePool.ts` exports `buffMoves`, `debuffMoves`,
       `drainMoves`, `redirectMoves` (plus per-type maps), each populated
       with a real, named, flat-tiered set per the sizing/magnitude
-      guidance above.
-- [ ] Every new move is a valid instance of its corresponding `Move`
+      guidance above. (11 buffs, 12 debuffs, 8 drains, 4 redirects — 35
+      total, same order of magnitude as the existing 45-move damage pool.
+      A shared `groupByType()` helper builds all five `*ByType` maps,
+      including the pre-existing damage-pool one, instead of five
+      copy-pasted loops.)
+- [x] Every new move is a valid instance of its corresponding `Move`
       union member from step 21 (compiles with no `any`/casts needed).
-- [ ] At least one move of each new kind exists that is NOT tagged to a
+- [x] At least one move of each new kind exists that is NOT tagged to a
       specific type (i.e. usable as a fallback for any Pokemon during
-      step 23's rolling, regardless of its own type(s)).
-- [ ] Spot-check: every one of the 18 `PokemonType`s has at least one
+      step 23's rolling, regardless of its own type(s)). (Tagged `type:
+      "Normal"`, the same convention the existing damage pool already
+      uses for its own generic moves — "Swords Dance", "Harden",
+      "Recover", "Refresh" (buff), "Growl", "Leer" (debuff), "Life Steal"
+      (drain), "Disorient" (redirect).)
+- [x] Spot-check: every one of the 18 `PokemonType`s has at least one
       buff move and one debuff move it can roll via the 85%-own-type path
       (either a type-tagged move of that exact type, or reliance on the
       generic fallback pool covers it) — no type should be structurally
-      unable to roll a support move.
-- [ ] `npm run build` / `npm run lint` clean.
+      unable to roll a support move. (Verified by script: for any type
+      with no type-tagged move, `rollMoveset()`'s existing pattern —
+      `useOwnType` only fires when the own-type pool is non-empty — falls
+      through to the full pool 100% of the time, so every type is
+      structurally covered.)
+- [x] `npm run build` / `npm run lint` clean.
+
+Also validated: no move name collides with the existing 45-move damage
+pool or with another new move; every drain's `percentOfDamageDealt` and
+every redirect's `turns`/`mana_cost` fall inside the ranges the step doc
+specifies; a full 1v1 and 3v3 battle still resolve correctly end-to-end
+(this step doesn't touch the battle engine or rolling logic, so this is
+just a no-regression check).
