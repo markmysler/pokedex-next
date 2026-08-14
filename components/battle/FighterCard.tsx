@@ -16,6 +16,14 @@ interface TeamMemberDisplay {
   poisonTurns?: number;
   burnTurns?: number;
   freezeTurns?: number;
+  // Buff/debuff/shield/redirect (upgrades/28-move-ui-and-ally-targeting.md)
+  // -- same "optional but always present on a real FighterState" story.
+  atkMod?: number;
+  atkModTurns?: number;
+  defMod?: number;
+  defModTurns?: number;
+  shieldPoints?: number;
+  redirectTurns?: number;
 }
 
 interface FighterCardProps {
@@ -33,6 +41,12 @@ interface FighterCardProps {
   poisonTurns?: number;
   burnTurns?: number;
   freezeTurns?: number;
+  atkMod?: number;
+  atkModTurns?: number;
+  defMod?: number;
+  defModTurns?: number;
+  shieldPoints?: number;
+  redirectTurns?: number;
   movesCaption: string;
   children?: React.ReactNode;
   // 3v3 only (upgrades/05-3v3-battles.md) — the full 3-member team, so the
@@ -57,14 +71,22 @@ const STATUS_TOOLTIPS: Record<"bleed" | "blind" | "poison" | "burn" | "freeze", 
 
 // Small badge row shared by the active card and bench members
 // (upgrades/10-battle-depth.md, extended by
-// upgrades/19-burn-and-freeze-status-effects.md) — status persists on the
-// bench, so both need to show it, just at different sizes.
+// upgrades/19-burn-and-freeze-status-effects.md and, for atkMod/defMod/
+// shieldPoints/redirectTurns, upgrades/28-move-ui-and-ally-targeting.md)
+// — status persists on the bench, so both need to show it, just at
+// different sizes.
 function StatusBadges({
   bleedTurns,
   blindTurns,
   poisonTurns,
   burnTurns,
   freezeTurns,
+  atkMod,
+  atkModTurns,
+  defMod,
+  defModTurns,
+  shieldPoints,
+  redirectTurns,
   compact,
 }: {
   bleedTurns?: number;
@@ -72,9 +94,23 @@ function StatusBadges({
   poisonTurns?: number;
   burnTurns?: number;
   freezeTurns?: number;
+  atkMod?: number;
+  atkModTurns?: number;
+  defMod?: number;
+  defModTurns?: number;
+  shieldPoints?: number;
+  redirectTurns?: number;
   compact?: boolean;
 }) {
-  if (!bleedTurns && !blindTurns && !poisonTurns && !burnTurns && !freezeTurns) return null;
+  const hasAtkMod = Boolean(atkMod && atkMod !== 1);
+  const hasDefMod = Boolean(defMod && defMod !== 1);
+  const hasShield = Boolean(shieldPoints && shieldPoints > 0);
+  const hasRedirect = Boolean(redirectTurns && redirectTurns > 0);
+  if (!bleedTurns && !blindTurns && !poisonTurns && !burnTurns && !freezeTurns && !hasAtkMod && !hasDefMod && !hasShield && !hasRedirect) return null;
+
+  const atkPct = atkMod ? Math.round((atkMod - 1) * 100) : 0;
+  const defPct = defMod ? Math.round((defMod - 1) * 100) : 0;
+
   // <span>, not <div> -- this renders inside a bench <button> in compact
   // mode, and <div> isn't valid phrasing content inside a <button>.
   return (
@@ -84,6 +120,26 @@ function StatusBadges({
       {Boolean(poisonTurns) && <span className="status-badge poison" title={STATUS_TOOLTIPS.poison}>☠️ Poisoned ({poisonTurns})</span>}
       {Boolean(burnTurns) && <span className="status-badge burn" title={STATUS_TOOLTIPS.burn}>🔥 Burning ({burnTurns})</span>}
       {Boolean(freezeTurns) && <span className="status-badge freeze" title={STATUS_TOOLTIPS.freeze}>❄️ Frozen ({freezeTurns})</span>}
+      {hasAtkMod && (
+        <span className={`status-badge ${atkPct > 0 ? "buff" : "debuff"}`} title={`Attack is x${atkMod} (${atkPct > 0 ? "+" : ""}${atkPct}%) for ${atkModTurns} more turn${atkModTurns === 1 ? "" : "s"}.`}>
+          ⚔️ ATK {atkPct > 0 ? "+" : ""}{atkPct}% ({atkModTurns})
+        </span>
+      )}
+      {hasDefMod && (
+        <span className={`status-badge ${defPct > 0 ? "buff" : "debuff"}`} title={`Defense is x${defMod} (${defPct > 0 ? "+" : ""}${defPct}%) for ${defModTurns} more turn${defModTurns === 1 ? "" : "s"}.`}>
+          🛡️ DEF {defPct > 0 ? "+" : ""}{defPct}% ({defModTurns})
+        </span>
+      )}
+      {hasShield && (
+        <span className="status-badge shield" title={`A shield absorbs the next ${shieldPoints} damage before HP is touched. No duration -- it just runs out.`}>
+          💠 Shield ({shieldPoints})
+        </span>
+      )}
+      {hasRedirect && (
+        <span className="status-badge redirect" title={`Confused: this fighter's own attacks land on itself or a living ally instead of the opponent, for ${redirectTurns} more turn${redirectTurns === 1 ? "" : "s"}.`}>
+          🌀 Confused ({redirectTurns})
+        </span>
+      )}
     </span>
   );
 }
@@ -100,6 +156,12 @@ export default function FighterCard({
   poisonTurns,
   burnTurns,
   freezeTurns,
+  atkMod,
+  atkModTurns,
+  defMod,
+  defModTurns,
+  shieldPoints,
+  redirectTurns,
   movesCaption,
   children,
   team,
@@ -117,7 +179,19 @@ export default function FighterCard({
       {pokemon.nickname && <div className="fighter-species-line">#{pokemon.number} {pokemon.name}</div>}
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
       {shiny && <span className="shiny-badge">✨ Shiny</span>}
-      <StatusBadges bleedTurns={bleedTurns} blindTurns={blindTurns} poisonTurns={poisonTurns} burnTurns={burnTurns} freezeTurns={freezeTurns} />
+      <StatusBadges
+        bleedTurns={bleedTurns}
+        blindTurns={blindTurns}
+        poisonTurns={poisonTurns}
+        burnTurns={burnTurns}
+        freezeTurns={freezeTurns}
+        atkMod={atkMod}
+        atkModTurns={atkModTurns}
+        defMod={defMod}
+        defModTurns={defModTurns}
+        shieldPoints={shieldPoints}
+        redirectTurns={redirectTurns}
+      />
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
 
       <div className="hp-label">HP: {Math.max(0, hp)} / {maxHp}</div>
@@ -159,6 +233,12 @@ export default function FighterCard({
                     poisonTurns={member.poisonTurns}
                     burnTurns={member.burnTurns}
                     freezeTurns={member.freezeTurns}
+                    atkMod={member.atkMod}
+                    atkModTurns={member.atkModTurns}
+                    defMod={member.defMod}
+                    defModTurns={member.defModTurns}
+                    shieldPoints={member.shieldPoints}
+                    redirectTurns={member.redirectTurns}
                     compact
                   />
                 )}

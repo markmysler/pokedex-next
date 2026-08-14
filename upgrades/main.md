@@ -10,11 +10,12 @@ shipped in full. v3 itself followed the v2 plan
 ([archive/v2/main.md](archive/v2/main.md), 15 steps, all shipped), which
 followed the original 8-step plan ([archive/main.md](archive/main.md)).
 
-**Steps 21-27 shipped (2026-08-12, 2026-08-14 x6); steps 28-29 remain
-planning-only.** See "The attack-system rework" below before starting any
-of the remaining steps. **Every move kind is fully executable** (since
-step 26), and redirect now extends to allies in 3v3, including bench
-members (step 27, the optional stretch).
+**Steps 21-28 shipped (2026-08-12, 2026-08-14 x7); step 29 remains
+planning-only.** See "The attack-system rework" below before starting it.
+**The rework is now fully playable end-to-end** — every move kind
+executes (steps 24-26), redirect extends to allies in 3v3 (step 27), and
+every move kind's UI describes what it does with a working ally-target
+picker for buffs (step 28).
 
 Each step has its own file with what to build and an end state to
 validate against before moving to the next step — same format as every
@@ -29,7 +30,7 @@ archived plan.
 | 25 | Battle engine: drain (life/mana steal) execution | [25-battle-engine-drain-moves.md](25-battle-engine-drain-moves.md) | 21, 22 | **Shipped** |
 | 26 | Battle engine: redirect, self-hit only | [26-battle-engine-redirect-self.md](26-battle-engine-redirect-self.md) | 21, 22 | **Shipped** |
 | 27 | Battle engine: redirect, extend to allies (higher-risk stretch) | [27-battle-engine-redirect-allies.md](27-battle-engine-redirect-allies.md) | 26 | **Shipped** |
-| 28 | Move-kind UI (badges/tooltips) + ally-target picker for buffs | [28-move-ui-and-ally-targeting.md](28-move-ui-and-ally-targeting.md) | 24, 25, 26 | **Planned** |
+| 28 | Move-kind UI (badges/tooltips) + ally-target picker for buffs | [28-move-ui-and-ally-targeting.md](28-move-ui-and-ally-targeting.md) | 24, 25, 26 | **Shipped** |
 | 29 | Existing-instance policy + roster-wide roll validation | [29-existing-instance-policy-and-validation.md](29-existing-instance-policy-and-validation.md) | 23, 24, 25, 26, 28 | **Planned** |
 
 ## The attack-system rework

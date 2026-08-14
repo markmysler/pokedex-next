@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { BattleAction, FighterState, OwnedPokemon, RoomSlot, TeamState } from "@/types/pokemon";
-import { buildTeamState, resolveTeamRound } from "@/lib/battleEngine";
+import { buildTeamState, hasLivingAlly, resolveTeamRound } from "@/lib/battleEngine";
 import { rollBotTeam } from "@/lib/collection";
 import TeamPicker from "@/components/online/TeamPicker";
 import FighterCard from "./FighterCard";
 import MoveButton from "./MoveButton";
+import AllyTargetPicker from "./AllyTargetPicker";
 import BattleResultDialog from "./BattleResultDialog";
 import LootboxRevealDialog from "@/components/inventory/LootboxRevealDialog";
 import { playAttackSound, playDodgeSound, playFaintSound, playVictorySound, playDefeatSound } from "@/lib/sound";
@@ -125,6 +126,10 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   const [autoRunning, setAutoRunning] = useState(false);
   const [resultDialog, setResultDialog] = useState<{ won: boolean; lootboxGranted: boolean; lootboxId: string | null } | null>(null);
   const [revealPokemon, setRevealPokemon] = useState<OwnedPokemon | null>(null);
+  // Awaiting a target choice for this move index (upgrades/28-move-ui-and
+  // -ally-targeting.md) -- only ever set for a buff move whose caster has
+  // a living ally; every other move submits immediately with no picker.
+  const [pendingBuffMoveIndex, setPendingBuffMoveIndex] = useState<number | null>(null);
   const logRef = useRef<HTMLPreElement>(null);
 
   function appendLog(lines: string[]) {
@@ -155,6 +160,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     setAutoRunning(false);
     setResultDialog(null);
     setRevealPokemon(null);
+    setPendingBuffMoveIndex(null);
     const fresh = freshBattle(team);
     setBattle(fresh);
     setLog(startLog(fresh));
@@ -166,6 +172,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     setAutoRunning(false);
     setResultDialog(null);
     setRevealPokemon(null);
+    setPendingBuffMoveIndex(null);
     const fresh = freshBattle(myTeam);
     setBattle(fresh);
     setLog(startLog(fresh));
@@ -175,6 +182,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     setAutoRunning(false);
     setResultDialog(null);
     setRevealPokemon(null);
+    setPendingBuffMoveIndex(null);
     setBattle(null);
     setLog([]);
     setPhase("picking");
@@ -182,6 +190,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
 
   function submitAction(action: BattleAction) {
     if (!battle || battle.over) return;
+    setPendingBuffMoveIndex(null);
 
     // Forced switch: only the side whose active fainted may act, and only
     // with a switch — mirrors the online room's same rule.
@@ -364,12 +373,26 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
           poisonTurns={you.poisonTurns}
           burnTurns={you.burnTurns}
           freezeTurns={you.freezeTurns}
+          atkMod={you.atkMod}
+          atkModTurns={you.atkModTurns}
+          defMod={you.defMod}
+          defModTurns={you.defModTurns}
+          shieldPoints={you.shieldPoints}
+          redirectTurns={you.redirectTurns}
           movesCaption={myForcedSwitch ? "Choose your next Pokémon:" : "Select Attack Move:"}
           team={battle.team1.members}
           activeIndex={battle.team1.activeIndex}
           onSwitchTo={canSwitchNow ? (i) => submitAction({ type: "switch", teamIndex: i as 0 | 1 | 2 }) : undefined}
         >
-          {!myForcedSwitch && (
+          {!myForcedSwitch && pendingBuffMoveIndex !== null && (
+            <AllyTargetPicker
+              team={battle.team1.members}
+              activeIndex={battle.team1.activeIndex}
+              onSelect={(teamIndex) => submitAction({ type: "attack", moveIndex: pendingBuffMoveIndex, buffTargetTeamIndex: teamIndex })}
+              onCancel={() => setPendingBuffMoveIndex(null)}
+            />
+          )}
+          {!myForcedSwitch && pendingBuffMoveIndex === null && (
             <div className="moves-grid">
               {[0, 1, 2, 3].map((i) => {
                 const move = you.pokemon.moves[i];
@@ -381,7 +404,13 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
                     move={move}
                     disabled={!canAttackNow || insufficientMana}
                     insufficientMana={insufficientMana}
-                    onClick={() => submitAction({ type: "attack", moveIndex: i })}
+                    onClick={() => {
+                      if (move.kind === "buff" && hasLivingAlly(battle.team1)) {
+                        setPendingBuffMoveIndex(i);
+                      } else {
+                        submitAction({ type: "attack", moveIndex: i });
+                      }
+                    }}
                   />
                 );
               })}
@@ -401,6 +430,12 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
           poisonTurns={opp.poisonTurns}
           burnTurns={opp.burnTurns}
           freezeTurns={opp.freezeTurns}
+          atkMod={opp.atkMod}
+          atkModTurns={opp.atkModTurns}
+          defMod={opp.defMod}
+          defModTurns={opp.defModTurns}
+          shieldPoints={opp.shieldPoints}
+          redirectTurns={opp.redirectTurns}
           movesCaption=""
           team={battle.team2.members}
           activeIndex={battle.team2.activeIndex}

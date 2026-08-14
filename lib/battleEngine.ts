@@ -195,6 +195,10 @@ interface ExecuteMoveOptions {
   // this -- its self-hit is still detected via reference equality, same as
   // step 26 (redirect in 1v1 is always self, there's no ally concept).
   redirectKind?: "self" | "ally";
+  // Ally-target picker for buff moves in 3v3 team battles (upgrades/28
+  // -move-ui-and-ally-targeting.md) -- undefined means self (the only
+  // valid target in 1v1, or when the caster has no living ally).
+  buffTarget?: FighterState;
 }
 
 // Power/category only exist on damage (and, from step 25, drain) moves —
@@ -237,7 +241,7 @@ export function executeMove(
   }
 
   if (move.kind === "damage" || move.kind === "drain") return executeDamage(attackerState, defenderState, move, header, opts?.redirectKind);
-  if (move.kind === "buff") return executeBuff(attackerState, move, header);
+  if (move.kind === "buff") return executeBuff(attackerState, opts?.buffTarget ?? attackerState, move, header);
   if (move.kind === "debuff") return executeDebuff(defenderState, move, header);
   return executeRedirect(defenderState, move, header);
 }
@@ -337,11 +341,12 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
   return { log, hit: true, dealt: dmg, statusInflicted };
 }
 
-// Always self-targeted for now — an explicit ally-target picker for 3v3
-// team battles is upgrades/28-move-ui-and-ally-targeting.md's job; this
-// step is just the execution given an already-resolved target.
-function executeBuff(casterState: FighterState, move: BuffMove, header: string): MoveResult {
-  const caster = casterState.pokemon;
+// Targets the caster (self) by default, or an explicitly-chosen living
+// ally in a 3v3 team battle (upgrades/28-move-ui-and-ally-targeting.md).
+// Mana is still paid by the caster (already handled in executeMove above)
+// regardless of who the effect lands on.
+function executeBuff(casterState: FighterState, targetState: FighterState, move: BuffMove, header: string): MoveResult {
+  const target = targetState.pokemon;
   const log = [header];
   const buff = move.buff;
 
@@ -351,42 +356,42 @@ function executeBuff(casterState: FighterState, move: BuffMove, header: string):
       // on re-cast rather than compounding (same precedent as bleed/poison
       // etc.'s "refreshed, not stacked" re-inflict behavior).
       if (buff.stat === "atk") {
-        casterState.atkMod = buff.multiplier;
-        casterState.atkModTurns = buff.turns;
+        targetState.atkMod = buff.multiplier;
+        targetState.atkModTurns = buff.turns;
       } else {
-        casterState.defMod = buff.multiplier;
-        casterState.defModTurns = buff.turns;
+        targetState.defMod = buff.multiplier;
+        targetState.defModTurns = buff.turns;
       }
       const statName = buff.stat === "atk" ? "Attack" : "Defense";
-      log.push(`  -> ✨ ${caster.name}'s ${statName} rose to x${buff.multiplier} for ${buff.turns} turns!`);
+      log.push(`  -> ✨ ${target.name}'s ${statName} rose to x${buff.multiplier} for ${buff.turns} turns!`);
       break;
     }
     case "heal": {
-      const amount = Math.round((casterState.maxHp * buff.percentOfMaxHp) / 100);
-      casterState.hp = Math.min(casterState.maxHp, casterState.hp + amount);
-      log.push(`  -> 💚 ${caster.name} healed ${amount} HP! (${casterState.hp}/${casterState.maxHp})`);
+      const amount = Math.round((targetState.maxHp * buff.percentOfMaxHp) / 100);
+      targetState.hp = Math.min(targetState.maxHp, targetState.hp + amount);
+      log.push(`  -> 💚 ${target.name} healed ${amount} HP! (${targetState.hp}/${targetState.maxHp})`);
       break;
     }
     case "restoreMana": {
-      casterState.mp = Math.min(casterState.maxMp, casterState.mp + buff.amount);
-      log.push(`  -> 🔷 ${caster.name} restored ${buff.amount} MP! (${casterState.mp}/${casterState.maxMp})`);
+      targetState.mp = Math.min(targetState.maxMp, targetState.mp + buff.amount);
+      log.push(`  -> 🔷 ${target.name} restored ${buff.amount} MP! (${targetState.mp}/${targetState.maxMp})`);
       break;
     }
     case "shield": {
       // Additive -- a second shield cast while one is already up stacks
       // the pool, unlike statUp's refresh-not-stack (shields have no
       // duration to conflict over).
-      casterState.shieldPoints += buff.amount;
-      log.push(`  -> 🛡️ ${caster.name} gained a ${buff.amount}-point shield! (total: ${casterState.shieldPoints})`);
+      targetState.shieldPoints += buff.amount;
+      log.push(`  -> 🛡️ ${target.name} gained a ${buff.amount}-point shield! (total: ${targetState.shieldPoints})`);
       break;
     }
     case "cleanse": {
-      casterState.bleedTurns = 0;
-      casterState.blindTurns = 0;
-      casterState.poisonTurns = 0;
-      casterState.burnTurns = 0;
-      casterState.freezeTurns = 0;
-      log.push(`  -> 🌿 ${caster.name}'s status ailments were cleansed!`);
+      targetState.bleedTurns = 0;
+      targetState.blindTurns = 0;
+      targetState.poisonTurns = 0;
+      targetState.burnTurns = 0;
+      targetState.freezeTurns = 0;
+      log.push(`  -> 🌿 ${target.name}'s status ailments were cleansed!`);
       break;
     }
   }
@@ -453,7 +458,7 @@ function executeRedirect(defenderState: FighterState, move: RedirectMove, header
 // Rolls blind's self-miss (and decrements blindTurns once per attack
 // attempt, whether it hits or misses) and dodge, then delegates to
 // executeMove with the outcome already decided.
-function resolveAttack(atkState: FighterState, defState: FighterState, move: Move, redirectKind?: "self" | "ally"): MoveResult {
+function resolveAttack(atkState: FighterState, defState: FighterState, move: Move, redirectKind?: "self" | "ally", buffTarget?: FighterState): MoveResult {
   let blindMiss = false;
   if (atkState.blindTurns > 0) {
     blindMiss = Math.random() < BLIND_MISS_CHANCE;
@@ -462,9 +467,9 @@ function resolveAttack(atkState: FighterState, defState: FighterState, move: Mov
   const dodged = !blindMiss && Math.random() < rollDodgeChance(atkState.pokemon.spd, defState.pokemon.spd);
 
   if (blindMiss || dodged) {
-    return executeMove(atkState, defState, move, { forceMiss: true, missReason: blindMiss ? "blind" : "dodge", redirectKind });
+    return executeMove(atkState, defState, move, { forceMiss: true, missReason: blindMiss ? "blind" : "dodge", redirectKind, buffTarget });
   }
-  return executeMove(atkState, defState, move, { redirectKind });
+  return executeMove(atkState, defState, move, { redirectKind, buffTarget });
 }
 
 export interface BattleEvent {
@@ -591,6 +596,28 @@ function pickRedirectTarget(atkTeam: TeamState): FighterState {
   return livingMembers[Math.floor(Math.random() * livingMembers.length)];
 }
 
+// Whether `team`'s active member has a living teammate to target (bench or
+// otherwise) -- upgrades/28-move-ui-and-ally-targeting.md's gate for
+// showing the buff ally-target picker at all client-side (no picker for a
+// choice that isn't actually a choice). Exported for the UI to reuse
+// rather than reimplementing this same team-shape query.
+export function hasLivingAlly(team: TeamState): boolean {
+  return team.members.some((m, i) => i !== team.activeIndex && m.hp > 0);
+}
+
+// Resolves a buff move's chosen target (upgrades/28-move-ui-and-ally
+// -targeting.md): defaults to self, same as every other move kind's
+// implicit targeting elsewhere in this file. An out-of-range or fainted
+// index is defensively treated as "no valid choice" and falls back to
+// self, same spirit as existing move-index bounds checks -- the server
+// never trusts the client beyond "which index was chosen."
+function resolveBuffTarget(atkTeam: TeamState, atkState: FighterState, teamIndex: 0 | 1 | 2 | undefined): FighterState {
+  if (teamIndex === undefined) return atkState;
+  const candidate = atkTeam.members[teamIndex];
+  if (!candidate || candidate.hp <= 0) return atkState;
+  return candidate;
+}
+
 export interface TeamRoundResult {
   log: string[];
   over: boolean;
@@ -696,7 +723,13 @@ export function resolveTeamRound(
     const redirectKind: "self" | "ally" | undefined =
       redirectTarget === null ? undefined : redirectTarget === atkState ? "self" : "ally";
 
-    const result = resolveAttack(atkState, target, move, redirectKind);
+    // Ally-target picker for buff moves (upgrades/28-move-ui-and-ally
+    // -targeting.md) -- only meaningful for a buff; every other kind
+    // ignores action.buffTargetTeamIndex entirely (ignored automatically
+    // here too, since resolveBuffTarget() is only even consulted below).
+    const buffTarget = move.kind === "buff" ? resolveBuffTarget(atkTeam, atkState, action.buffTargetTeamIndex) : undefined;
+
+    const result = resolveAttack(atkState, target, move, redirectKind, buffTarget);
     log.push(...result.log);
     events.push({
       slot,

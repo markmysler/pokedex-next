@@ -322,10 +322,19 @@ input, #search-input, select, textarea, .pokemon-list {
 .status-badge.poison { background: #7D3C98; }
 .status-badge.burn { background: #D35400; }
 .status-badge.freeze { background: #2E86C1; }
+/* atkMod/defMod/shieldPoints/redirectTurns (upgrades/28-move-ui-and-ally-targeting.md) */
+.status-badge.buff { background: #2FA572; }
+.status-badge.debuff { background: #C0392B; }
+.status-badge.shield { background: #3498DB; }
+.status-badge.redirect { background: #7D6608; }
 .status-badges.compact { gap: 2px; margin-top: 2px; }
 .status-badges.compact .status-badge { font-size: 8px; padding: 1px 4px; border-radius: 6px; }
 
 .rematch-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+
+/* Ally-target picker for buff moves (upgrades/28-move-ui-and-ally-targeting.md) */
+.ally-target-picker { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+.ally-target-picker .bench-row { margin-top: 0; }
 
 /* IN-MATCH CHAT (upgrades/08-chat.md — never persisted, local state only) */
 .chat-panel { display: flex; flex-direction: column; gap: 8px; }

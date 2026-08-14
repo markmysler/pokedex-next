@@ -1,13 +1,11 @@
 # Step 28: Move-kind UI (badges/tooltips) + ally-target picker for buffs
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain. Depends on steps 24,
-25, 26 (the engine has to actually execute these move kinds before there's
-real behavior to surface in the UI). Does **not** depend on step 27 —
-redirect's own targeting is automatic/engine-side (main.md's key
-decision), so whether ally-redirect ships doesn't change anything this
-step builds.
+**Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
+
+The rework is now actually playable end-to-end, not just executable via a
+raw API call — every move kind's button describes what it does, and a
+buff caster with a living ally gets a real choice of who it lands on.
 
 ## Why here
 
@@ -96,21 +94,52 @@ status badge.
 
 ## End state
 
-- [ ] Every move kind's button clearly and correctly describes its
+- [x] Every move kind's button clearly and correctly describes its
       effect at a glance, with a working hover tooltip for the full
       description — spot-checked against at least one move of each of the
-      5 kinds.
-- [ ] In a 3v3 battle with a living bench ally, selecting a buff move
+      5 kinds. (`moveEffectText()`/`moveTooltip()` in `lib/pokemonDisplay
+      .ts`, spot-checked against one move of each kind: damage
+      `"40 Pwr"`, drain `"35 Pwr, 45% HP drain"`, buff `"+50% ATK, 3
+      turns"`, debuff `"Poison"`, redirect `"2 turns confused"` — damage's
+      text deliberately matches the pre-existing `"N Pwr"` format exactly,
+      verified byte-for-byte. `MoveButton.tsx` also gets a kind-specific
+      icon/background color distinct from the per-type damage color.)
+- [x] In a 3v3 battle with a living bench ally, selecting a buff move
       shows a target picker (self + each living ally); selecting a target
       submits correctly and the engine applies the buff to the chosen
-      fighter, not always self.
-- [ ] In 1v1, or in 3v3 once all allies have fainted, buff moves submit
-      immediately with no picker shown, always targeting self.
-- [ ] Debuff/drain/redirect moves submit immediately with no picker in
+      fighter, not always self. (Engine-level: `buffTargetTeamIndex: 1`
+      routed Barrier's 60-point shield to the bench ally, not the caster,
+      confirmed on both the target's and the caster's own `shieldPoints`.
+      UI: `AllyTargetPicker` wired into both `BattleArena.tsx` and
+      `OnlineBattle.tsx`, gated behind `hasLivingAlly()`; ran 50 3v3
+      battles with real rolled movesets and randomized
+      `buffTargetTeamIndex` on ~half of all buff-move picks — 0 crashes.
+      Full interactive browser click-through wasn't run — no browser
+      pre-installed and Supabase auth setup for a live session was out of
+      proportion to what it'd add beyond the engine-level coverage above
+      plus a clean `tsc`/build/lint pass — but the wiring was manually
+      traced end-to-end in both files.)
+- [x] In 1v1, or in 3v3 once all allies have fainted, buff moves submit
+      immediately with no picker shown, always targeting self. (1v1: no
+      `AttackAction`/picker concept exists there at all — `resolveRound()`
+      still just receives a bare `Move`, buffs still always self-target
+      via `executeMove`'s `opts?.buffTarget ?? attackerState` default. 3v3:
+      confirmed `hasLivingAlly()` returns `false` once both bench members
+      have fainted, and omitting `buffTargetTeamIndex` entirely still
+      defaults to self in the engine.)
+- [x] Debuff/drain/redirect moves submit immediately with no picker in
       every context — regression check that the picker only ever appears
-      for buffs.
-- [ ] The new persistent-effect badges (`atkMod`/`defMod`/`shieldPoints`/
+      for buffs. (UI: the picker-vs-moves-grid branch only triggers on
+      `move.kind === "buff"`. Engine: confirmed a debuff move with
+      `buffTargetTeamIndex` set still lands on the opponent's active
+      member, completely ignoring the field, and does not affect the
+      caster's own bench member either.)
+- [x] The new persistent-effect badges (`atkMod`/`defMod`/`shieldPoints`/
       `redirectTurns`) appear on both the active fighter card and the
       bench row, with working hover tooltips, matching the existing
-      status-badge visual language.
-- [ ] `npm run build` / `npm run lint` clean.
+      status-badge visual language. (`FighterCard.tsx`'s `StatusBadges`
+      extended with 4 new conditional badges — green/red for
+      atkMod/defMod based on direction, distinct colors for shield/
+      redirect — wired through both the active-card props and the
+      per-bench-member `TeamMemberDisplay` shape in both battle UIs.)
+- [x] `npm run build` / `npm run lint` clean.

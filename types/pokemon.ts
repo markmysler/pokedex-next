@@ -181,6 +181,14 @@ export type RoomSlot = 1 | 2;
 export interface AttackAction {
   type: "attack";
   moveIndex: number;
+  // Only meaningful for a buff move in a 3v3 team battle where the caster
+  // has a living ally to choose (upgrades/28-move-ui-and-ally-targeting.md)
+  // -- undefined/omitted means target self, the only valid value in 1v1 or
+  // when no living ally exists. Every other move kind ignores this field
+  // entirely: debuffs/drain always target the opponent's active member
+  // (existing implicit targeting), redirect's own target is chosen
+  // automatically, engine-side, never by the player.
+  buffTargetTeamIndex?: 0 | 1 | 2;
 }
 
 export interface SwitchAction {

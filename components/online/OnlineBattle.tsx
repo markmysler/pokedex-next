@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import type { BattleAction, OwnedPokemon, RoomSlot, TeamState } from "@/types/pokemon";
 import FighterCard from "@/components/battle/FighterCard";
 import MoveButton from "@/components/battle/MoveButton";
+import AllyTargetPicker from "@/components/battle/AllyTargetPicker";
 import BattleResultDialog from "@/components/battle/BattleResultDialog";
 import LootboxRevealDialog from "@/components/inventory/LootboxRevealDialog";
 import TeamPicker from "./TeamPicker";
 import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
-import type { BattleEvent } from "@/lib/battleEngine";
+import { hasLivingAlly, type BattleEvent } from "@/lib/battleEngine";
 import { playAttackSound, playDodgeSound, playFaintSound, playVictorySound, playDefeatSound } from "@/lib/sound";
 
 interface OnlineBattleProps {
@@ -52,6 +53,10 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [resultDialog, setResultDialog] = useState<{ won: boolean; lootboxGranted: boolean; lootboxId: string | null } | null>(null);
   const [revealPokemon, setRevealPokemon] = useState<OwnedPokemon | null>(null);
+  // Awaiting a target choice for this move index (upgrades/28-move-ui-and
+  // -ally-targeting.md) -- only ever set for a buff move whose caster has
+  // a living ally; every other move submits immediately with no picker.
+  const [pendingBuffMoveIndex, setPendingBuffMoveIndex] = useState<number | null>(null);
   const logRef = useRef<HTMLPreElement>(null);
   const mySlotRef = useRef<RoomSlot | null>(null);
   const lockedInRef = useRef(false);
@@ -163,6 +168,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
       awaitingForcedSwitch: payload.awaitingForcedSwitch,
     });
     setMoveLocked(false);
+    setPendingBuffMoveIndex(null);
     appendLog([`\n--- 🥊 Round ${payload.turnCount} ---`, ...(payload.log ?? ["(synced from server)"])]);
 
     // One sound per structured event (upgrades/10-battle-depth.md's `events`
@@ -322,6 +328,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     setBattle(null);
     setLog([]);
     setMoveLocked(false);
+    setPendingBuffMoveIndex(null);
     setStatus("");
     setTurnStatus("");
     setRoomCodeInput("");
@@ -341,6 +348,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     setBattle(null);
     setLog([]);
     setMoveLocked(false);
+    setPendingBuffMoveIndex(null);
     setMyLockedIn(false);
     setTurnStatus("");
     setStatus("");
@@ -419,6 +427,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
 
   async function submitAction(action: BattleAction) {
     if (!battle || battle.over || !roomCode) return;
+    setPendingBuffMoveIndex(null);
     const isMyForcedSwitch = battle.awaitingForcedSwitch === mySlot;
     if (!isMyForcedSwitch) {
       if (moveLocked || battle.awaitingForcedSwitch) return; // my turn to act is blocked right now
@@ -567,12 +576,26 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
           poisonTurns={you.poisonTurns}
           burnTurns={you.burnTurns}
           freezeTurns={you.freezeTurns}
+          atkMod={you.atkMod}
+          atkModTurns={you.atkModTurns}
+          defMod={you.defMod}
+          defModTurns={you.defModTurns}
+          shieldPoints={you.shieldPoints}
+          redirectTurns={you.redirectTurns}
           movesCaption={myForcedSwitch ? "Choose your next Pokémon:" : "Select Attack Move:"}
           team={youTeamState.members}
           activeIndex={youTeamState.activeIndex}
           onSwitchTo={canSwitchNow ? (i) => submitAction({ type: "switch", teamIndex: i as 0 | 1 | 2 }) : undefined}
         >
-          {!myForcedSwitch && (
+          {!myForcedSwitch && pendingBuffMoveIndex !== null && (
+            <AllyTargetPicker
+              team={youTeamState.members}
+              activeIndex={youTeamState.activeIndex}
+              onSelect={(teamIndex) => submitAction({ type: "attack", moveIndex: pendingBuffMoveIndex, buffTargetTeamIndex: teamIndex })}
+              onCancel={() => setPendingBuffMoveIndex(null)}
+            />
+          )}
+          {!myForcedSwitch && pendingBuffMoveIndex === null && (
             <div className="moves-grid">
               {[0, 1, 2, 3].map((i) => {
                 const move = you.pokemon.moves[i];
@@ -584,7 +607,13 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
                     move={move}
                     disabled={!canAttackNow || insufficientMana}
                     insufficientMana={insufficientMana}
-                    onClick={() => submitAction({ type: "attack", moveIndex: i })}
+                    onClick={() => {
+                      if (move.kind === "buff" && hasLivingAlly(youTeamState)) {
+                        setPendingBuffMoveIndex(i);
+                      } else {
+                        submitAction({ type: "attack", moveIndex: i });
+                      }
+                    }}
                   />
                 );
               })}
@@ -604,6 +633,12 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
           poisonTurns={opp.poisonTurns}
           burnTurns={opp.burnTurns}
           freezeTurns={opp.freezeTurns}
+          atkMod={opp.atkMod}
+          atkModTurns={opp.atkModTurns}
+          defMod={opp.defMod}
+          defModTurns={opp.defModTurns}
+          shieldPoints={opp.shieldPoints}
+          redirectTurns={opp.redirectTurns}
           movesCaption=""
           team={oppTeamState.members}
           activeIndex={oppTeamState.activeIndex}
