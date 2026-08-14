@@ -3,13 +3,10 @@
 **Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
 rework" section for the full context and dependency chain.
 
-**Known interim gap (mostly closed by steps 24-25; fully closed by step
-26):** every newly-rolled instance gets 2 support moves. As of steps
-24-25, buff/debuff/drain support moves all execute correctly in a real
-battle. Redirect is the only kind that still throws in `battleEngine.ts`
-if selected, since nothing executes it until step 26 lands.
-Already-rolled instances (from before this step) are unaffected — they
-still have 4 damage moves.
+**Known interim gap: closed as of step 26.** Every newly-rolled instance
+gets 2 support moves, and as of steps 24-26 all four support kinds
+(buff/debuff/drain/redirect) execute correctly in a real battle — no
+move kind is unplayable anymore.
 
 ## Why here
 

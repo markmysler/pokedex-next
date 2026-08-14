@@ -1,9 +1,11 @@
 # Step 26: Battle engine — redirect, self-hit only
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain. Depends on steps 21
-(types) and 22 (real moves to test with).
+**Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
+
+Closes the last slice of step 23's interim gap — every move kind is now
+fully executable. Step 27 (extending redirect to a living ally instead of
+always-self) remains optional/deferred.
 
 ## Why here
 
@@ -75,26 +77,42 @@ Pikachu").
 
 ## End state
 
-- [ ] A `RedirectMove` sets `redirectTurns` on the target exactly like a
+- [x] A `RedirectMove` sets `redirectTurns` on the target exactly like a
       debuff sets its own fields — verified directly, not just "the move
-      exists."
-- [ ] While `redirectTurns > 0`, that fighter's own attacks land on
+      exists." (Taunt: `redirectTurns` set to its `turns` value directly.)
+- [x] While `redirectTurns > 0`, that fighter's own attacks land on
       themselves instead of the opponent, in both 1v1 (`resolveRound`)
       and 3v3 (`resolveTeamRound`) — verified for both, since they're
-      separate code paths.
-- [ ] A self-hit still deals real damage (using the fighter's own
+      separate code paths. (Isolated the effect with a 0-power control
+      move on the non-redirected side in each: only the redirected
+      fighter's own HP dropped, the other side's stayed untouched.)
+- [x] A self-hit still deals real damage (using the fighter's own
       atk/def, exactly the formula a normal hit against them would use)
       and can still faint them, ending the battle/triggering a forced
       switch through the *existing* faint-handling code paths, with no
-      new bookkeeping needed.
-- [ ] `redirectTurns` decays by 1 per active turn (paused while benched,
+      new bookkeeping needed. (1v1: self-hit faint correctly ended the
+      battle with the *other* player as winner. 3v3: self-hit faint on a
+      2-HP-remaining team correctly triggered `awaitingForcedSwitch`
+      rather than ending the battle, exactly the existing team-wipe logic
+      — no new bookkeeping was written for this, `handleFaint()` is called
+      with the attacker's own team/slot when the hit was a self-hit.)
+- [x] `redirectTurns` decays by 1 per active turn (paused while benched,
       same rule as every other status), independent of and stacking
       correctly alongside any simultaneously-active buff/debuff/freeze
-      effects on the same fighter.
-- [ ] The battle log clearly reads as "hurt itself in confusion," not a
-      normal attack-on-opponent line.
-- [ ] Regression: a fighter under redirect can still be the *target* of
+      effects on the same fighter. (`redirectTurns`, `atkModTurns`, and
+      `freezeTurns` all set simultaneously on one fighter, each ticked
+      down independently by 1 per round as expected.)
+- [x] The battle log clearly reads as "hurt itself in confusion," not a
+      normal attack-on-opponent line. (Exact phrase present: "🌀 X is
+      confused! It hurt itself in its confusion!")
+- [x] Regression: a fighter under redirect can still be the *target* of
       the opponent's normal attacks in the same round (redirect only
       changes what happens when the afflicted fighter is the one
-      attacking, not when they're being attacked).
-- [ ] `npm run build` / `npm run lint` clean.
+      attacking, not when they're being attacked). (Redirected fighter1
+      still took damage from fighter2's normal incoming attack in the
+      same round it hit itself.)
+- [x] `npm run build` / `npm run lint` clean.
+
+Also verified: 80 full battles (50x 1v1, 30x 3v3) using freshly-rolled
+instances' real movesets, randomly picking among all 4 slots (every kind
+now executable) — 0 crashes.

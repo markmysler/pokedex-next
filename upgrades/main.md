@@ -10,12 +10,11 @@ shipped in full. v3 itself followed the v2 plan
 ([archive/v2/main.md](archive/v2/main.md), 15 steps, all shipped), which
 followed the original 8-step plan ([archive/main.md](archive/main.md)).
 
-**Steps 21-25 shipped (2026-08-12, 2026-08-14 x4); steps 26-29 remain
+**Steps 21-26 shipped (2026-08-12, 2026-08-14 x5); steps 27-29 remain
 planning-only.** See "The attack-system rework" below before starting any
-of the remaining steps. **Interim note:** buff/debuff/drain support moves
-are now fully playable (steps 24/25). Redirect is the only support kind
-still not executable — guaranteed onto every newly-rolled instance since
-step 23, but throws if selected in a real battle until step 26 lands.
+of the remaining steps. **Every move kind is now fully executable** —
+step 23's interim gap (newly-rolled support moves that couldn't be used
+in a real battle yet) is fully closed as of step 26.
 
 Each step has its own file with what to build and an end state to
 validate against before moving to the next step — same format as every
@@ -28,7 +27,7 @@ archived plan.
 | 23 | Guaranteed 2-damage + 2-support move-slot rolling | [23-guaranteed-move-slot-rolling.md](23-guaranteed-move-slot-rolling.md) | 22 | **Shipped** |
 | 24 | Battle engine: buff & debuff execution | [24-battle-engine-buffs-and-debuffs.md](24-battle-engine-buffs-and-debuffs.md) | 21, 22 | **Shipped** |
 | 25 | Battle engine: drain (life/mana steal) execution | [25-battle-engine-drain-moves.md](25-battle-engine-drain-moves.md) | 21, 22 | **Shipped** |
-| 26 | Battle engine: redirect, self-hit only | [26-battle-engine-redirect-self.md](26-battle-engine-redirect-self.md) | 21, 22 | **Planned** |
+| 26 | Battle engine: redirect, self-hit only | [26-battle-engine-redirect-self.md](26-battle-engine-redirect-self.md) | 21, 22 | **Shipped** |
 | 27 | Battle engine: redirect, extend to allies (higher-risk stretch) | [27-battle-engine-redirect-allies.md](27-battle-engine-redirect-allies.md) | 26 | **Planned** |
 | 28 | Move-kind UI (badges/tooltips) + ally-target picker for buffs | [28-move-ui-and-ally-targeting.md](28-move-ui-and-ally-targeting.md) | 24, 25, 26 | **Planned** |
 | 29 | Existing-instance policy + roster-wide roll validation | [29-existing-instance-policy-and-validation.md](29-existing-instance-policy-and-validation.md) | 23, 24, 25, 26, 28 | **Planned** |

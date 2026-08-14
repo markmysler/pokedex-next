@@ -1,4 +1,4 @@
-import type { BattleAction, BuffMove, DamageMove, DebuffMove, DrainMove, FighterState, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
+import type { BattleAction, BuffMove, DamageMove, DebuffMove, DrainMove, FighterState, RedirectMove, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
 import { getTypeMultiplier } from "./typeData";
 
 function randInt(min: number, max: number): number {
@@ -167,6 +167,14 @@ function applyStatusTick(state: FighterState): string[] {
       state.defMod = 1;
     }
   }
+  // Redirect (upgrades/26-battle-engine-redirect-self.md) decays the same
+  // way -- same tick point, same "paused while benched" rule.
+  if (state.hp > 0 && state.redirectTurns > 0) {
+    state.redirectTurns -= 1;
+    if (state.redirectTurns === 0) {
+      log.push(`  -> 🌀 Confused no longer — ${state.pokemon.name}'s attacks aimed correctly again.`);
+    }
+  }
   return log;
 }
 
@@ -195,18 +203,14 @@ function moveHeader(casterName: string, move: Move, costStr: string): string {
 // 21; the only new thing on a landed damage hit is rolling for status
 // inflict (upgrades/10) and shield absorption (upgrades/24). Buff/debuff
 // execution added in upgrades/24-battle-engine-buffs-and-debuffs.md; drain
-// added in upgrades/25-battle-engine-drain-moves.md. Redirect (upgrades/26)
-// isn't executable yet.
+// added in upgrades/25-battle-engine-drain-moves.md; redirect added in
+// upgrades/26-battle-engine-redirect-self.md.
 export function executeMove(
   attackerState: FighterState,
   defenderState: FighterState,
   move: Move,
   opts?: ExecuteMoveOptions
 ): MoveResult {
-  if (move.kind === "redirect") {
-    throw new Error(`${move.kind} moves aren't executable yet (see upgrades/26)`);
-  }
-
   const attacker = attackerState.pokemon;
   const defender = defenderState.pokemon;
   const cost = move.mana_cost ?? 10;
@@ -227,7 +231,8 @@ export function executeMove(
 
   if (move.kind === "damage" || move.kind === "drain") return executeDamage(attackerState, defenderState, move, header);
   if (move.kind === "buff") return executeBuff(attackerState, move, header);
-  return executeDebuff(defenderState, move, header);
+  if (move.kind === "debuff") return executeDebuff(defenderState, move, header);
+  return executeRedirect(defenderState, move, header);
 }
 
 // Shared by DamageMove and DrainMove (upgrades/25-battle-engine-drain
@@ -249,8 +254,15 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
 
   const absorbed = applyDamage(defenderState, dmg);
 
+  // A redirected fighter's own attack landing on themselves (upgrades/26
+  // -battle-engine-redirect-self.md) is the same object for attacker and
+  // defender -- called out explicitly in the log instead of the default
+  // phrasing, which would otherwise read like a copy-paste bug ("Pikachu
+  // used Tackle... Pikachu HP: ...").
+  const selfHit = attackerState === defenderState;
   const log = [
     `${header} ${effectivenessText(mult)}`,
+    ...(selfHit ? [`  -> 🌀 ${attacker.name} is confused! It hurt itself in its confusion!`] : []),
     damageLogLine(defender.name, attacker.name, dmg, absorbed, defenderState.hp, attackerState.mp),
   ];
 
@@ -415,6 +427,18 @@ function executeDebuff(defenderState: FighterState, move: DebuffMove, header: st
   return { log, hit: true, dealt: 0, statusInflicted };
 }
 
+// Inflicting redirect targets the opponent's active member exactly like a
+// debuff (upgrades/26-battle-engine-redirect-self.md) -- no new targeting
+// UI. *Consuming* it (making the afflicted fighter's own next attacks land
+// on themselves) is resolveRound()/resolveTeamRound()'s job, not this
+// function's -- it just sets the counter.
+function executeRedirect(defenderState: FighterState, move: RedirectMove, header: string): MoveResult {
+  const defender = defenderState.pokemon;
+  defenderState.redirectTurns = move.turns;
+  const log = [header, `  -> 🌀 ${defender.name} is confused about who to attack, for ${move.turns} turns!`];
+  return { log, hit: true, dealt: 0, statusInflicted: [] };
+}
+
 // Rolls blind's self-miss (and decrements blindTurns once per attack
 // attempt, whether it hits or misses) and dodge, then delegates to
 // executeMove with the outcome already decided.
@@ -481,7 +505,13 @@ export function resolveRound(
     log.push(...applyStatusTick(atkState));
     if (atkState.hp <= 0) continue; // fainted from its own tick before acting
 
-    const result = resolveAttack(atkState, defState, move);
+    // Redirect (upgrades/26-battle-engine-redirect-self.md): while active,
+    // this fighter's own attack lands on themselves instead of the
+    // opponent. 1v1 has no bench/ally concept, so self is the only
+    // possible redirect target here even after step 27 ships.
+    const target = atkState.redirectTurns > 0 ? atkState : defState;
+
+    const result = resolveAttack(atkState, target, move);
     log.push(...result.log);
     events.push({
       slot,
@@ -489,7 +519,7 @@ export function resolveRound(
       hit: result.hit,
       dealt: result.dealt,
       statusInflicted: result.statusInflicted,
-      fainted: defState.hp <= 0,
+      fainted: target.hp <= 0,
     });
 
     if (fighter1State.hp <= 0 || fighter2State.hp <= 0) break;
@@ -625,7 +655,12 @@ export function resolveTeamRound(
     const move = atkState.pokemon.moves[action.moveIndex];
     if (!move) continue; // validated by the caller before reaching here
 
-    const result = resolveAttack(atkState, defState, move);
+    // Redirect (upgrades/26-battle-engine-redirect-self.md): while active,
+    // this fighter's own attack lands on themselves instead of the
+    // opponent's active member. Ally-redirect is step 27's job.
+    const target = atkState.redirectTurns > 0 ? atkState : defState;
+
+    const result = resolveAttack(atkState, target, move);
     log.push(...result.log);
     events.push({
       slot,
@@ -633,12 +668,18 @@ export function resolveTeamRound(
       hit: result.hit,
       dealt: result.dealt,
       statusInflicted: result.statusInflicted,
-      fainted: defState.hp <= 0,
+      fainted: target.hp <= 0,
     });
 
-    if (defState.hp <= 0) {
-      const defSlot: RoomSlot = slot === 1 ? 2 : 1;
-      const outcome = handleFaint(defSlot, defTeam, defState.pokemon.name, log);
+    if (target.hp <= 0) {
+      // A self-hit faint is the attacker's own side going down, not the
+      // defender's -- reuse the exact same handleFaint() bookkeeping
+      // (team-wipe/forced-switch), just pointed at whichever side actually
+      // took the hit.
+      const isSelfHit = target === atkState;
+      const faintedSlot: RoomSlot = isSelfHit ? slot : slot === 1 ? 2 : 1;
+      const faintedTeam = isSelfHit ? atkTeam : defTeam;
+      const outcome = handleFaint(faintedSlot, faintedTeam, target.pokemon.name, log);
       over = outcome.over;
       winner = outcome.winner;
       if (outcome.awaitingForcedSwitch) awaitingForcedSwitch = outcome.awaitingForcedSwitch;
