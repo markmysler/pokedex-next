@@ -1,17 +1,5 @@
-import type { BattleAction, DamageMove, FighterState, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
+import type { BattleAction, BuffMove, DamageMove, DebuffMove, FighterState, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
 import { getTypeMultiplier } from "./typeData";
-
-// Every move in today's pool is a DamageMove (upgrades/21-move-kind-data
-// -model.md) -- executeMove() still only knows how to run one. Actually
-// executing the other kinds is steps 24-26's job; this just narrows the
-// type so the damage path keeps compiling and behaving identically. Should
-// never actually throw until a later step starts handing out non-damage
-// moves before its own execution branch exists.
-function assertDamageMove(move: Move): asserts move is DamageMove {
-  if (move.kind !== "damage") {
-    throw new Error(`${move.kind} moves aren't executable yet (see upgrades/24-26)`);
-  }
-}
 
 function randInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -59,11 +47,59 @@ function hasType(pokemon: { type1: PokemonType; type2: PokemonType | null }, typ
   return pokemon.type1 === type || pokemon.type2 === type;
 }
 
+function setStatusTurns(state: FighterState, status: StatusKind, turns: number): void {
+  if (status === "bleed") state.bleedTurns = turns;
+  else if (status === "blind") state.blindTurns = turns;
+  else if (status === "poison") state.poisonTurns = turns;
+  else if (status === "burn") state.burnTurns = turns;
+  else state.freezeTurns = turns;
+}
+
+// Shared exact wording with the existing chance-based infliction in
+// executeMove()'s damage branch, so a guaranteed debuff-inflicted status
+// (upgrades/24-battle-engine-buffs-and-debuffs.md) reads identically to an
+// incidental one.
+function statusInflictLogLine(status: StatusKind, targetName: string): string {
+  switch (status) {
+    case "bleed": return `  -> 🩸 ${targetName} is bleeding!`;
+    case "blind": return `  -> 🌀 ${targetName} is blinded!`;
+    case "poison": return `  -> ☠️ ${targetName} is poisoned!`;
+    case "burn": return `  -> 🔥 ${targetName} is burned!`;
+    case "freeze": return `  -> ❄️ ${targetName} is frozen!`;
+  }
+}
+
+// Shield-aware damage application (upgrades/24-battle-engine-buffs-and
+// -debuffs.md) -- shared by regular damage moves and (step 25) drain moves.
+// Absorbs into shieldPoints before HP, partial or full. Returns how much
+// the shield absorbed, so the caller can log it.
+function applyDamage(state: FighterState, dmg: number): number {
+  const absorbedByShield = Math.min(state.shieldPoints, dmg);
+  state.shieldPoints -= absorbedByShield;
+  const remaining = dmg - absorbedByShield;
+  state.hp = Math.max(0, state.hp - remaining);
+  return absorbedByShield;
+}
+
+function damageLogLine(defenderName: string, attackerName: string, dmg: number, absorbed: number, hpAfter: number, mpAfter: number): string {
+  if (absorbed <= 0) return `  -> Dealt ${dmg} damage! ${defenderName} HP: ${hpAfter} | ${attackerName} Mana: ${mpAfter}/100`;
+  if (absorbed >= dmg) return `  -> 🛡️ Shield absorbed all ${dmg} damage!`;
+  return `  -> 🛡️ Shield absorbed ${absorbed} damage! Dealt ${dmg - absorbed} damage! ${defenderName} HP: ${hpAfter} | ${attackerName} Mana: ${mpAfter}/100`;
+}
+
 // Applied at the point atk/def/spd are actually read, not stored back onto
 // the Pokemon's base stats — a frozen fighter's own numbers are unchanged,
 // only what battleEngine derives from them this instant.
 function freezeAdjusted(stat: number, state: FighterState): number {
   return state.freezeTurns > 0 ? stat * FREEZE_STAT_MULT : stat;
+}
+
+// Buff/debuff stat modifiers (upgrades/24-battle-engine-buffs-and-debuffs.md)
+// compose multiplicatively with freeze's existing multiplier, not
+// override it -- a frozen *and* debuffed fighter is doubly weakened.
+// `mod` is the fighter's own atkMod or defMod, whichever `stat` is.
+function effectiveStat(stat: number, state: FighterState, mod: number): number {
+  return freezeAdjusted(stat, state) * mod;
 }
 
 function rollDodgeChance(attackerSpd: number, defenderSpd: number): number {
@@ -111,6 +147,26 @@ function applyStatusTick(state: FighterState): string[] {
     const remaining = state.freezeTurns > 0 ? ` (${state.freezeTurns} turn${state.freezeTurns === 1 ? "" : "s"} left)` : " — it thawed out.";
     log.push(`  -> ❄️ ${state.pokemon.name} is frozen, sapping its Attack, Defense and Speed!${remaining}`);
   }
+  // Buff/debuff stat modifiers (upgrades/24-battle-engine-buffs-and-debuffs
+  // .md) decay the same way as the five statuses above -- only shieldPoints
+  // (no duration, self-limits by depletion) and redirectTurns (step 26's
+  // own concern) are deliberately excluded from this tick.
+  if (state.hp > 0 && state.atkModTurns > 0) {
+    state.atkModTurns -= 1;
+    if (state.atkModTurns === 0) {
+      const wasBuff = state.atkMod > 1;
+      log.push(`  -> ${wasBuff ? "💪" : "💢"} ${state.pokemon.name}'s Attack ${wasBuff ? "boost" : "drop"} wore off!`);
+      state.atkMod = 1;
+    }
+  }
+  if (state.hp > 0 && state.defModTurns > 0) {
+    state.defModTurns -= 1;
+    if (state.defModTurns === 0) {
+      const wasBuff = state.defMod > 1;
+      log.push(`  -> ${wasBuff ? "💪" : "💢"} ${state.pokemon.name}'s Defense ${wasBuff ? "boost" : "drop"} wore off!`);
+      state.defMod = 1;
+    }
+  }
   return log;
 }
 
@@ -126,16 +182,30 @@ interface ExecuteMoveOptions {
   missReason?: "dodge" | "blind";
 }
 
+// Power/category only exist on damage (and, from step 25, drain) moves —
+// everything else's header just shows the type.
+function moveHeader(casterName: string, move: Move, costStr: string): string {
+  const detail = move.kind === "damage" || move.kind === "drain" ? `${move.type}, ${move.power} Pwr` : move.type;
+  return `• ${casterName} used [${move.name}] (${detail} | ${costStr})!`;
+}
+
 // Mutates attacker/defender state in place. Mana cost is always paid,
 // whether the move connects or not — dodging/blinded-flailing still means
-// the move was cast. Damage math is byte-for-byte what it was before this
-// step; the only new thing on a landed hit is rolling for status inflict.
+// the move was cast. Damage math is byte-for-byte what it was before step
+// 21; the only new thing on a landed damage hit is rolling for status
+// inflict (upgrades/10) and shield absorption (upgrades/24). Buff/debuff
+// execution added in upgrades/24-battle-engine-buffs-and-debuffs.md; drain
+// (upgrades/25) and redirect (upgrades/26) aren't executable yet.
 export function executeMove(
   attackerState: FighterState,
   defenderState: FighterState,
-  move: DamageMove,
+  move: Move,
   opts?: ExecuteMoveOptions
 ): MoveResult {
+  if (move.kind === "drain" || move.kind === "redirect") {
+    throw new Error(`${move.kind} moves aren't executable yet (see upgrades/25-26)`);
+  }
+
   const attacker = attackerState.pokemon;
   const defender = defenderState.pokemon;
   const cost = move.mana_cost ?? 10;
@@ -144,7 +214,7 @@ export function executeMove(
   if (cost === 0) attackerState.mp = Math.min(attackerState.maxMp, attackerState.mp + 15);
 
   const costStr = cost > 0 ? `-${cost} MP` : "+15 MP Energy Surge!";
-  const header = `• ${attacker.name} used [${move.name}] (${move.type}, ${move.power} Pwr | ${costStr})!`;
+  const header = moveHeader(attacker.name, move, costStr);
 
   if (opts?.forceMiss) {
     const missLine =
@@ -154,21 +224,29 @@ export function executeMove(
     return { log: [header, missLine], hit: false, dealt: 0, statusInflicted: [] };
   }
 
+  if (move.kind === "damage") return executeDamage(attackerState, defenderState, move, header);
+  if (move.kind === "buff") return executeBuff(attackerState, move, header);
+  return executeDebuff(defenderState, move, header);
+}
+
+function executeDamage(attackerState: FighterState, defenderState: FighterState, move: DamageMove, header: string): MoveResult {
+  const attacker = attackerState.pokemon;
+  const defender = defenderState.pokemon;
   const mult = getTypeMultiplier(move.type, defender.type1, defender.type2);
 
   const isSpecial = move.category === "Special";
-  const atkStat = Math.max(10, freezeAdjusted(isSpecial ? attacker.spatk : attacker.atk, attackerState));
-  const defStat = Math.max(10, freezeAdjusted(isSpecial ? defender.spdef : defender.def, defenderState));
+  const atkStat = Math.max(10, effectiveStat(isSpecial ? attacker.spatk : attacker.atk, attackerState, attackerState.atkMod));
+  const defStat = Math.max(10, effectiveStat(isSpecial ? defender.spdef : defender.def, defenderState, defenderState.defMod));
 
   const rawDmg = ((2 * 50) / 5 + 2) * (atkStat / Math.max(1, defStat)) * move.power / 50 + 2;
   const rng = randUniform(0.85, 1.15);
   const dmg = Math.max(1, Math.floor(rawDmg * mult * rng));
 
-  defenderState.hp = Math.max(0, defenderState.hp - dmg);
+  const absorbed = applyDamage(defenderState, dmg);
 
   const log = [
     `${header} ${effectivenessText(mult)}`,
-    `  -> Dealt ${dmg} damage! ${defender.name} HP: ${defenderState.hp} | ${attacker.name} Mana: ${attackerState.mp}/100`,
+    damageLogLine(defender.name, attacker.name, dmg, absorbed, defenderState.hp, attackerState.mp),
   ];
 
   const statusInflicted: StatusKind[] = [];
@@ -177,12 +255,12 @@ export function executeMove(
     if (!isSpecial && Math.random() < inflictChance) {
       defenderState.bleedTurns = STATUS_DURATION;
       statusInflicted.push("bleed");
-      log.push(`  -> 🩸 ${defender.name} is bleeding!`);
+      log.push(statusInflictLogLine("bleed", defender.name));
     }
     if (isSpecial && Math.random() < inflictChance) {
       defenderState.blindTurns = STATUS_DURATION;
       statusInflicted.push("blind");
-      log.push(`  -> 🌀 ${defender.name} is blinded!`);
+      log.push(statusInflictLogLine("blind", defender.name));
     }
     // Poison-type moves roll independently of category — a physical
     // Poison-type move can inflict both bleed and poison on the same hit,
@@ -191,7 +269,7 @@ export function executeMove(
     if (move.type === "Poison" && Math.random() < inflictChance) {
       defenderState.poisonTurns = STATUS_DURATION;
       statusInflicted.push("poison");
-      log.push(`  -> ☠️ ${defender.name} is poisoned!`);
+      log.push(statusInflictLogLine("poison", defender.name));
     }
     // Fire/Ice-typed moves roll independently too, each with a type-based
     // immunity a Water/Fire-type target respectively is naturally immune to
@@ -201,22 +279,123 @@ export function executeMove(
     if (move.type === "Fire" && !hasType(defender, "Water") && Math.random() < inflictChance) {
       defenderState.burnTurns = STATUS_DURATION;
       statusInflicted.push("burn");
-      log.push(`  -> 🔥 ${defender.name} is burned!`);
+      log.push(statusInflictLogLine("burn", defender.name));
     }
     if (move.type === "Ice" && !hasType(defender, "Fire") && Math.random() < inflictChance) {
       defenderState.freezeTurns = STATUS_DURATION;
       statusInflicted.push("freeze");
-      log.push(`  -> ❄️ ${defender.name} is frozen!`);
+      log.push(statusInflictLogLine("freeze", defender.name));
     }
   }
 
   return { log, hit: true, dealt: dmg, statusInflicted };
 }
 
+// Always self-targeted for now — an explicit ally-target picker for 3v3
+// team battles is upgrades/28-move-ui-and-ally-targeting.md's job; this
+// step is just the execution given an already-resolved target.
+function executeBuff(casterState: FighterState, move: BuffMove, header: string): MoveResult {
+  const caster = casterState.pokemon;
+  const log = [header];
+  const buff = move.buff;
+
+  switch (buff.effect) {
+    case "statUp": {
+      // Overwrites, not stacks -- refreshes back to full duration/magnitude
+      // on re-cast rather than compounding (same precedent as bleed/poison
+      // etc.'s "refreshed, not stacked" re-inflict behavior).
+      if (buff.stat === "atk") {
+        casterState.atkMod = buff.multiplier;
+        casterState.atkModTurns = buff.turns;
+      } else {
+        casterState.defMod = buff.multiplier;
+        casterState.defModTurns = buff.turns;
+      }
+      const statName = buff.stat === "atk" ? "Attack" : "Defense";
+      log.push(`  -> ✨ ${caster.name}'s ${statName} rose to x${buff.multiplier} for ${buff.turns} turns!`);
+      break;
+    }
+    case "heal": {
+      const amount = Math.round((casterState.maxHp * buff.percentOfMaxHp) / 100);
+      casterState.hp = Math.min(casterState.maxHp, casterState.hp + amount);
+      log.push(`  -> 💚 ${caster.name} healed ${amount} HP! (${casterState.hp}/${casterState.maxHp})`);
+      break;
+    }
+    case "restoreMana": {
+      casterState.mp = Math.min(casterState.maxMp, casterState.mp + buff.amount);
+      log.push(`  -> 🔷 ${caster.name} restored ${buff.amount} MP! (${casterState.mp}/${casterState.maxMp})`);
+      break;
+    }
+    case "shield": {
+      // Additive -- a second shield cast while one is already up stacks
+      // the pool, unlike statUp's refresh-not-stack (shields have no
+      // duration to conflict over).
+      casterState.shieldPoints += buff.amount;
+      log.push(`  -> 🛡️ ${caster.name} gained a ${buff.amount}-point shield! (total: ${casterState.shieldPoints})`);
+      break;
+    }
+    case "cleanse": {
+      casterState.bleedTurns = 0;
+      casterState.blindTurns = 0;
+      casterState.poisonTurns = 0;
+      casterState.burnTurns = 0;
+      casterState.freezeTurns = 0;
+      log.push(`  -> 🌿 ${caster.name}'s status ailments were cleansed!`);
+      break;
+    }
+  }
+
+  return { log, hit: true, dealt: 0, statusInflicted: [] };
+}
+
+// Always targets the opponent's active member -- same implicit targeting
+// damage moves already use, no picker needed (main.md's key decision).
+function executeDebuff(defenderState: FighterState, move: DebuffMove, header: string): MoveResult {
+  const defender = defenderState.pokemon;
+  const log = [header];
+  const debuff = move.debuff;
+  const statusInflicted: StatusKind[] = [];
+
+  switch (debuff.effect) {
+    case "statDown": {
+      if (debuff.stat === "atk") {
+        defenderState.atkMod = debuff.multiplier;
+        defenderState.atkModTurns = debuff.turns;
+      } else {
+        defenderState.defMod = debuff.multiplier;
+        defenderState.defModTurns = debuff.turns;
+      }
+      const statName = debuff.stat === "atk" ? "Attack" : "Defense";
+      log.push(`  -> 💢 ${defender.name}'s ${statName} fell to x${debuff.multiplier} for ${debuff.turns} turns!`);
+      break;
+    }
+    case "drainMana": {
+      defenderState.mp = Math.max(0, defenderState.mp - debuff.amount);
+      log.push(`  -> 🔻 ${defender.name} lost ${debuff.amount} MP! (${defenderState.mp}/${defenderState.maxMp})`);
+      break;
+    }
+    case "removeShield": {
+      defenderState.shieldPoints = 0;
+      log.push(`  -> 💥 ${defender.name}'s shield was destroyed!`);
+      break;
+    }
+    case "inflictStatus": {
+      // Guaranteed, no roll -- distinct from the chance-based infliction
+      // executeDamage() above still does; that stays untouched.
+      setStatusTurns(defenderState, debuff.status, STATUS_DURATION);
+      statusInflicted.push(debuff.status);
+      log.push(statusInflictLogLine(debuff.status, defender.name));
+      break;
+    }
+  }
+
+  return { log, hit: true, dealt: 0, statusInflicted };
+}
+
 // Rolls blind's self-miss (and decrements blindTurns once per attack
 // attempt, whether it hits or misses) and dodge, then delegates to
 // executeMove with the outcome already decided.
-function resolveAttack(atkState: FighterState, defState: FighterState, move: DamageMove): MoveResult {
+function resolveAttack(atkState: FighterState, defState: FighterState, move: Move): MoveResult {
   let blindMiss = false;
   if (atkState.blindTurns > 0) {
     blindMiss = Math.random() < BLIND_MISS_CHANCE;
@@ -253,9 +432,6 @@ export function resolveRound(
   move1: Move,
   move2: Move
 ): RoundResult {
-  assertDamageMove(move1);
-  assertDamageMove(move2);
-
   const log: string[] = [];
   const events: BattleEvent[] = [];
 
@@ -265,7 +441,7 @@ export function resolveRound(
   const p1Speed = freezeAdjusted(fighter1State.pokemon.spd, fighter1State) + randInt(-2, 2);
   const p2Speed = freezeAdjusted(fighter2State.pokemon.spd, fighter2State) + randInt(-2, 2);
 
-  const order: Array<[FighterState, FighterState, DamageMove, RoomSlot]> =
+  const order: Array<[FighterState, FighterState, Move, RoomSlot]> =
     p1Speed >= p2Speed
       ? [
           [fighter1State, fighter2State, move1, 1],
@@ -425,7 +601,6 @@ export function resolveTeamRound(
 
     const move = atkState.pokemon.moves[action.moveIndex];
     if (!move) continue; // validated by the caller before reaching here
-    assertDamageMove(move);
 
     const result = resolveAttack(atkState, defState, move);
     log.push(...result.log);

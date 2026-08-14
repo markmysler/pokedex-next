@@ -1,9 +1,12 @@
 # Step 24: Battle engine — buff & debuff execution
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain. Depends on steps 21
-(types) and 22 (real moves to test with).
+**Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
+
+Closes most of step 23's "known interim gap" — newly-rolled instances'
+buff/debuff support moves are now fully executable in a real battle.
+Drain and redirect moves (the other 2 support kinds) still throw until
+steps 25/26 land.
 
 ## Why here
 
@@ -123,31 +126,46 @@ needed there.
 
 ## End state
 
-- [ ] A `statUp`/`statDown` buff/debuff move measurably changes the
+- [x] A `statUp`/`statDown` buff/debuff move measurably changes the
       damage dealt/taken by the affected fighter afterward, decaying back
       to normal after its turn count expires — same verification style
       used for step 19's freeze (many trials, averaged, compared against
-      an unaffected control).
-- [ ] Re-casting a stat buff before it expires refreshes its duration
+      an unaffected control). (Swords Dance: 300-trial avg damage 16.3 →
+      24.2 after self-casting it, ~1.5x as designed. Harden's `defModTurns`
+      confirmed to decay 2→1→0 and `defMod` reset to 1 after 2 status
+      ticks via `resolveRound()`.)
+- [x] Re-casting a stat buff before it expires refreshes its duration
       without stacking its magnitude (verified: casting `statUp 1.3x` for
-      3 turns twice in a row never produces `1.69x`).
-- [ ] `heal`/`restoreMana` correctly cap at `maxHp`/`maxMp` (can't
+      3 turns twice in a row never produces `1.69x`). (Cast Swords Dance
+      [1.5x/3t] twice in a row: `atkMod` stayed 1.5, `atkModTurns` reset to
+      3, never compounded to 2.25.)
+- [x] `heal`/`restoreMana` correctly cap at `maxHp`/`maxMp` (can't
       overheal past max).
-- [ ] `shield` correctly absorbs incoming damage before HP, correctly
+- [x] `shield` correctly absorbs incoming damage before HP, correctly
       stacks when cast twice, and correctly lets damage through to HP
       once depleted (including a hit that's larger than the remaining
       shield — partial absorb, remainder hits HP, in the same hit).
-- [ ] `cleanse` zeroes all five existing status turn counters on its
+      (Barrier x2 → 120 shield; forced a 10-point shield against a bigger
+      hit → shield hit 0, exactly `dealt - 10` came off HP in that same
+      call; a 999-point shield fully absorbed a hit with zero HP loss.)
+- [x] `cleanse` zeroes all five existing status turn counters on its
       target and nothing else (regression check: doesn't touch
       `atkModTurns`/`defModTurns`/`shieldPoints`/`redirectTurns`).
-- [ ] `drainMana`/`removeShield` correctly floor at 0 (can't go negative).
-- [ ] `inflictStatus` guarantees the named status every time it's used,
+- [x] `drainMana`/`removeShield` correctly floor at 0 (can't go negative).
+- [x] `inflictStatus` guarantees the named status every time it's used,
       with no roll involved (100/100 trials, contrasted against the
       existing chance-based infliction which is unaffected and still
-      probabilistic).
-- [ ] A frozen (step 19) fighter that's also debuffed is weaker than
+      probabilistic). (Toxic Spike: 100/100.)
+- [x] A frozen (step 19) fighter that's also debuffed is weaker than
       either effect alone — confirms the multipliers compose rather than
-      one overriding the other.
-- [ ] Existing pure-damage-move battles (both 1v1 local and 3v3 online)
-      are unaffected — regression check, not just "still compiles."
-- [ ] `npm run build` / `npm run lint` clean.
+      one overriding the other. (Fixed instance pair, 300-trial averages
+      each: baseline 12.5 → frozen-only 9.3 ≈ debuffed-only 9.2 → both
+      6.9, clearly lower than either alone.)
+- [x] Existing pure-damage-move battles (both 1v1 local and 3v3 online)
+      are unaffected — regression check, not just "still compiles." (Also
+      ran 50 full battles — 30x 1v1, 20x 3v3 — using freshly-rolled
+      instances' real (2-damage+2-support) movesets, randomly picking
+      among damage/buff/debuff slots each turn: 0 crashes. Confirmed
+      drain/redirect still correctly throw the documented "not executable
+      yet (see upgrades/25-26)" error.)
+- [x] `npm run build` / `npm run lint` clean.

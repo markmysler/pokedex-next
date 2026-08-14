@@ -3,15 +3,13 @@
 **Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
 rework" section for the full context and dependency chain.
 
-**Known interim gap (expected, closed by steps 24-26):** every newly
--rolled instance now gets 2 support moves it cannot actually use yet —
-`battleEngine.ts`'s `assertDamageMove()` (step 21) throws if a
-buff/debuff/drain/redirect move is ever selected in a real battle, since
-nothing executes those kinds until steps 24-26 land. Already-rolled
-instances (from before this step) are unaffected — they still have 4
-damage moves. Don't roll/use new lootbox Pokemon in an actual battle
-until at least step 24 ships, or a battle attempting to use one of their
-support moves will error.
+**Known interim gap (partially closed by step 24; fully closed by steps
+25-26):** every newly-rolled instance gets 2 support moves. As of step
+24, buff/debuff support moves execute correctly in a real battle. Drain
+and redirect moves still throw in `battleEngine.ts` if selected, since
+nothing executes those two kinds until steps 25/26 land.
+Already-rolled instances (from before this step) are unaffected — they
+still have 4 damage moves.
 
 ## Why here
 
