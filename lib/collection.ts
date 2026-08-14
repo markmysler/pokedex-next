@@ -1,5 +1,5 @@
 import type { Move, OwnedPokemon, Pokemon, PokemonType, RolledStats } from "@/types/pokemon";
-import { allMoves, movesByType } from "./data/movePool";
+import { allMoves, movesByType, supportMoves, supportMovesByType } from "./data/movePool";
 import { getPokemon, pokedexOrder } from "./pokedex";
 
 // Box-Muller transform — standard normal (mean 0, stddev 1).
@@ -44,27 +44,56 @@ export function rollStats(pokemon: Pick<Pokemon, "hp" | "atk" | "def" | "spatk" 
 // models this exact same pool mixture when scoring a rolled moveset.
 export const SAME_TYPE_CHANCE = 0.85;
 export const MOVE_SLOTS = 4;
+// Guaranteed 2-damage + 2-support split (upgrades/23-guaranteed-move-slot
+// -rolling.md) -- deliberately *not* one-forced-buff + one-forced-debuff
+// etc., just "2 of the other kinds," each of the 2 support slots drawn
+// independently from the combined buff/debuff/drain/redirect pool.
+const DAMAGE_SLOTS = 2;
+const SUPPORT_SLOTS = 4 - DAMAGE_SLOTS;
 const MAX_ROLL_ATTEMPTS = 200;
 
-// ~85% of a rolled Pokemon's moves match one of its own type(s); ~15% can be
-// any type (the "rare cases" from the request). Draws without replacement —
-// a moveset with the same move in two slots would look like a bug.
+// Draws one move from `pool` (85%-own-type/15%-any-type weighting, same as
+// before), retrying against a name already in `excludeNames` up to
+// MAX_ROLL_ATTEMPTS times. Shared by rollMoveset()'s damage and support
+// passes so both get identical own-type-weighted sampling behavior.
+function rollOneMove(
+  pool: Move[],
+  poolByType: Partial<Record<PokemonType, Move[]>>,
+  ownTypes: PokemonType[],
+  excludeNames: Set<string>
+): Move | undefined {
+  const ownTypePool = ownTypes.flatMap((t) => poolByType[t] ?? []);
+
+  for (let attempts = 0; attempts < MAX_ROLL_ATTEMPTS; attempts++) {
+    const useOwnType = ownTypePool.length > 0 && Math.random() < SAME_TYPE_CHANCE;
+    const candidates = useOwnType ? ownTypePool : pool;
+    const candidate = candidates[Math.floor(Math.random() * candidates.length)];
+    if (!excludeNames.has(candidate.name)) return candidate;
+  }
+  return undefined;
+}
+
+// 2 slots from the damage pool + 2 from the combined support pool (buff/
+// debuff/drain/redirect), each slot independently 85%-own-type-weighted.
+// Name-dedup is global across all 4 slots, not per-pool -- a Pokemon
+// shouldn't roll the same move name twice even across pools (defensive;
+// the pools are disjoint by kind so this shouldn't trigger in practice).
 export function rollMoveset(pokemon: Pick<Pokemon, "type1" | "type2">): Move[] {
   const ownTypes: PokemonType[] = [pokemon.type1, pokemon.type2].filter((t): t is PokemonType => Boolean(t));
-  const ownTypePool = ownTypes.flatMap((t) => movesByType[t] ?? []);
-
   const picked: Move[] = [];
   const pickedNames = new Set<string>();
-  let attempts = 0;
 
-  while (picked.length < MOVE_SLOTS && attempts < MAX_ROLL_ATTEMPTS) {
-    attempts++;
-    const useOwnType = ownTypePool.length > 0 && Math.random() < SAME_TYPE_CHANCE;
-    const pool = useOwnType ? ownTypePool : allMoves;
-    const candidate = pool[Math.floor(Math.random() * pool.length)];
-    if (pickedNames.has(candidate.name)) continue;
-    pickedNames.add(candidate.name);
-    picked.push(candidate);
+  for (let i = 0; i < DAMAGE_SLOTS; i++) {
+    const move = rollOneMove(allMoves, movesByType, ownTypes, pickedNames);
+    if (!move) break;
+    picked.push(move);
+    pickedNames.add(move.name);
+  }
+  for (let i = 0; i < SUPPORT_SLOTS; i++) {
+    const move = rollOneMove(supportMoves, supportMovesByType, ownTypes, pickedNames);
+    if (!move) break;
+    picked.push(move);
+    pickedNames.add(move.name);
   }
 
   return picked;

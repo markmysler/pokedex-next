@@ -87,3 +87,11 @@ export const redirectMoves: RedirectMove[] = [
   { name: "Disorient", type: "Normal", mana_cost: 25, kind: "redirect", turns: 2 },
 ];
 export const redirectMovesByType = groupByType(redirectMoves);
+
+// Combined "support" pool (upgrades/23-guaranteed-move-slot-rolling.md) --
+// the 4 new kinds pooled together, drawn from as a single unit for a
+// rolled instance's 2 support slots (as opposed to a forced one-of-each
+// guarantee). Union of the 4 per-type maps the same way the flat array is
+// a union of the 4 flat arrays.
+export const supportMoves: Move[] = [...buffMoves, ...debuffMoves, ...drainMoves, ...redirectMoves];
+export const supportMovesByType: Partial<Record<PokemonType, Move[]>> = groupByType(supportMoves);

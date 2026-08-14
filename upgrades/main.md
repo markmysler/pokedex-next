@@ -10,9 +10,12 @@ shipped in full. v3 itself followed the v2 plan
 ([archive/v2/main.md](archive/v2/main.md), 15 steps, all shipped), which
 followed the original 8-step plan ([archive/main.md](archive/main.md)).
 
-**Steps 21-22 shipped (2026-08-12, 2026-08-14); steps 23-29 remain
-planning-only.** See "The attack-system rework" below before starting any
-of the remaining steps.
+**Steps 21-23 shipped (2026-08-12, 2026-08-14, 2026-08-14); steps 24-29
+remain planning-only.** See "The attack-system rework" below before
+starting any of the remaining steps. **Interim note:** as of step 23,
+every newly-rolled instance gets 2 support moves that can't actually be
+used in a battle yet — see step 23's "Known interim gap" — so steps
+24-26 (engine execution) should follow soon.
 
 Each step has its own file with what to build and an end state to
 validate against before moving to the next step — same format as every
@@ -22,7 +25,7 @@ archived plan.
 |---|------|------|------------|--------|
 | 21 | Move data model rework (damage/buff/debuff/drain/redirect) | [21-move-kind-data-model.md](21-move-kind-data-model.md) | — | **Shipped** |
 | 22 | Author the buff/debuff/drain/redirect move pool | [22-buff-debuff-drain-redirect-move-pool.md](22-buff-debuff-drain-redirect-move-pool.md) | 21 | **Shipped** |
-| 23 | Guaranteed 2-damage + 2-support move-slot rolling | [23-guaranteed-move-slot-rolling.md](23-guaranteed-move-slot-rolling.md) | 22 | **Planned** |
+| 23 | Guaranteed 2-damage + 2-support move-slot rolling | [23-guaranteed-move-slot-rolling.md](23-guaranteed-move-slot-rolling.md) | 22 | **Shipped** |
 | 24 | Battle engine: buff & debuff execution | [24-battle-engine-buffs-and-debuffs.md](24-battle-engine-buffs-and-debuffs.md) | 21, 22 | **Planned** |
 | 25 | Battle engine: drain (life/mana steal) execution | [25-battle-engine-drain-moves.md](25-battle-engine-drain-moves.md) | 21, 22 | **Planned** |
 | 26 | Battle engine: redirect, self-hit only | [26-battle-engine-redirect-self.md](26-battle-engine-redirect-self.md) | 21, 22 | **Planned** |

@@ -1,9 +1,17 @@
 # Step 23: Guaranteed 2-damage + 2-support move-slot rolling
 
-**Status: planning only — not implemented.** Do not start this step
-without an explicit go-ahead; see `main.md`'s "The attack-system rework"
-section for the full context and dependency chain. Depends on step 22
-(needs real buff/debuff/drain/redirect moves to draw from).
+**Status: shipped**, 2026-08-14. See `main.md`'s "The attack-system
+rework" section for the full context and dependency chain.
+
+**Known interim gap (expected, closed by steps 24-26):** every newly
+-rolled instance now gets 2 support moves it cannot actually use yet —
+`battleEngine.ts`'s `assertDamageMove()` (step 21) throws if a
+buff/debuff/drain/redirect move is ever selected in a real battle, since
+nothing executes those kinds until steps 24-26 land. Already-rolled
+instances (from before this step) are unaffected — they still have 4
+damage moves. Don't roll/use new lootbox Pokemon in an actual battle
+until at least step 24 ships, or a battle attempting to use one of their
+support moves will error.
 
 ## Why here
 
@@ -73,24 +81,44 @@ rolled" changes from the caller's perspective.
 
 ## End state
 
-- [ ] `rollMoveset()` always returns exactly 4 moves: exactly 2 with
+- [x] `rollMoveset()` always returns exactly 4 moves: exactly 2 with
       `kind: "damage"`, exactly 2 with `kind` in `{buff, debuff, drain,
       redirect}`, verified over many trials (hundreds), not just a single
-      call.
-- [ ] The existing 85%-own-type / 15%-any-type weighting still holds
+      call. (2000 trials across random species, 0 shortfalls, always
+      exactly 2+2.)
+- [x] The existing 85%-own-type / 15%-any-type weighting still holds
       separately for both the damage pass and the support pass (a
       Fire-type Pokemon's 2 support slots lean Fire-flavored buffs/
       debuffs/drain/redirect at roughly the same 85% rate its damage
-      slots already do).
-- [ ] No move name ever repeats within one rolled moveset, across all 4
+      slots already do). (Verified with Normal — deep enough own-type
+      pools on both sides (5 damage/8 support) to measure cleanly: 85.2%
+      damage, 87.8% support over 8000 draws each. A sparse type like Fire
+      (only 1 own-type support move) shows a lower *measured* rate for its
+      2nd support slot purely because global dedup excludes that single
+      move once the 1st slot claims it — a dedup artifact of small pools,
+      not a weighting bug; the shared `rollOneMove()` helper applies
+      identical logic to both passes by construction.)
+- [x] No move name ever repeats within one rolled moveset, across all 4
       slots (regression check on the existing dedup behavior, now spanning
-      2 pools instead of 1).
-- [ ] `rollBotOpponent()`/`rollBotTeam()` (bot-side teams, local Battle
+      2 pools instead of 1). (Checked on every trial above — always 4
+      unique names.)
+- [x] `rollBotOpponent()`/`rollBotTeam()` (bot-side teams, local Battle
       Arena) automatically pick up the same 2-damage+2-support guarantee
       with no code changes of their own — verified, not assumed, since
-      they reuse `rollMoveset()`.
-- [ ] Every one of the 18 `PokemonType`s can actually complete a roll
+      they reuse `rollMoveset()`. (100 `rollBotOpponent()` calls + 20
+      `rollBotTeam()` calls, all 2+2.)
+- [x] Every one of the 18 `PokemonType`s can actually complete a roll
       without hitting `MAX_ROLL_ATTEMPTS` and falling short of 4 moves —
       exercises step 22's "no type structurally unable to roll a support
-      move" checklist item for real, at rolling time.
-- [ ] `npm run build` / `npm run lint` clean.
+      move" checklist item for real, at rolling time. (50 rolls per
+      mono-type Pokemon across all 18 types, 0 shortfalls — including the
+      5 types with zero own-type support moves today (Water, Ground,
+      Flying, Rock, Dragon), which correctly fall through to the full
+      support pool every time instead of failing.)
+- [x] `npm run build` / `npm run lint` clean.
+
+Also verified: a battle using only the 2 damage-move slots off a freshly
+-rolled instance still resolves correctly end-to-end (no regression on
+the part of rolling this step actually owns); selecting one of the 2 new
+support-move slots in a real battle currently throws a clear, expected
+error (`assertDamageMove` from step 21) — see "Known interim gap" above.
