@@ -32,9 +32,12 @@ const KIND_COLOR: Record<Exclude<MoveKind, "damage">, string> = {
 
 export default function MoveButton({ move, disabled, insufficientMana, onClick }: MoveButtonProps) {
   const icon = move.kind === "damage" ? "" : `${KIND_ICON[move.kind]} `;
-  const label = insufficientMana
-    ? `⚠️ ${move.name} (${move.mana_cost} MP)`
-    : `${icon}${move.name} (${moveEffectText(move)} | ${move.mana_cost} MP)`;
+  // Split into a name line (display font) and a meta line (mono) instead of
+  // one combined string (upgrades/35-battle-shared-components-redesign.md's
+  // "movebtn-style layout") -- same information as before, just laid out on
+  // two lines rather than packed into a single label.
+  const nameLine = insufficientMana ? `⚠️ ${move.name}` : `${icon}${move.name}`;
+  const metaLine = insufficientMana ? `${move.mana_cost} MP` : `${moveEffectText(move)} · ${move.mana_cost} MP`;
   const background = disabled ? "gray" : move.kind === "damage" ? TYPE_COLORS[move.type] ?? "#68A090" : KIND_COLOR[move.kind];
   // Same reasoning as FighterCard.tsx's status badges: --good/--bad/--info/
   // --warn run bright in dark theme, so the button's default white label
@@ -52,7 +55,8 @@ export default function MoveButton({ move, disabled, insufficientMana, onClick }
       onClick={onClick}
       title={moveTooltip(move)}
     >
-      {label}
+      <span className="move-btn-name">{nameLine}</span>
+      <span className="move-btn-meta">{metaLine}</span>
     </button>
   );
 }

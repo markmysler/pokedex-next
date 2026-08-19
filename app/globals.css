@@ -395,25 +395,80 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .arena-frame { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .fighter-card {
   background: var(--surface);
-  border-radius: 10px;
-  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+  box-shadow: var(--shadow-1);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
 }
 .fighter-card h3 { margin: 4px 0; }
+/* "CardTab-adjacent" bezel-pill treatment (upgrades/35-battle-shared-
+   components-redesign.md) -- the literal CardTab component doesn't fit a
+   fighter card's centered, icon-less layout, so this hand-styles the same
+   dark-pill/mono/uppercase language instead (plan explicitly allows this). */
+.fighter-name-tab {
+  display: inline-flex;
+  align-items: center;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
 .fighter-species-line { font-size: 11px; color: var(--ink-soft); margin: -4px 0 4px 0; }
 .battle-sprite { width: 85px; height: 85px; object-fit: contain; }
-.hp-label, .mp-label { font-size: 12px; font-weight: bold; margin: 0; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-.mp-label { color: #00BCFF; }
-.fighter-card .progress-bar { width: 100%; }
-.moves-caption { font-size: 11px; font-weight: bold; color: var(--ink-soft); margin-top: 4px; }
+.fighter-card .meter { width: 100%; }
+.moves-caption {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-top: var(--s-2);
+}
 .moves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; }
 .move-btn {
-  border: none; border-radius: 8px; padding: 6px 4px; font-size: 11px; font-weight: bold; color: white; cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  color: white;
 }
+/* Subtle top-highlight gradient (upgrades/35-battle-shared-components-
+   redesign.md's "movebtn-style layout") -- a light skeuomorphic sheen
+   fitting the device-readout aesthetic, sitting above the button's own
+   inline background color, below its text (both via z-index stacking). */
+.move-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22), transparent 60%);
+  pointer-events: none;
+}
+.move-btn-name { position: relative; font-family: var(--font-display); font-weight: 800; font-size: 12px; }
+.move-btn-meta { position: relative; font-family: var(--font-mono); font-size: 10px; opacity: .85; }
 .move-btn:disabled { background: var(--surface-3) !important; color: var(--ink-faint); cursor: not-allowed; }
+.move-btn:disabled::before { display: none; }
 .ai-arsenal { font-size: 11px; color: var(--ink-faint); text-align: center; }
 
 /* 3v3 TEAM PICKER + BENCH (upgrades/archive/v2/05-3v3-battles.md) */
@@ -457,6 +512,7 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .bench-sprite { width: 32px; height: 32px; object-fit: contain; }
 .bench-name { font-size: 10px; font-weight: bold; }
 .bench-hp { font-size: 9px; color: var(--ink-soft); }
+.bench-member .meter { width: 100%; margin: 1px 0; }
 
 .status-badges { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
 .status-badge {
@@ -938,7 +994,7 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 
 .battle-result-dialog { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 6px; }
 .battle-result-dialog h2 { margin: 0; }
-.battle-result-lootbox { color: #FFD700; font-weight: bold; }
+.battle-result-lootbox { color: var(--accent-2); font-weight: bold; }
 .battle-result-no-lootbox { color: var(--ink-soft); }
 .battle-result-actions { display: flex; gap: 10px; }
 
@@ -1103,6 +1159,11 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .segbar { height: 10px; border-radius: 4px; background: var(--surface-2); display: flex; gap: 2px; padding: 2px; overflow: hidden; }
 .segbar span { flex: 1; border-radius: 2px; background: var(--surface-3); }
 .segbar span.on { background: var(--seg-color, var(--accent)); }
+
+/* Bench-member size (upgrades/35-battle-shared-components-redesign.md) --
+   same component, smaller everything to fit inside a ~1/3-width bench card. */
+.meter.compact { grid-template-columns: 20px 1fr 30px; gap: 4px; font-size: 8px; margin: 2px 0; }
+.meter.compact .segbar { height: 6px; padding: 1px; gap: 1px; }
 
 /* CARD TAB (components/ui/CardTab.tsx, upgrades/31-shared-ui-primitives.md)
    — the overlapping icon-chip + eyebrow-label header every card wears

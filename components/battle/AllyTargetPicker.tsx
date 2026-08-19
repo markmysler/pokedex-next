@@ -2,6 +2,16 @@ import type { FighterState } from "@/types/pokemon";
 import { displayName } from "@/lib/pokemonDisplay";
 import { isShinyInstance } from "@/lib/shiny";
 import Sprite from "@/components/Sprite";
+import SegmentedMeter from "@/components/ui/SegmentedMeter";
+
+// Same green->amber->red thresholds as FighterCard.tsx's bench meters
+// (upgrades/35-battle-shared-components-redesign.md) -- kept as a local
+// copy rather than importing FighterCard's private helper, same as this
+// component already duplicates FighterCard's bench-member visual language
+// rather than importing FighterCard itself.
+function hpColor(pct: number): string {
+  return pct > 0.5 ? "var(--good)" : pct > 0.2 ? "var(--warn)" : "var(--bad)";
+}
 
 interface AllyTargetPickerProps {
   team: [FighterState, FighterState, FighterState];
@@ -36,7 +46,7 @@ export default function AllyTargetPicker({ team, activeIndex, onSelect, onCancel
             >
               <Sprite name={member.pokemon.name} form={shiny ? "shiny" : "normal"} className="bench-sprite" />
               <span className="bench-name">{isSelf ? "Self" : displayName(member.pokemon)}</span>
-              <span className="bench-hp">{Math.max(0, member.hp)}/{member.maxHp} HP</span>
+              <SegmentedMeter label="HP" value={Math.max(0, member.hp)} max={member.maxHp} color={hpColor(Math.max(0, Math.min(1, member.hp / member.maxHp)))} segments={6} compact />
             </button>
           );
         })}

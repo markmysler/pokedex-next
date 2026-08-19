@@ -33,7 +33,7 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
-**Progress: steps 30–34 shipped 2026-08-19** (design tokens in
+**Progress: steps 30–35 shipped 2026-08-19** (design tokens in
 `app/globals.css`/`lib/typeData.ts`; shared primitives — buttons, inputs,
 chips, the new `SegmentedMeter`/`CardTab` components, and the Modal/Toast/
 battle-log fixes — also in `app/globals.css` plus
@@ -47,14 +47,21 @@ the Collection cluster — Pokédex and Inventory both wired with
 `SegmentedMeter`/`CardTab`, the shared mobile split-pane →
 full-screen-detail pattern, Inventory's gold `.lootbox-hero` banner and
 `.btn-tradeup` button, and `LootboxRevealDialog`'s stat rows migrated to
-`SegmentedMeter` with its `revealed` prop driving the existing stagger.
-All five verified via `npm run build`/`npm run lint` and Playwright —
-steps 30–31 via screenshots of a throwaway component gallery, steps
-32–34 via live disposable-account click-throughs (real signup, real
-navigation, a real profile save, a real lootbox open, zero console
-errors) since neither a nav rework nor an authenticated page can be
-meaningfully verified without a session. See each step file's End state
-notes). Steps 35–39 not started.
+`SegmentedMeter` with its `revealed` prop driving the existing stagger;
+the Battle shared components — `FighterCard`'s HP/MP (both active-size
+and a new compact bench size) migrated to `SegmentedMeter`, its title/
+moves-caption hand-styled onto the bezel-tab language, `MoveButton` split
+into a two-line name/meta layout with a top-highlight sheen, and
+`AllyTargetPicker`/`BattleResultDialog` restyled to match. All six
+verified via `npm run build`/`npm run lint` and Playwright — steps 30–31
+via screenshots of a throwaway component gallery, steps 32–34 via live
+disposable-account click-throughs (real signup, real navigation, a real
+profile save, a real lootbox open), step 35 via a real ~14-round bot
+battle plus a throwaway status-badge/move-kind gallery (same
+mount-screenshot-revert technique as 30–31, since RNG doesn't reliably
+surface every status in a short test battle) — zero console errors
+throughout. See each step file's End state notes). Steps 36–39 not
+started.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
@@ -63,7 +70,7 @@ notes). Steps 35–39 not started.
 | 32 | ✅ Navigation shell — desktop rail + mobile bottom tabs | [32-navigation-shell-rework.md](32-navigation-shell-rework.md) | 30, 31 |
 | 33 | ✅ Account cluster — Login, Signup, Dashboard, Profile | [33-account-cluster-redesign.md](33-account-cluster-redesign.md) | 30, 31, 32 |
 | 34 | ✅ Collection cluster — Pokédex, Inventory, Lootbox reveal | [34-collection-cluster-redesign.md](34-collection-cluster-redesign.md) | 30, 31, 32 |
-| 35 | Battle shared components — FighterCard, MoveButton, AllyTargetPicker, BattleResultDialog | [35-battle-shared-components-redesign.md](35-battle-shared-components-redesign.md) | 30, 31 |
+| 35 | ✅ Battle shared components — FighterCard, MoveButton, AllyTargetPicker, BattleResultDialog | [35-battle-shared-components-redesign.md](35-battle-shared-components-redesign.md) | 30, 31 |
 | 36 | Battle Arena page + Team Picker — bot battle wiring | [36-battle-arena-and-team-picker-redesign.md](36-battle-arena-and-team-picker-redesign.md) | 32, 35 |
 | 37 | Online Battle page — room setup, chat, rematch wiring | [37-online-battle-redesign.md](37-online-battle-redesign.md) | 35, 36 |
 | 38 | Social & progression cluster — Friends, Trade/Chat, Notifications, History, Leaderboard | [38-social-cluster-redesign.md](38-social-cluster-redesign.md) | 30, 31, 32 |
@@ -226,6 +233,29 @@ From the 2026-08-19 design pass and planning conversation:
   matching `.shiny-badge`'s existing "rare item" convention of staying
   visually identical in both themes rather than flipping with theme
   tokens — consistent with why `.shiny-badge` itself isn't tokenized.
+- **`SegmentedMeter`'s root element is `<span>`, not `<div>`** (changed in
+  step 35, when `FighterCard`'s bench meters became its first consumer
+  nested inside a `<button>`) — a `<div>` isn't valid phrasing content
+  inside a button, same constraint that already made `StatusBadges` a
+  `<span>`. Purely a tag change; `.meter`/`.segbar`'s CSS `display: grid`/
+  `flex` means layout is identical either way. Anything wiring
+  `SegmentedMeter` into a `<button>` or other phrasing-content-only
+  context in a later step (36–38) gets this for free; nothing further to
+  do.
+- **Battle status-badge colors were already correct going into step 35**
+  — buff/debuff/shield/redirect were mapped onto good/bad/info/warn back
+  in step 31 (before any page had a reason to render them live), so step
+  35's "final check" against `DESIGN_SYSTEM.md` §6 was a verification
+  pass, not new work: confirmed via a throwaway `FighterCard` mount that
+  every status (including the 5 fixed-hue ones — bleed/blind/poison/burn/
+  freeze, which §6 says should *keep* distinct hues rather than move onto
+  tokens) reads correctly in both themes. No CSS values changed in 35.
+- **`FighterCard`'s bench meters show HP only, not MP`** — the bench data
+  shape (`TeamMemberDisplay`) never carried mp/maxMp for benched members,
+  a pre-existing gap this step didn't introduce or attempt to fix. Noting
+  here in case 36/37/38 want bench MP visible later: that requires a
+  data-shape change wherever `TeamMemberDisplay`/its equivalent is built,
+  not just another component restyle.
 
 ## Working through a step
 

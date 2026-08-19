@@ -1,8 +1,16 @@
 import type { OwnedPokemon } from "@/types/pokemon";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
+import SegmentedMeter from "@/components/ui/SegmentedMeter";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName } from "@/lib/pokemonDisplay";
+
+// Same green->amber->red HP-percentage logic as before, just feeding
+// SegmentedMeter's color prop with tokens instead of an inline hex style
+// (upgrades/35-battle-shared-components-redesign.md).
+function hpColor(pct: number): string {
+  return pct > 0.5 ? "var(--good)" : pct > 0.2 ? "var(--warn)" : "var(--bad)";
+}
 
 interface TeamMemberDisplay {
   pokemon: OwnedPokemon;
@@ -168,14 +176,11 @@ export default function FighterCard({
   activeIndex,
   onSwitchTo,
 }: FighterCardProps) {
-  const hpPct = Math.max(0, Math.min(1, hp / maxHp));
-  const hpColor = hpPct > 0.5 ? "#2FA572" : hpPct > 0.2 ? "#F39C12" : "#E74C3C";
-  const mpPct = Math.max(0, Math.min(1, mp / maxMp));
   const shiny = isShinyInstance(pokemon);
 
   return (
     <div className="fighter-card">
-      <h3>{title}{displayName(pokemon)}</h3>
+      <h3><span className="fighter-name-tab">{title}{displayName(pokemon)}</span></h3>
       {pokemon.nickname && <div className="fighter-species-line">#{pokemon.number} {pokemon.name}</div>}
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
       {shiny && <span className="shiny-badge">✨ Shiny</span>}
@@ -194,15 +199,8 @@ export default function FighterCard({
       />
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
 
-      <div className="hp-label">HP: {Math.max(0, hp)} / {maxHp}</div>
-      <div className="progress-bar small">
-        <div className="progress-fill hp" style={{ width: `${hpPct * 100}%`, background: hpColor }} />
-      </div>
-
-      <div className="mp-label">💧 Mana: {Math.max(0, mp)} / {maxMp}</div>
-      <div className="progress-bar small">
-        <div className="progress-fill mp" style={{ width: `${mpPct * 100}%` }} />
-      </div>
+      <SegmentedMeter label="HP" value={Math.max(0, hp)} max={maxHp} color={hpColor(Math.max(0, Math.min(1, hp / maxHp)))} />
+      <SegmentedMeter label="MP" value={Math.max(0, mp)} max={maxMp} color="var(--info)" />
 
       <div className="moves-caption">{movesCaption}</div>
       {children}
@@ -225,7 +223,11 @@ export default function FighterCard({
               >
                 <Sprite name={member.pokemon.name} form={benchShiny ? "shiny" : "normal"} className="bench-sprite" />
                 <span className="bench-name">{benchShiny ? "✨ " : ""}{displayName(member.pokemon)}</span>
-                <span className="bench-hp">{fainted ? "💀 Fainted" : `${Math.max(0, member.hp)}/${member.maxHp} HP`}</span>
+                {fainted ? (
+                  <span className="bench-hp">💀 Fainted</span>
+                ) : (
+                  <SegmentedMeter label="HP" value={Math.max(0, member.hp)} max={member.maxHp} color={hpColor(Math.max(0, Math.min(1, member.hp / member.maxHp)))} segments={6} compact />
+                )}
                 {!fainted && (
                   <StatusBadges
                     bleedTurns={member.bleedTurns}
