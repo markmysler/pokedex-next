@@ -7,6 +7,7 @@ import MoveButton from "@/components/battle/MoveButton";
 import AllyTargetPicker from "@/components/battle/AllyTargetPicker";
 import BattleResultDialog from "@/components/battle/BattleResultDialog";
 import LootboxRevealDialog from "@/components/inventory/LootboxRevealDialog";
+import CardTab from "@/components/ui/CardTab";
 import TeamPicker from "./TeamPicker";
 import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
@@ -481,10 +482,11 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
   if (!roomCode) {
     return (
       <div className="card" id="online-setup">
-        <h3>🌐 Online Battle (3v3)</h3>
+        <CardTab icon="🌐" label="Online battle (3v3)" />
         <div className="online-actions">
-          <button className="btn-primary" onClick={createRoom}>Create Room</button>
+          <button className="btn-primary" onClick={createRoom}>🆕 Create Room</button>
         </div>
+        <div className="online-divider"><span>or</span></div>
         <div className="online-join-row">
           <input
             value={roomCodeInput}
@@ -503,7 +505,8 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     return (
       <>
         <div className="card" id="online-setup">
-          <h3>🌐 Room Code: {roomCode}</h3>
+          <CardTab icon="🌐" label="Waiting for opponent" />
+          <p className="friend-code-display">{roomCode}</p>
           <div className="online-status">{status}</div>
           <button className="btn-secondary" onClick={leaveRoom}>Cancel</button>
         </div>
@@ -516,12 +519,12 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     return (
       <>
         <div className="card select-bar">
-          <div>Room Code: <strong>{roomCode}</strong></div>
+          <div>Room Code: <span className="room-code-chip">{roomCode}</span></div>
           <button className="btn-secondary" onClick={leaveRoom}>Leave Room</button>
         </div>
         {myLockedIn ? (
           <div className="card">
-            <h3>✅ Team Locked In</h3>
+            <CardTab icon="✅" label="Team locked in" color="var(--good)" />
             <div className="online-status">{status || "Waiting for your opponent to lock in their team..."}</div>
           </div>
         ) : (
@@ -559,7 +562,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
       )}
 
       <div className="card select-bar">
-        <div>Room Code: <strong>{roomCode}</strong> — share this with your opponent</div>
+        <div>Room Code: <span className="room-code-chip">{roomCode}</span> — share this with your opponent</div>
         <button className="btn-secondary" onClick={leaveRoom}>Leave Room</button>
       </div>
 
@@ -652,6 +655,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
 
       {battle.over && (
         <div className="card rematch-panel">
+          <CardTab icon="🔁" label="Rematch?" />
           {rematchRequestedBy === null && (
             <button className="btn-primary" onClick={requestRematch}>🔁 Request Rematch</button>
           )}

@@ -599,23 +599,33 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .ally-target-picker { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
 .ally-target-picker .bench-row { margin-top: 0; }
 
-/* IN-MATCH CHAT (upgrades/archive/v2/08-chat.md — never persisted, local state only) */
+/* IN-MATCH CHAT (upgrades/archive/v2/08-chat.md — never persisted, local
+   state only; restyled to a bubble layout in upgrades/37-online-battle-
+   redesign.md, "own message" color already correctly on var(--accent)
+   from step 30's token sweep -- nothing to change there). */
 .chat-panel { display: flex; flex-direction: column; gap: 8px; }
-.chat-panel h3 { margin: 0; }
 .chat-messages {
   min-height: 100px;
   max-height: 200px;
   overflow-y: auto;
-  background: var(--surface);
-  border-radius: 8px;
-  padding: 8px 10px;
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  padding: var(--s-3);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 6px;
   font-size: 13px;
 }
 .chat-empty { color: var(--ink-faint); margin: 0; font-size: 12px; }
-.chat-message { word-break: break-word; }
+.chat-message {
+  word-break: break-word;
+  max-width: 85%;
+  padding: 5px 10px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.chat-message.mine { align-self: flex-end; background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
 .chat-message.mine .chat-sender { color: var(--accent); }
 .chat-sender { font-weight: bold; }
 .chat-input-row { display: flex; gap: 8px; }
@@ -625,7 +635,7 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
   background: var(--surface);
   color: var(--ink);
   border: 1px solid var(--border-strong);
-  border-radius: 6px;
+  border-radius: var(--r-md);
 }
 
 .log-container { flex: 1; display: flex; flex-direction: column; }
@@ -661,15 +671,25 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .btn-danger:hover { background: var(--bad-bg); }
 .btn-danger:disabled { opacity: .5; cursor: not-allowed; }
 
-/* ONLINE BATTLE */
+/* ONLINE BATTLE (upgrades/37-online-battle-redesign.md) */
 #online-setup { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
 #online-setup h3 { margin: 0; }
 .online-actions { display: flex; }
+.online-actions .btn-primary { flex: 1; }
+/* "or" divider between Create Room and the join-by-code row -- two
+   equally-weighted entry points, not a primary/secondary hierarchy. */
+.online-divider { display: flex; align-items: center; gap: var(--s-3); color: var(--ink-faint); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.online-divider::before, .online-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 .online-join-row { display: flex; gap: 8px; }
 .online-join-row input {
   flex: 1; padding: 8px; text-transform: uppercase; letter-spacing: 2px; text-align: center;
 }
 .online-status { font-size: 13px; color: var(--ink-soft); white-space: pre-wrap; min-height: 18px; }
+/* Compact inline room-code reference for the picking/battling select-bars
+   -- distinct from .friend-code-display's full "code plate" treatment,
+   which is reserved for the dedicated waiting-room screen where the code
+   is the whole point of the card. */
+.room-code-chip { font-family: var(--font-mono); font-weight: 700; letter-spacing: .08em; background: var(--surface-2); padding: 2px 8px; border-radius: var(--r-sm); }
 
 /* Terminal readout (upgrades/31-shared-ui-primitives.md): dark screen /
    light text in dark mode, flips to light screen / dark text in light

@@ -33,7 +33,7 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
-**Progress: steps 30–36 shipped 2026-08-19** (design tokens in
+**Progress: steps 30–37 shipped 2026-08-19** (design tokens in
 `app/globals.css`/`lib/typeData.ts`; shared primitives — buttons, inputs,
 chips, the new `SegmentedMeter`/`CardTab` components, and the Modal/Toast/
 battle-log fixes — also in `app/globals.css` plus
@@ -56,16 +56,23 @@ into a two-line name/meta layout with a top-highlight sheen, and
 Arena page + Team Picker — `TeamPicker`'s `CardTab` header + sticky
 `.team-lockbar`, the VS badge turned into a solid accent pill, and a new
 720px breakpoint stacking the two `FighterCard`s vertically on narrow
-screens. All seven verified via `npm run build`/`npm run lint` and
-Playwright — steps 30–31 via screenshots of a throwaway component
-gallery, steps 32–34 via live disposable-account click-throughs (real
-signup, real navigation, a real profile save, a real lootbox open), step
-35 via a real ~14-round bot battle plus a throwaway status-badge/
-move-kind gallery, step 36 via a full team-pick → auto-battle → win →
-reset → change-team live run at three different viewport widths (700/
-760/1280px) to nail down the new stacking breakpoint precisely — zero
-console errors throughout. See each step file's End state notes). Steps
-37–39 not started.
+screens; the Online Battle page — room setup/waiting-room `CardTab`
+headers, the waiting room's code now on the shared `.friend-code-display`
+"code plate," `ChatPanel` restyled to a bubble layout, and the rematch
+panel — all reusing steps 35/36's arena/fighter-card work unchanged.
+All eight verified via `npm run build`/`npm run lint` and Playwright —
+steps 30–31 via screenshots of a throwaway component gallery, steps
+32–34 via live disposable-account click-throughs (real signup, real
+navigation, a real profile save, a real lootbox open), step 35 via a
+real ~14-round bot battle plus a throwaway status-badge/move-kind
+gallery, step 36 via a full team-pick → auto-battle → win → reset →
+change-team live run at three viewport widths, step 37 via a genuine
+two-account, two-browser-context online match (room create/join, both
+lock in, play to completion, chat both directions, rematch request/
+accept) — see that step's implementation notes for why a handful of
+400/409 network-log entries during concurrent play are expected,
+pre-existing server behavior, not a regression. See each step file's End
+state notes). Steps 38–39 not started.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
@@ -76,7 +83,7 @@ console errors throughout. See each step file's End state notes). Steps
 | 34 | ✅ Collection cluster — Pokédex, Inventory, Lootbox reveal | [34-collection-cluster-redesign.md](34-collection-cluster-redesign.md) | 30, 31, 32 |
 | 35 | ✅ Battle shared components — FighterCard, MoveButton, AllyTargetPicker, BattleResultDialog | [35-battle-shared-components-redesign.md](35-battle-shared-components-redesign.md) | 30, 31 |
 | 36 | ✅ Battle Arena page + Team Picker — bot battle wiring | [36-battle-arena-and-team-picker-redesign.md](36-battle-arena-and-team-picker-redesign.md) | 32, 35 |
-| 37 | Online Battle page — room setup, chat, rematch wiring | [37-online-battle-redesign.md](37-online-battle-redesign.md) | 35, 36 |
+| 37 | ✅ Online Battle page — room setup, chat, rematch wiring | [37-online-battle-redesign.md](37-online-battle-redesign.md) | 35, 36 |
 | 38 | Social & progression cluster — Friends, Trade/Chat, Notifications, History, Leaderboard | [38-social-cluster-redesign.md](38-social-cluster-redesign.md) | 30, 31, 32 |
 | 39 | Full responsive + theme QA pass, doc reconciliation, archive the wave | [39-responsive-theme-qa-pass.md](39-responsive-theme-qa-pass.md) | 33, 34, 35, 36, 37, 38 |
 
@@ -281,6 +288,31 @@ From the 2026-08-19 design pass and planning conversation:
   "count + confirm action pinned to the bottom of a card." Since
   `TeamPicker.tsx` is shared with Online (step 37), that page inherits
   this restyle automatically without its own pass.
+- **Step 37's live validation used two real accounts in two separate
+  Playwright browser contexts**, not one tab talking to itself — the
+  only way to genuinely exercise Realtime broadcast + the polling
+  backstop + the server-side race handling between two independent
+  clients. A handful of `400`/`409` network-log entries during actual
+  concurrent play are **expected**, not a bug: traced to
+  `app/api/rooms/[code]/move/route.ts` (untouched by this step), they're
+  the server correctly rejecting an action submitted into a state that
+  changed a moment earlier (battle already resolved, opponent's forced-
+  switch turn, etc.) — already caught and surfaced as UI status text by
+  existing (also untouched) client code, never an unhandled exception.
+  Don't chase this to literal zero in future steps that touch online
+  play; it's a property of concurrent PvP, not of the styling.
+- **Room code display has two treatments at different weights**: the
+  dedicated waiting-room screen (where the code is the whole point) gets
+  the full `.friend-code-display` "code plate" shared with Profile/
+  Friends; the compact inline references in the picking/battling phase
+  headers get a new, smaller `.room-code-chip` — same underlying
+  information, sized to how much visual weight each context deserves.
+- **Steps 35 and 36's "restyle once, reuse across both battle pages" bet
+  paid off exactly as planned in step 37** — `FighterCard`, `MoveButton`,
+  the arena's 720px stacking breakpoint, and `.battle-log`'s theme-
+  correct colors all needed zero further changes to work correctly on
+  `/online`. Only the screens genuinely unique to online play (room
+  setup, waiting room, chat, rematch) needed real work in step 37.
 
 ## Working through a step
 

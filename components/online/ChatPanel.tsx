@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import CardTab from "@/components/ui/CardTab";
 
 export interface ChatMessage {
   text: string;
@@ -36,7 +37,7 @@ export default function ChatPanel({ messages, onSend }: ChatPanelProps) {
 
   return (
     <div className="card chat-panel">
-      <h3>💬 Chat</h3>
+      <CardTab icon="💬" label="Chat" />
       <div className="chat-messages" ref={listRef}>
         {messages.length === 0 ? (
           <p className="chat-empty">No messages yet — say hi!</p>
