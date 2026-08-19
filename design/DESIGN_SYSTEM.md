@@ -61,18 +61,20 @@ Every card gets a small pill overlapping its top-left edge: a 16–20px icon chi
 
 ## 5. Meters (HP / MP / base stats)
 
-Segmented bar, not a smooth gradient fill: a 9–12 cell row, each cell independently lit or unlit, colored per context (`--good` for healthy HP, shifting toward `--warn`/`--bad` as it drops, `--info` for MP, the relevant type color for a base-stat row). Numeric readout in mono type to the right, tabular-nums. Applies to: Pokédex/Inventory stat blocks, Lootbox reveal, FighterCard HP/MP, bench HP.
+Segmented bar, not a smooth gradient fill: a 10-cell row (6 for the compact bench-member size, where 9-12 read as illegible slivers at that width), each cell independently lit or unlit, colored per context (`--good`/`--warn`/`--bad` shifting as HP drops, `--info` for MP). Numeric readout in mono type to the right, tabular-nums. Applies to: Pokédex/Inventory stat blocks, Lootbox reveal, FighterCard HP/MP (active + compact bench sizes), AllyTargetPicker.
+
+**Deviation from the original spec**: base-stat rows (Pokédex/Inventory/Lootbox reveal) keep the pre-existing fixed per-stat palette (HP/Atk/Def/Sp.Atk/Sp.Def/Speed each their own color — the standard "stat radar" convention) rather than the Pokémon's type color as first specified — that data was already wired this way before the redesign, reads correctly regardless of which two types a Pokémon has, and matches the mental model every other Pokémon game's stat screen already uses. Changing it would have been a data/behavior change disguised as a restyle, out of scope for a visual wave.
 
 ## 6. Components
 
-- **Buttons** — pill radius, display-face label. `btn-primary` = solid accent w/ colored glow shadow; `btn-secondary` = surface-2 + border; `btn-ghost` = dashed border, transparent; `btn-danger` = outline in `--bad`. All ≥ 38px tall on mobile.
+- **Buttons** — pill radius, display-face label. `btn-primary` = solid accent w/ colored glow shadow; `btn-secondary` = surface-2 + border; `btn-ghost` = dashed border, transparent; `btn-danger` = outline in `--bad`. Generously padded (`8px 16px`) for comfortable mobile tapping.
 - **Inputs** — 1.5px border, `--r-md`, accent focus ring (`box-shadow` halo, not just outline color).
 - **Type chips** — unchanged concept from today (pill, white text, type color fill), refined for contrast.
-- **Status chips** (battle) — same semantic palette as tokens above: bleed/poison/burn/freeze keep distinct saturated hues; buff/debuff/shield/redirect map onto good/bad/info/warn respectively (see Battle cluster mockup for the full set).
-- **Move buttons** — damage moves keep type-color fill (data channel); buff/debuff/drain/redirect moves use semantic color + icon instead, so "what element" and "what kind of move" never compete for the same hue.
+- **Status chips** (battle) — same semantic palette as tokens above: bleed/blind/poison/burn/freeze keep distinct saturated hues; buff/debuff/shield/redirect map onto good/bad/info/warn respectively (see Battle cluster mockup for the full set).
+- **Move buttons** — damage moves keep type-color fill (data channel); buff/debuff/drain/redirect moves use semantic color + icon instead, so "what element" and "what kind of move" never compete for the same hue. Shipped as a two-line layout — name in display type, power/effect + MP cost in mono underneath, with a subtle top-highlight sheen — rather than one packed single-line label.
 - **Navigation** — desktop: fixed 220px left rail, unchanged link set, active state = solid accent pill. Mobile (< 900px): bottom tab bar, 5 primary destinations (Dashboard/Inventory/Pokédex/Battle/More) + a "More" sheet holding Online, Friends, Notifications, History, Leaderboard, Profile — replaces the current slide-over hamburger, which doesn't fit a 10-item menu well at phone width.
 - **Modal / Toast** — same overlay + centered panel model as today's `Modal.tsx`/`Toast.tsx`, restyled onto the new radius/shadow/color tokens. Toast card sizes to its content (no stretch) and anchors bottom-right. No new library.
-- **Battle log** (bot + online) — background `--surface-3`, text `--ink`, so it's dark-screen/light-text in dark mode and flips to light-screen/dark-text in light mode, same as every other panel — it must **not** be hardcoded to a fixed dark terminal color, or it goes illegible (light-on-light) once the app is in dark theme. Only `.win`/`.hit` keep fixed accent colors (`--good` / `--accent-2`) in both themes.
+- **Battle log** (bot + online) — background `--surface-3`, text `--ink`, so it's dark-screen/light-text in dark mode and flips to light-screen/dark-text in light mode, same as every other panel — it must **not** be hardcoded to a fixed dark terminal color, or it goes illegible (light-on-light) once the app is in dark theme. The log itself is plain mono text (no per-line "win"/"hit" highlight classes exist or are planned — that was an early idea that never became part of the shipped log's markup, which is a single `<pre>` block, not per-line spans).
 
 ## 7. Responsive rules
 
@@ -80,10 +82,14 @@ Segmented bar, not a smooth gradient fill: a 9–12 cell row, each cell independ
 - Two-pane list+detail screens (Pokédex, Inventory) — split pane ≥ 900px; below that, list/grid is the full screen and selecting an entry pushes a full-screen detail view with a back affordance, rather than compressing both panes.
 - Battle arena's two `FighterCard`s sit side-by-side ≥ 720px, stack vertically (you on top) below that — never shrink to illegible 50%-width cards.
 - Dashboard's 4-stat strip: 4-across ≥ 720px, 2×2 below.
-- All touch targets ≥ 38–44px tall on mobile; primary buttons full-width in narrow forms (auth, profile).
+- Generously padded touch targets on mobile; primary buttons full-width in narrow forms (auth, profile, online setup).
 
 ## 8. What's intentionally unchanged
 
 - Emoji-as-iconography (kept, not replaced with an icon font) — deliberate for the playful Pokémon tone, standardized via the icon-chip treatment above rather than floating inline.
 - Overall information architecture / page list (13 screens, same routes) — this is a visual and interaction-density redesign, not a re-scoping.
 - The 18 type colors as categorical data — refined for contrast only.
+
+---
+
+**Status**: shipped in full (steps 30–39, `upgrades/main.md`, archived to `upgrades/archive/v5/`) as of 2026-08-19. This document was reconciled against the actual implementation in step 39 — the two real deviations from the original spec (base-stat meter coloring, §5; the battle log's plain-text-only markup, §6) are called out inline above rather than silently left stale. Everything else on this page matches what shipped.

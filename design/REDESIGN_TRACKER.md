@@ -1,6 +1,6 @@
 # Visual Redesign Tracker
 
-Tracks progress of the modern/Pokémon-inspired redesign (see `DESIGN_SYSTEM.md` for tokens). Status refers to **implementation in code** — every screen below already has a finished, responsive (desktop + mobile) design mockup; none have been coded yet.
+Tracks progress of the modern/Pokémon-inspired redesign (see `DESIGN_SYSTEM.md` for tokens). **Shipped in full** — all 15 screens and all 10 shared components below are implemented, responsive, and verified in both themes (steps 30–39, `upgrades/main.md`, archived to `upgrades/archive/v5/`).
 
 **Legend**: 🎨 Designed → not built · 🚧 In progress → build started · ✅ Done → matches mockup, responsive, both themes verified
 
@@ -20,39 +20,37 @@ Tracks progress of the modern/Pokémon-inspired redesign (see `DESIGN_SYSTEM.md`
 
 | # | Screen | Route | Status | Notes |
 |---|---|---|---|---|
-| 1 | Login | `/login` | 🎨 Designed | auth card, minimal mobile delta |
-| 2 | Signup | `/signup` | 🎨 Designed | incl. "check your email" state |
-| 3 | Dashboard | `/dashboard` | 🎨 Designed | new 4-tile stat strip replaces prose stat cards |
-| 4 | Profile | `/profile` | 🎨 Designed | avatar + form + friend code plate |
-| 5 | Pokédex (list+detail) | `/pokedex` | 🎨 Designed | mobile: grid → full-screen detail sheet |
-| 6 | Inventory (list+detail) | `/inventory` | 🎨 Designed | lootbox banner promoted to gold hero card |
-| 7 | Lootbox reveal | modal | 🎨 Designed | drumroll → sprite → stats → moves, unchanged pacing |
-| 8 | Team Picker | pre-battle | 🎨 Designed | shared by Battle + Online |
-| 9 | Battle Arena (bot) | `/battle` | 🎨 Designed | fighters stack on mobile instead of shrinking |
-| 10 | Online Battle (setup/waiting/picking/battling/rematch) | `/online` | 🎨 Designed | room-code plate + chat panel carried through all phases |
-| 11 | Friends | `/friends` | 🎨 Designed | code plate, incoming/outgoing, friend list |
-| 12 | Friend Chat & Trade | `/friends/[id]` | 🎨 Designed | trade card + chat panel |
-| 13 | Notifications | `/notifications` | 🎨 Designed | shares list-row shape with History/Leaderboard |
-| 14 | History | `/history` | 🎨 Designed | win/loss stripe, team snapshot line |
-| 15 | Leaderboard | `/leaderboard` | 🎨 Designed | medal ranks, "me" row highlight |
+| 1 | Login | `/login` | ✅ Done | auth card, minimal mobile delta |
+| 2 | Signup | `/signup` | ✅ Done | incl. "check your email" state |
+| 3 | Dashboard | `/dashboard` | ✅ Done | new 4-tile stat strip replaces prose stat cards |
+| 4 | Profile | `/profile` | ✅ Done | avatar + form + friend code plate |
+| 5 | Pokédex (list+detail) | `/pokedex` | ✅ Done | mobile: grid → full-screen detail sheet |
+| 6 | Inventory (list+detail) | `/inventory` | ✅ Done | lootbox banner promoted to gold hero card |
+| 7 | Lootbox reveal | modal | ✅ Done | drumroll → sprite → stats → moves, unchanged pacing |
+| 8 | Team Picker | pre-battle | ✅ Done | shared by Battle + Online |
+| 9 | Battle Arena (bot) | `/battle` | ✅ Done | fighters stack on mobile instead of shrinking |
+| 10 | Online Battle (setup/waiting/picking/battling/rematch) | `/online` | ✅ Done | room-code plate + chat panel carried through all phases |
+| 11 | Friends | `/friends` | ✅ Done | code plate, incoming/outgoing, friend list |
+| 12 | Friend Chat & Trade | `/friends/[id]` | ✅ Done | trade card + chat panel |
+| 13 | Notifications | `/notifications` | ✅ Done | shares list-row shape with History/Leaderboard |
+| 14 | History | `/history` | ✅ Done | win/loss stripe, team snapshot line |
+| 15 | Leaderboard | `/leaderboard` | ✅ Done | medal ranks, "me" row highlight |
 
 ## Shared components
 
 | Component | Status | Notes |
 |---|---|---|
-| App shell (rail nav / bottom tabs) | 🎨 Designed | breakpoint moves from 720px hamburger → 900px rail/tab-bar split |
-| `Sprite` | 🎨 Designed | frame/background treatment only, same `<img>` behavior |
-| `TypeBadges` | 🎨 Designed | refined contrast, same 18-color mapping |
-| `PokemonInstanceCard` (grid + list) | 🎨 Designed | |
-| `PokemonFilterBar` | 🎨 Designed | |
-| `FighterCard` + `StatusBadges` | 🎨 Designed | segmented meters, semantic status colors |
-| `MoveButton` | 🎨 Designed | type color for damage, semantic color for buff/debuff/drain/redirect |
-| `Modal` / `Toast` | 🎨 Designed | same structural model, new tokens |
-| Segmented stat/HP/MP meter (new) | 🎨 Designed | replaces smooth `.progress-fill` gradient bars |
-| "Bezel tab" card header (new) | 🎨 Designed | replaces inline-emoji `<h3>` card headers app-wide |
+| App shell (rail nav / bottom tabs) | ✅ Done | breakpoint moves from 720px hamburger → 900px rail/tab-bar split |
+| `Sprite` | ✅ Done | frame/background treatment only, same `<img>` behavior |
+| `TypeBadges` | ✅ Done | refined contrast, same 18-color mapping |
+| `PokemonInstanceCard` (grid + list) | ✅ Done | |
+| `PokemonFilterBar` | ✅ Done | |
+| `FighterCard` + `StatusBadges` | ✅ Done | segmented meters, semantic status colors |
+| `MoveButton` | ✅ Done | type color for damage, semantic color for buff/debuff/drain/redirect |
+| `Modal` / `Toast` | ✅ Done | same structural model, new tokens |
+| Segmented stat/HP/MP meter (new) | ✅ Done | replaces smooth `.progress-fill` gradient bars |
+| "Bezel tab" card header (new) | ✅ Done | replaces inline-emoji `<h3>` card headers app-wide |
 
-## Next steps
+## Status
 
-1. Review all five artifacts, confirm direction before any code changes.
-2. Once approved, implement in `app/globals.css` + component-by-component, checking each row above to ✅ as it ships (verify both themes + mobile/desktop each time).
-3. Suggested build order: Design System tokens first (globals.css), then Account cluster (smallest surface area), Collection, Battle (largest), Social last.
+Wave complete as of 2026-08-19. See `upgrades/archive/v5/main.md` for the full step-by-step implementation history, validation notes, and the key decisions made along the way (design direction, token choices, and several judgment calls documented as they came up). `upgrades/main.md` now points here as "no active wave."

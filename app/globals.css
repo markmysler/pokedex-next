@@ -255,11 +255,8 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
   pointer-events: none;
 }
 
-.filter-row { display: flex; gap: 8px; }
 .filter-col { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 12px; font-weight: bold; }
-.filter-col select, .stat-filter-row select { padding: 6px; }
-.stat-filter-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
-.stat-filter-row select { width: 100px; }
+.filter-col select { padding: 6px; }
 
 .count-label { font-size: 11px; color: var(--ink-soft); }
 
@@ -301,10 +298,7 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .completion-label { font-weight: bold; font-size: 14px; white-space: nowrap; }
 
 .progress-bar { flex: 1; height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; }
-.progress-bar.small { height: 9px; }
 .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.2s; }
-.progress-fill.hp { background: var(--accent); }
-.progress-fill.mp { background: #00BCFF; }
 
 /* Completion banner's track stays a smooth fill (a percentage, not a device
    stat) but gets the pill/gradient hero treatment the segmented meters don't
@@ -371,12 +365,6 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .sprite-label.shiny { color: #FFD700; }
 .sprite-img { width: 120px; height: 120px; object-fit: contain; image-rendering: pixelated; }
 
-#card-stats h3 { margin: 0 0 10px 0; }
-.stat-row { display: grid; grid-template-columns: 75px 1fr 45px; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; }
-.stat-row .stat-name { font-weight: bold; }
-.stat-row .stat-value { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-.stat-bar-track { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
-.stat-bar-fill { height: 100%; width: 0%; }
 .total-stats { margin-top: 8px; font-weight: bold; color: var(--ink-soft); font-size: 13px; }
 
 .notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -406,8 +394,6 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
   box-shadow: var(--shadow-1);
   white-space: nowrap;
 }
-#btn-random-rival { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: none; cursor: pointer; }
-
 .arena-frame { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 /* Stack vertically (you on top, per DOM order) below 720px instead of
    squeezing both FighterCards to an illegible 50% width (upgrades/36-
@@ -673,7 +659,6 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 
 /* ONLINE BATTLE (upgrades/37-online-battle-redesign.md) */
 #online-setup { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
-#online-setup h3 { margin: 0; }
 .online-actions { display: flex; }
 .online-actions .btn-primary { flex: 1; }
 /* "or" divider between Create Room and the join-by-code row -- two
@@ -757,9 +742,15 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
   padding: 8px 10px;
   font-size: 14px;
 }
-.auth-error { color: #E74C3C; font-size: 13px; margin: 0; }
+/* Cross-page consistency pass (upgrades/39-responsive-theme-qa-pass.md) --
+   .auth-error and both link colors below were still on hardcoded hex left
+   over from before this wave; DESIGN_SYSTEM.md §1 explicitly maps errors
+   onto --bad and links onto --info, so these now read the same tokens
+   status badges/buttons already do instead of a fixed color that can't
+   adapt between themes. */
+.auth-error { color: var(--bad); font-size: 13px; margin: 0; }
 .auth-switch { font-size: 13px; color: var(--ink-soft); text-align: center; margin: 0; }
-.auth-switch a { color: #3498DB; }
+.auth-switch a { color: var(--info); }
 
 /* PROFILE (upgrades/33-account-cluster-redesign.md) -- purely decorative
    avatar circle (no upload system exists or is planned) above the
@@ -805,7 +796,7 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .dashboard-team-member { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-align: center; width: 90px; }
 .dashboard-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; }
 .dashboard-note { font-size: 12px; color: var(--ink-soft); margin: 8px 0 0 0; }
-.dashboard-note a { color: #3498DB; }
+.dashboard-note a { color: var(--info); }
 
 /* Shared "list row inside a card" shape across History/Leaderboard/
    Notifications (and Friends/Trades below) -- upgrades/38-social-cluster-
@@ -1104,7 +1095,6 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .lootbox-reveal-content.lootbox-reveal-shiny .lootbox-reveal-sprite { filter: drop-shadow(0 0 14px rgba(240, 193, 92, 0.55)); }
 .lootbox-reveal-sprite { width: 160px; height: 160px; object-fit: contain; image-rendering: pixelated; }
 .lootbox-stats { width: 100%; max-width: 320px; }
-.lootbox-stats .stat-bar-fill { transition: width 0.4s ease; }
 .lootbox-moves { width: 100%; max-width: 320px; }
 .lootbox-moves h3 { margin: 6px 0; text-align: center; }
 .lootbox-moves .move-list li {
@@ -1229,9 +1219,13 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .trade-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
 .trade-builder { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 .trade-builder-actions { display: flex; gap: 8px; }
+/* Same contrast fix as .status-badge.buff/etc (step 31) -- --bad runs
+   bright in dark theme, so a literal white label would fail contrast
+   there even though it read fine in light theme; --accent-ink already
+   encodes the correct flip. */
 .nav-link-badge {
-  background: #E74C3C;
-  color: white;
+  background: var(--bad);
+  color: var(--accent-ink);
   font-size: 10px;
   font-weight: bold;
   border-radius: 10px;
@@ -1241,8 +1235,9 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 
 /* SEGMENTED METER (components/ui/SegmentedMeter.tsx, upgrades/31-shared-
    ui-primitives.md) — the Game Boy-style HP/MP/stat readout that replaces
-   .progress-fill/.stat-bar-fill's smooth gradient fill. Not wired into any
-   page yet; the CSS ships in this step so later steps just consume it. */
+   the old smooth .progress-fill gradient fill. Wired into every stat/HP/MP
+   context app-wide by steps 34/35 (Pokédex/Inventory/LootboxReveal, then
+   FighterCard's active + compact bench sizes). */
 .meter { display: grid; grid-template-columns: 58px 1fr 56px; align-items: center; gap: var(--s-3); font-size: 12px; margin: 5px 0; }
 .meter .m-label { font-weight: 700; color: var(--ink-soft); }
 .meter .m-value { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
@@ -1257,7 +1252,10 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 
 /* CARD TAB (components/ui/CardTab.tsx, upgrades/31-shared-ui-primitives.md)
    — the overlapping icon-chip + eyebrow-label header every card wears
-   instead of an inline-emoji <h3>. Not wired into any page yet. */
+   instead of an inline-emoji <h3>. Wired app-wide by steps 33–38; the few
+   cards that intentionally keep a plain heading (identity-style headers
+   like PokemonDetail's #card-header, or dialog titles inside Modal) are
+   documented as deliberate exceptions in their own step files. */
 .card-tab {
   position: relative;
   display: inline-flex;
