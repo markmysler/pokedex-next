@@ -1,32 +1,81 @@
-/* Ported from pokedex-web/public/styles.css — same visual design, same
-   dark/light theme via [data-theme] + CSS variables. */
+/* Design system v5 (upgrades/30-design-tokens-and-foundations.md) — warm,
+   device-inspired neutrals + Poké Red accent, replacing the old
+   pokedex-web-ported blue-purple palette. Token names and values come
+   from design/DESIGN_SYSTEM.md; every existing selector below keeps its
+   name/structure for now and just reads the new tokens -- component
+   restructuring (segmented meters, bezel-tab headers, etc.) is later
+   steps in this wave. */
+
+:root {
+  /* Spacing scale (gap/padding only) */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px;
+  --s-6: 24px; --s-7: 32px; --s-8: 40px; --s-9: 56px;
+
+  /* Radius scale */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 22px; --r-pill: 999px;
+
+  /* Typography roles -- system stacks, no webfont dependency */
+  --font-display: -apple-system, "Segoe UI Semibold", "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif;
+  --font-body: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
 
 :root[data-theme="dark"] {
-  --bg-sidebar: #1E1E2E;
-  --bg-main: #14141F;
-  --bg-card: #1E1E2E;
-  --bg-banner: #242438;
-  --bg-fighter-card: #242438;
-  --text-primary: #E4E4EA;
-  --text-secondary: #9a9aa8;
-  --text-muted: #70707d;
-  --border-color: #2D2D3F;
-  --hover-color: #2D2D3F;
-  --input-bg: #2A2A3C;
+  --bg: #191215;
+  --surface: #241A1E;
+  --surface-2: #2E2125;
+  --surface-3: #3A2A2F;
+  --ink: #F5EAE7;
+  --ink-soft: #C1AEB0;
+  --ink-faint: #8C767A;
+  --border: #3A2A2F;
+  --border-strong: #4C383D;
+
+  --accent: #FF5A57;
+  --accent-ink: #1A0D0D;
+  --accent-2: #F0A93E;
+  --accent-2-ink: #1A0D0D;
+
+  --good: #3FDB8F;
+  --good-bg: #113328;
+  --warn: #F0B93E;
+  --warn-bg: #362A11;
+  --bad: #FF8A5B;
+  --bad-bg: #3A2013;
+  --info: #6FA6FF;
+  --info-bg: #16233B;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, .35), 0 8px 20px rgba(0, 0, 0, .35);
+  --shadow-2: 0 6px 16px rgba(0, 0, 0, .4), 0 24px 48px rgba(0, 0, 0, .5);
 }
 
 :root[data-theme="light"] {
-  --bg-sidebar: #e6e6e6;
-  --bg-main: #f2f2f2;
-  --bg-card: #ffffff;
-  --bg-banner: #d9d9d9;
-  --bg-fighter-card: #f0f0f0;
-  --text-primary: #1a1a1a;
-  --text-secondary: #555555;
-  --text-muted: #808080;
-  --border-color: #cccccc;
-  --hover-color: #d0d0d0;
-  --input-bg: #ffffff;
+  --bg: #F4EFEC;
+  --surface: #FFFFFF;
+  --surface-2: #EAE1DC;
+  --surface-3: #DED2CB;
+  --ink: #241A1F;
+  --ink-soft: #6E5D62;
+  --ink-faint: #9C8B8F;
+  --border: #DED0C9;
+  --border-strong: #C9B8B1;
+
+  --accent: #C62A35;
+  --accent-ink: #FFFFFF;
+  --accent-2: #C97A1F;
+  --accent-2-ink: #241A1F;
+
+  --good: #24875A;
+  --good-bg: #E1F3EA;
+  --warn: #A96A0E;
+  --warn-bg: #FBEBD2;
+  --bad: #C24422;
+  --bad-bg: #FBE5DC;
+  --info: #2C69B8;
+  --info-bg: #E3EDFB;
+
+  --shadow-1: 0 1px 2px rgba(36, 20, 20, .06), 0 6px 16px rgba(36, 20, 20, .07);
+  --shadow-2: 0 4px 10px rgba(36, 20, 20, .10), 0 20px 40px rgba(36, 20, 20, .14);
 }
 
 * { box-sizing: border-box; }
@@ -34,9 +83,16 @@
 html, body { padding: 0; margin: 0; }
 
 body {
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: var(--bg-main);
-  color: var(--text-primary);
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 /* APP SHELL (side nav + main content) */
@@ -48,12 +104,12 @@ body {
 .side-nav {
   width: 260px;
   flex-shrink: 0;
-  background: var(--bg-sidebar);
+  background: var(--surface-2);
   padding: 15px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-right: 1px solid var(--border-color);
+  border-right: 1px solid var(--border);
 }
 
 .sidebar-title { font-size: 22px; margin: 0 0 6px 0; }
@@ -68,13 +124,13 @@ body {
   gap: 8px;
   padding: 8px 10px;
   border-radius: 6px;
-  color: var(--text-primary);
+  color: var(--ink);
   text-decoration: none;
   font-size: 14px;
   font-weight: bold;
 }
-.nav-link:hover { background: var(--hover-color); }
-.nav-link.active { background: #2FA572; color: white; }
+.nav-link:hover { background: var(--surface-3); }
+.nav-link.active { background: var(--accent); color: var(--accent-ink); }
 .nav-link-icon { font-size: 16px; }
 
 .app-main { flex: 1; min-width: 0; overflow-y: auto; }
@@ -86,9 +142,9 @@ body {
     top: 12px;
     left: 12px;
     z-index: 30;
-    background: var(--bg-banner);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    background: var(--surface-2);
+    color: var(--ink);
+    border: 1px solid var(--border);
     border-radius: 6px;
     font-size: 18px;
     padding: 6px 10px;
@@ -117,9 +173,9 @@ body {
    rule (e.g. the rename field, the lootbox quantity stepper) falls back to
    the browser's default white background regardless of theme. */
 input, #search-input, select, textarea, .pokemon-list {
-  background: var(--input-bg);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
 }
 
@@ -131,7 +187,7 @@ input, #search-input, select, textarea, .pokemon-list {
 .stat-filter-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
 .stat-filter-row select { width: 100px; }
 
-.count-label { font-size: 11px; color: var(--text-secondary); }
+.count-label { font-size: 11px; color: var(--ink-soft); }
 
 .pokemon-list {
   flex: 1;
@@ -146,10 +202,11 @@ input, #search-input, select, textarea, .pokemon-list {
   cursor: pointer;
   font-size: 13px;
   white-space: pre;
-  font-family: "Consolas", monospace;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
-.pokemon-row:hover { background: var(--hover-color); }
-.pokemon-row.selected { background: #2FA572; color: white; }
+.pokemon-row:hover { background: var(--surface-3); }
+.pokemon-row.selected { background: var(--accent); color: var(--accent-ink); }
 
 .theme-row { display: flex; align-items: center; gap: 8px; padding-top: 6px; font-size: 12px; }
 .sound-toggle { padding: 2px 10px; font-size: 14px; line-height: 1.4; }
@@ -159,7 +216,7 @@ input, #search-input, select, textarea, .pokemon-list {
 .page-title { margin: 0; font-size: 22px; }
 
 .header-banner {
-  background: var(--bg-banner);
+  background: var(--surface-2);
   border-radius: 10px;
   padding: 10px 15px;
   display: flex;
@@ -168,14 +225,14 @@ input, #search-input, select, textarea, .pokemon-list {
 }
 .completion-label { font-weight: bold; font-size: 14px; white-space: nowrap; }
 
-.progress-bar { flex: 1; height: 12px; background: var(--border-color); border-radius: 6px; overflow: hidden; }
+.progress-bar { flex: 1; height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; }
 .progress-bar.small { height: 9px; }
-.progress-fill { height: 100%; width: 0%; background: #2FA572; transition: width 0.2s; }
-.progress-fill.hp { background: #2FA572; }
+.progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.2s; }
+.progress-fill.hp { background: var(--accent); }
 .progress-fill.mp { background: #00BCFF; }
 
 .card {
-  background: var(--bg-card);
+  background: var(--surface);
   border-radius: 12px;
   padding: 15px;
 }
@@ -199,31 +256,31 @@ input, #search-input, select, textarea, .pokemon-list {
 .switch, .switch-labeled { position: relative; }
 .switch input, .switch-labeled input { display: none; }
 .switch .slider, .switch-labeled .slider {
-  width: 40px; height: 20px; background: var(--border-color); border-radius: 20px; position: relative; display: inline-block; transition: background 0.2s;
+  width: 40px; height: 20px; background: var(--border); border-radius: 20px; position: relative; display: inline-block; transition: background 0.2s;
 }
 .switch .slider::before, .switch-labeled .slider::before {
   content: ""; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: left 0.2s;
 }
-.switch input:checked + .slider, .switch-labeled input:checked + .slider { background: #2FA572; }
+.switch input:checked + .slider, .switch-labeled input:checked + .slider { background: var(--accent); }
 .switch input:checked + .slider::before, .switch-labeled input:checked + .slider::before { left: 22px; }
 
 .sprites-card { display: flex; justify-content: space-around; }
 .sprite-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.sprite-label { font-size: 12px; font-weight: bold; color: var(--text-secondary); }
+.sprite-label { font-size: 12px; font-weight: bold; color: var(--ink-soft); }
 .sprite-label.shiny { color: #FFD700; }
 .sprite-img { width: 120px; height: 120px; object-fit: contain; image-rendering: pixelated; }
 
 #card-stats h3 { margin: 0 0 10px 0; }
 .stat-row { display: grid; grid-template-columns: 75px 1fr 45px; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; }
 .stat-row .stat-name { font-weight: bold; }
-.stat-row .stat-value { text-align: right; }
-.stat-bar-track { height: 10px; background: var(--border-color); border-radius: 5px; overflow: hidden; }
+.stat-row .stat-value { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.stat-bar-track { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
 .stat-bar-fill { height: 100%; width: 0%; }
-.total-stats { margin-top: 8px; font-weight: bold; color: var(--text-secondary); font-size: 13px; }
+.total-stats { margin-top: 8px; font-weight: bold; color: var(--ink-soft); font-size: 13px; }
 
 .notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 .notes-header h3 { margin: 0; }
-.notes-status { font-size: 11px; color: var(--text-muted); }
+.notes-status { font-size: 11px; color: var(--ink-faint); }
 #notes-box { width: 100%; padding: 8px; font-size: 12px; resize: vertical; }
 
 /* BATTLE ARENA */
@@ -236,7 +293,7 @@ input, #search-input, select, textarea, .pokemon-list {
 
 .arena-frame { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .fighter-card {
-  background: var(--bg-fighter-card);
+  background: var(--surface);
   border-radius: 10px;
   padding: 10px;
   display: flex;
@@ -245,28 +302,28 @@ input, #search-input, select, textarea, .pokemon-list {
   gap: 4px;
 }
 .fighter-card h3 { margin: 4px 0; }
-.fighter-species-line { font-size: 11px; color: var(--text-secondary); margin: -4px 0 4px 0; }
+.fighter-species-line { font-size: 11px; color: var(--ink-soft); margin: -4px 0 4px 0; }
 .battle-sprite { width: 85px; height: 85px; object-fit: contain; }
-.hp-label, .mp-label { font-size: 12px; font-weight: bold; margin: 0; }
+.hp-label, .mp-label { font-size: 12px; font-weight: bold; margin: 0; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .mp-label { color: #00BCFF; }
 .fighter-card .progress-bar { width: 100%; }
-.moves-caption { font-size: 11px; font-weight: bold; color: var(--text-secondary); margin-top: 4px; }
+.moves-caption { font-size: 11px; font-weight: bold; color: var(--ink-soft); margin-top: 4px; }
 .moves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; }
 .move-btn {
   border: none; border-radius: 8px; padding: 6px 4px; font-size: 11px; font-weight: bold; color: white; cursor: pointer;
 }
 .move-btn:disabled { background: #555 !important; color: #ccc; cursor: not-allowed; }
-.ai-arsenal { font-size: 11px; color: var(--text-muted); text-align: center; }
+.ai-arsenal { font-size: 11px; color: var(--ink-faint); text-align: center; }
 
-/* 3v3 TEAM PICKER + BENCH (upgrades/05-3v3-battles.md) */
+/* 3v3 TEAM PICKER + BENCH (upgrades/archive/v2/05-3v3-battles.md) */
 .team-picker-grid { max-height: 50vh; overflow-y: auto; }
 .trade-picker-grid { max-height: 40vh; overflow-y: auto; }
 .team-picker-order {
   position: absolute;
   top: 6px;
   right: 6px;
-  background: #2FA572;
-  color: white;
+  background: var(--accent);
+  color: var(--accent-ink);
   font-size: 11px;
   font-weight: bold;
   border-radius: 50%;
@@ -285,24 +342,24 @@ input, #search-input, select, textarea, .pokemon-list {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  background: var(--input-bg);
-  border: 1px solid var(--border-color);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 4px;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--ink);
   font: inherit;
 }
-.bench-member:hover:not(:disabled) { border-color: #2FA572; }
+.bench-member:hover:not(:disabled) { border-color: var(--accent); }
 .bench-member:disabled { cursor: not-allowed; opacity: 0.6; }
 .bench-member.fainted { opacity: 0.5; }
 .bench-sprite { width: 32px; height: 32px; object-fit: contain; }
 .bench-name { font-size: 10px; font-weight: bold; }
-.bench-hp { font-size: 9px; color: var(--text-secondary); }
+.bench-hp { font-size: 9px; color: var(--ink-soft); }
 
 .status-badges { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
 .status-badge {
-  /* inline-flex, not default inline (upgrades/16-status-tooltip-hover-area.md)
+  /* inline-flex, not default inline (upgrades/archive/v3/16-status-tooltip-hover-area.md)
      -- an inline element's hover/hit-test box for the title tooltip isn't
      guaranteed to include its own padding consistently, so hovering the
      padded area around the label (not just the emoji glyph) could miss
@@ -322,8 +379,10 @@ input, #search-input, select, textarea, .pokemon-list {
 .status-badge.poison { background: #7D3C98; }
 .status-badge.burn { background: #D35400; }
 .status-badge.freeze { background: #2E86C1; }
-/* atkMod/defMod/shieldPoints/redirectTurns (upgrades/28-move-ui-and-ally-targeting.md) */
-.status-badge.buff { background: #2FA572; }
+/* atkMod/defMod/shieldPoints/redirectTurns (upgrades/archive/v4/28-move-ui-and-ally-targeting.md).
+   .buff mechanically follows the app-wide old-hardcoded-green-to-accent swap (step 30);
+   the full semantic remap onto --good/--bad/--info/--warn is step 31. */
+.status-badge.buff { background: var(--accent); color: var(--accent-ink); }
 .status-badge.debuff { background: #C0392B; }
 .status-badge.shield { background: #3498DB; }
 .status-badge.redirect { background: #7D6608; }
@@ -332,18 +391,18 @@ input, #search-input, select, textarea, .pokemon-list {
 
 .rematch-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
 
-/* Ally-target picker for buff moves (upgrades/28-move-ui-and-ally-targeting.md) */
+/* Ally-target picker for buff moves (upgrades/archive/v4/28-move-ui-and-ally-targeting.md) */
 .ally-target-picker { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
 .ally-target-picker .bench-row { margin-top: 0; }
 
-/* IN-MATCH CHAT (upgrades/08-chat.md — never persisted, local state only) */
+/* IN-MATCH CHAT (upgrades/archive/v2/08-chat.md — never persisted, local state only) */
 .chat-panel { display: flex; flex-direction: column; gap: 8px; }
 .chat-panel h3 { margin: 0; }
 .chat-messages {
   min-height: 100px;
   max-height: 200px;
   overflow-y: auto;
-  background: var(--input-bg);
+  background: var(--surface);
   border-radius: 8px;
   padding: 8px 10px;
   display: flex;
@@ -351,17 +410,17 @@ input, #search-input, select, textarea, .pokemon-list {
   gap: 4px;
   font-size: 13px;
 }
-.chat-empty { color: var(--text-muted); margin: 0; font-size: 12px; }
+.chat-empty { color: var(--ink-faint); margin: 0; font-size: 12px; }
 .chat-message { word-break: break-word; }
-.chat-message.mine .chat-sender { color: #2FA572; }
+.chat-message.mine .chat-sender { color: var(--accent); }
 .chat-sender { font-weight: bold; }
 .chat-input-row { display: flex; gap: 8px; }
 .chat-input-row input {
   flex: 1;
   padding: 8px 10px;
-  background: var(--input-bg);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
 }
 
@@ -383,17 +442,18 @@ input, #search-input, select, textarea, .pokemon-list {
 .online-join-row input {
   flex: 1; padding: 8px; text-transform: uppercase; letter-spacing: 2px; text-align: center;
 }
-.online-status { font-size: 13px; color: var(--text-secondary); white-space: pre-wrap; min-height: 18px; }
+.online-status { font-size: 13px; color: var(--ink-soft); white-space: pre-wrap; min-height: 18px; }
 
 .battle-log {
   flex: 1;
   min-height: 220px;
   max-height: 320px;
   overflow-y: auto;
-  background: var(--input-bg);
+  background: var(--surface);
   border-radius: 8px;
   padding: 10px;
-  font-family: Consolas, monospace;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 12px;
   white-space: pre-wrap;
   margin: 0;
@@ -407,7 +467,7 @@ input, #search-input, select, textarea, .pokemon-list {
   gap: 8px;
   padding-top: 8px;
   margin-top: 4px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border);
   font-size: 12px;
 }
 .account-name {
@@ -423,7 +483,7 @@ input, #search-input, select, textarea, .pokemon-list {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-main);
+  background: var(--bg);
   padding: 20px;
 }
 .auth-form {
@@ -436,15 +496,15 @@ input, #search-input, select, textarea, .pokemon-list {
 .auth-form h1 { margin: 0 0 4px 0; font-size: 22px; text-align: center; }
 .auth-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: bold; }
 .auth-form input {
-  background: var(--input-bg);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 14px;
 }
 .auth-error { color: #E74C3C; font-size: 13px; margin: 0; }
-.auth-switch { font-size: 13px; color: var(--text-secondary); text-align: center; margin: 0; }
+.auth-switch { font-size: 13px; color: var(--ink-soft); text-align: center; margin: 0; }
 .auth-switch a { color: #3498DB; }
 
 /* DASHBOARD */
@@ -452,18 +512,20 @@ input, #search-input, select, textarea, .pokemon-list {
 .dashboard-team { display: flex; gap: 12px; flex-wrap: wrap; }
 .dashboard-team-member { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-align: center; width: 90px; }
 .dashboard-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; }
-.dashboard-note { font-size: 12px; color: var(--text-secondary); margin: 8px 0 0 0; }
+.dashboard-note { font-size: 12px; color: var(--ink-soft); margin: 8px 0 0 0; }
 .dashboard-note a { color: #3498DB; }
 
 .match-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.match-row { font-size: 13px; padding: 6px 8px; border-radius: 6px; background: var(--input-bg); }
-.match-row.win { border-left: 3px solid #2FA572; }
+.match-row { font-size: 13px; padding: 6px 8px; border-radius: 6px; background: var(--surface); }
+/* .win mechanically follows the app-wide old-hardcoded-green-to-accent swap (step 30);
+   the semantic remap onto --good is step 38 (Social & progression cluster). */
+.match-row.win { border-left: 3px solid var(--accent); }
 .match-row.loss { border-left: 3px solid #E74C3C; }
 
 .match-row-detailed { display: flex; flex-direction: column; gap: 2px; }
 .match-row-main { display: flex; justify-content: space-between; gap: 10px; font-weight: bold; }
-.match-row-date { font-weight: normal; color: var(--text-secondary); white-space: nowrap; }
-.match-row-sub { font-size: 12px; color: var(--text-secondary); }
+.match-row-date { font-weight: normal; color: var(--ink-soft); white-space: nowrap; }
+.match-row-sub { font-size: 12px; color: var(--ink-soft); }
 
 /* LEADERBOARD */
 .leaderboard-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -474,12 +536,12 @@ input, #search-input, select, textarea, .pokemon-list {
   gap: 10px;
   padding: 8px 10px;
   border-radius: 6px;
-  background: var(--input-bg);
+  background: var(--surface);
   font-size: 14px;
 }
-.leaderboard-row.me { border: 1px solid #2FA572; }
+.leaderboard-row.me { border: 1px solid var(--accent); }
 
-/* NOTIFICATIONS (upgrades/17-persistent-notifications.md) */
+/* NOTIFICATIONS (upgrades/archive/v3/17-persistent-notifications.md) */
 .notification-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .notification-row {
   display: flex;
@@ -489,23 +551,23 @@ input, #search-input, select, textarea, .pokemon-list {
   flex-wrap: wrap;
   padding: 8px 10px;
   border-radius: 6px;
-  background: var(--input-bg);
+  background: var(--surface);
   font-size: 13px;
 }
-.notification-row.unread { border-left: 3px solid #2FA572; }
+.notification-row.unread { border-left: 3px solid var(--accent); }
 .notification-row-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 200px; }
-.notification-row-date { font-size: 11px; color: var(--text-secondary); }
-.notification-row-unavailable { color: var(--text-secondary); font-style: italic; font-size: 12px; margin: 0; }
+.notification-row-date { font-size: 11px; color: var(--ink-soft); }
+.notification-row-unavailable { color: var(--ink-soft); font-style: italic; font-size: 12px; margin: 0; }
 .notification-action { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .leaderboard-rank { font-size: 16px; text-align: center; }
 .leaderboard-name { font-weight: bold; }
-.leaderboard-wins { color: var(--text-secondary); font-size: 13px; white-space: nowrap; }
+.leaderboard-wins { color: var(--ink-soft); font-size: 13px; white-space: nowrap; }
 
 /* CAUGHT BADGE (Pokedex tab, replaces the old manual toggle) */
-.caught-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 12px; background: var(--input-bg); color: var(--text-secondary); }
-.caught-badge.caught { background: #2FA572; color: white; }
+.caught-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 12px; background: var(--surface); color: var(--ink-soft); }
+.caught-badge.caught { background: var(--accent); color: var(--accent-ink); }
 
-/* SHINY BADGE (upgrades/03-shiny-pokemon.md) — an owned instance whose
+/* SHINY BADGE (upgrades/archive/03-shiny-pokemon.md) — an owned instance whose
    rolled stats+moveset landed in roughly the top 10% for its species */
 .shiny-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 12px; background: #FFD700; color: #1a1a1a; }
 
@@ -515,22 +577,22 @@ input, #search-input, select, textarea, .pokemon-list {
 
 .view-toggle { display: flex; gap: 4px; }
 .view-toggle button {
-  background: var(--input-bg);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 12px;
   cursor: pointer;
 }
-.view-toggle button.active { background: #2FA572; color: white; border-color: #2FA572; }
+.view-toggle button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
 .inventory-layout { display: grid; grid-template-columns: 1fr 340px; gap: 12px; align-items: start; }
 @media (max-width: 900px) {
   .inventory-layout { grid-template-columns: 1fr; }
 }
 
-/* TRADE-UP (upgrades/14-pokemon-tradeup.md) */
+/* TRADE-UP (upgrades/archive/v2/14-pokemon-tradeup.md) */
 .tradeup-bar {
   position: sticky;
   bottom: 0;
@@ -544,7 +606,7 @@ input, #search-input, select, textarea, .pokemon-list {
 }
 .tradeup-count { font-weight: bold; }
 .tradeup-confirm-list { list-style: none; margin: 10px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.tradeup-confirm-list li { padding: 6px 8px; background: var(--input-bg); border-radius: 6px; font-size: 13px; }
+.tradeup-confirm-list li { padding: 6px 8px; background: var(--surface); border-radius: 6px; font-size: 13px; }
 
 .pokemon-grid {
   display: grid;
@@ -555,8 +617,8 @@ input, #search-input, select, textarea, .pokemon-list {
   padding: 4px;
 }
 .pokemon-grid-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 8px;
   display: flex;
@@ -566,18 +628,18 @@ input, #search-input, select, textarea, .pokemon-list {
   cursor: pointer;
   text-align: center;
 }
-.pokemon-grid-card:hover { border-color: #2FA572; }
-.pokemon-grid-card.selected { background: #2FA572; color: white; }
+.pokemon-grid-card:hover { border-color: var(--accent); }
+.pokemon-grid-card.selected { background: var(--accent); color: var(--accent-ink); }
 .pokemon-grid-card.disabled, .pokemon-row.disabled { opacity: 0.4; cursor: not-allowed; }
-.pokemon-grid-card.disabled:hover { border-color: var(--border-color); }
+.pokemon-grid-card.disabled:hover { border-color: var(--border); }
 .grid-card-sprite { width: 64px; height: 64px; object-fit: contain; }
 .grid-card-name { font-size: 12px; font-weight: bold; }
-.grid-card-species { font-size: 10px; color: var(--text-secondary); }
+.grid-card-species { font-size: 10px; color: var(--ink-soft); }
 /* .grid-card-species's own color would otherwise win over the parent's
-   inherited white and render near-invisible on the green selected
-   background (~1.1:1 contrast) -- explicit override, not inheritance,
-   restores it to readable. */
-.pokemon-grid-card.selected .grid-card-species { color: white; }
+   inherited accent-ink and render near-invisible on the selected
+   background -- explicit override, not inheritance, restores it to
+   readable in both themes (accent-ink flips dark/light with the theme). */
+.pokemon-grid-card.selected .grid-card-species { color: var(--accent-ink); }
 .grid-card-total { font-size: 11px; }
 
 .inventory-layout .pokemon-list { max-height: 70vh; }
@@ -586,14 +648,14 @@ input, #search-input, select, textarea, .pokemon-list {
 .rename-btn { font-size: 11px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
 .nickname-edit-form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .nickname-edit-form input { flex: 1; min-width: 120px; }
-.detail-species-line { font-size: 12px; color: var(--text-secondary); margin: -6px 0 0 0; }
+.detail-species-line { font-size: 12px; color: var(--ink-soft); margin: -6px 0 0 0; }
 .lootbox-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .lootbox-batch-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .lootbox-qty-stepper input { width: 56px; text-align: center; padding: 6px 4px; }
 .move-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
-.move-list li { padding: 4px 8px; background: var(--input-bg); border-radius: 6px; }
+.move-list li { padding: 4px 8px; background: var(--surface); border-radius: 6px; }
 
-/* MODAL (upgrades/02-battle-result-dialog.md) — shared by any dialog/overlay */
+/* MODAL (upgrades/archive/v2/02-battle-result-dialog.md) — shared by any dialog/overlay */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -607,7 +669,7 @@ input, #search-input, select, textarea, .pokemon-list {
 .modal-panel { position: relative; max-width: 420px; width: 100%; text-align: center; }
 .modal-panel-large { max-width: 640px; }
 
-/* WELCOME DIALOG (upgrades/main.md's post-plan onboarding addition) */
+/* WELCOME DIALOG (upgrades/archive/main.md's post-plan onboarding addition) */
 .welcome-dialog-body { text-align: left; font-size: 13px; }
 .welcome-dialog-list { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 10px; line-height: 1.5; }
 .modal-close {
@@ -616,20 +678,20 @@ input, #search-input, select, textarea, .pokemon-list {
   right: 8px;
   background: transparent;
   border: none;
-  color: var(--text-secondary);
+  color: var(--ink-soft);
   font-size: 16px;
   cursor: pointer;
   padding: 4px 8px;
 }
-.modal-close:hover { color: var(--text-primary); }
+.modal-close:hover { color: var(--ink); }
 
 .battle-result-dialog { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 6px; }
 .battle-result-dialog h2 { margin: 0; }
 .battle-result-lootbox { color: #FFD700; font-weight: bold; }
-.battle-result-no-lootbox { color: var(--text-secondary); }
+.battle-result-no-lootbox { color: var(--ink-soft); }
 .battle-result-actions { display: flex; gap: 10px; }
 
-/* LOOTBOX REVEAL (upgrades/04-lootbox-opening.md) — the roll already
+/* LOOTBOX REVEAL (upgrades/archive/v2/04-lootbox-opening.md) — the roll already
    happened server-side; everything here is a cosmetic client-side reveal
    of an already-decided result, never a second roll. */
 .lootbox-reveal { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 6px; min-height: 260px; justify-content: center; cursor: pointer; }
@@ -667,7 +729,7 @@ input, #search-input, select, textarea, .pokemon-list {
 .lootbox-moves .move-list li.move-revealed { opacity: 1; transform: translateY(0); }
 .lootbox-reveal-actions { margin-top: 8px; }
 
-/* TOASTS (upgrades/05-friend-system.md) — app-wide live notifications */
+/* TOASTS (upgrades/archive/v2/05-friend-system.md) — app-wide live notifications */
 .toast-stack {
   position: fixed;
   bottom: 16px;
@@ -690,25 +752,27 @@ input, #search-input, select, textarea, .pokemon-list {
   right: 6px;
   background: transparent;
   border: none;
-  color: var(--text-secondary);
+  color: var(--ink-soft);
   cursor: pointer;
   font-size: 12px;
   padding: 4px;
 }
-.toast-close:hover { color: var(--text-primary); }
+.toast-close:hover { color: var(--ink); }
 .toast-invite { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .toast-action { font-size: 11px; padding: 4px 10px; }
 
-/* FRIENDS PAGE (upgrades/05-friend-system.md) */
+/* FRIENDS PAGE (upgrades/archive/v2/05-friend-system.md) */
 .friend-code-display {
   font-size: 22px;
   font-weight: bold;
   letter-spacing: 3px;
   text-align: center;
-  background: var(--input-bg);
+  background: var(--surface);
   border-radius: 8px;
   padding: 10px;
   margin: 8px 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 .friend-row {
   display: flex;
@@ -716,7 +780,7 @@ input, #search-input, select, textarea, .pokemon-list {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
 }
 .friend-row:last-child { border-bottom: none; }
 .friend-row-actions { display: flex; gap: 8px; }
@@ -726,23 +790,23 @@ input, #search-input, select, textarea, .pokemon-list {
   flex-direction: column;
   gap: 8px;
   padding: 10px 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border);
   font-size: 13px;
 }
 .trade-row:last-child { border-bottom: none; }
 .trade-row-header { font-weight: bold; }
 .trade-row-pokemon { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .trade-row-side { display: flex; flex-direction: column; gap: 6px; }
-.trade-row-side h4 { margin: 0; font-size: 11px; font-weight: bold; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; }
+.trade-row-side h4 { margin: 0; font-size: 11px; font-weight: bold; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; }
 .trade-row-cards { display: flex; gap: 6px; flex-wrap: wrap; }
 /* Same card as the interactive pickers, but purely informational here --
    no selection, so the pointer cursor / hover highlight (which imply
    "click me") are turned off. */
 .trade-row-cards .pokemon-grid-card { width: 92px; cursor: default; }
-.trade-row-cards .pokemon-grid-card:hover { border-color: var(--border-color); }
-.trade-row-arrow { font-size: 20px; color: var(--text-secondary); align-self: center; }
+.trade-row-cards .pokemon-grid-card:hover { border-color: var(--border); }
+.trade-row-arrow { font-size: 20px; color: var(--ink-soft); align-self: center; }
 .trade-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
-.trade-builder { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
+.trade-builder { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
 .trade-builder-actions { display: flex; gap: 8px; }
 .nav-link-badge {
   background: #E74C3C;

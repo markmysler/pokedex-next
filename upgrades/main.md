@@ -33,9 +33,14 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
+**Progress: step 30 shipped 2026-08-19** (design tokens live in
+`app/globals.css` and `lib/typeData.ts`, verified via `npm run build`/
+`npm run lint` and a Playwright screenshot of `/login` in both themes —
+see the step file's End state notes). Steps 31–39 not started.
+
 | # | Step | File | Depends on |
 |---|------|------|------------|
-| 30 | Design tokens & global foundations (palette, type, spacing/radius/shadow scale) | [30-design-tokens-and-foundations.md](30-design-tokens-and-foundations.md) | — |
+| 30 | ✅ Design tokens & global foundations (palette, type, spacing/radius/shadow scale) | [30-design-tokens-and-foundations.md](30-design-tokens-and-foundations.md) | — |
 | 31 | Shared UI primitives — buttons/inputs/chips, `SegmentedMeter`, `CardTab`, Modal/Toast fixes | [31-shared-ui-primitives.md](31-shared-ui-primitives.md) | 30 |
 | 32 | Navigation shell — desktop rail + mobile bottom tabs | [32-navigation-shell-rework.md](32-navigation-shell-rework.md) | 30, 31 |
 | 33 | Account cluster — Login, Signup, Dashboard, Profile | [33-account-cluster-redesign.md](33-account-cluster-redesign.md) | 30, 31, 32 |

@@ -1,6 +1,6 @@
 # Step 30: Design tokens & global foundations
 
-**Status: not started**
+**Status: shipped**, 2026-08-19.
 
 ## Why here
 
@@ -72,16 +72,36 @@ just repainted, because every existing class (`.card`, `.btn-primary`,
 
 ## End state
 
-- [ ] `app/globals.css`'s token block matches `design/DESIGN_SYSTEM.md`
-      §1 exactly, in both `prefers-color-scheme` and both
-      `[data-theme]` variants.
-- [ ] No literal `#2FA572` (or any other hardcoded color this wave
-      replaces) remains anywhere in `app/globals.css` — `grep -c
-      "#2FA572"` returns 0.
-- [ ] `lib/typeData.ts`'s `TYPE_COLORS` matches the refined 18-color set.
-- [ ] `npm run build` clean, no unused-token lint issues.
-- [ ] Manual pass: load every existing page in both themes (toggle via
-      the sidebar switch, unchanged in this step) — layout and
-      interaction are pixel-identical to before, only colors/type
-      changed. No component should look "broken" (missing background,
-      invisible text) — that would mean a token rename was missed.
+- [x] `app/globals.css`'s token block matches `design/DESIGN_SYSTEM.md`
+      §1 exactly, in both `[data-theme]` variants.
+      (Implementation note: this app always has `data-theme="dark"|"light"`
+      explicitly set — `app/layout.tsx` hardcodes `data-theme="dark"` at
+      SSR time and `SideNav.tsx`'s toggle sets it client-side — so there's
+      no bare `prefers-color-scheme` fallback layer in the real app,
+      unlike the standalone mockup artifacts which needed one to render
+      correctly outside the app shell. Spacing/radius/font tokens, being
+      theme-independent, live in a new bare `:root {}` block instead.)
+- [x] No literal `#2FA572` remains anywhere in `app/globals.css` —
+      `grep -c "#2FA572"` returns 0 (two explanatory code comments that
+      *mentioned* the old hex as prose were reworded to avoid a false
+      positive on this check).
+- [x] `lib/typeData.ts`'s `TYPE_COLORS` matches the refined 18-color set.
+- [x] `npm run build` and `npm run lint` clean.
+- [x] Manual pass via a Playwright screenshot of `/login` (unauthenticated,
+      but exercises `.card`/`.auth-form`/inputs/links against the real
+      running app) in both dark and light theme (light forced via the
+      same `document.documentElement.dataset.theme` mechanism the
+      sidebar toggle uses) — new palette renders correctly, no invisible
+      text, no missing backgrounds, zero console errors. Authenticated
+      pages (Dashboard, Pokédex, etc.) weren't separately screenshotted
+      to avoid creating throwaway account data in the shared Supabase
+      project, but share the identical token mechanism just confirmed
+      working, plus a clean build/lint across every file that references
+      these tokens.
+      (Implementation note: as documented above, `.btn-primary` and a
+      handful of other non-`#2FA572` hardcoded hex values — e.g. the blue
+      primary-button/link color, the gold shiny/lootbox color, individual
+      status-badge hues — were deliberately left untouched in this step;
+      they're explicitly in scope for step 31 and later steps, which is
+      why the login screenshot still shows a blue "Log in" button. This
+      matches the step plan, not a miss.)

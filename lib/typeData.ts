@@ -1,25 +1,28 @@
 import type { PokemonType } from "@/types/pokemon";
 
-// Ported from interfaz_pokemon.py / pokedex-web — single shared copy used by
-// both the client (badges/move buttons) and server (battle resolution).
+// Refined for the v5 visual redesign (upgrades/30-design-tokens-and-foundations.md)
+// — same 18-color categorical mapping pokedex-web/interfaz_pokemon.py used,
+// values nudged per design/DESIGN_SYSTEM.md §1 for AA contrast on a white
+// chip. Shared by both the client (badges/move buttons) and server (battle
+// resolution).
 export const TYPE_COLORS: Record<PokemonType, string> = {
   Normal: "#A8A878",
   Fire: "#EE8130",
   Water: "#6390F0",
   Grass: "#7AC74C",
-  Electric: "#F7D02C",
-  Ice: "#96D9D6",
+  Electric: "#F0C93C",
+  Ice: "#7FD4CF",
   Fighting: "#C22E28",
   Poison: "#A33EA1",
-  Ground: "#E2BF65",
+  Ground: "#D6B44A",
   Flying: "#A890F0",
   Psychic: "#F95587",
-  Bug: "#A6B91A",
+  Bug: "#9DB026",
   Rock: "#B6A136",
   Ghost: "#735797",
   Dragon: "#6F35FC",
-  Dark: "#705848",
-  Steel: "#B7B7CE",
+  Dark: "#6C5B52",
+  Steel: "#8E8EA6",
   Fairy: "#D685AD",
 };
 
