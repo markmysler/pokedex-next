@@ -9,11 +9,14 @@ interface MoveButtonProps {
   onClick: () => void;
 }
 
-// Distinct from damage moves' own per-type color (upgrades/28-move-ui-and
-// -ally-targeting.md) -- reuses the same hues FighterCard.tsx's status
-// badges already established for the same concepts (buff=green like a
-// heal, debuff=bleed-red like a bad status, drain=poison-purple for the
-// vampiric theme, redirect=blind's brown/yellow for the confusion theme).
+// Distinct from damage moves' own per-type color -- semantic tokens
+// (upgrades/31-shared-ui-primitives.md, design/DESIGN_SYSTEM.md §6) rather
+// than ad hoc hexes, so "what kind of move is this" reads through the same
+// good/bad/info/warn vocabulary as everything else in the app: buff=good
+// (a beneficial effect), debuff=bad (a harmful one), drain=info (the same
+// hue MP/mana already uses, fitting drain's life/mana-steal theme),
+// redirect=warn (matches FighterCard.tsx's status-badge.redirect, both
+// being the same "confused" concept).
 const KIND_ICON: Record<Exclude<MoveKind, "damage">, string> = {
   buff: "✨",
   debuff: "💢",
@@ -21,10 +24,10 @@ const KIND_ICON: Record<Exclude<MoveKind, "damage">, string> = {
   redirect: "🌀",
 };
 const KIND_COLOR: Record<Exclude<MoveKind, "damage">, string> = {
-  buff: "#2FA572",
-  debuff: "#C0392B",
-  drain: "#7D3C98",
-  redirect: "#7D6608",
+  buff: "var(--good)",
+  debuff: "var(--bad)",
+  drain: "var(--info)",
+  redirect: "var(--warn)",
 };
 
 export default function MoveButton({ move, disabled, insufficientMana, onClick }: MoveButtonProps) {
@@ -33,11 +36,18 @@ export default function MoveButton({ move, disabled, insufficientMana, onClick }
     ? `⚠️ ${move.name} (${move.mana_cost} MP)`
     : `${icon}${move.name} (${moveEffectText(move)} | ${move.mana_cost} MP)`;
   const background = disabled ? "gray" : move.kind === "damage" ? TYPE_COLORS[move.type] ?? "#68A090" : KIND_COLOR[move.kind];
+  // Same reasoning as FighterCard.tsx's status badges: --good/--bad/--info/
+  // --warn run bright in dark theme, so the button's default white label
+  // (.move-btn's base color) would fail contrast there -- --accent-ink
+  // already encodes the right dark/light flip for "text on a token fill."
+  // Damage moves are unaffected (TYPE_COLORS isn't part of this contrast
+  // fix, pre-existing behavior, out of scope here).
+  const color = !disabled && move.kind !== "damage" ? "var(--accent-ink)" : undefined;
 
   return (
     <button
       className="move-btn"
-      style={{ background }}
+      style={{ background, color }}
       disabled={disabled}
       onClick={onClick}
       title={moveTooltip(move)}

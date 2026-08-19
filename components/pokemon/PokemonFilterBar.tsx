@@ -23,13 +23,15 @@ export default function PokemonFilterBar({
 }: PokemonFilterBarProps) {
   return (
     <div className="card inventory-toolbar">
-      <input
-        id="search-input"
-        type="text"
-        placeholder="🔍 Search Name, # or Nickname..."
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
-      />
+      <div className="search">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Search Name, # or Nickname..."
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+      </div>
       <div className="filter-col">
         <label>Type Filter:</label>
         <select value={typeFilter} onChange={(e) => onTypeFilterChange(e.target.value)}>

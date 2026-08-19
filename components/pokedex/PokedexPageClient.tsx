@@ -69,13 +69,15 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
       <CompletionBanner acquiredCount={acquiredCount} total={order.length} />
 
       <div className="card inventory-toolbar">
-        <input
-          id="search-input"
-          type="text"
-          placeholder="🔍 Search Name or #..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="search">
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Search Name or #..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <div className="filter-col">
           <label>Type Filter:</label>
           <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>

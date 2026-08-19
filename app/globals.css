@@ -175,11 +175,41 @@ h1, h2, h3, h4 {
 input, #search-input, select, textarea, .pokemon-list {
   background: var(--surface);
   color: var(--ink);
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--r-md);
+}
+input:focus, #search-input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 #search-input { padding: 8px 10px; font-size: 14px; }
+
+/* Search icon (upgrades/31-shared-ui-primitives.md) -- wraps #search-input
+   wherever a caller opts in, replacing the old placeholder-embedded 🔍
+   (which disappeared the moment the field had any text). The icon is
+   forced into its own fixed-size flex box rather than centered against
+   its own line box -- plain top:50%/translateY(-50%) on the glyph looked
+   vertically off-center due to emoji glyph metrics (caught in design
+   review, see upgrades/main.md's key decisions). */
+.search { position: relative; }
+.search #search-input { width: 100%; padding-left: 34px; }
+.search::before {
+  content: "🔍";
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-size: 13px;
+  line-height: 1;
+  opacity: .6;
+  pointer-events: none;
+}
 
 .filter-row { display: flex; gap: 8px; }
 .filter-col { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 12px; font-weight: bold; }
@@ -233,8 +263,10 @@ input, #search-input, select, textarea, .pokemon-list {
 
 .card {
   background: var(--surface);
-  border-radius: 12px;
-  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-5);
+  box-shadow: var(--shadow-1);
 }
 
 #card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
@@ -247,8 +279,10 @@ input, #search-input, select, textarea, .pokemon-list {
   font-weight: bold;
   font-size: 11px;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: var(--r-pill);
   display: inline-block;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
 }
 
 .switch-labeled { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
@@ -312,7 +346,7 @@ input, #search-input, select, textarea, .pokemon-list {
 .move-btn {
   border: none; border-radius: 8px; padding: 6px 4px; font-size: 11px; font-weight: bold; color: white; cursor: pointer;
 }
-.move-btn:disabled { background: #555 !important; color: #ccc; cursor: not-allowed; }
+.move-btn:disabled { background: var(--surface-3) !important; color: var(--ink-faint); cursor: not-allowed; }
 .ai-arsenal { font-size: 11px; color: var(--ink-faint); text-align: center; }
 
 /* 3v3 TEAM PICKER + BENCH (upgrades/archive/v2/05-3v3-battles.md) */
@@ -379,13 +413,18 @@ input, #search-input, select, textarea, .pokemon-list {
 .status-badge.poison { background: #7D3C98; }
 .status-badge.burn { background: #D35400; }
 .status-badge.freeze { background: #2E86C1; }
-/* atkMod/defMod/shieldPoints/redirectTurns (upgrades/archive/v4/28-move-ui-and-ally-targeting.md).
-   .buff mechanically follows the app-wide old-hardcoded-green-to-accent swap (step 30);
-   the full semantic remap onto --good/--bad/--info/--warn is step 31. */
-.status-badge.buff { background: var(--accent); color: var(--accent-ink); }
-.status-badge.debuff { background: #C0392B; }
-.status-badge.shield { background: #3498DB; }
-.status-badge.redirect { background: #7D6608; }
+/* atkMod/defMod/shieldPoints/redirectTurns (upgrades/archive/v4/28-move-ui-and-ally-targeting.md)
+   -- semantic mapping per design/DESIGN_SYSTEM.md §6 (step 31): buff=good,
+   debuff=bad, shield=info, redirect=warn. Paired with --accent-ink, not a
+   literal white -- these tokens run bright in dark theme (meant to read as
+   colored highlights against dark surfaces), so a fixed white would fail
+   contrast there even though it reads fine in light theme; --accent-ink
+   already encodes exactly that same "dark text on a bright token, light
+   text on a muted token" flip, just under an accent-flavored name. */
+.status-badge.buff { background: var(--good); color: var(--accent-ink); }
+.status-badge.debuff { background: var(--bad); color: var(--accent-ink); }
+.status-badge.shield { background: var(--info); color: var(--accent-ink); }
+.status-badge.redirect { background: var(--warn); color: var(--accent-ink); }
 .status-badges.compact { gap: 2px; margin-top: 2px; }
 .status-badges.compact .status-badge { font-size: 8px; padding: 1px 4px; border-radius: 6px; }
 
@@ -426,13 +465,36 @@ input, #search-input, select, textarea, .pokemon-list {
 
 .log-container { flex: 1; display: flex; flex-direction: column; }
 .action-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-.btn-primary, .btn-secondary {
-  border: none; border-radius: 6px; padding: 8px 14px; font-weight: bold; cursor: pointer; font-size: 13px;
+
+/* Buttons (upgrades/31-shared-ui-primitives.md) -- pill radius, display
+   font. Each variant is a self-contained rule (not a shared .btn base +
+   modifier, since every consumer already passes a single className like
+   "btn-primary" directly) so no component markup needs to change here. */
+.btn-primary, .btn-secondary, .btn-ghost, .btn-danger {
+  font-family: var(--font-display);
+  border-radius: var(--r-pill);
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: filter .12s ease, background-color .12s ease, border-color .12s ease;
 }
-.btn-primary { background: #3498DB; color: white; }
-.btn-primary:hover { background: #2980B9; }
-.btn-secondary { background: gray; color: white; }
-.btn-secondary:hover { background: #666; }
+.btn-primary, .btn-secondary { border: none; }
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .15), 0 6px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; filter: none; box-shadow: none; }
+.btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border-strong); }
+.btn-secondary:hover { background: var(--surface-3); }
+.btn-secondary:disabled { opacity: .5; cursor: not-allowed; }
+.btn-ghost { background: transparent; color: var(--ink-soft); border: 1px dashed var(--border-strong); }
+.btn-ghost:hover { color: var(--ink); border-color: var(--ink-soft); }
+.btn-danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); }
+.btn-danger:hover { background: var(--bad-bg); }
+.btn-danger:disabled { opacity: .5; cursor: not-allowed; }
 
 /* ONLINE BATTLE */
 #online-setup { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
@@ -444,13 +506,20 @@ input, #search-input, select, textarea, .pokemon-list {
 }
 .online-status { font-size: 13px; color: var(--ink-soft); white-space: pre-wrap; min-height: 18px; }
 
+/* Terminal readout (upgrades/31-shared-ui-primitives.md): dark screen /
+   light text in dark mode, flips to light screen / dark text in light
+   mode -- token-driven, not a permanently-inverted panel. An earlier pass
+   hardcoded this to var(--ink), which flips *opposite* of what's wanted
+   (illegible light-on-light once the app is in dark theme) -- caught
+   during design review, see upgrades/main.md's key decisions. */
 .battle-log {
   flex: 1;
   min-height: 220px;
   max-height: 320px;
   overflow-y: auto;
-  background: var(--surface);
-  border-radius: 8px;
+  background: var(--surface-3);
+  color: var(--ink);
+  border-radius: var(--r-md);
   padding: 10px;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -563,17 +632,21 @@ input, #search-input, select, textarea, .pokemon-list {
 .leaderboard-name { font-weight: bold; }
 .leaderboard-wins { color: var(--ink-soft); font-size: 13px; white-space: nowrap; }
 
-/* CAUGHT BADGE (Pokedex tab, replaces the old manual toggle) */
-.caught-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 12px; background: var(--surface); color: var(--ink-soft); }
-.caught-badge.caught { background: var(--accent); color: var(--accent-ink); }
+/* CAUGHT BADGE (Pokedex tab, replaces the old manual toggle) -- soft
+   good-tinted pill (upgrades/31-shared-ui-primitives.md) since "caught" is
+   the same semantic concept as a win/high-HP, not the brand accent. */
+.caught-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--ink-faint); }
+.caught-badge.caught { background: var(--good-bg); color: var(--good); }
 
 /* SHINY BADGE (upgrades/archive/03-shiny-pokemon.md) — an owned instance whose
-   rolled stats+moveset landed in roughly the top 10% for its species */
-.shiny-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 12px; background: #FFD700; color: #1a1a1a; }
+   rolled stats+moveset landed in roughly the top 10% for its species.
+   Fixed warm-gold gradient (upgrades/31-shared-ui-primitives.md), same in
+   both themes -- a deliberate "rare item" treatment, not a theme token. */
+.shiny-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: var(--r-pill); background: linear-gradient(135deg, #FFE9A8, #F0C15C); color: #4A3200; }
 
 /* INVENTORY / POKEDEX toolbars + grid/list views */
 .inventory-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
-.inventory-toolbar #search-input { flex: 1; min-width: 160px; padding: 8px 10px; font-size: 14px; }
+.inventory-toolbar .search { flex: 1; min-width: 160px; }
 
 .view-toggle { display: flex; gap: 4px; }
 .view-toggle button {
@@ -666,7 +739,7 @@ input, #search-input, select, textarea, .pokemon-list {
   justify-content: center;
   padding: 20px;
 }
-.modal-panel { position: relative; max-width: 420px; width: 100%; text-align: center; }
+.modal-panel { position: relative; max-width: 420px; width: 100%; text-align: center; border-radius: var(--r-xl); box-shadow: var(--shadow-2); }
 .modal-panel-large { max-width: 640px; }
 
 /* WELCOME DIALOG (upgrades/archive/main.md's post-plan onboarding addition) */
@@ -729,7 +802,12 @@ input, #search-input, select, textarea, .pokemon-list {
 .lootbox-moves .move-list li.move-revealed { opacity: 1; transform: translateY(0); }
 .lootbox-reveal-actions { margin-top: 8px; }
 
-/* TOASTS (upgrades/archive/v2/05-friend-system.md) — app-wide live notifications */
+/* TOASTS (upgrades/archive/v2/05-friend-system.md) — app-wide live notifications.
+   align-items: flex-end (upgrades/31-shared-ui-primitives.md) + toast-card's
+   own width: fit-content keep each toast only as wide as its content and
+   anchored to the stack's right edge, instead of stretching to match
+   .toast-stack's width (the flex column's default cross-axis stretch) --
+   caught during design review, see upgrades/main.md's key decisions. */
 .toast-stack {
   position: fixed;
   bottom: 16px;
@@ -737,14 +815,18 @@ input, #search-input, select, textarea, .pokemon-list {
   z-index: 90;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 8px;
   max-width: 320px;
 }
 .toast-card {
   position: relative;
+  width: fit-content;
+  max-width: 100%;
   padding: 10px 28px 10px 14px;
   font-size: 13px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  line-height: 1.4;
+  box-shadow: var(--shadow-2);
 }
 .toast-close {
   position: absolute;
@@ -816,4 +898,45 @@ input, #search-input, select, textarea, .pokemon-list {
   border-radius: 10px;
   padding: 1px 6px;
   margin-left: 6px;
+}
+
+/* SEGMENTED METER (components/ui/SegmentedMeter.tsx, upgrades/31-shared-
+   ui-primitives.md) — the Game Boy-style HP/MP/stat readout that replaces
+   .progress-fill/.stat-bar-fill's smooth gradient fill. Not wired into any
+   page yet; the CSS ships in this step so later steps just consume it. */
+.meter { display: grid; grid-template-columns: 48px 1fr 56px; align-items: center; gap: var(--s-3); font-size: 12px; margin: 5px 0; }
+.meter .m-label { font-weight: 700; color: var(--ink-soft); }
+.meter .m-value { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.segbar { height: 10px; border-radius: 4px; background: var(--surface-2); display: flex; gap: 2px; padding: 2px; overflow: hidden; }
+.segbar span { flex: 1; border-radius: 2px; background: var(--surface-3); }
+.segbar span.on { background: var(--seg-color, var(--accent)); }
+
+/* CARD TAB (components/ui/CardTab.tsx, upgrades/31-shared-ui-primitives.md)
+   — the overlapping icon-chip + eyebrow-label header every card wears
+   instead of an inline-emoji <h3>. Not wired into any page yet. */
+.card-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 5px 12px 5px 6px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: var(--s-3);
+}
+.card-tab-chip {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  background: var(--accent);
+  color: var(--accent-ink);
 }

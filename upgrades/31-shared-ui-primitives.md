@@ -1,6 +1,6 @@
 # Step 31: Shared UI primitives — buttons, inputs, chips, meters, card tabs
 
-**Status: not started**
+**Status: shipped**, 2026-08-19.
 
 ## Why here
 
@@ -99,19 +99,64 @@ friends list), Friend chat (trades, chat), FighterCard's moves caption.
 
 ## End state
 
-- [ ] `components/ui/SegmentedMeter.tsx` and `components/ui/CardTab.tsx`
-      exist, typed, with no consumers wired yet (that's steps 33–38) —
-      but a throwaway usage in Storybook-less manual testing (e.g.
-      temporarily drop one into any existing page) renders correctly in
-      both themes.
-- [ ] `.btn-primary/secondary/ghost/danger`, inputs, all chip/pill
+- [x] `components/ui/SegmentedMeter.tsx` and `components/ui/CardTab.tsx`
+      exist, typed, with no consumers wired yet (that's steps 33–38) — a
+      throwaway usage temporarily dropped into `/login` (reverted before
+      commit) rendered correctly in both themes.
+      (Implementation note: `CardTab`'s inner icon-chip element is
+      `.card-tab-chip`, not the artifact's generic `.chip`, to avoid
+      claiming an unscoped class name in the real stylesheet.)
+- [x] `.btn-primary/secondary/ghost/danger`, inputs, all chip/pill
       classes, `.move-btn`, `.modal-*`, `.toast-*`, `.battle-log` match
       the Design System artifact 1:1 (colors, radius, shadow).
-- [ ] Search input icon is vertically centered (visually verified, not
-      just via `top:50%`).
-- [ ] Toast card in a manual test (trigger any existing toast — e.g. a
-      friend request in dev) is only as tall as its content.
-- [ ] `npm run build` clean.
-- [ ] Manual pass in both themes: buttons/inputs/chips/modal/toast all
-      legible with correct contrast; no leftover hardcoded hex from the
-      old status-badge colors.
+      (Implementation notes:
+      — `.btn-primary`/`.btn-secondary`/`.btn-ghost`/`.btn-danger` stayed
+      four self-contained rules rather than a shared `.btn` base class,
+      since every real consumer already passes a single className
+      directly (e.g. `className="btn-primary"`) — adding a `.btn` base
+      would have meant touching every button call site across the app,
+      out of scope for a primitives-only step.
+      — `.caught-badge.caught` went to the soft `--good-bg`/`--good`
+      pairing (not `--accent`) — "caught" is the same semantic concept as
+      a win/high-HP per `DESIGN_SYSTEM.md`'s own token table, and this is
+      the step explicitly named for that recolor in the plan; step 30's
+      interim `--accent` value for it was always meant to be superseded
+      here, not a miss.
+      — `.status-badge.buff/debuff/shield/redirect` and
+      `MoveButton.tsx`'s equivalent `KIND_COLOR` entries pair their
+      background with `var(--accent-ink)`, not a literal white: `--good`/
+      `--bad`/`--info`/`--warn` all run bright in dark theme (meant to
+      read as colored highlights against dark surfaces), so fixed white
+      text would fail contrast there even though it's fine in light theme
+      — `--accent-ink` already encodes exactly that "dark text on a
+      bright token, light text on a muted token" flip. Caught during this
+      step's own implementation, not present in the reviewed mockups —
+      documented in `app/globals.css`'s comments and
+      `upgrades/main.md`'s key decisions so it isn't lost.
+      — `drain`'s move-kind color maps to `--info` and `redirect` to
+      `--warn` — the Design System doc names the four semantic tokens but
+      doesn't spell out which move-kind gets which; this pairing keeps
+      `redirect` consistent with its status-badge counterpart (both
+      "confused") and gives `drain` the mana/life-steal-adjacent `--info`
+      hue, the only reasonable pairing left for the remaining two slots.)
+- [x] Search input icon is vertically centered (visually verified via
+      screenshot, not just via `top:50%`) — and, going further than the
+      original plan, actually wired into the two real search inputs
+      (`PokemonFilterBar.tsx`, `PokedexPageClient.tsx`) via a new `.search`
+      wrapper div, replacing the old placeholder-embedded 🔍 (which
+      disappeared once the field had any text — a real UX bug beyond the
+      centering issue, fixed for free by switching to an overlay icon).
+- [x] Toast card in a manual test (a static markup rendering of the same
+      `.toast-stack`/`.card.toast-card` classes `Toast.tsx` produces,
+      temporarily on `/login`, reverted before commit) is only as tall/wide
+      as its content, not stretched.
+- [x] `npm run build` and `npm run lint` clean.
+- [x] Manual pass in both themes via Playwright screenshots of the
+      temporary `/login` test markup (reverted before commit): buttons
+      (primary/secondary/ghost/danger/disabled), type/caught/shiny chips,
+      all four status-badge kinds, the segmented meter, the search icon,
+      a modal, and a toast — all legible with correct contrast in both
+      themes, zero console errors. No leftover hardcoded hex from the old
+      status-badge colors for the four semantic-mapped kinds (bleed/
+      blind/poison/burn/freeze intentionally keep their own fixed hues
+      per `DESIGN_SYSTEM.md` §6, untouched).

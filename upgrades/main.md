@@ -33,15 +33,20 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
-**Progress: step 30 shipped 2026-08-19** (design tokens live in
-`app/globals.css` and `lib/typeData.ts`, verified via `npm run build`/
-`npm run lint` and a Playwright screenshot of `/login` in both themes —
-see the step file's End state notes). Steps 31–39 not started.
+**Progress: steps 30–31 shipped 2026-08-19** (design tokens in
+`app/globals.css`/`lib/typeData.ts`; shared primitives — buttons, inputs,
+chips, the new `SegmentedMeter`/`CardTab` components, and the Modal/Toast/
+battle-log fixes — also in `app/globals.css` plus
+`components/ui/SegmentedMeter.tsx`, `components/ui/CardTab.tsx`,
+`components/battle/MoveButton.tsx`, and the two real search-input
+consumers. Both verified via `npm run build`/`npm run lint` and Playwright
+screenshots — see each step file's End state notes). Steps 32–39 not
+started.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
 | 30 | ✅ Design tokens & global foundations (palette, type, spacing/radius/shadow scale) | [30-design-tokens-and-foundations.md](30-design-tokens-and-foundations.md) | — |
-| 31 | Shared UI primitives — buttons/inputs/chips, `SegmentedMeter`, `CardTab`, Modal/Toast fixes | [31-shared-ui-primitives.md](31-shared-ui-primitives.md) | 30 |
+| 31 | ✅ Shared UI primitives — buttons/inputs/chips, `SegmentedMeter`, `CardTab`, Modal/Toast fixes | [31-shared-ui-primitives.md](31-shared-ui-primitives.md) | 30 |
 | 32 | Navigation shell — desktop rail + mobile bottom tabs | [32-navigation-shell-rework.md](32-navigation-shell-rework.md) | 30, 31 |
 | 33 | Account cluster — Login, Signup, Dashboard, Profile | [33-account-cluster-redesign.md](33-account-cluster-redesign.md) | 30, 31, 32 |
 | 34 | Collection cluster — Pokédex, Inventory, Lootbox reveal | [34-collection-cluster-redesign.md](34-collection-cluster-redesign.md) | 30, 31, 32 |
@@ -141,6 +146,24 @@ From the 2026-08-19 design pass and planning conversation:
 - **No new libraries, no new build tooling.** Same custom-CSS-in-
   `globals.css` + React approach as every prior wave — `Modal`/`Toast`
   keep their existing structural model, just restyled.
+- **A fourth contrast bug, not present in the mockups, was caught while
+  implementing step 31**: pairing `--good`/`--bad`/`--info`/`--warn`
+  directly with literal white text (as the reviewed status-badge mockup
+  did) fails in dark theme, where all four tokens run bright/light by
+  design (meant to read as colored highlights against dark surfaces).
+  Fixed by pairing them with `--accent-ink` instead, which already
+  encodes the same "dark text on a bright token, light text on a muted
+  token" flip under an accent-flavored name — applied to
+  `.status-badge.buff/debuff/shield/redirect` and `MoveButton.tsx`'s
+  matching `KIND_COLOR` entries. No new token was introduced for this;
+  `--accent-ink`'s values happen to be exactly what's needed.
+- **The search-icon fix went further than planned**: rather than just
+  restyling `#search-input`'s CSS, step 31 introduced a real `.search`
+  wrapper (icon as a permanent overlay) and removed the 🔍 emoji from the
+  two real placeholder strings it was embedded in
+  (`PokemonFilterBar.tsx`, `PokedexPageClient.tsx`) — the placeholder
+  approach had its own bug beyond centering: the icon disappeared the
+  moment the field had any text, since it was part of the placeholder.
 
 ## Working through a step
 
