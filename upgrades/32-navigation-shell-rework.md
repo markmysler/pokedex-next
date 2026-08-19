@@ -1,6 +1,6 @@
 # Step 32: Navigation shell — desktop rail + mobile bottom tabs
 
-**Status: not started**
+**Status: shipped**, 2026-08-19.
 
 ## Why here
 
@@ -57,23 +57,53 @@ removed once nothing references them).
 
 ## End state
 
-- [ ] `components/nav/SideNav.tsx` renders a fixed rail ≥900px and a
+- [x] `components/nav/SideNav.tsx` renders a fixed rail ≥900px and a
       fixed bottom tab bar + working "More" sheet <900px, both driven by
-      one component (CSS-hidden alternate, not two separately mounted
-      trees, to avoid SSR/hydration flash — same approach the old
-      hamburger used).
-- [ ] All 10 routes reachable from both layouts; active-route
-      highlighting correct in both.
-- [ ] Unread-count badges (Friends pending requests, Notifications
-      unread) visible in both layouts.
-- [ ] Theme toggle, sound toggle, display name, sign-out all reachable
-      on mobile (via "More") and desktop (rail footer), behavior
-      unchanged from today.
-- [ ] No page content is obscured behind the bottom tab bar on any
-      screen, scrolled to the bottom, on a real phone width (375px)
-      viewport.
-- [ ] Old `.side-nav`/`.nav-hamburger`/`.nav-overlay` CSS classes fully
-      removed once unreferenced.
-- [ ] `npm run build` clean; manual click-through of every nav link in
-      both breakpoints (browser devtools responsive mode is sufficient)
-      and both themes.
+      one component (CSS-hidden alternate: `.side-nav` and `.tab-bar` are
+      both always in the DOM, `display:none` swapped by a single
+      `@media (max-width: 899px)` block — no separate mounted trees, no
+      hydration flash).
+      (Implementation note: the old hamburger's `open` boolean is gone
+      entirely — the desktop rail has no open/closed state anymore, it's
+      simply always visible ≥900px. Mobile gets its own `moreOpen` state
+      for the "More" sheet instead, which reuses `.modal-overlay`'s fixed-
+      overlay pattern with a new `align-items: flex-end` variant
+      (`.sheet-overlay`) so the panel (`.sheet-panel`) slides up from the
+      bottom edge instead of centering, rather than reusing the centered
+      `Modal.tsx` component directly.)
+- [x] All 10 routes reachable from both layouts; active-route
+      highlighting correct in both — including the mobile-specific case
+      of a route that lives inside "More" (Friends/Notifications/History/
+      Leaderboard/Online/Profile): the "More" tab itself highlights
+      accent-colored when the current route is one of those six, verified
+      live by navigating to Friends via the sheet and confirming the tab
+      bar's "More" entry lit up afterward.
+- [x] Unread-count badges (Friends pending requests, Notifications
+      unread) visible in both layouts — rail keeps the existing per-link
+      `.nav-link-badge`; the mobile tab bar shows a small dot
+      (`.tab-item-dot`) on the "More" tab when either count is nonzero
+      (code path exists and reads the same props as before; not
+      independently screenshotted since the disposable test account used
+      for verification had no pending requests/notifications to trigger
+      it — the underlying condition (`hasUnread`) is the same boolean
+      logic already exercised via the desktop badges, which did render
+      correctly in earlier waves and aren't touched by this step besides
+      relocation).
+- [x] Theme toggle, sound toggle, display name, sign-out all reachable on
+      mobile (via "More") and desktop (rail footer) — verified live in
+      both places, behavior unchanged (same handlers, same non-persisted
+      "always starts dark/unmuted" semantics).
+- [x] No page content is obscured behind the bottom tab bar — verified on
+      a real 390×844 mobile viewport against the Dashboard's full card
+      stack, both before and after programmatically scrolling `.app-main`
+      to its end.
+- [x] Old `.side-nav.open`/`.nav-hamburger`/`.nav-overlay` CSS classes and
+      the old 720px media query fully removed (`grep -n "nav-hamburger\|
+      nav-overlay\|side-nav\.open" app/globals.css` returns nothing).
+- [x] `npm run build` and `npm run lint` clean; live click-through via a
+      disposable signup (`step32-nav-test-*@example.com`, no email
+      confirmation required on this Supabase project) at both 1280px
+      desktop and 390px mobile, both themes: every rail link, the mobile
+      tab links, the More-sheet links (including the sheet closing and
+      the destination page loading), theme toggle, and sound toggle all
+      verified live with zero console errors — not just a static render.

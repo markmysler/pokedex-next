@@ -33,21 +33,26 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
-**Progress: steps 30–31 shipped 2026-08-19** (design tokens in
+**Progress: steps 30–32 shipped 2026-08-19** (design tokens in
 `app/globals.css`/`lib/typeData.ts`; shared primitives — buttons, inputs,
 chips, the new `SegmentedMeter`/`CardTab` components, and the Modal/Toast/
 battle-log fixes — also in `app/globals.css` plus
 `components/ui/SegmentedMeter.tsx`, `components/ui/CardTab.tsx`,
 `components/battle/MoveButton.tsx`, and the two real search-input
-consumers. Both verified via `npm run build`/`npm run lint` and Playwright
-screenshots — see each step file's End state notes). Steps 32–39 not
-started.
+consumers; the navigation shell rework — `components/nav/SideNav.tsx`
+rewritten to a desktop rail + mobile bottom-tab-bar + "More" sheet. All
+three verified via `npm run build`/`npm run lint` and Playwright — steps
+30–31 via screenshots of a throwaway component gallery, step 32 via a
+live disposable-account click-through (real signup, real navigation,
+zero console errors) since a nav rework can't be meaningfully verified
+without an authenticated session. See each step file's End state notes).
+Steps 33–39 not started.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
 | 30 | ✅ Design tokens & global foundations (palette, type, spacing/radius/shadow scale) | [30-design-tokens-and-foundations.md](30-design-tokens-and-foundations.md) | — |
 | 31 | ✅ Shared UI primitives — buttons/inputs/chips, `SegmentedMeter`, `CardTab`, Modal/Toast fixes | [31-shared-ui-primitives.md](31-shared-ui-primitives.md) | 30 |
-| 32 | Navigation shell — desktop rail + mobile bottom tabs | [32-navigation-shell-rework.md](32-navigation-shell-rework.md) | 30, 31 |
+| 32 | ✅ Navigation shell — desktop rail + mobile bottom tabs | [32-navigation-shell-rework.md](32-navigation-shell-rework.md) | 30, 31 |
 | 33 | Account cluster — Login, Signup, Dashboard, Profile | [33-account-cluster-redesign.md](33-account-cluster-redesign.md) | 30, 31, 32 |
 | 34 | Collection cluster — Pokédex, Inventory, Lootbox reveal | [34-collection-cluster-redesign.md](34-collection-cluster-redesign.md) | 30, 31, 32 |
 | 35 | Battle shared components — FighterCard, MoveButton, AllyTargetPicker, BattleResultDialog | [35-battle-shared-components-redesign.md](35-battle-shared-components-redesign.md) | 30, 31 |
@@ -164,6 +169,23 @@ From the 2026-08-19 design pass and planning conversation:
   (`PokemonFilterBar.tsx`, `PokedexPageClient.tsx`) — the placeholder
   approach had its own bug beyond centering: the icon disappeared the
   moment the field had any text, since it was part of the placeholder.
+- **Mobile's 4 dedicated tabs are Dashboard/Inventory/Pokédex/Battle**
+  (step 32) — the routes a trainer reaches for constantly — with the
+  other 6 (Online, Friends, Notifications, History, Leaderboard, Profile)
+  behind "More." The "More" tab itself highlights as active when the
+  current route is one of those six, not just when the sheet is open, so
+  the tab bar never shows zero tabs lit while on a real page.
+- **Step 32 was verified with a live disposable account**, not just a
+  static render — same precedent v4's step 21 set (see `archive/v4/
+  main.md`): a nav rework only really proves itself by actually
+  navigating through it post-login, which needs a real session. Signed up
+  `step32-nav-test-*@example.com` (this Supabase project doesn't require
+  email confirmation), clicked every rail link and every mobile
+  tab/sheet link, toggled theme/sound, confirmed zero console errors, and
+  left the throwaway account in place afterward (no deletion flow exists
+  in-app, and an empty test account isn't harmful to leave — unlike v4's
+  step 21, which was validating against data-mutating battle/lootbox
+  flows on what was explicitly called out as the production database).
 
 ## Working through a step
 

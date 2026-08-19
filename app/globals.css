@@ -101,21 +101,22 @@ h1, h2, h3, h4 {
   min-height: 100vh;
 }
 
+/* Desktop rail, >=900px (upgrades/32-navigation-shell-rework.md) -- below
+   900px this is replaced by .tab-bar + .sheet-panel below, not a
+   slide-over of this same element, so there's no "open" state to manage
+   here anymore. */
 .side-nav {
-  width: 260px;
+  width: 220px;
   flex-shrink: 0;
   background: var(--surface-2);
-  padding: 15px;
+  padding: var(--s-4) var(--s-3);
   display: flex;
   flex-direction: column;
   gap: 8px;
   border-right: 1px solid var(--border);
 }
 
-.sidebar-title { font-size: 22px; margin: 0 0 6px 0; }
-
-.nav-hamburger { display: none; }
-.nav-overlay { display: none; }
+.sidebar-title { font-size: 20px; margin: 0 0 6px 0; }
 
 .nav-links { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .nav-link {
@@ -123,10 +124,10 @@ h1, h2, h3, h4 {
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: var(--r-md);
   color: var(--ink);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: bold;
 }
 .nav-link:hover { background: var(--surface-3); }
@@ -135,37 +136,80 @@ h1, h2, h3, h4 {
 
 .app-main { flex: 1; min-width: 0; overflow-y: auto; }
 
-@media (max-width: 720px) {
-  .nav-hamburger {
-    display: block;
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 30;
-    background: var(--surface-2);
-    color: var(--ink);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 18px;
-    padding: 6px 10px;
-    cursor: pointer;
-  }
-  .nav-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 19;
-  }
-  .side-nav {
-    position: fixed;
-    inset: 0 auto 0 0;
-    z-index: 20;
-    transform: translateX(-100%);
-    transition: transform 0.2s;
-    width: 260px;
-  }
-  .side-nav.open { transform: translateX(0); }
+/* Mobile bottom tab bar, <900px (upgrades/32-navigation-shell-rework.md)
+   -- replaces the old hamburger + slide-over drawer, which didn't leave
+   room for 44px touch targets on a 10-item menu. 5 primary destinations;
+   everything else lives behind "More" (.sheet-panel below). */
+.tab-bar {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  gap: 2px;
+  box-shadow: var(--shadow-2);
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border-radius: var(--r-md);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-faint);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+.tab-item-icon { font-size: 19px; line-height: 1; }
+.tab-item.active { color: var(--accent); }
+.tab-item-dot {
+  position: absolute;
+  top: 2px;
+  right: calc(50% - 17px);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1.5px solid var(--surface-2);
+}
+
+/* "More" sheet -- reuses .modal-overlay's fixed-overlay pattern, anchored
+   to the bottom edge instead of centered, rather than a new library. */
+.sheet-overlay { align-items: flex-end; padding: 0; }
+.sheet-panel {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  max-height: 82vh;
+  overflow-y: auto;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  text-align: left;
+  padding-bottom: calc(var(--s-5) + env(safe-area-inset-bottom, 0px));
+}
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--border-strong);
+  margin: 0 auto var(--s-4);
+}
+
+@media (max-width: 899px) {
+  .side-nav { display: none; }
+  .tab-bar { display: flex; }
+  .app-main { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* Base theme styling for every text/number input, not just the ones with a
