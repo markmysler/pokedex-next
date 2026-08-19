@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import CardTab from "@/components/ui/CardTab";
 
 interface ProfilePageClientProps {
   email: string;
@@ -43,33 +44,43 @@ export default function ProfilePageClient({ email, initialDisplayName, friendCod
   return (
     <div className="page">
       <h1 className="page-title">👤 Profile</h1>
-      <form className="card auth-form" onSubmit={handleSave}>
-        <label>
-          Email
-          <input value={email} disabled />
-        </label>
-        <label>
-          Display name
-          <input
-            value={displayName}
-            onChange={(e) => {
-              setDisplayName(e.target.value);
-              setSaved(false);
-            }}
-            minLength={2}
-            maxLength={30}
-            required
-          />
-        </label>
-        {error && <p className="auth-error">{error}</p>}
-        <button className="btn-primary" type="submit" disabled={saving}>
-          {saving ? "Saving…" : "Save"}
-        </button>
-        {saved && <p className="notes-status">Saved ✓</p>}
-      </form>
 
-      <div className="card">
-        <h3>🔑 Your Friend Code</h3>
+      <div className="card profile-card">
+        <div className="profile-header">
+          <div className="avatar-lg">👤</div>
+          <div>
+            <div className="profile-header-name">{displayName || "Trainer"}</div>
+            <div className="profile-header-email">{email}</div>
+          </div>
+        </div>
+        <form className="auth-form profile-form" onSubmit={handleSave}>
+          <label>
+            Email
+            <input value={email} disabled />
+          </label>
+          <label>
+            Display name
+            <input
+              value={displayName}
+              onChange={(e) => {
+                setDisplayName(e.target.value);
+                setSaved(false);
+              }}
+              minLength={2}
+              maxLength={30}
+              required
+            />
+          </label>
+          {error && <p className="auth-error">{error}</p>}
+          <button className="btn-primary" type="submit" disabled={saving}>
+            {saving ? "Saving…" : "Save"}
+          </button>
+          {saved && <p className="notes-status">Saved ✓</p>}
+        </form>
+      </div>
+
+      <div className="card profile-card">
+        <CardTab icon="🔑" label="Your friend code" />
         <p className="friend-code-display">{friendCode}</p>
         <p className="online-status">Share this code with a friend so they can add you on the Friends page.</p>
       </div>

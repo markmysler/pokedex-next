@@ -6,6 +6,7 @@ import { getDashboardStats } from "@/lib/dashboardStats";
 import { getMatchHistoryForUser } from "@/lib/history";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
+import CardTab from "@/components/ui/CardTab";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName } from "@/lib/pokemonDisplay";
 
@@ -41,9 +42,20 @@ export default async function DashboardPage() {
     <div className="page">
       <h1 className="page-title">🏠 Dashboard</h1>
 
+      {/* The 4 numbers a trainer actually checks at a glance, promoted out
+          of the Battle Stats/Collection Stats cards below (upgrades/33-
+          account-cluster-redesign.md) — same `stats` object, just a
+          different layout, not a new query. */}
+      <div className="stat-strip">
+        <div className="stat-tile"><div className="stat-tile-n">{stats.botWins}</div><div className="stat-tile-l">Bot wins</div></div>
+        <div className="stat-tile"><div className="stat-tile-n">{pct(stats.botWinPct)}</div><div className="stat-tile-l">Bot win rate</div></div>
+        <div className="stat-tile"><div className="stat-tile-n">{stats.onlineWins}</div><div className="stat-tile-l">Online wins</div></div>
+        <div className="stat-tile"><div className="stat-tile-n">{stats.pokedexOwnedPct.toFixed(1)}%</div><div className="stat-tile-l">Dex owned</div></div>
+      </div>
+
       <div className="dashboard-grid">
         <div className="card">
-          <h2>Your Team</h2>
+          <CardTab icon="⭐" label="Your team" />
           {topPokemon.length === 0 ? (
             <p>You don&apos;t own any Pokémon yet.</p>
           ) : (
@@ -70,30 +82,26 @@ export default async function DashboardPage() {
         </div>
 
         <div className="card">
-          <h2>Battle Stats</h2>
+          <CardTab icon="⚔️" label="Battle stats" />
           <div className="dashboard-stats-grid">
-            <div><strong>{stats.botWins}</strong> bot wins</div>
             <div><strong>{stats.botLosses}</strong> bot losses</div>
-            <div><strong>{stats.onlineWins}</strong> online wins</div>
             <div><strong>{stats.onlineLosses}</strong> online losses</div>
-            <div><strong>{pct(stats.botWinPct)}</strong> bot win rate</div>
             <div><strong>{pct(stats.onlineWinPct)}</strong> online win rate</div>
           </div>
         </div>
 
         <div className="card">
-          <h2>Collection Stats</h2>
+          <CardTab icon="🎒" label="Collection stats" />
           <div className="dashboard-stats-grid">
             <div><strong>{stats.lootboxesOpened}</strong> lootboxes opened</div>
             <div><strong>{stats.pokemonReleased}</strong> Pokémon released</div>
             <div><strong>{stats.mostUsedPokemon ? `${stats.mostUsedPokemon.name} (${stats.mostUsedPokemon.count})` : "—"}</strong> most used</div>
             <div><strong>{stats.mostOwnedPokemon ? `${stats.mostOwnedPokemon.name} (${stats.mostOwnedPokemon.count})` : "—"}</strong> most owned</div>
-            <div><strong>{stats.pokedexOwnedPct.toFixed(1)}%</strong> of Pokédex owned</div>
           </div>
         </div>
 
         <div className="card">
-          <h2>Recent Matches</h2>
+          <CardTab icon="🏆" label="Recent matches" color="var(--good)" />
           {recentMatches.length === 0 ? (
             <p>No matches played yet. <Link href="/battle">Battle a bot →</Link></p>
           ) : (

@@ -1,6 +1,6 @@
 # Step 33: Account cluster — Login, Signup, Dashboard, Profile
 
-**Status: not started**
+**Status: shipped**, 2026-08-19.
 
 ## Why here
 
@@ -45,15 +45,37 @@ Reference: `design/REDESIGN_TRACKER.md`'s Account cluster artifact.
 
 ## End state
 
-- [ ] Login/Signup match the Account cluster mockup in both themes, both
-      breakpoints (desktop card, full-bleed-ish mobile card).
-- [ ] Dashboard shows the new 4-tile stat strip above the existing card
-      grid; all numbers still come from `getDashboardStats` (no new
-      queries — this is a layout change, not a data change).
-- [ ] Profile shows the avatar + form + code-plate layout from the
-      mockup; save flow (`PATCH /api/profile`) unchanged and still
-      works.
-- [ ] All four screens verified at desktop (rail nav) and mobile
-      (bottom-tab shell from step 32) widths, both themes.
-- [ ] `npm run build` clean; no console errors/hydration warnings
-      introduced.
+- [x] Login/Signup match the Account cluster mockup in both themes, both
+      breakpoints (desktop card, full-bleed-ish mobile card) — verified
+      unchanged, since these needed no code changes: both already read
+      the step 30/31 tokens automatically through `.auth-page`/
+      `.auth-form`/`.btn-primary`. The "check your email" alt state's
+      markup/classes are untouched by this step (not independently
+      re-screenshotted — this Supabase project doesn't require email
+      confirmation, so it can't be reached live without disabling that
+      setting, and there was nothing to change in its code either way).
+- [x] Dashboard shows the new 4-tile stat strip above the existing card
+      grid (bot wins, bot win rate, online wins, dex-owned %); Battle
+      Stats/Collection Stats keep the remaining 3+4 numbers; all four
+      cards now use `CardTab` headers. All numbers still come from the
+      same `getDashboardStats` call — no new queries.
+- [x] Profile shows the avatar + form + code-plate layout from the
+      mockup; save flow (`PATCH /api/profile`) exercised live — renamed
+      a real test account's display name, confirmed "Saved ✓" and the
+      new name reflected in both the profile header and the sidebar
+      (via `router.refresh()`, unchanged behavior).
+      (Implementation note: nesting the avatar header + form inside one
+      `.card` — instead of the form itself being the `.card` as before —
+      needed a small unplanned fix: `.auth-form`'s own 360px max-width
+      only made sense when it *was* the whole card; nested inside a
+      wider, unconstrained card it left an awkward gap. Added
+      `.profile-card { max-width: 420px }` on the outer card and a
+      compound `.auth-form.profile-form { max-width: none }` override so
+      the form fills its now-correctly-capped parent instead of
+      double-capping narrower.)
+- [x] All four screens verified at desktop (1280px, rail nav) and mobile
+      (390px, bottom-tab shell from step 32) widths, both themes, via
+      Playwright against the real running app (not static markup) —
+      including a fresh disposable signup to reach Dashboard/Profile.
+- [x] `npm run build` and `npm run lint` clean; zero console errors across
+      the whole flow (login → signup → dashboard → profile → save).

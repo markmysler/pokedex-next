@@ -33,27 +33,30 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
-**Progress: steps 30–32 shipped 2026-08-19** (design tokens in
+**Progress: steps 30–33 shipped 2026-08-19** (design tokens in
 `app/globals.css`/`lib/typeData.ts`; shared primitives — buttons, inputs,
 chips, the new `SegmentedMeter`/`CardTab` components, and the Modal/Toast/
 battle-log fixes — also in `app/globals.css` plus
 `components/ui/SegmentedMeter.tsx`, `components/ui/CardTab.tsx`,
 `components/battle/MoveButton.tsx`, and the two real search-input
 consumers; the navigation shell rework — `components/nav/SideNav.tsx`
-rewritten to a desktop rail + mobile bottom-tab-bar + "More" sheet. All
-three verified via `npm run build`/`npm run lint` and Playwright — steps
-30–31 via screenshots of a throwaway component gallery, step 32 via a
-live disposable-account click-through (real signup, real navigation,
-zero console errors) since a nav rework can't be meaningfully verified
-without an authenticated session. See each step file's End state notes).
-Steps 33–39 not started.
+rewritten to a desktop rail + mobile bottom-tab-bar + "More" sheet; the
+Account cluster — Dashboard's new stat strip + `CardTab` headers, and
+Profile's avatar header + code-plate friend code, both wired for real.
+All four verified via `npm run build`/`npm run lint` and Playwright —
+steps 30–31 via screenshots of a throwaway component gallery, steps
+32–33 via live disposable-account click-throughs (real signup, real
+navigation, a real profile save, zero console errors) since neither a
+nav rework nor an authenticated page can be meaningfully verified
+without a session. See each step file's End state notes). Steps 34–39
+not started.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
 | 30 | ✅ Design tokens & global foundations (palette, type, spacing/radius/shadow scale) | [30-design-tokens-and-foundations.md](30-design-tokens-and-foundations.md) | — |
 | 31 | ✅ Shared UI primitives — buttons/inputs/chips, `SegmentedMeter`, `CardTab`, Modal/Toast fixes | [31-shared-ui-primitives.md](31-shared-ui-primitives.md) | 30 |
 | 32 | ✅ Navigation shell — desktop rail + mobile bottom tabs | [32-navigation-shell-rework.md](32-navigation-shell-rework.md) | 30, 31 |
-| 33 | Account cluster — Login, Signup, Dashboard, Profile | [33-account-cluster-redesign.md](33-account-cluster-redesign.md) | 30, 31, 32 |
+| 33 | ✅ Account cluster — Login, Signup, Dashboard, Profile | [33-account-cluster-redesign.md](33-account-cluster-redesign.md) | 30, 31, 32 |
 | 34 | Collection cluster — Pokédex, Inventory, Lootbox reveal | [34-collection-cluster-redesign.md](34-collection-cluster-redesign.md) | 30, 31, 32 |
 | 35 | Battle shared components — FighterCard, MoveButton, AllyTargetPicker, BattleResultDialog | [35-battle-shared-components-redesign.md](35-battle-shared-components-redesign.md) | 30, 31 |
 | 36 | Battle Arena page + Team Picker — bot battle wiring | [36-battle-arena-and-team-picker-redesign.md](36-battle-arena-and-team-picker-redesign.md) | 32, 35 |
@@ -186,6 +189,15 @@ From the 2026-08-19 design pass and planning conversation:
   in-app, and an empty test account isn't harmful to leave — unlike v4's
   step 21, which was validating against data-mutating battle/lootbox
   flows on what was explicitly called out as the production database).
+  Step 33 followed the same live-account approach for the same reason
+  (Dashboard/Profile are both authenticated-only) and additionally
+  exercised the real `PATCH /api/profile` save flow, not just a render.
+- **`.friend-code-display`'s "code plate" restyle (step 33) is a single
+  shared class**, not a per-page copy — Profile (step 33), Friends (step
+  38), and Online's room-code display (step 37) all reuse it, so the
+  dashed-border/mono/letter-spaced treatment stays visually identical
+  everywhere a short alphanumeric code is meant to be read aloud or
+  copied, without three near-duplicate CSS rules to keep in sync.
 
 ## Working through a step
 
