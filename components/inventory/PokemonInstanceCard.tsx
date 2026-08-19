@@ -47,8 +47,13 @@ export default function PokemonInstanceCard({ pokemon, variant, selected, onSele
       <div className="grid-card-name">{name}</div>
       {pokemon.nickname && <div className="grid-card-species">#{pokemon.number} {pokemon.name}</div>}
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
-      {shiny && <span className="shiny-badge">✨ Shiny</span>}
-      <div className="grid-card-total">Total {pokemon.total}{pokemon.isStarter ? " ⭐" : ""}</div>
+      {(pokemon.isStarter || shiny) && (
+        <div className="grid-card-badges">
+          {pokemon.isStarter && <span className="starter-badge">⭐ Starter</span>}
+          {shiny && <span className="shiny-badge">✨ Shiny</span>}
+        </div>
+      )}
+      <div className="grid-card-total">Total {pokemon.total}</div>
     </div>
   );
 }

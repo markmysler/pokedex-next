@@ -33,7 +33,7 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
-**Progress: steps 30–33 shipped 2026-08-19** (design tokens in
+**Progress: steps 30–34 shipped 2026-08-19** (design tokens in
 `app/globals.css`/`lib/typeData.ts`; shared primitives — buttons, inputs,
 chips, the new `SegmentedMeter`/`CardTab` components, and the Modal/Toast/
 battle-log fixes — also in `app/globals.css` plus
@@ -42,14 +42,19 @@ battle-log fixes — also in `app/globals.css` plus
 consumers; the navigation shell rework — `components/nav/SideNav.tsx`
 rewritten to a desktop rail + mobile bottom-tab-bar + "More" sheet; the
 Account cluster — Dashboard's new stat strip + `CardTab` headers, and
-Profile's avatar header + code-plate friend code, both wired for real.
-All four verified via `npm run build`/`npm run lint` and Playwright —
+Profile's avatar header + code-plate friend code, both wired for real;
+the Collection cluster — Pokédex and Inventory both wired with
+`SegmentedMeter`/`CardTab`, the shared mobile split-pane →
+full-screen-detail pattern, Inventory's gold `.lootbox-hero` banner and
+`.btn-tradeup` button, and `LootboxRevealDialog`'s stat rows migrated to
+`SegmentedMeter` with its `revealed` prop driving the existing stagger.
+All five verified via `npm run build`/`npm run lint` and Playwright —
 steps 30–31 via screenshots of a throwaway component gallery, steps
-32–33 via live disposable-account click-throughs (real signup, real
-navigation, a real profile save, zero console errors) since neither a
-nav rework nor an authenticated page can be meaningfully verified
-without a session. See each step file's End state notes). Steps 34–39
-not started.
+32–34 via live disposable-account click-throughs (real signup, real
+navigation, a real profile save, a real lootbox open, zero console
+errors) since neither a nav rework nor an authenticated page can be
+meaningfully verified without a session. See each step file's End state
+notes). Steps 35–39 not started.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
@@ -57,7 +62,7 @@ not started.
 | 31 | ✅ Shared UI primitives — buttons/inputs/chips, `SegmentedMeter`, `CardTab`, Modal/Toast fixes | [31-shared-ui-primitives.md](31-shared-ui-primitives.md) | 30 |
 | 32 | ✅ Navigation shell — desktop rail + mobile bottom tabs | [32-navigation-shell-rework.md](32-navigation-shell-rework.md) | 30, 31 |
 | 33 | ✅ Account cluster — Login, Signup, Dashboard, Profile | [33-account-cluster-redesign.md](33-account-cluster-redesign.md) | 30, 31, 32 |
-| 34 | Collection cluster — Pokédex, Inventory, Lootbox reveal | [34-collection-cluster-redesign.md](34-collection-cluster-redesign.md) | 30, 31, 32 |
+| 34 | ✅ Collection cluster — Pokédex, Inventory, Lootbox reveal | [34-collection-cluster-redesign.md](34-collection-cluster-redesign.md) | 30, 31, 32 |
 | 35 | Battle shared components — FighterCard, MoveButton, AllyTargetPicker, BattleResultDialog | [35-battle-shared-components-redesign.md](35-battle-shared-components-redesign.md) | 30, 31 |
 | 36 | Battle Arena page + Team Picker — bot battle wiring | [36-battle-arena-and-team-picker-redesign.md](36-battle-arena-and-team-picker-redesign.md) | 32, 35 |
 | 37 | Online Battle page — room setup, chat, rematch wiring | [37-online-battle-redesign.md](37-online-battle-redesign.md) | 35, 36 |
@@ -198,6 +203,29 @@ From the 2026-08-19 design pass and planning conversation:
   dashed-border/mono/letter-spaced treatment stays visually identical
   everywhere a short alphanumeric code is meant to be read aloud or
   copied, without three near-duplicate CSS rules to keep in sync.
+- **The mobile split-pane → full-screen-detail pattern (step 34) is a
+  shared CSS contract, not a shared component.** Pokédex and Inventory
+  both toggle one `mobile-detail-open` class on `.inventory-layout`,
+  and the breakpoint logic (hide list, fixed-position the detail pane,
+  show `.detail-back-btn`) lives once in `globals.css`. A wrapper
+  component was considered and skipped — the two pages' detail panels
+  differ enough (Pokédex stacks several `.card`s including a notes
+  textarea; Inventory is one `.card` with inline rename/discard) that a
+  shared component would mostly prop-drill children through without
+  removing real duplication. Same pattern will apply to any future
+  list+detail screen without re-deriving the breakpoint math.
+- **`SegmentedMeter`'s label column (48px, set in step 31 with no
+  consumer yet) was too narrow for real stat labels** ("Sp. Def" etc.) —
+  widened to 58px once step 34 became its first real page-level
+  consumer. Worth knowing before wiring it into FighterCard's HP/MP
+  (step 35): the column width is now tuned for stat-name-length labels,
+  not the shorter "HP"/"MP" battle labels, but 58px comfortably fits
+  both, so no further adjustment should be needed there.
+- **Lootbox hero banner and the lootbox-reveal shiny panel both use a
+  fixed gold treatment** (`#F0C15C`/`color-mix(... var(--accent-2) ...)`),
+  matching `.shiny-badge`'s existing "rare item" convention of staying
+  visually identical in both themes rather than flipping with theme
+  tokens — consistent with why `.shiny-badge` itself isn't tokenized.
 
 ## Working through a step
 

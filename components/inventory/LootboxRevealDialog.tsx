@@ -5,6 +5,7 @@ import type { OwnedPokemon } from "@/types/pokemon";
 import Modal from "@/components/ui/Modal";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
+import SegmentedMeter from "@/components/ui/SegmentedMeter";
 import { isShinyInstance } from "@/lib/shiny";
 import { movePower } from "@/lib/pokemonDisplay";
 import { playLootboxDrumrollSound, playLootboxRevealSound } from "@/lib/sound";
@@ -120,7 +121,7 @@ export default function LootboxRevealDialog({ pokemon, onClose, hasNext }: Lootb
           </div>
         )}
 
-        <div className={`lootbox-reveal-content${phase !== "drumroll" ? " revealed" : ""}`}>
+        <div className={`lootbox-reveal-content${phase !== "drumroll" ? " revealed" : ""}${shiny ? " lootbox-reveal-shiny" : ""}`}>
           <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="lootbox-reveal-sprite" />
           <h2>#{pokemon.number} {pokemon.name}</h2>
           <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center />
@@ -130,16 +131,7 @@ export default function LootboxRevealDialog({ pokemon, onClose, hasNext }: Lootb
             {STAT_INFO.map(({ label, key, color }, i) => {
               const revealed = fullyRevealed || i < statsRevealed;
               return (
-                <div className="stat-row" key={key}>
-                  <span className="stat-name">{label}:</span>
-                  <div className="stat-bar-track">
-                    <div
-                      className="stat-bar-fill"
-                      style={{ width: revealed ? `${Math.min(100, (pokemon[key] / 160) * 100)}%` : "0%", background: color }}
-                    />
-                  </div>
-                  <span className="stat-value">{revealed ? pokemon[key] : ""}</span>
-                </div>
+                <SegmentedMeter key={key} label={label} value={pokemon[key]} max={160} color={color} revealed={revealed} />
               );
             })}
             {fullyRevealed && <div className="total-stats">Total: {pokemon.total}</div>}

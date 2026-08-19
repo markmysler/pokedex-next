@@ -7,6 +7,8 @@ import PokemonFilterBar from "@/components/pokemon/PokemonFilterBar";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
 import Modal from "@/components/ui/Modal";
+import SegmentedMeter from "@/components/ui/SegmentedMeter";
+import CardTab from "@/components/ui/CardTab";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName, movePower } from "@/lib/pokemonDisplay";
 import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
@@ -39,6 +41,9 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   const [sortBy, setSortBy] = useState<SortKey>("unsorted");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedId, setSelectedId] = useState<string | null>(initialPokemon[0]?.id ?? null);
+  // Only affects <900px (see .mobile-detail-open in globals.css) -- desktop's
+  // split pane always shows both, so this is inert there.
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const [openingId, setOpeningId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [revealQueue, setRevealQueue] = useState<OwnedPokemon[]>([]);
@@ -66,6 +71,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
     setSelectedId(id);
     setRenamingId(null);
     setRenameError(null);
+    setMobileDetailOpen(true);
   }
 
   function startRenaming(p: OwnedPokemon) {
@@ -97,7 +103,10 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
     const data = await res.json();
     if (data.error) return setError(data.error);
     setPokemon((prev) => prev.filter((p) => p.id !== id));
-    if (selectedId === id) setSelectedId(null);
+    if (selectedId === id) {
+      setSelectedId(null);
+      setMobileDetailOpen(false);
+    }
   }
 
   async function handleOpen(id: string) {
@@ -196,8 +205,8 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
       )}
 
       {lootboxes.length > 0 && (
-        <div className="card">
-          <h2>📦 Unopened Lootboxes ({lootboxes.length})</h2>
+        <div className="card lootbox-hero">
+          <CardTab icon="📦" label={`Unopened lootboxes (${lootboxes.length})`} color="var(--accent-2)" />
           {lootboxes.length === 1 ? (
             <div className="lootbox-row">
               <button
@@ -252,7 +261,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
           <button className={viewMode === "grid" ? "active" : ""} onClick={() => setViewMode("grid")}>▦ Grid</button>
           <button className={viewMode === "list" ? "active" : ""} onClick={() => setViewMode("list")}>☰ List</button>
         </div>
-        <button className={tradeUpMode ? "btn-primary" : "btn-secondary"} onClick={toggleTradeUpMode}>
+        <button className={`btn-tradeup${tradeUpMode ? " active" : ""}`} onClick={toggleTradeUpMode}>
           🔥 Trade Up
         </button>
         <div className="count-label">Showing: {filtered.length} of {pokemon.length}</div>
@@ -260,7 +269,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
 
       {tradeUpError && <p className="auth-error">{tradeUpError}</p>}
 
-      <div className="inventory-layout">
+      <div className={`inventory-layout${mobileDetailOpen ? " mobile-detail-open" : ""}`}>
         <div className={viewMode === "grid" ? "pokemon-grid" : "pokemon-list"}>
           {filtered.length === 0 && <p>No Pokémon match your filters.</p>}
           {filtered.map((p) => (
@@ -278,6 +287,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
 
         {selected && !tradeUpMode && (
           <div className="card inventory-detail">
+            <button className="detail-back-btn" onClick={() => setMobileDetailOpen(false)}>← Back to list</button>
             <div id="card-header">
               {renamingId === selected.id ? (
                 <form className="nickname-edit-form" onSubmit={handleRenameSave}>
@@ -310,23 +320,14 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
             </div>
             <Sprite name={selected.name} form={isShinyInstance(selected) ? "shiny" : "normal"} className="sprite-img" />
             <div id="card-stats">
-              <h3>📊 Stats (this Pokémon)</h3>
+              <CardTab icon="📊" label="Stats" />
               {STAT_INFO.map(({ label, key, color }) => (
-                <div className="stat-row" key={key}>
-                  <span className="stat-name">{label}:</span>
-                  <div className="stat-bar-track">
-                    <div
-                      className="stat-bar-fill"
-                      style={{ width: `${Math.min(100, (selected[key] / 160) * 100)}%`, background: color }}
-                    />
-                  </div>
-                  <span className="stat-value">{selected[key]}</span>
-                </div>
+                <SegmentedMeter key={key} label={label} value={selected[key]} max={160} color={color} />
               ))}
               <div className="total-stats">Total: {selected.total}</div>
             </div>
             <div id="card-moves">
-              <h3>⚔️ Moves</h3>
+              <CardTab icon="⚔️" label="Moves" />
               <ul className="move-list">
                 {selected.moves.map((m) => {
                   const power = movePower(m);
@@ -337,7 +338,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
               </ul>
             </div>
             <button
-              className="btn-secondary"
+              className="btn-danger"
               onClick={() => handleDiscard(selected.id)}
               disabled={selected.isStarter}
               title={selected.isStarter ? "Starters can't be discarded" : undefined}

@@ -291,8 +291,9 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 
 .header-banner {
   background: var(--surface-2);
-  border-radius: 10px;
-  padding: 10px 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4) var(--s-5);
   display: flex;
   align-items: center;
   gap: 15px;
@@ -304,6 +305,14 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.2s; }
 .progress-fill.hp { background: var(--accent); }
 .progress-fill.mp { background: #00BCFF; }
+
+/* Completion banner's track stays a smooth fill (a percentage, not a device
+   stat) but gets the pill/gradient hero treatment the segmented meters don't
+   need (upgrades/34-collection-cluster-redesign.md) -- scoped modifiers so
+   the shared base classes above (still used by the battle HP/MP bars until
+   step 35/36 migrate those to SegmentedMeter) are untouched. */
+.progress-bar.completion { height: 14px; border-radius: var(--r-pill); background: var(--surface-3); }
+.progress-fill.completion { border-radius: var(--r-pill); background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
 
 .card {
   background: var(--surface);
@@ -342,8 +351,22 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .switch input:checked + .slider, .switch-labeled input:checked + .slider { background: var(--accent); }
 .switch input:checked + .slider::before, .switch-labeled input:checked + .slider::before { left: 22px; }
 
-.sprites-card { display: flex; justify-content: space-around; }
-.sprite-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.sprites-card { display: flex; justify-content: space-around; gap: var(--s-4); flex-wrap: wrap; }
+.sprite-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  flex: 1;
+  min-width: 140px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-4) var(--s-5);
+}
+/* Fixed gold tint, same "rare item" logic as .shiny-badge -- not a theme
+   token, deliberately identical in both themes. */
+.sprite-col-shiny { background: linear-gradient(135deg, rgba(240, 193, 92, 0.16), var(--surface-2)); border-color: #F0C15C; }
 .sprite-label { font-size: 12px; font-weight: bold; color: var(--ink-soft); }
 .sprite-label.shiny { color: #FFD700; }
 .sprite-img { width: 120px; height: 120px; object-fit: contain; image-rendering: pixelated; }
@@ -726,6 +749,12 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
    both themes -- a deliberate "rare item" treatment, not a theme token. */
 .shiny-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: var(--r-pill); background: linear-gradient(135deg, #FFE9A8, #F0C15C); color: #4A3200; }
 
+/* STARTER BADGE (upgrades/34-collection-cluster-redesign.md) -- outlined
+   accent pill, distinct from shiny's solid gold fill so a starter+shiny
+   instance reads as two separate facts, not one badge fighting the other. */
+.starter-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: var(--r-pill); background: var(--surface-2); border: 1px solid var(--accent); color: var(--accent); }
+.grid-card-badges { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+
 /* INVENTORY / POKEDEX toolbars + grid/list views */
 .inventory-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
 .inventory-toolbar .search { flex: 1; min-width: 160px; }
@@ -742,9 +771,66 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 }
 .view-toggle button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
+/* TRADE UP button -- pulled out of the view-toggle button group visually
+   (margin-left: auto) and given its own "fire" identity instead of
+   swapping between .btn-primary/.btn-secondary, so it reads as a separate
+   action, not a third view mode (upgrades/34-collection-cluster-redesign.md). */
+.btn-tradeup {
+  margin-left: auto;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--accent-2);
+  background: var(--surface);
+  color: var(--accent-2);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-tradeup:hover { background: var(--accent-2); color: var(--accent-2-ink); }
+.btn-tradeup.active { background: var(--accent-2); color: var(--accent-2-ink); box-shadow: var(--shadow-1); }
+
 .inventory-layout { display: grid; grid-template-columns: 1fr 340px; gap: 12px; align-items: start; }
 @media (max-width: 900px) {
   .inventory-layout { grid-template-columns: 1fr; }
+}
+
+/* MOBILE SPLIT-PANE -> FULL-SCREEN DETAIL (upgrades/34-collection-cluster-
+   redesign.md) -- shared by Pokedex and Inventory so the breakpoint logic
+   lives in one place. Both pages toggle the same "mobile-detail-open" class
+   on their .inventory-layout wrapper; on >=900px this block doesn't apply at
+   all, so desktop's split pane (above) is unaffected either way. */
+.detail-back-btn { display: none; }
+@media (max-width: 899px) {
+  .detail-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0 0 var(--s-3) 0;
+  }
+  .inventory-layout:not(.mobile-detail-open) .inventory-detail { display: none; }
+  .inventory-layout.mobile-detail-open > .pokemon-grid,
+  .inventory-layout.mobile-detail-open > .pokemon-list {
+    display: none;
+  }
+  .inventory-layout.mobile-detail-open .inventory-detail {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    overflow-y: auto;
+    background: var(--bg);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    padding: var(--s-5);
+  }
 }
 
 /* TRADE-UP (upgrades/archive/v2/14-pokemon-tradeup.md) */
@@ -774,7 +860,7 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .pokemon-grid-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-lg);
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -782,8 +868,9 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
   gap: 4px;
   cursor: pointer;
   text-align: center;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.pokemon-grid-card:hover { border-color: var(--accent); }
+.pokemon-grid-card:hover { border-color: var(--accent); box-shadow: var(--shadow-1); }
 .pokemon-grid-card.selected { background: var(--accent); color: var(--accent-ink); }
 .pokemon-grid-card.disabled, .pokemon-row.disabled { opacity: 0.4; cursor: not-allowed; }
 .pokemon-grid-card.disabled:hover { border-color: var(--border); }
@@ -800,6 +887,15 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .inventory-layout .pokemon-list { max-height: 70vh; }
 
 .inventory-detail { display: flex; flex-direction: column; gap: 10px; }
+
+/* LOOTBOX HERO (upgrades/34-collection-cluster-redesign.md) -- the unopened-
+   lootboxes card reads as a distinct "hero" element, not a plain .card, in
+   both the single and batch-open states. color-mix keeps the tint subtle
+   enough that plain var(--ink) text stays legible across it in both themes. */
+.lootbox-hero {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-2) 20%, var(--surface)), var(--surface) 65%);
+  border-color: var(--accent-2);
+}
 .rename-btn { font-size: 11px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
 .nickname-edit-form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .nickname-edit-form input { flex: 1; min-width: 120px; }
@@ -871,6 +967,16 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 }
 .lootbox-reveal-content.revealed { opacity: 1; transform: scale(1); }
 .lootbox-reveal-content h2 { margin: 4px 0 0 0; }
+/* Fixed gold "rare item" treatment, same reasoning as .shiny-badge -- not a
+   theme token, identical in both themes (upgrades/34-collection-cluster-
+   redesign.md). */
+.lootbox-reveal-content.lootbox-reveal-shiny {
+  border: 2px solid #F0C15C;
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+  background: radial-gradient(circle at 50% 30%, rgba(240, 193, 92, 0.18), transparent 70%);
+}
+.lootbox-reveal-content.lootbox-reveal-shiny .lootbox-reveal-sprite { filter: drop-shadow(0 0 14px rgba(240, 193, 92, 0.55)); }
 .lootbox-reveal-sprite { width: 160px; height: 160px; object-fit: contain; image-rendering: pixelated; }
 .lootbox-stats { width: 100%; max-width: 320px; }
 .lootbox-stats .stat-bar-fill { transition: width 0.4s ease; }
@@ -991,7 +1097,7 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
    ui-primitives.md) — the Game Boy-style HP/MP/stat readout that replaces
    .progress-fill/.stat-bar-fill's smooth gradient fill. Not wired into any
    page yet; the CSS ships in this step so later steps just consume it. */
-.meter { display: grid; grid-template-columns: 48px 1fr 56px; align-items: center; gap: var(--s-3); font-size: 12px; margin: 5px 0; }
+.meter { display: grid; grid-template-columns: 58px 1fr 56px; align-items: center; gap: var(--s-3); font-size: 12px; margin: 5px 0; }
 .meter .m-label { font-weight: 700; color: var(--ink-soft); }
 .meter .m-value { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .segbar { height: 10px; border-radius: 4px; background: var(--surface-2); display: flex; gap: 2px; padding: 2px; overflow: hidden; }

@@ -25,6 +25,14 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
   const [statFilter, setStatFilter] = useState<StatFilter>("Any");
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [selectedId, setSelectedId] = useState<string | null>(order[0] ?? null);
+  // Only affects <900px (see .mobile-detail-open in globals.css) -- desktop's
+  // split pane always shows both, so this is inert there.
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
+
+  function selectEntry(num: string) {
+    setSelectedId(num);
+    setMobileDetailOpen(true);
+  }
 
   const isAcquired = (num: string) => Boolean(userData[num]?.acquired);
 
@@ -110,7 +118,7 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
         <div className="count-label">Showing: {filtered.length} of {order.length} Pokémon</div>
       </div>
 
-      <div className="inventory-layout">
+      <div className={`inventory-layout${mobileDetailOpen ? " mobile-detail-open" : ""}`}>
         <div className={viewMode === "grid" ? "pokemon-grid" : "pokemon-list"}>
           {filtered.map((num) => {
             const p = pokedex[num];
@@ -120,7 +128,7 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
                 <div
                   key={num}
                   className={`pokemon-row${num === selectedId ? " selected" : ""}`}
-                  onClick={() => setSelectedId(num)}
+                  onClick={() => selectEntry(num)}
                 >
                   {`#${num}  ${p.name.padEnd(15)}${acquired ? " 🟢" : " ⚪"}`}
                 </div>
@@ -130,7 +138,7 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
               <div
                 key={num}
                 className={`pokemon-grid-card${num === selectedId ? " selected" : ""}`}
-                onClick={() => setSelectedId(num)}
+                onClick={() => selectEntry(num)}
               >
                 <Sprite name={p.name} form="normal" className="grid-card-sprite" />
                 <div className="grid-card-name">#{p.number} {p.name}</div>
@@ -143,6 +151,7 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
 
         {selectedPokemon && (
           <div className="inventory-detail">
+            <button className="detail-back-btn" onClick={() => setMobileDetailOpen(false)}>← Back to list</button>
             <PokemonDetail
               key={selectedPokemon.number}
               pokemon={selectedPokemon}

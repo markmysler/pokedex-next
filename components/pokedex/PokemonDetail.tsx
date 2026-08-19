@@ -4,6 +4,8 @@ import { useState } from "react";
 import type { Pokemon, UserPokedexEntry } from "@/types/pokemon";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
+import SegmentedMeter from "@/components/ui/SegmentedMeter";
+import CardTab from "@/components/ui/CardTab";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallback";
 
 const STAT_INFO: Array<{ label: string; key: keyof Pokemon; color: string }> = [
@@ -52,35 +54,23 @@ export default function PokemonDetail({ pokemon, entry, onNotesChange }: Pokemon
           <span className="sprite-label">Normal Form</span>
           <Sprite name={spriteBase} form="normal" className="sprite-img" />
         </div>
-        <div className="sprite-col">
+        <div className="sprite-col sprite-col-shiny">
           <span className="sprite-label shiny">✨ Shiny Form</span>
           <Sprite name={spriteBase} form="shiny" className="sprite-img" />
         </div>
       </div>
 
       <div className="card" id="card-stats">
-        <h3>📊 Base Stats</h3>
-        {STAT_INFO.map(({ label, key, color }) => {
-          const value = pokemon[key] as number;
-          return (
-            <div className="stat-row" key={key}>
-              <span className="stat-name">{label}:</span>
-              <div className="stat-bar-track">
-                <div
-                  className="stat-bar-fill"
-                  style={{ width: `${Math.min(100, (value / 160) * 100)}%`, background: color }}
-                />
-              </div>
-              <span className="stat-value">{value}</span>
-            </div>
-          );
-        })}
+        <CardTab icon="📊" label="Base stats" />
+        {STAT_INFO.map(({ label, key, color }) => (
+          <SegmentedMeter key={key} label={label} value={pokemon[key] as number} max={160} color={color} />
+        ))}
         <div className="total-stats">Total Base Stats: {pokemon.total}</div>
       </div>
 
       <div className="card" id="card-notes">
         <div className="notes-header">
-          <h3>📝 Personal Trainer Notes</h3>
+          <CardTab icon="📝" label="Trainer notes" />
           <span className="notes-status">{saved ? "Saved ✓" : ""}</span>
         </div>
         <textarea

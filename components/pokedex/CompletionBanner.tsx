@@ -11,8 +11,8 @@ export default function CompletionBanner({ acquiredCount, total }: CompletionBan
       <span className="completion-label">
         Pokédex Completion: {acquiredCount} / {total} ({pct.toFixed(1)}%)
       </span>
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: `${pct}%` }} />
+      <div className="progress-bar completion">
+        <div className="progress-fill completion" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
