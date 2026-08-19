@@ -33,7 +33,7 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
-**Progress: steps 30–37 shipped 2026-08-19** (design tokens in
+**Progress: steps 30–38 shipped 2026-08-19** (design tokens in
 `app/globals.css`/`lib/typeData.ts`; shared primitives — buttons, inputs,
 chips, the new `SegmentedMeter`/`CardTab` components, and the Modal/Toast/
 battle-log fixes — also in `app/globals.css` plus
@@ -59,20 +59,29 @@ Arena page + Team Picker — `TeamPicker`'s `CardTab` header + sticky
 screens; the Online Battle page — room setup/waiting-room `CardTab`
 headers, the waiting room's code now on the shared `.friend-code-display`
 "code plate," `ChatPanel` restyled to a bubble layout, and the rematch
-panel — all reusing steps 35/36's arena/fighter-card work unchanged.
-All eight verified via `npm run build`/`npm run lint` and Playwright —
-steps 30–31 via screenshots of a throwaway component gallery, steps
-32–34 via live disposable-account click-throughs (real signup, real
-navigation, a real profile save, a real lootbox open), step 35 via a
-real ~14-round bot battle plus a throwaway status-badge/move-kind
-gallery, step 36 via a full team-pick → auto-battle → win → reset →
-change-team live run at three viewport widths, step 37 via a genuine
-two-account, two-browser-context online match (room create/join, both
-lock in, play to completion, chat both directions, rematch request/
-accept) — see that step's implementation notes for why a handful of
-400/409 network-log entries during concurrent play are expected,
-pre-existing server behavior, not a regression. See each step file's End
-state notes). Steps 38–39 not started.
+panel — all reusing steps 35/36's arena/fighter-card work unchanged; the
+Social & progression cluster — Friends (avatar rows, `CardTab` headers,
+the friend code now sharing `.friend-code-display` as its third
+consumer), Friend Chat/Trade (trade rows, `CardTab`), and a unified
+list-row shape (shared background/radius/padding/font-size, plus a
+`32px 1fr auto` icon-chip grid) across Notifications/History/Leaderboard,
+with History's win/loss stripe finally remapped from accent/hardcoded-hex
+onto `--good`/`--bad`. All nine verified via `npm run build`/`npm run
+lint` and Playwright — steps 30–31 via screenshots of a throwaway
+component gallery, steps 32–34 via live disposable-account click-
+throughs (real signup, real navigation, a real profile save, a real
+lootbox open), step 35 via a real ~14-round bot battle plus a throwaway
+status-badge/move-kind gallery, step 36 via a full team-pick →
+auto-battle → win → reset → change-team live run at three viewport
+widths, step 37 via a genuine two-account, two-browser-context online
+match (room create/join, both lock in, play to completion, chat both
+directions, rematch request/accept — see that step's implementation
+notes for why a handful of 400/409 network-log entries during
+concurrent play are expected, pre-existing server behavior, not a
+regression), step 38 via a genuine two-account friend flow (request →
+accept → trade propose → trade accept → chat both directions →
+notifications → a real bot-battle History row → Leaderboard). See each
+step file's End state notes). Step 39 not started.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
@@ -84,7 +93,7 @@ state notes). Steps 38–39 not started.
 | 35 | ✅ Battle shared components — FighterCard, MoveButton, AllyTargetPicker, BattleResultDialog | [35-battle-shared-components-redesign.md](35-battle-shared-components-redesign.md) | 30, 31 |
 | 36 | ✅ Battle Arena page + Team Picker — bot battle wiring | [36-battle-arena-and-team-picker-redesign.md](36-battle-arena-and-team-picker-redesign.md) | 32, 35 |
 | 37 | ✅ Online Battle page — room setup, chat, rematch wiring | [37-online-battle-redesign.md](37-online-battle-redesign.md) | 35, 36 |
-| 38 | Social & progression cluster — Friends, Trade/Chat, Notifications, History, Leaderboard | [38-social-cluster-redesign.md](38-social-cluster-redesign.md) | 30, 31, 32 |
+| 38 | ✅ Social & progression cluster — Friends, Trade/Chat, Notifications, History, Leaderboard | [38-social-cluster-redesign.md](38-social-cluster-redesign.md) | 30, 31, 32 |
 | 39 | Full responsive + theme QA pass, doc reconciliation, archive the wave | [39-responsive-theme-qa-pass.md](39-responsive-theme-qa-pass.md) | 33, 34, 35, 36, 37, 38 |
 
 ## Why this order
@@ -313,6 +322,26 @@ From the 2026-08-19 design pass and planning conversation:
   correct colors all needed zero further changes to work correctly on
   `/online`. Only the screens genuinely unique to online play (room
   setup, waiting room, chat, rematch) needed real work in step 37.
+- **Step 38 unified Notifications/History/Leaderboard onto one shared
+  list-row rule** (background, radius, padding, font-size) instead of
+  three independently-drifted values, and gave Notifications/History the
+  same `32px 1fr auto` icon-chip grid Leaderboard already had — the
+  "same underlying list-row shape" the plan called for is now a single
+  CSS rule these three share, not three screens that each happen to look
+  similar. `.friend-row`/`.trade-row` joined the same treatment.
+- **`.match-row.win`/`.match-row.loss` finally reached `--good`/`--bad`
+  in step 38** — `.win` had been sitting on step 30's mechanical
+  hardcoded-green-to-`--accent` sweep since that step explicitly deferred
+  its semantic remap to step 38 (documented in a code comment at the
+  time); `.loss` was still a bare hex the whole time. Both `.notification-
+  row.unread` and `.leaderboard-row.me` were already correctly on
+  `--accent` (identity/attention signals, not win/loss ones) and didn't
+  need touching.
+- **`.avatar-sm` (Friends, step 38) is a smaller sibling of `.avatar-lg`
+  (Profile, step 33)**, same radial-gradient placeholder recipe at 32px
+  instead of 64px — not a new avatar concept, just the existing
+  "no real avatar system, this is decorative" pattern applied at list-row
+  scale.
 
 ## Working through a step
 

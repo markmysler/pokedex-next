@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { FriendsData } from "@/lib/friends";
+import CardTab from "@/components/ui/CardTab";
 
 interface FriendsPageClientProps {
   myFriendCode: string;
@@ -80,13 +81,13 @@ export default function FriendsPageClient({ myFriendCode, initial }: FriendsPage
   return (
     <>
       <div className="card">
-        <h3>🔑 Your Friend Code</h3>
+        <CardTab icon="🔑" label="Your friend code" />
         <p className="friend-code-display">{myFriendCode}</p>
         <p className="online-status">Share this code with a friend so they can add you.</p>
       </div>
 
       <div className="card">
-        <h3>➕ Add a Friend</h3>
+        <CardTab icon="➕" label="Add a friend" />
         <div className="online-join-row">
           <input
             value={codeInput}
@@ -101,10 +102,13 @@ export default function FriendsPageClient({ myFriendCode, initial }: FriendsPage
 
       {data.incoming.length > 0 && (
         <div className="card">
-          <h3>📥 Incoming Requests</h3>
+          <CardTab icon="📥" label="Incoming requests" />
           {data.incoming.map((r) => (
             <div key={r.friendshipId} className="friend-row">
-              <span>{r.displayName}</span>
+              <div className="friend-row-identity">
+                <span className="avatar-sm">👤</span>
+                <span>{r.displayName}</span>
+              </div>
               <div className="friend-row-actions">
                 <button className="btn-primary" disabled={busyId === r.friendshipId} onClick={() => respond(r.friendshipId, true)}>
                   Accept
@@ -120,10 +124,13 @@ export default function FriendsPageClient({ myFriendCode, initial }: FriendsPage
 
       {data.outgoing.length > 0 && (
         <div className="card">
-          <h3>📤 Outgoing Requests</h3>
+          <CardTab icon="📤" label="Outgoing requests" />
           {data.outgoing.map((r) => (
             <div key={r.friendshipId} className="friend-row">
-              <span>{r.displayName}</span>
+              <div className="friend-row-identity">
+                <span className="avatar-sm">👤</span>
+                <span>{r.displayName}</span>
+              </div>
               <button className="btn-secondary" disabled={busyId === r.friendshipId} onClick={() => remove(r.friendshipId)}>
                 Cancel
               </button>
@@ -133,11 +140,14 @@ export default function FriendsPageClient({ myFriendCode, initial }: FriendsPage
       )}
 
       <div className="card">
-        <h3>🤝 Friends ({data.friends.length})</h3>
+        <CardTab icon="🤝" label={`Friends (${data.friends.length})`} color="var(--good)" />
         {data.friends.length === 0 && <p>No friends yet — send a request above to get started.</p>}
         {data.friends.map((f) => (
           <div key={f.friendshipId} className="friend-row">
-            <span>{f.displayName}</span>
+            <div className="friend-row-identity">
+              <span className="avatar-sm">👤</span>
+              <span>{f.displayName}</span>
+            </div>
             <div className="friend-row-actions">
               <button className="btn-primary" disabled={busyId === f.userId} onClick={() => battle(f.userId)}>
                 ⚔️ Battle

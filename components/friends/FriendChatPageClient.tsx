@@ -7,6 +7,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import ChatPanel, { type ChatMessage } from "@/components/online/ChatPanel";
 import PokemonMultiPicker from "@/components/pokemon/PokemonMultiPicker";
 import PokemonInstanceCard from "@/components/inventory/PokemonInstanceCard";
+import CardTab from "@/components/ui/CardTab";
 
 interface PendingTrade {
   id: string;
@@ -151,7 +152,7 @@ export default function FriendChatPageClient({
       <p><Link href="/friends">← Back to Friends</Link></p>
 
       <div className="card">
-        <h2>🔄 Trades</h2>
+        <CardTab icon="🔄" label="Trades" />
         {tradeError && <p className="auth-error">{tradeError}</p>}
 
         {trades.length === 0 && !showBuilder && <p>No pending trades.</p>}

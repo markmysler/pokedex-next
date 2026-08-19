@@ -807,47 +807,54 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .dashboard-note { font-size: 12px; color: var(--ink-soft); margin: 8px 0 0 0; }
 .dashboard-note a { color: #3498DB; }
 
-.match-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.match-row { font-size: 13px; padding: 6px 8px; border-radius: 6px; background: var(--surface); }
-/* .win mechanically follows the app-wide old-hardcoded-green-to-accent swap (step 30);
-   the semantic remap onto --good is step 38 (Social & progression cluster). */
-.match-row.win { border-left: 3px solid var(--accent); }
-.match-row.loss { border-left: 3px solid #E74C3C; }
+/* Shared "list row inside a card" shape across History/Leaderboard/
+   Notifications (and Friends/Trades below) -- upgrades/38-social-cluster-
+   redesign.md's cross-check that these don't each drift to slightly
+   different padding/radius/font-size despite sharing the same underlying
+   icon-chip + primary-line + muted-meta-line shape from DESIGN_SYSTEM.md.
+   surface-2 (the nested-panel token) gives each row a background distinct
+   from the parent .card, which is plain .surface -- flat rows against a
+   same-color card would have no separation without it. */
+.match-list, .notification-list, .leaderboard-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-2); }
+.match-row, .leaderboard-row, .notification-row {
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  padding: var(--s-3) var(--s-4);
+  font-size: 13px;
+}
+.match-row { display: flex; align-items: flex-start; gap: var(--s-3); }
+.match-row-icon { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; font-size: 16px; background: var(--surface-3); border-radius: var(--r-pill); }
+.match-row-body { flex: 1; min-width: 0; }
+/* Semantic remap onto --good/--bad (upgrades/38-social-cluster-redesign.md)
+   -- .win previously rode the app-wide hardcoded-green-to-accent swap from
+   step 30, which was mechanically correct then but not the final home for
+   a win/loss signal once --good/--bad existed to hold it. */
+.match-row.win { border-left: 3px solid var(--good); }
+.match-row.loss { border-left: 3px solid var(--bad); }
 
-.match-row-detailed { display: flex; flex-direction: column; gap: 2px; }
-.match-row-main { display: flex; justify-content: space-between; gap: 10px; font-weight: bold; }
+.match-row-detailed .match-row-main { display: flex; justify-content: space-between; gap: 10px; font-weight: bold; }
 .match-row-date { font-weight: normal; color: var(--ink-soft); white-space: nowrap; }
-.match-row-sub { font-size: 12px; color: var(--ink-soft); }
+.match-row-sub { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
 
 /* LEADERBOARD */
-.leaderboard-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .leaderboard-row {
   display: grid;
   grid-template-columns: 32px 1fr auto;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  background: var(--surface);
-  font-size: 14px;
+  gap: var(--s-3);
 }
 .leaderboard-row.me { border: 1px solid var(--accent); }
 
 /* NOTIFICATIONS (upgrades/archive/v3/17-persistent-notifications.md) */
-.notification-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .notification-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding: 8px 10px;
-  border-radius: 6px;
-  background: var(--surface);
-  font-size: 13px;
+  gap: var(--s-3);
 }
+.notification-row-icon { width: 32px; height: 32px; display: grid; place-items: center; font-size: 16px; background: var(--surface-3); border-radius: var(--r-pill); }
 .notification-row.unread { border-left: 3px solid var(--accent); }
-.notification-row-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 200px; }
+.notification-row-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .notification-row-date { font-size: 11px; color: var(--ink-soft); }
 .notification-row-unavailable { color: var(--ink-soft); font-style: italic; font-size: 12px; margin: 0; }
 .notification-action { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
@@ -1167,26 +1174,47 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
+/* Friend/trade rows join History/Leaderboard/Notifications' shared row
+   shape (upgrades/38-social-cluster-redesign.md) -- surface-2 card-rows
+   with their own gap, replacing the old plain border-bottom divider list. */
 .friend-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  margin-bottom: var(--s-2);
 }
-.friend-row:last-child { border-bottom: none; }
-.friend-row-actions { display: flex; gap: 8px; }
+.friend-row:last-child { margin-bottom: 0; }
+.friend-row-identity { display: flex; align-items: center; gap: var(--s-3); }
+.friend-row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Same radial-gradient recipe as .avatar-lg (step 33), scaled down for a
+   list row rather than a page header. */
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--surface-3), var(--surface));
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
 
 .trade-row {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+  margin-bottom: var(--s-2);
   font-size: 13px;
 }
-.trade-row:last-child { border-bottom: none; }
+.trade-row:last-child { margin-bottom: 0; }
 .trade-row-header { font-weight: bold; }
 .trade-row-pokemon { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .trade-row-side { display: flex; flex-direction: column; gap: 6px; }

@@ -19,15 +19,18 @@ export default async function HistoryPage() {
           <ul className="match-list">
             {matches.map((m) => (
               <li key={m.id} className={`match-row match-row-detailed${m.won ? " win" : " loss"}`}>
-                <div className="match-row-main">
-                  <span>{m.won ? "🏆 Won" : "💀 Lost"} vs {m.opponentLabel}</span>
-                  <span className="match-row-date">{new Date(m.playedAt).toLocaleString()}</span>
-                </div>
-                <div className="match-row-sub">
-                  {m.mode === "online" ? `Online${m.roomCode ? ` — room ${m.roomCode}` : ""}` : "vs Bot"}
-                  {m.teamSnapshot && m.teamSnapshot.length > 0 && (
-                    <> · Your team: {m.teamSnapshot.map((p) => p.name).join(", ")}</>
-                  )}
+                <span className="match-row-icon">{m.won ? "🏆" : "💀"}</span>
+                <div className="match-row-body">
+                  <div className="match-row-main">
+                    <span>{m.won ? "Won" : "Lost"} vs {m.opponentLabel}</span>
+                    <span className="match-row-date">{new Date(m.playedAt).toLocaleString()}</span>
+                  </div>
+                  <div className="match-row-sub">
+                    {m.mode === "online" ? `Online${m.roomCode ? ` — room ${m.roomCode}` : ""}` : "vs Bot"}
+                    {m.teamSnapshot && m.teamSnapshot.length > 0 && (
+                      <> · Your team: {m.teamSnapshot.map((p) => p.name).join(", ")}</>
+                    )}
+                  </div>
                 </div>
               </li>
             ))}

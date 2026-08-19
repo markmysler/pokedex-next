@@ -57,8 +57,9 @@ export default async function NotificationsPage() {
               const rendered = renderNotification(n);
               return (
                 <li key={n.id} className={`notification-row${n.read ? "" : " unread"}`}>
+                  <span className="notification-row-icon">{rendered.icon}</span>
                   <div className="notification-row-main">
-                    <span className="notification-row-text">{rendered.icon} {rendered.text}</span>
+                    <span className="notification-row-text">{rendered.text}</span>
                     <span className="notification-row-date">{new Date(n.createdAt).toLocaleString()}</span>
                   </div>
                   {n.kind === "battle-invite" ? (
