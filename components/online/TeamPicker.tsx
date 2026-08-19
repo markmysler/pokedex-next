@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { OwnedPokemon } from "@/types/pokemon";
 import PokemonInstanceCard from "@/components/inventory/PokemonInstanceCard";
 import PokemonFilterBar from "@/components/pokemon/PokemonFilterBar";
+import CardTab from "@/components/ui/CardTab";
 import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
 
 const TEAM_SIZE = 3;
@@ -52,7 +53,7 @@ export default function TeamPicker({ inventory, typesList, onSubmit }: TeamPicke
 
   return (
     <div className="card team-picker">
-      <h3>🎯 Pick Your Team ({selected.length}/{TEAM_SIZE})</h3>
+      <CardTab icon="🎯" label={`Pick your team (${selected.length}/${TEAM_SIZE})`} />
       <p className="online-status">Choose 3 Pokémon. Your opponent won&apos;t see your picks until you both lock in.</p>
 
       <PokemonFilterBar
@@ -85,10 +86,13 @@ export default function TeamPicker({ inventory, typesList, onSubmit }: TeamPicke
       {inventory.length === 0 && <p>You don&apos;t own any Pokémon yet.</p>}
       {inventory.length > 0 && filtered.length === 0 && <p>No Pokémon match your filters.</p>}
 
-      <div className="online-status">{error}</div>
-      <button className="btn-primary" disabled={selected.length !== TEAM_SIZE || submitting} onClick={submit}>
-        {submitting ? "Locking in..." : `Lock In Team (${selected.length}/${TEAM_SIZE})`}
-      </button>
+      <div className="team-lockbar">
+        <span className="team-lockbar-count">{selected.length}/{TEAM_SIZE} selected</span>
+        {error && <span className="auth-error">{error}</span>}
+        <button className="btn-primary" disabled={selected.length !== TEAM_SIZE || submitting} onClick={submit}>
+          {submitting ? "Locking in..." : "🎯 Lock In Team"}
+        </button>
+      </div>
     </div>
   );
 }

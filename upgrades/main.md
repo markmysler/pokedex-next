@@ -33,7 +33,7 @@ product-scope change. The one real interaction-model change is
 navigation (step 32): the current hamburger-drawer nav becomes a fixed
 desktop rail + mobile bottom-tab-bar.
 
-**Progress: steps 30–35 shipped 2026-08-19** (design tokens in
+**Progress: steps 30–36 shipped 2026-08-19** (design tokens in
 `app/globals.css`/`lib/typeData.ts`; shared primitives — buttons, inputs,
 chips, the new `SegmentedMeter`/`CardTab` components, and the Modal/Toast/
 battle-log fixes — also in `app/globals.css` plus
@@ -52,16 +52,20 @@ the Battle shared components — `FighterCard`'s HP/MP (both active-size
 and a new compact bench size) migrated to `SegmentedMeter`, its title/
 moves-caption hand-styled onto the bezel-tab language, `MoveButton` split
 into a two-line name/meta layout with a top-highlight sheen, and
-`AllyTargetPicker`/`BattleResultDialog` restyled to match. All six
-verified via `npm run build`/`npm run lint` and Playwright — steps 30–31
-via screenshots of a throwaway component gallery, steps 32–34 via live
-disposable-account click-throughs (real signup, real navigation, a real
-profile save, a real lootbox open), step 35 via a real ~14-round bot
-battle plus a throwaway status-badge/move-kind gallery (same
-mount-screenshot-revert technique as 30–31, since RNG doesn't reliably
-surface every status in a short test battle) — zero console errors
-throughout. See each step file's End state notes). Steps 36–39 not
-started.
+`AllyTargetPicker`/`BattleResultDialog` restyled to match; the Battle
+Arena page + Team Picker — `TeamPicker`'s `CardTab` header + sticky
+`.team-lockbar`, the VS badge turned into a solid accent pill, and a new
+720px breakpoint stacking the two `FighterCard`s vertically on narrow
+screens. All seven verified via `npm run build`/`npm run lint` and
+Playwright — steps 30–31 via screenshots of a throwaway component
+gallery, steps 32–34 via live disposable-account click-throughs (real
+signup, real navigation, a real profile save, a real lootbox open), step
+35 via a real ~14-round bot battle plus a throwaway status-badge/
+move-kind gallery, step 36 via a full team-pick → auto-battle → win →
+reset → change-team live run at three different viewport widths (700/
+760/1280px) to nail down the new stacking breakpoint precisely — zero
+console errors throughout. See each step file's End state notes). Steps
+37–39 not started.
 
 | # | Step | File | Depends on |
 |---|------|------|------------|
@@ -71,7 +75,7 @@ started.
 | 33 | ✅ Account cluster — Login, Signup, Dashboard, Profile | [33-account-cluster-redesign.md](33-account-cluster-redesign.md) | 30, 31, 32 |
 | 34 | ✅ Collection cluster — Pokédex, Inventory, Lootbox reveal | [34-collection-cluster-redesign.md](34-collection-cluster-redesign.md) | 30, 31, 32 |
 | 35 | ✅ Battle shared components — FighterCard, MoveButton, AllyTargetPicker, BattleResultDialog | [35-battle-shared-components-redesign.md](35-battle-shared-components-redesign.md) | 30, 31 |
-| 36 | Battle Arena page + Team Picker — bot battle wiring | [36-battle-arena-and-team-picker-redesign.md](36-battle-arena-and-team-picker-redesign.md) | 32, 35 |
+| 36 | ✅ Battle Arena page + Team Picker — bot battle wiring | [36-battle-arena-and-team-picker-redesign.md](36-battle-arena-and-team-picker-redesign.md) | 32, 35 |
 | 37 | Online Battle page — room setup, chat, rematch wiring | [37-online-battle-redesign.md](37-online-battle-redesign.md) | 35, 36 |
 | 38 | Social & progression cluster — Friends, Trade/Chat, Notifications, History, Leaderboard | [38-social-cluster-redesign.md](38-social-cluster-redesign.md) | 30, 31, 32 |
 | 39 | Full responsive + theme QA pass, doc reconciliation, archive the wave | [39-responsive-theme-qa-pass.md](39-responsive-theme-qa-pass.md) | 33, 34, 35, 36, 37, 38 |
@@ -256,6 +260,27 @@ From the 2026-08-19 design pass and planning conversation:
   here in case 36/37/38 want bench MP visible later: that requires a
   data-shape change wherever `TeamMemberDisplay`/its equivalent is built,
   not just another component restyle.
+- **Step 36 needed almost no component JSX changes** — `BattleArena.tsx`
+  itself was untouched; `.select-bar`/`.vs-badge`/`.vs-text`/
+  `.fighter-select` already existed and already played the exact roles
+  the mockup called for (VS badge / status text / Change Team button),
+  so the "vsbar treatment" was a CSS-only restyle of existing structure.
+  Only `TeamPicker.tsx` got real JSX changes (`CardTab` header, the new
+  `.team-lockbar`). Worth remembering for 37/38: several "page wiring"
+  steps in this wave turn out to be mostly CSS once the shared components
+  underneath are already right — don't assume a step needs component
+  surgery just because its title says "page."
+- **`.arena-frame`'s 720px stack breakpoint is genuinely new CSS**, not a
+  restyle of an existing rule — nothing before step 36 gave the arena any
+  responsive behavior, so `/battle` (and, once step 37 reuses the same
+  arena markup, `/online`) previously just squeezed both `FighterCard`s
+  to an illegible 50% width below 720px. Verified the exact cutover by
+  testing 700px and 760px explicitly rather than eyeballing one width.
+- **`.team-lockbar` (step 36) reuses Inventory's `.tradeup-bar` sticky-
+  footer convention (step 34)** rather than inventing a new pattern for
+  "count + confirm action pinned to the bottom of a card." Since
+  `TeamPicker.tsx` is shared with Online (step 37), that page inherits
+  this restyle automatically without its own pass.
 
 ## Working through a step
 

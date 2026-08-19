@@ -385,14 +385,37 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 #notes-box { width: 100%; padding: 8px; font-size: 12px; resize: vertical; }
 
 /* BATTLE ARENA */
-.select-bar { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.select-bar { display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap; }
 .fighter-select { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: bold; }
 .fighter-select select { padding: 6px; }
+.fighter-select .online-status { font-weight: 400; }
 .vs-badge { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.vs-text { font-size: 20px; font-weight: bold; color: #FFD700; }
+/* "VS badge" treatment (upgrades/36-battle-arena-and-team-picker-
+   redesign.md) -- a solid accent pill instead of plain gold text, matching
+   the same chip language used for status/type badges elsewhere. */
+.vs-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent);
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-1);
+  white-space: nowrap;
+}
 #btn-random-rival { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: none; cursor: pointer; }
 
 .arena-frame { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Stack vertically (you on top, per DOM order) below 720px instead of
+   squeezing both FighterCards to an illegible 50% width (upgrades/36-
+   battle-arena-and-team-picker-redesign.md, DESIGN_SYSTEM.md §7). New
+   breakpoint -- nothing before this step needed the arena to reflow. */
+@media (max-width: 720px) {
+  .arena-frame { grid-template-columns: 1fr; }
+}
 .fighter-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -473,6 +496,25 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 
 /* 3v3 TEAM PICKER + BENCH (upgrades/archive/v2/05-3v3-battles.md) */
 .team-picker-grid { max-height: 50vh; overflow-y: auto; }
+/* Lock-in bar (upgrades/36-battle-arena-and-team-picker-redesign.md) --
+   same sticky-footer-inside-a-card convention as Inventory's .tradeup-bar,
+   with its own background so it opaquely overlays the grid scrolling
+   behind it rather than a transparent sticky element. */
+.team-lockbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  margin-top: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+.team-lockbar-count { font-weight: 700; font-family: var(--font-mono); }
 .trade-picker-grid { max-height: 40vh; overflow-y: auto; }
 .team-picker-order {
   position: absolute;
@@ -587,7 +629,7 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 }
 
 .log-container { flex: 1; display: flex; flex-direction: column; }
-.action-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.action-row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); flex-wrap: wrap; margin-bottom: var(--s-3); }
 
 /* Buttons (upgrades/31-shared-ui-primitives.md) -- pill radius, display
    font. Each variant is a self-contained rule (not a shared .btn base +
