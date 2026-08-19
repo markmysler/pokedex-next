@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { BattleAction, FighterState, OwnedPokemon, RoomSlot, TeamState } from "@/types/pokemon";
-import { buildTeamState, hasLivingAlly, resolveTeamRound } from "@/lib/battleEngine";
+import { buildTeamState, classifyLogLine, hasLivingAlly, resolveTeamRound } from "@/lib/battleEngine";
 import { rollBotTeam } from "@/lib/collection";
 import TeamPicker from "@/components/online/TeamPicker";
 import FighterCard from "./FighterCard";
@@ -130,7 +130,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   // -ally-targeting.md) -- only ever set for a buff move whose caster has
   // a living ally; every other move submits immediately with no picker.
   const [pendingBuffMoveIndex, setPendingBuffMoveIndex] = useState<number | null>(null);
-  const logRef = useRef<HTMLPreElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
 
   function appendLog(lines: string[]) {
     setLog((prev) => [...prev, ...lines]);
@@ -450,7 +450,11 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
           <button className="btn-secondary" onClick={resetBattle}>🔄 Reset Battle</button>
         </div>
         <div className="online-status">{blockedByBotSwitch ? "Opponent is choosing a new Pokémon..." : ""}</div>
-        <pre className="battle-log" ref={logRef}>{log.join("\n")}</pre>
+        <div className="battle-log" ref={logRef}>
+          {log.map((line, i) => (
+            <div key={i} className={classifyLogLine(line)}>{line}</div>
+          ))}
+        </div>
       </div>
     </>
   );

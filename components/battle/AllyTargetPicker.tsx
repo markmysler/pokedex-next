@@ -47,6 +47,7 @@ export default function AllyTargetPicker({ team, activeIndex, onSelect, onCancel
               <Sprite name={member.pokemon.name} form={shiny ? "shiny" : "normal"} className="bench-sprite" />
               <span className="bench-name">{isSelf ? "Self" : displayName(member.pokemon)}</span>
               <SegmentedMeter label="HP" value={Math.max(0, member.hp)} max={member.maxHp} color={hpColor(Math.max(0, Math.min(1, member.hp / member.maxHp)))} segments={6} compact />
+              <SegmentedMeter label="MP" value={Math.max(0, member.mp)} max={member.maxMp} color="var(--info)" segments={6} compact />
             </button>
           );
         })}

@@ -332,18 +332,20 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
 }
 
-.switch-labeled { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
-
-.switch, .switch-labeled { position: relative; }
-.switch input, .switch-labeled input { display: none; }
-.switch .slider, .switch-labeled .slider {
+/* .switch-labeled (a labeled variant of this toggle) predates the redesign
+   and was never actually used by any component even before it -- removed
+   here as dead code found in a post-wave audit, not something this wave
+   introduced. */
+.switch { position: relative; }
+.switch input { display: none; }
+.switch .slider {
   width: 40px; height: 20px; background: var(--border); border-radius: 20px; position: relative; display: inline-block; transition: background 0.2s;
 }
-.switch .slider::before, .switch-labeled .slider::before {
+.switch .slider::before {
   content: ""; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: left 0.2s;
 }
-.switch input:checked + .slider, .switch-labeled input:checked + .slider { background: var(--accent); }
-.switch input:checked + .slider::before, .switch-labeled input:checked + .slider::before { left: 22px; }
+.switch input:checked + .slider { background: var(--accent); }
+.switch input:checked + .slider::before { left: 22px; }
 
 .sprites-card { display: flex; justify-content: space-around; gap: var(--s-4); flex-wrap: wrap; }
 .sprite-col {
@@ -478,7 +480,8 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .move-btn-meta { position: relative; font-family: var(--font-mono); font-size: 10px; opacity: .85; }
 .move-btn:disabled { background: var(--surface-3) !important; color: var(--ink-faint); cursor: not-allowed; }
 .move-btn:disabled::before { display: none; }
-.ai-arsenal { font-size: 11px; color: var(--ink-faint); text-align: center; }
+/* .ai-arsenal predates the redesign and was never used by any component
+   even before it -- removed as dead code found in a post-wave audit. */
 
 /* 3v3 TEAM PICKER + BENCH (upgrades/archive/v2/05-3v3-battles.md) */
 .team-picker-grid { max-height: 50vh; overflow-y: auto; }
@@ -630,11 +633,19 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 /* Buttons (upgrades/31-shared-ui-primitives.md) -- pill radius, display
    font. Each variant is a self-contained rule (not a shared .btn base +
    modifier, since every consumer already passes a single className like
-   "btn-primary" directly) so no component markup needs to change here. */
-.btn-primary, .btn-secondary, .btn-ghost, .btn-danger {
+   "btn-primary" directly) so no component markup needs to change here.
+   Padding bumped to 11px/18px (from 8px/16px) so real buttons clear ~38px
+   tall on mobile -- caught in a post-wave audit measuring an actual
+   rendered button at 33px, short of DESIGN_SYSTEM.md's touch-target
+   guidance. `.btn-ghost` (a 4th variant originally planned alongside these
+   three) was removed in the same pass: it had zero consumers anywhere in
+   the app, confirmed via a full cross-check of every CSS class against
+   every .tsx file's source -- dead code the step-39 QA sweep should have
+   caught but missed. */
+.btn-primary, .btn-secondary, .btn-danger {
   font-family: var(--font-display);
   border-radius: var(--r-pill);
-  padding: 8px 16px;
+  padding: 11px 18px;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
@@ -651,8 +662,6 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border-strong); }
 .btn-secondary:hover { background: var(--surface-3); }
 .btn-secondary:disabled { opacity: .5; cursor: not-allowed; }
-.btn-ghost { background: transparent; color: var(--ink-soft); border: 1px dashed var(--border-strong); }
-.btn-ghost:hover { color: var(--ink); border-color: var(--ink-soft); }
 .btn-danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); }
 .btn-danger:hover { background: var(--bad-bg); }
 .btn-danger:disabled { opacity: .5; cursor: not-allowed; }
@@ -697,6 +706,16 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
   white-space: pre-wrap;
   margin: 0;
 }
+/* Per-line highlighting (lib/battleEngine.ts's classifyLogLine) -- each
+   log entry now renders as its own child instead of one joined string, so
+   individual lines can carry a class. white-space: pre-wrap above is an
+   inherited property, so it still applies to these children without
+   needing to repeat it here. Fixed accent colors in both themes, same
+   "rare item"/status-badge convention as elsewhere -- these are highlight
+   colors, not theme-flipping surface colors. */
+.battle-log .win { color: var(--good); font-weight: 700; }
+.battle-log .loss { color: var(--bad); font-weight: 700; }
+.battle-log .hit { color: var(--accent-2); }
 
 /* ACCOUNT (sidebar) */
 .account-row {
@@ -1001,6 +1020,23 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .grid-card-total { font-size: 11px; }
 
 .inventory-layout .pokemon-list { max-height: 70vh; }
+
+/* Below 900px, don't cap the list/grid at a flat 70vh -- that's a
+   desktop-split-pane height, and on a single-column mobile layout it let
+   the list's own inner scroll box extend behind the fixed .tab-bar,
+   hiding its bottom rows with no visual cue more content existed
+   (confirmed live: the box's own bottom edge sat 70-140px past the tab
+   bar's top edge, depending on the page). `.app-main` already reserves
+   padding-bottom for the tab bar (see the MOBILE SPLIT-PANE block below),
+   so removing the inner cap here lets the page's own scroll handle it
+   correctly instead of nesting a second, shorter scroll region inside it. */
+@media (max-width: 899px) {
+  .inventory-layout > .pokemon-grid,
+  .inventory-layout .pokemon-list {
+    max-height: none;
+    overflow: visible;
+  }
+}
 
 .inventory-detail { display: flex; flex-direction: column; gap: 10px; }
 

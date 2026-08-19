@@ -11,7 +11,7 @@ import CardTab from "@/components/ui/CardTab";
 import TeamPicker from "./TeamPicker";
 import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
-import { hasLivingAlly, type BattleEvent } from "@/lib/battleEngine";
+import { classifyLogLine, hasLivingAlly, type BattleEvent } from "@/lib/battleEngine";
 import { playAttackSound, playDodgeSound, playFaintSound, playVictorySound, playDefeatSound } from "@/lib/sound";
 
 interface OnlineBattleProps {
@@ -58,7 +58,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
   // -ally-targeting.md) -- only ever set for a buff move whose caster has
   // a living ally; every other move submits immediately with no picker.
   const [pendingBuffMoveIndex, setPendingBuffMoveIndex] = useState<number | null>(null);
-  const logRef = useRef<HTMLPreElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
   const mySlotRef = useRef<RoomSlot | null>(null);
   const lockedInRef = useRef(false);
   const phaseRef = useRef<Phase>("setup");
@@ -650,7 +650,11 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
 
       <div className="card log-container">
         <div className="online-status">{blockedByOpponentSwitch ? "Opponent is choosing a new Pokémon..." : turnStatus}</div>
-        <pre className="battle-log" ref={logRef}>{log.join("\n")}</pre>
+        <div className="battle-log" ref={logRef}>
+          {log.map((line, i) => (
+            <div key={i} className={classifyLogLine(line)}>{line}</div>
+          ))}
+        </div>
       </div>
 
       {battle.over && (

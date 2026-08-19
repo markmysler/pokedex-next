@@ -18,6 +18,19 @@ export function effectivenessText(mult: number): string {
   return "💥 Normal Hit (1.0x)";
 }
 
+// Per-line battle-log highlighting (upgrades/main.md's DESIGN_SYSTEM.md §6
+// originally specified this; it never made it into the shipped markup
+// until a post-wave audit caught the gap). Both BattleArena.tsx and
+// OnlineBattle.tsx render one line of `log` per array entry and apply
+// whichever class this returns -- shared here rather than duplicated so
+// the two consumers can't drift on what counts as a "win" or a "hit" line.
+export function classifyLogLine(line: string): "win" | "loss" | "hit" | undefined {
+  if (line.includes("VICTORY")) return "win";
+  if (line.includes("DEFEAT")) return "loss";
+  if (/Hit|EFFECT/i.test(line)) return "hit";
+  return undefined;
+}
+
 // --- Status effects (upgrades/10-battle-depth.md) --------------------------
 // Additive layer on top of the existing damage formula, which is unchanged
 // for a non-dodged, non-blinded hit. Defaults to tune once played, same

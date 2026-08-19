@@ -14,13 +14,25 @@ steps, shipped 2026-08-14), which followed
 [archive/v2/main.md](archive/v2/main.md) (15 steps), which followed the
 original 8-step plan in [archive/main.md](archive/main.md).
 
+A same-day follow-up fix pass (2026-08-19, after a full pre-push bug
+audit) closed two of DESIGN_SYSTEM.md's three documented deviations
+(battle log per-line win/hit/loss highlighting, `FighterCard` bench MP
+meters) and fixed four issues the audit found: dead CSS (`.btn-ghost`,
+plus pre-existing `.switch-labeled`/`.ai-arsenal`), buttons short of a
+comfortable mobile tap target (33px → 39px), and the mobile Pokédex/
+Inventory list hiding its last few rows behind the bottom tab bar. See
+`design/DESIGN_SYSTEM.md`'s status line and `lib/battleEngine.ts`'s
+`classifyLogLine` for details — this wasn't a new wave, just a targeted
+fix pass on the one that already shipped, so it has no step files of its
+own.
+
 The redesign's own source-of-truth docs live outside `upgrades/` and stay
 current going forward, independent of any wave's lifecycle:
 
 - **[design/DESIGN_SYSTEM.md](../design/DESIGN_SYSTEM.md)** — the
   token/component spec (palette, type, spacing, radius, meters, nav,
-  battle log) as actually implemented, including the two places
-  implementation deviated from the original spec (documented inline).
+  battle log) as actually implemented, including the one remaining place
+  implementation deviates from the original spec (documented inline).
 - **[design/REDESIGN_TRACKER.md](../design/REDESIGN_TRACKER.md)** —
   per-screen status; all 15 screens + 10 shared components read ✅ Done.
 
