@@ -1,6 +1,6 @@
 # Upgrade Path
 
-## The mana-to-uses migration (in progress — step 40 shipped, 2026-09-11)
+## The mana-to-uses migration (in progress — steps 40–41 shipped, 2026-09-11)
 
 Sixth wave, requested 2026-08-19 right after the fifth wave's (full visual
 redesign, 10 steps + a same-day fix pass — see
@@ -31,7 +31,7 @@ wins stay their existing unconditional 100%, untouched).
 | # | Step | File | Depends on | Status |
 |---|------|------|------------|--------|
 | 40 | Move data model rework (mana_cost → max_uses, mp/maxMp → per-move moveUses) | [40-uses-based-move-data-model.md](40-uses-based-move-data-model.md) | — | **Shipped** |
-| 41 | Balance patch: 3-damage + 1-support slot rolling | [41-move-slot-rebalance-3-damage-1-support.md](41-move-slot-rebalance-3-damage-1-support.md) | 40 | Not started |
+| 41 | Balance patch: 3-damage + 1-support slot rolling | [41-move-slot-rebalance-3-damage-1-support.md](41-move-slot-rebalance-3-damage-1-support.md) | 40 | **Shipped** |
 | 42 | Battle engine: execute moves against uses, not mana | [42-battle-engine-uses-execution.md](42-battle-engine-uses-execution.md) | 40, 41 | Partially done (see step 40's "what actually happened") |
 | 43 | Server validation + battle UI: uses instead of mana | [43-uses-ui-and-server-validation.md](43-uses-ui-and-server-validation.md) | 42 | Partially done (see step 40's "what actually happened") |
 | 44 | Starter movesets: 3-damage + 1-support, uses-based (trigger + backfill) | [44-starter-moveset-rework.md](44-starter-moveset-rework.md) | 40, 41 | Not started |
@@ -126,6 +126,16 @@ full detail):
   decrement-and-reject logic and the server route's real uses-based
   rejection remain explicitly un-implemented (`TODO`-marked) and are still
   42/43's real remaining work, just a smaller diff than originally scoped.
+- **The 85%-own-type weighting doesn't hold uniformly under 3 damage
+  slots** (step 41) — it's capped by each type's own damage-pool depth,
+  which was already shallow (exactly 2 own-type moves) for 11 of 18 types
+  before this step; going from 2 to 3 damage slots exposes that ceiling for
+  the first time (~63% observed vs. the nominal 85%), and Dark has 0
+  own-type damage moves in the pool at all (true before this step too, not
+  caused by it). Pre-existing `rollOneMove()` dedup behavior, not a step-41
+  bug — authoring deeper per-type damage pools would fix it but is a
+  content decision outside any current step's scope. See step 41's own
+  file for the full per-type table.
 
 ## Working through a step
 

@@ -44,11 +44,13 @@ export function rollStats(pokemon: Pick<Pokemon, "hp" | "atk" | "def" | "spatk" 
 // models this exact same pool mixture when scoring a rolled moveset.
 export const SAME_TYPE_CHANCE = 0.85;
 export const MOVE_SLOTS = 4;
-// Guaranteed 2-damage + 2-support split (upgrades/23-guaranteed-move-slot
-// -rolling.md) -- deliberately *not* one-forced-buff + one-forced-debuff
-// etc., just "2 of the other kinds," each of the 2 support slots drawn
-// independently from the combined buff/debuff/drain/redirect pool.
-const DAMAGE_SLOTS = 2;
+// Guaranteed 3-damage + 1-support split (upgrades/41-move-slot-rebalance-3
+// -damage-1-support.md, rebalancing upgrades/23-guaranteed-move-slot
+// -rolling.md's original 2-damage+2-support) -- deliberately *not* one-
+// forced-buff + one-forced-debuff etc., just "the rest are the other
+// kinds," the single support slot drawn from the combined buff/debuff/
+// drain/redirect pool same as before.
+const DAMAGE_SLOTS = 3;
 const SUPPORT_SLOTS = 4 - DAMAGE_SLOTS;
 const MAX_ROLL_ATTEMPTS = 200;
 
