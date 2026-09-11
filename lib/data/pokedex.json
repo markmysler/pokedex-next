@@ -17,7 +17,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -25,7 +25,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -33,7 +33,7 @@
         "type": "Grass",
         "power": 55,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -41,7 +41,7 @@
         "type": "Grass",
         "power": 120,
         "category": "Special",
-        "mana_cost": 45,
+        "max_uses": 1,
         "kind": "damage"
       }
     ]
@@ -64,7 +64,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -72,7 +72,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -80,7 +80,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -88,7 +88,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -111,7 +111,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -119,7 +119,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -127,7 +127,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -135,7 +135,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -158,7 +158,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -166,7 +166,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -174,7 +174,7 @@
         "type": "Fire",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       },
       {
@@ -182,7 +182,7 @@
         "type": "Fire",
         "power": 110,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       }
     ]
@@ -205,7 +205,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -213,7 +213,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -221,7 +221,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -229,7 +229,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -252,7 +252,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -260,7 +260,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -268,7 +268,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -276,7 +276,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -299,7 +299,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -307,7 +307,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -315,7 +315,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -323,7 +323,7 @@
         "type": "Water",
         "power": 110,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       }
     ]
@@ -346,7 +346,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -354,7 +354,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -362,7 +362,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -370,7 +370,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -393,7 +393,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -401,7 +401,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -409,7 +409,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -417,7 +417,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -440,7 +440,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -448,7 +448,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -456,7 +456,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -464,7 +464,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -487,7 +487,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -495,7 +495,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -503,7 +503,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -511,7 +511,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -534,7 +534,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -542,7 +542,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -550,7 +550,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -558,7 +558,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -581,7 +581,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -589,7 +589,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -597,7 +597,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -605,7 +605,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -628,7 +628,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -636,7 +636,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -644,7 +644,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -652,7 +652,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -675,7 +675,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -683,7 +683,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -691,7 +691,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -699,7 +699,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -722,7 +722,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -730,7 +730,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -738,7 +738,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -746,7 +746,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -769,7 +769,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -777,7 +777,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -785,7 +785,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -793,7 +793,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -816,7 +816,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -824,7 +824,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -832,7 +832,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -840,7 +840,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -863,7 +863,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -871,7 +871,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -879,7 +879,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -887,7 +887,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -910,7 +910,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -918,7 +918,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -926,7 +926,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -934,7 +934,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -957,7 +957,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -965,7 +965,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -973,7 +973,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -981,7 +981,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1004,7 +1004,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1012,7 +1012,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1020,7 +1020,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1028,7 +1028,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1051,7 +1051,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1059,7 +1059,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1067,7 +1067,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1075,7 +1075,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1098,7 +1098,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1106,7 +1106,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1114,7 +1114,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1122,7 +1122,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1145,7 +1145,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1153,7 +1153,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1161,7 +1161,7 @@
         "type": "Electric",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       },
       {
@@ -1169,7 +1169,7 @@
         "type": "Electric",
         "power": 110,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       }
     ]
@@ -1192,7 +1192,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1200,7 +1200,7 @@
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -1208,7 +1208,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1216,7 +1216,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1239,7 +1239,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1247,7 +1247,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -1255,7 +1255,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1263,7 +1263,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1286,7 +1286,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1294,7 +1294,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -1302,7 +1302,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1310,7 +1310,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1333,7 +1333,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1341,7 +1341,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1349,7 +1349,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1357,7 +1357,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1380,7 +1380,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1388,7 +1388,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1396,7 +1396,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1404,7 +1404,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1427,7 +1427,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1435,7 +1435,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1443,7 +1443,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1451,7 +1451,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -1474,7 +1474,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1482,7 +1482,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1490,7 +1490,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1498,7 +1498,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1521,7 +1521,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1529,7 +1529,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1537,7 +1537,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1545,7 +1545,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1568,7 +1568,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1576,7 +1576,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1584,7 +1584,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1592,7 +1592,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -1615,7 +1615,7 @@
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1623,7 +1623,7 @@
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -1631,7 +1631,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1639,7 +1639,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1662,7 +1662,7 @@
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1670,7 +1670,7 @@
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -1678,7 +1678,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1686,7 +1686,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1709,7 +1709,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1717,7 +1717,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -1725,7 +1725,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1733,7 +1733,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1756,7 +1756,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1764,7 +1764,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -1772,7 +1772,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1780,7 +1780,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1803,7 +1803,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1811,7 +1811,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1819,7 +1819,7 @@
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1827,7 +1827,7 @@
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -1850,7 +1850,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1858,7 +1858,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1866,7 +1866,7 @@
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1874,7 +1874,7 @@
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -1897,7 +1897,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1905,7 +1905,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1913,7 +1913,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1921,7 +1921,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1944,7 +1944,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1952,7 +1952,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1960,7 +1960,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1968,7 +1968,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -1991,7 +1991,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -1999,7 +1999,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2007,7 +2007,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2015,7 +2015,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2038,7 +2038,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2046,7 +2046,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2054,7 +2054,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2062,7 +2062,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2085,7 +2085,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2093,7 +2093,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2101,7 +2101,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2109,7 +2109,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2132,7 +2132,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2140,7 +2140,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2148,7 +2148,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2156,7 +2156,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2179,7 +2179,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2187,7 +2187,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2195,7 +2195,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2203,7 +2203,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2226,7 +2226,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2234,7 +2234,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2242,7 +2242,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2250,7 +2250,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2273,7 +2273,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2281,7 +2281,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2289,7 +2289,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2297,7 +2297,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2320,7 +2320,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2328,7 +2328,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2336,7 +2336,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2344,7 +2344,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2367,7 +2367,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2375,7 +2375,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2383,7 +2383,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2391,7 +2391,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2414,7 +2414,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2422,7 +2422,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2430,7 +2430,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2438,7 +2438,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -2461,7 +2461,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2469,7 +2469,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2477,7 +2477,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2485,7 +2485,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -2508,7 +2508,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2516,7 +2516,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2524,7 +2524,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2532,7 +2532,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2555,7 +2555,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2563,7 +2563,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2571,7 +2571,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2579,7 +2579,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2602,7 +2602,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2610,7 +2610,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2618,7 +2618,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2626,7 +2626,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2649,7 +2649,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2657,7 +2657,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2665,7 +2665,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2673,7 +2673,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2696,7 +2696,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2704,7 +2704,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2712,7 +2712,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2720,7 +2720,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2743,7 +2743,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2751,7 +2751,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2759,7 +2759,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2767,7 +2767,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2790,7 +2790,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2798,7 +2798,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2806,7 +2806,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2814,7 +2814,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2837,7 +2837,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2845,7 +2845,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2853,7 +2853,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2861,7 +2861,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2884,7 +2884,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2892,7 +2892,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2900,7 +2900,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2908,7 +2908,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2931,7 +2931,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2939,7 +2939,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2947,7 +2947,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2955,7 +2955,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -2978,7 +2978,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -2986,7 +2986,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -2994,7 +2994,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3002,7 +3002,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3025,7 +3025,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3033,7 +3033,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3041,7 +3041,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3049,7 +3049,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3072,7 +3072,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3080,7 +3080,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3088,7 +3088,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3096,7 +3096,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3119,7 +3119,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3127,7 +3127,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3135,7 +3135,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3143,7 +3143,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3166,7 +3166,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3174,7 +3174,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3182,7 +3182,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3190,7 +3190,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3213,7 +3213,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3221,7 +3221,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3229,7 +3229,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3237,7 +3237,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3260,7 +3260,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3268,7 +3268,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3276,7 +3276,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3284,7 +3284,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3307,7 +3307,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3315,7 +3315,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3323,7 +3323,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3331,7 +3331,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3354,7 +3354,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3362,7 +3362,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3370,7 +3370,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3378,7 +3378,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3401,7 +3401,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3409,7 +3409,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3417,7 +3417,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3425,7 +3425,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3448,7 +3448,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3456,7 +3456,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3464,7 +3464,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3472,7 +3472,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -3495,7 +3495,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3503,7 +3503,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3511,7 +3511,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3519,7 +3519,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -3542,7 +3542,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3550,7 +3550,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3558,7 +3558,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3566,7 +3566,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -3589,7 +3589,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3597,7 +3597,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3605,7 +3605,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3613,7 +3613,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3636,7 +3636,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3644,7 +3644,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3652,7 +3652,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3660,7 +3660,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3683,7 +3683,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3691,7 +3691,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3699,7 +3699,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3707,7 +3707,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -3730,7 +3730,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3738,7 +3738,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3746,7 +3746,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3754,7 +3754,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -3777,7 +3777,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3785,7 +3785,7 @@
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3793,7 +3793,7 @@
         "type": "Steel",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3801,7 +3801,7 @@
         "type": "Steel",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -3824,7 +3824,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3832,7 +3832,7 @@
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -3840,7 +3840,7 @@
         "type": "Steel",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3848,7 +3848,7 @@
         "type": "Steel",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -3871,7 +3871,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3879,7 +3879,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3887,7 +3887,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3895,7 +3895,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3918,7 +3918,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3926,7 +3926,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3934,7 +3934,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3942,7 +3942,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -3965,7 +3965,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3973,7 +3973,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3981,7 +3981,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -3989,7 +3989,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4012,7 +4012,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4020,7 +4020,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4028,7 +4028,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4036,7 +4036,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4059,7 +4059,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4067,7 +4067,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4075,7 +4075,7 @@
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4083,7 +4083,7 @@
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       }
     ]
@@ -4106,7 +4106,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4114,7 +4114,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4122,7 +4122,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4130,7 +4130,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4153,7 +4153,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4161,7 +4161,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4169,7 +4169,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4177,7 +4177,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4200,7 +4200,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4208,7 +4208,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4216,7 +4216,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4224,7 +4224,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4247,7 +4247,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4255,7 +4255,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4263,7 +4263,7 @@
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4271,7 +4271,7 @@
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       }
     ]
@@ -4294,7 +4294,7 @@
         "type": "Ghost",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4302,7 +4302,7 @@
         "type": "Ghost",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4310,7 +4310,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4318,7 +4318,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4341,7 +4341,7 @@
         "type": "Ghost",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4349,7 +4349,7 @@
         "type": "Ghost",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4357,7 +4357,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4365,7 +4365,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4388,7 +4388,7 @@
         "type": "Ghost",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4396,7 +4396,7 @@
         "type": "Ghost",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4404,7 +4404,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4412,7 +4412,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4435,7 +4435,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4443,7 +4443,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4451,7 +4451,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4459,7 +4459,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -4482,7 +4482,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4490,7 +4490,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4498,7 +4498,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4506,7 +4506,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4529,7 +4529,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4537,7 +4537,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4545,7 +4545,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4553,7 +4553,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4576,7 +4576,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4584,7 +4584,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4592,7 +4592,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4600,7 +4600,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4623,7 +4623,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4631,7 +4631,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4639,7 +4639,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4647,7 +4647,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4670,7 +4670,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4678,7 +4678,7 @@
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4686,7 +4686,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4694,7 +4694,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4717,7 +4717,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4725,7 +4725,7 @@
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4733,7 +4733,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4741,7 +4741,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4764,7 +4764,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4772,7 +4772,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4780,7 +4780,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4788,7 +4788,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -4811,7 +4811,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4819,7 +4819,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4827,7 +4827,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4835,7 +4835,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -4858,7 +4858,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4866,7 +4866,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4874,7 +4874,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4882,7 +4882,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4905,7 +4905,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4913,7 +4913,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -4921,7 +4921,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4929,7 +4929,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4952,7 +4952,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4960,7 +4960,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4968,7 +4968,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -4976,7 +4976,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -4999,7 +4999,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5007,7 +5007,7 @@
         "type": "Fighting",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5015,7 +5015,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5023,7 +5023,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5046,7 +5046,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5054,7 +5054,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5062,7 +5062,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5070,7 +5070,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -5093,7 +5093,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5101,7 +5101,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5109,7 +5109,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5117,7 +5117,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5140,7 +5140,7 @@
         "type": "Poison",
         "power": 30,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5148,7 +5148,7 @@
         "type": "Poison",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5156,7 +5156,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5164,7 +5164,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5187,7 +5187,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5195,7 +5195,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5203,7 +5203,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5211,7 +5211,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -5234,7 +5234,7 @@
         "type": "Ground",
         "power": 20,
         "category": "Special",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5242,7 +5242,7 @@
         "type": "Ground",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5250,7 +5250,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5258,7 +5258,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -5281,7 +5281,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5289,7 +5289,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5297,7 +5297,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5305,7 +5305,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -5328,7 +5328,7 @@
         "type": "Grass",
         "power": 45,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5336,7 +5336,7 @@
         "type": "Grass",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5344,7 +5344,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5352,7 +5352,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5375,7 +5375,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5383,7 +5383,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5391,7 +5391,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5399,7 +5399,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -5422,7 +5422,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5430,7 +5430,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5438,7 +5438,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5446,7 +5446,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5469,7 +5469,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5477,7 +5477,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5485,7 +5485,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5493,7 +5493,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5516,7 +5516,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5524,7 +5524,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5532,7 +5532,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5540,7 +5540,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5563,7 +5563,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5571,7 +5571,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5579,7 +5579,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5587,7 +5587,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5610,7 +5610,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5618,7 +5618,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5626,7 +5626,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5634,7 +5634,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5657,7 +5657,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5665,7 +5665,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5673,7 +5673,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5681,7 +5681,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -5704,7 +5704,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5712,7 +5712,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5720,7 +5720,7 @@
         "type": "Fairy",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5728,7 +5728,7 @@
         "type": "Fairy",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -5751,7 +5751,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5759,7 +5759,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5767,7 +5767,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5775,7 +5775,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5798,7 +5798,7 @@
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5806,7 +5806,7 @@
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       },
       {
@@ -5814,7 +5814,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5822,7 +5822,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -5845,7 +5845,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5853,7 +5853,7 @@
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5861,7 +5861,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5869,7 +5869,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5892,7 +5892,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5900,7 +5900,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5908,7 +5908,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5916,7 +5916,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5939,7 +5939,7 @@
         "type": "Bug",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5947,7 +5947,7 @@
         "type": "Bug",
         "power": 75,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -5955,7 +5955,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5963,7 +5963,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -5986,7 +5986,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -5994,7 +5994,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6002,7 +6002,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6010,7 +6010,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6033,7 +6033,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6041,7 +6041,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6049,7 +6049,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6057,7 +6057,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6080,7 +6080,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6088,7 +6088,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6096,7 +6096,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6104,7 +6104,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6127,7 +6127,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6135,7 +6135,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6143,7 +6143,7 @@
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6151,7 +6151,7 @@
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       }
     ]
@@ -6174,7 +6174,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6182,7 +6182,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6190,7 +6190,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6198,7 +6198,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6221,7 +6221,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6229,7 +6229,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6237,7 +6237,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6245,7 +6245,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6268,7 +6268,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6276,7 +6276,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6284,7 +6284,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6292,7 +6292,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6315,7 +6315,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6323,7 +6323,7 @@
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6331,7 +6331,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6339,7 +6339,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6362,7 +6362,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6370,7 +6370,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6378,7 +6378,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6386,7 +6386,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6409,7 +6409,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6417,7 +6417,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6425,7 +6425,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6433,7 +6433,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6456,7 +6456,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6464,7 +6464,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6472,7 +6472,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6480,7 +6480,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6503,7 +6503,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6511,7 +6511,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6519,7 +6519,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6527,7 +6527,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6550,7 +6550,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6558,7 +6558,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6566,7 +6566,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6574,7 +6574,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6597,7 +6597,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6605,7 +6605,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6613,7 +6613,7 @@
         "type": "Water",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6621,7 +6621,7 @@
         "type": "Water",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6644,7 +6644,7 @@
         "type": "Rock",
         "power": 50,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6652,7 +6652,7 @@
         "type": "Rock",
         "power": 75,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6660,7 +6660,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6668,7 +6668,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6691,7 +6691,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6699,7 +6699,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6707,7 +6707,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6715,7 +6715,7 @@
         "type": "Normal",
         "power": 85,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -6738,7 +6738,7 @@
         "type": "Ice",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6746,7 +6746,7 @@
         "type": "Ice",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       },
       {
@@ -6754,7 +6754,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6762,7 +6762,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6785,7 +6785,7 @@
         "type": "Electric",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6793,7 +6793,7 @@
         "type": "Electric",
         "power": 65,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6801,7 +6801,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6809,7 +6809,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6832,7 +6832,7 @@
         "type": "Fire",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6840,7 +6840,7 @@
         "type": "Fire",
         "power": 60,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6848,7 +6848,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6856,7 +6856,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6879,7 +6879,7 @@
         "type": "Dragon",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6887,7 +6887,7 @@
         "type": "Dragon",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6895,7 +6895,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6903,7 +6903,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6926,7 +6926,7 @@
         "type": "Dragon",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6934,7 +6934,7 @@
         "type": "Dragon",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6942,7 +6942,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6950,7 +6950,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -6973,7 +6973,7 @@
         "type": "Dragon",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6981,7 +6981,7 @@
         "type": "Dragon",
         "power": 80,
         "category": "Physical",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -6989,7 +6989,7 @@
         "type": "Flying",
         "power": 35,
         "category": "Physical",
-        "mana_cost": 0,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -6997,7 +6997,7 @@
         "type": "Flying",
         "power": 40,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]
@@ -7020,7 +7020,7 @@
         "type": "Normal",
         "power": 60,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -7028,7 +7028,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -7036,7 +7036,7 @@
         "type": "Psychic",
         "power": 90,
         "category": "Special",
-        "mana_cost": 30,
+        "max_uses": 2,
         "kind": "damage"
       },
       {
@@ -7044,7 +7044,7 @@
         "type": "Ghost",
         "power": 80,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       }
     ]
@@ -7067,7 +7067,7 @@
         "type": "Psychic",
         "power": 50,
         "category": "Special",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -7075,7 +7075,7 @@
         "type": "Psychic",
         "power": 65,
         "category": "Special",
-        "mana_cost": 20,
+        "max_uses": 4,
         "kind": "damage"
       },
       {
@@ -7083,7 +7083,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       },
       {
@@ -7091,7 +7091,7 @@
         "type": "Normal",
         "power": 40,
         "category": "Physical",
-        "mana_cost": 10,
+        "max_uses": 5,
         "kind": "damage"
       }
     ]

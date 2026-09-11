@@ -572,8 +572,6 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
           pokemon={you.pokemon}
           hp={you.hp}
           maxHp={you.maxHp}
-          mp={you.mp}
-          maxMp={you.maxMp}
           bleedTurns={you.bleedTurns}
           blindTurns={you.blindTurns}
           poisonTurns={you.poisonTurns}
@@ -603,7 +601,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
               {[0, 1, 2, 3].map((i) => {
                 const move = you.pokemon.moves[i];
                 if (!move) return <button key={i} className="move-btn" disabled>--</button>;
-                const insufficientMana = you.mp < (move.mana_cost ?? 10);
+                const insufficientMana = you.moveUses[i] === 0;
                 return (
                   <MoveButton
                     key={i}
@@ -629,8 +627,6 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
           pokemon={opp.pokemon}
           hp={opp.hp}
           maxHp={opp.maxHp}
-          mp={opp.mp}
-          maxMp={opp.maxMp}
           bleedTurns={opp.bleedTurns}
           blindTurns={opp.blindTurns}
           poisonTurns={opp.poisonTurns}

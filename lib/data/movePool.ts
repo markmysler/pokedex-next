@@ -34,57 +34,72 @@ export const movesByType: Partial<Record<PokemonType, Move[]>> = groupByType(all
 // Pokemon's 85%-own-type roll always has *something* to draw from even for
 // types with no obvious flavor match (step 23 wires the actual rolling).
 
+// max_uses values below follow upgrades/40-uses-based-move-data-model.md's
+// mana_cost -> max_uses tier table (5-10 -> 5, 15-20 -> 4, 22-25 -> 3,
+// 28-30 -> 2, 35-45 -> 1), applied to each move's old mana_cost.
 export const buffMoves: BuffMove[] = [
-  { name: "Meditate", type: "Psychic", mana_cost: 10, kind: "buff", buff: { effect: "statUp", stat: "atk", multiplier: 1.15, turns: 2 } },
-  { name: "Bulk Up", type: "Fighting", mana_cost: 20, kind: "buff", buff: { effect: "statUp", stat: "atk", multiplier: 1.3, turns: 3 } },
-  { name: "Swords Dance", type: "Normal", mana_cost: 30, kind: "buff", buff: { effect: "statUp", stat: "atk", multiplier: 1.5, turns: 3 } },
-  { name: "Harden", type: "Normal", mana_cost: 10, kind: "buff", buff: { effect: "statUp", stat: "def", multiplier: 1.15, turns: 2 } },
-  { name: "Iron Defense", type: "Steel", mana_cost: 20, kind: "buff", buff: { effect: "statUp", stat: "def", multiplier: 1.3, turns: 3 } },
-  { name: "Cotton Guard", type: "Grass", mana_cost: 30, kind: "buff", buff: { effect: "statUp", stat: "def", multiplier: 1.5, turns: 3 } },
-  { name: "Recover", type: "Normal", mana_cost: 20, kind: "buff", buff: { effect: "heal", percentOfMaxHp: 25 } },
-  { name: "Moonlight", type: "Fairy", mana_cost: 35, kind: "buff", buff: { effect: "heal", percentOfMaxHp: 40 } },
-  { name: "Charge", type: "Electric", mana_cost: 5, kind: "buff", buff: { effect: "restoreMana", amount: 30 } },
-  { name: "Barrier", type: "Psychic", mana_cost: 22, kind: "buff", buff: { effect: "shield", amount: 60 } },
-  { name: "Refresh", type: "Normal", mana_cost: 15, kind: "buff", buff: { effect: "cleanse" } },
+  { name: "Meditate", type: "Psychic", max_uses: 5, kind: "buff", buff: { effect: "statUp", stat: "atk", multiplier: 1.15, turns: 2 } },
+  { name: "Bulk Up", type: "Fighting", max_uses: 4, kind: "buff", buff: { effect: "statUp", stat: "atk", multiplier: 1.3, turns: 3 } },
+  { name: "Swords Dance", type: "Normal", max_uses: 2, kind: "buff", buff: { effect: "statUp", stat: "atk", multiplier: 1.5, turns: 3 } },
+  { name: "Harden", type: "Normal", max_uses: 5, kind: "buff", buff: { effect: "statUp", stat: "def", multiplier: 1.15, turns: 2 } },
+  { name: "Iron Defense", type: "Steel", max_uses: 4, kind: "buff", buff: { effect: "statUp", stat: "def", multiplier: 1.3, turns: 3 } },
+  { name: "Cotton Guard", type: "Grass", max_uses: 2, kind: "buff", buff: { effect: "statUp", stat: "def", multiplier: 1.5, turns: 3 } },
+  { name: "Recover", type: "Normal", max_uses: 4, kind: "buff", buff: { effect: "heal", percentOfMaxHp: 25 } },
+  { name: "Moonlight", type: "Fairy", max_uses: 1, kind: "buff", buff: { effect: "heal", percentOfMaxHp: 40 } },
+  // Reassigned from "restoreMana" (upgrades/40-uses-based-move-data-model.md
+  // -- the mp pool it restored no longer exists; a modest atk buff keeps
+  // Charge's "power up" flavor without a uses-based analog to restoreMana).
+  { name: "Charge", type: "Electric", max_uses: 5, kind: "buff", buff: { effect: "statUp", stat: "atk", multiplier: 1.2, turns: 2 } },
+  { name: "Barrier", type: "Psychic", max_uses: 3, kind: "buff", buff: { effect: "shield", amount: 60 } },
+  { name: "Refresh", type: "Normal", max_uses: 4, kind: "buff", buff: { effect: "cleanse" } },
 ];
 export const buffMovesByType = groupByType(buffMoves);
 
 export const debuffMoves: DebuffMove[] = [
-  { name: "Growl", type: "Normal", mana_cost: 10, kind: "debuff", debuff: { effect: "statDown", stat: "atk", multiplier: 0.85, turns: 2 } },
-  { name: "Screech", type: "Dark", mana_cost: 20, kind: "debuff", debuff: { effect: "statDown", stat: "atk", multiplier: 0.7, turns: 3 } },
-  { name: "Demoralize", type: "Ghost", mana_cost: 30, kind: "debuff", debuff: { effect: "statDown", stat: "atk", multiplier: 0.5, turns: 3 } },
-  { name: "Leer", type: "Normal", mana_cost: 10, kind: "debuff", debuff: { effect: "statDown", stat: "def", multiplier: 0.85, turns: 2 } },
-  { name: "Acid Spray", type: "Poison", mana_cost: 20, kind: "debuff", debuff: { effect: "statDown", stat: "def", multiplier: 0.7, turns: 3 } },
-  { name: "Metal Sound", type: "Steel", mana_cost: 30, kind: "debuff", debuff: { effect: "statDown", stat: "def", multiplier: 0.5, turns: 3 } },
-  { name: "Mana Burn", type: "Electric", mana_cost: 8, kind: "debuff", debuff: { effect: "drainMana", amount: 25 } },
-  { name: "Mind Sap", type: "Psychic", mana_cost: 10, kind: "debuff", debuff: { effect: "drainMana", amount: 30 } },
-  { name: "Shield Breaker", type: "Fighting", mana_cost: 10, kind: "debuff", debuff: { effect: "removeShield" } },
+  { name: "Growl", type: "Normal", max_uses: 5, kind: "debuff", debuff: { effect: "statDown", stat: "atk", multiplier: 0.85, turns: 2 } },
+  { name: "Screech", type: "Dark", max_uses: 4, kind: "debuff", debuff: { effect: "statDown", stat: "atk", multiplier: 0.7, turns: 3 } },
+  { name: "Demoralize", type: "Ghost", max_uses: 2, kind: "debuff", debuff: { effect: "statDown", stat: "atk", multiplier: 0.5, turns: 3 } },
+  { name: "Leer", type: "Normal", max_uses: 5, kind: "debuff", debuff: { effect: "statDown", stat: "def", multiplier: 0.85, turns: 2 } },
+  { name: "Acid Spray", type: "Poison", max_uses: 4, kind: "debuff", debuff: { effect: "statDown", stat: "def", multiplier: 0.7, turns: 3 } },
+  { name: "Metal Sound", type: "Steel", max_uses: 2, kind: "debuff", debuff: { effect: "statDown", stat: "def", multiplier: 0.5, turns: 3 } },
+  // Reassigned from "drainMana" (upgrades/40-uses-based-move-data-model.md
+  // -- the mp pool it drained no longer exists). Mana Burn keeps an
+  // Electric-flavored atk-down; Mind Sap becomes a guaranteed blind
+  // ("sap the mind" -> disorientation), reusing the existing inflictStatus
+  // shape rather than inventing a new one.
+  { name: "Mana Burn", type: "Electric", max_uses: 5, kind: "debuff", debuff: { effect: "statDown", stat: "atk", multiplier: 0.85, turns: 2 } },
+  { name: "Mind Sap", type: "Psychic", max_uses: 5, kind: "debuff", debuff: { effect: "inflictStatus", status: "blind" } },
+  { name: "Shield Breaker", type: "Fighting", max_uses: 5, kind: "debuff", debuff: { effect: "removeShield" } },
   // inflictStatus reuses the exact type-to-status mapping steps 10/19
   // already established for damage moves' incidental (chance-based) rolls
   // -- these are the guaranteed version, priced higher accordingly.
-  { name: "Toxic Spike", type: "Poison", mana_cost: 28, kind: "debuff", debuff: { effect: "inflictStatus", status: "poison" } },
-  { name: "Inferno Curse", type: "Fire", mana_cost: 28, kind: "debuff", debuff: { effect: "inflictStatus", status: "burn" } },
-  { name: "Absolute Zero", type: "Ice", mana_cost: 28, kind: "debuff", debuff: { effect: "inflictStatus", status: "freeze" } },
+  { name: "Toxic Spike", type: "Poison", max_uses: 2, kind: "debuff", debuff: { effect: "inflictStatus", status: "poison" } },
+  { name: "Inferno Curse", type: "Fire", max_uses: 2, kind: "debuff", debuff: { effect: "inflictStatus", status: "burn" } },
+  { name: "Absolute Zero", type: "Ice", max_uses: 2, kind: "debuff", debuff: { effect: "inflictStatus", status: "freeze" } },
 ];
 export const debuffMovesByType = groupByType(debuffMoves);
 
 export const drainMoves: DrainMove[] = [
-  { name: "Drain Punch", type: "Fighting", category: "Physical", power: 35, mana_cost: 10, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 45 } },
-  { name: "Bug Bite", type: "Bug", category: "Physical", power: 35, mana_cost: 10, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 40 } },
-  { name: "Life Steal", type: "Normal", category: "Physical", power: 35, mana_cost: 10, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 40 } },
-  { name: "Giga Drain", type: "Grass", category: "Special", power: 55, mana_cost: 20, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 50 } },
-  { name: "Vampire Fang", type: "Dark", category: "Physical", power: 60, mana_cost: 20, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 45 } },
-  { name: "Mind Siphon", type: "Psychic", category: "Special", power: 55, mana_cost: 20, kind: "drain", drain: { resource: "mp", percentOfDamageDealt: 40 } },
-  { name: "Dream Eater", type: "Ghost", category: "Special", power: 90, mana_cost: 35, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 50 } },
-  { name: "Energy Drain", type: "Electric", category: "Special", power: 85, mana_cost: 30, kind: "drain", drain: { resource: "mp", percentOfDamageDealt: 45 } },
+  { name: "Drain Punch", type: "Fighting", category: "Physical", power: 35, max_uses: 5, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 45 } },
+  { name: "Bug Bite", type: "Bug", category: "Physical", power: 35, max_uses: 5, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 40 } },
+  { name: "Life Steal", type: "Normal", category: "Physical", power: 35, max_uses: 5, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 40 } },
+  { name: "Giga Drain", type: "Grass", category: "Special", power: 55, max_uses: 4, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 50 } },
+  { name: "Vampire Fang", type: "Dark", category: "Physical", power: 60, max_uses: 4, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 45 } },
+  // resource reassigned from "mp" to "hp" (upgrades/40-uses-based-move-
+  // data-model.md -- the mp pool it restored no longer exists); same
+  // percentOfDamageDealt either way, just healing HP now like every other
+  // drain move.
+  { name: "Mind Siphon", type: "Psychic", category: "Special", power: 55, max_uses: 4, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 40 } },
+  { name: "Dream Eater", type: "Ghost", category: "Special", power: 90, max_uses: 1, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 50 } },
+  { name: "Energy Drain", type: "Electric", category: "Special", power: 85, max_uses: 2, kind: "drain", drain: { resource: "hp", percentOfDamageDealt: 45 } },
 ];
 export const drainMovesByType = groupByType(drainMoves);
 
 export const redirectMoves: RedirectMove[] = [
-  { name: "Taunt", type: "Dark", mana_cost: 25, kind: "redirect", turns: 2 },
-  { name: "Confuse Ray", type: "Ghost", mana_cost: 30, kind: "redirect", turns: 3 },
-  { name: "Provoke", type: "Fighting", mana_cost: 25, kind: "redirect", turns: 2 },
-  { name: "Disorient", type: "Normal", mana_cost: 25, kind: "redirect", turns: 2 },
+  { name: "Taunt", type: "Dark", max_uses: 3, kind: "redirect", turns: 2 },
+  { name: "Confuse Ray", type: "Ghost", max_uses: 2, kind: "redirect", turns: 3 },
+  { name: "Provoke", type: "Fighting", max_uses: 3, kind: "redirect", turns: 2 },
+  { name: "Disorient", type: "Normal", max_uses: 3, kind: "redirect", turns: 2 },
 ];
 export const redirectMovesByType = groupByType(redirectMoves);
 

@@ -332,7 +332,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
                 {selected.moves.map((m) => {
                   const power = movePower(m);
                   return (
-                    <li key={m.name}>{m.name} — {m.type}, {power !== null ? `${power} Pwr, ` : ""}{m.mana_cost} MP</li>
+                    <li key={m.name}>{m.name} — {m.type}, {power !== null ? `${power} Pwr, ` : ""}{m.max_uses === null ? "unlimited" : m.max_uses} uses</li>
                   );
                 })}
               </ul>

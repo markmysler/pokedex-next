@@ -84,26 +84,31 @@ function cloneTeam(team: TeamState): TeamState {
   };
 }
 
-// Simple decision logic, mirrors the old 1v1 bot: random affordable move, or
-// the cheapest one available if nothing is affordable (mp floors at 0 rather
-// than going negative, so this is always safe to submit).
+// Simple decision logic, mirrors the old 1v1 bot: random castable move (uses
+// left, or unlimited), or whichever move has the most uses left if somehow
+// none are castable -- every instance always has at least one unlimited
+// (null) move per buildFighterState()'s free-move guarantee
+// (upgrades/40-uses-based-move-data-model.md), so that fallback should
+// never actually trigger, but it's kept as a defensive no-crash guarantee
+// the same way the old mana version always had a "cheapest" fallback.
 function pickBotAttackAction(team: TeamState): BattleAction {
   const active = team.members[team.activeIndex];
   const moves = active.pokemon.moves;
-  const affordable = moves.map((_, i) => i).filter((i) => (moves[i].mana_cost ?? 10) <= active.mp);
-  if (affordable.length) {
-    return { type: "attack", moveIndex: affordable[Math.floor(Math.random() * affordable.length)] };
+  const castable = moves.map((_, i) => i).filter((i) => active.moveUses[i] !== 0);
+  if (castable.length) {
+    return { type: "attack", moveIndex: castable[Math.floor(Math.random() * castable.length)] };
   }
-  let cheapestIndex = 0;
-  let cheapestCost = Infinity;
-  moves.forEach((m, i) => {
-    const cost = m.mana_cost ?? 10;
-    if (cost < cheapestCost) {
-      cheapestCost = cost;
-      cheapestIndex = i;
+  let mostAvailableIndex = 0;
+  let mostAvailableUses = -1;
+  moves.forEach((_, i) => {
+    const uses = active.moveUses[i];
+    const comparable = uses === null ? Infinity : uses;
+    if (comparable > mostAvailableUses) {
+      mostAvailableUses = comparable;
+      mostAvailableIndex = i;
     }
   });
-  return { type: "attack", moveIndex: cheapestIndex };
+  return { type: "attack", moveIndex: mostAvailableIndex };
 }
 
 function firstAliveBenchIndex(team: TeamState): 0 | 1 | 2 | null {
@@ -213,9 +218,9 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
       const active = battle.team1.members[battle.team1.activeIndex];
       const move = active.pokemon.moves[action.moveIndex];
       if (!move) return;
-      const cost = move.mana_cost ?? 10;
-      if (active.mp < cost) {
-        appendLog([`⚠️ Not enough Mana for ${move.name}! (Requires ${cost} MP, have ${active.mp} MP)`]);
+      const usesLeft = active.moveUses[action.moveIndex];
+      if (usesLeft === 0) {
+        appendLog([`⚠️ No uses left for ${move.name} this battle!`]);
         return;
       }
     } else {
@@ -305,9 +310,9 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
       }
       const active = battle.team1.members[battle.team1.activeIndex];
       const moves = active.pokemon.moves;
-      const affordable = moves.map((_, i) => i).filter((i) => (moves[i].mana_cost ?? 10) <= active.mp);
-      if (affordable.length) {
-        submitAction({ type: "attack", moveIndex: affordable[Math.floor(Math.random() * affordable.length)] });
+      const castable = moves.map((_, i) => i).filter((i) => active.moveUses[i] !== 0);
+      if (castable.length) {
+        submitAction({ type: "attack", moveIndex: castable[Math.floor(Math.random() * castable.length)] });
       } else if (moves.length) {
         submitAction({ type: "attack", moveIndex: Math.floor(Math.random() * moves.length) });
       }
@@ -366,8 +371,6 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
           pokemon={you.pokemon}
           hp={you.hp}
           maxHp={you.maxHp}
-          mp={you.mp}
-          maxMp={you.maxMp}
           bleedTurns={you.bleedTurns}
           blindTurns={you.blindTurns}
           poisonTurns={you.poisonTurns}
@@ -397,7 +400,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
               {[0, 1, 2, 3].map((i) => {
                 const move = you.pokemon.moves[i];
                 if (!move) return <button key={i} className="move-btn" disabled>--</button>;
-                const insufficientMana = you.mp < (move.mana_cost ?? 10);
+                const insufficientMana = you.moveUses[i] === 0;
                 return (
                   <MoveButton
                     key={i}
@@ -423,8 +426,6 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
           pokemon={opp.pokemon}
           hp={opp.hp}
           maxHp={opp.maxHp}
-          mp={opp.mp}
-          maxMp={opp.maxMp}
           bleedTurns={opp.bleedTurns}
           blindTurns={opp.blindTurns}
           poisonTurns={opp.poisonTurns}

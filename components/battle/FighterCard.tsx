@@ -16,10 +16,6 @@ interface TeamMemberDisplay {
   pokemon: OwnedPokemon;
   hp: number;
   maxHp: number;
-  // Optional for the same reason as mp/maxMp below -- real FighterState
-  // objects (the only thing ever passed in practice) always have these.
-  mp?: number;
-  maxMp?: number;
   // Optional so this interface still structurally matches any older/simpler
   // caller — real FighterState objects (the only thing ever passed in
   // practice) always have these (upgrades/10-battle-depth.md).
@@ -46,8 +42,6 @@ interface FighterCardProps {
   pokemon: OwnedPokemon;
   hp: number;
   maxHp: number;
-  mp: number;
-  maxMp: number;
   bleedTurns?: number;
   blindTurns?: number;
   poisonTurns?: number;
@@ -161,8 +155,6 @@ export default function FighterCard({
   pokemon,
   hp,
   maxHp,
-  mp,
-  maxMp,
   bleedTurns,
   blindTurns,
   poisonTurns,
@@ -204,7 +196,9 @@ export default function FighterCard({
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
 
       <SegmentedMeter label="HP" value={Math.max(0, hp)} max={maxHp} color={hpColor(Math.max(0, Math.min(1, hp / maxHp)))} />
-      <SegmentedMeter label="MP" value={Math.max(0, mp)} max={maxMp} color="var(--info)" />
+      {/* MP meter removed (upgrades/40-uses-based-move-data-model.md) -- no
+          more aggregate resource pool; per-move uses render on MoveButton
+          instead (upgrades/43-uses-ui-and-server-validation.md). */}
 
       <div className="moves-caption">{movesCaption}</div>
       {children}
@@ -232,9 +226,6 @@ export default function FighterCard({
                 ) : (
                   <>
                     <SegmentedMeter label="HP" value={Math.max(0, member.hp)} max={member.maxHp} color={hpColor(Math.max(0, Math.min(1, member.hp / member.maxHp)))} segments={6} compact />
-                    {member.mp !== undefined && member.maxMp !== undefined && (
-                      <SegmentedMeter label="MP" value={Math.max(0, member.mp)} max={member.maxMp} color="var(--info)" segments={6} compact />
-                    )}
                   </>
                 )}
                 {!fainted && (

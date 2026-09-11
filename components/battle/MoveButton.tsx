@@ -36,8 +36,12 @@ export default function MoveButton({ move, disabled, insufficientMana, onClick }
   // one combined string (upgrades/35-battle-shared-components-redesign.md's
   // "movebtn-style layout") -- same information as before, just laid out on
   // two lines rather than packed into a single label.
+  // "MP" cost text -> uses text (upgrades/40-uses-based-move-data-model.md;
+  // the insufficientMana prop itself is still mana-named/mana-computed by
+  // its callers pending upgrades/43-uses-ui-and-server-validation.md).
+  const usesText = move.max_uses === null ? "unlimited uses" : `${move.max_uses} uses`;
   const nameLine = insufficientMana ? `⚠️ ${move.name}` : `${icon}${move.name}`;
-  const metaLine = insufficientMana ? `${move.mana_cost} MP` : `${moveEffectText(move)} · ${move.mana_cost} MP`;
+  const metaLine = insufficientMana ? usesText : `${moveEffectText(move)} · ${usesText}`;
   const background = disabled ? "gray" : move.kind === "damage" ? TYPE_COLORS[move.type] ?? "#68A090" : KIND_COLOR[move.kind];
   // Same reasoning as FighterCard.tsx's status badges: --good/--bad/--info/
   // --warn run bright in dark theme, so the button's default white label

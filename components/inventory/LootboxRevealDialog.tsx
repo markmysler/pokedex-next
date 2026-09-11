@@ -145,7 +145,7 @@ export default function LootboxRevealDialog({ pokemon, onClose, hasNext }: Lootb
                   const power = movePower(m);
                   return (
                     <li key={m.name} className={fullyRevealed || i < movesRevealed ? "move-revealed" : undefined}>
-                      {m.name} — {m.type}, {power !== null ? `${power} Pwr, ` : ""}{m.mana_cost} MP
+                      {m.name} — {m.type}, {power !== null ? `${power} Pwr, ` : ""}{m.max_uses === null ? "unlimited" : m.max_uses} uses
                     </li>
                   );
                 })}

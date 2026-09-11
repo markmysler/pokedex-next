@@ -94,10 +94,13 @@ function applyDamage(state: FighterState, dmg: number): number {
   return absorbedByShield;
 }
 
-function damageLogLine(defenderName: string, attackerName: string, dmg: number, absorbed: number, hpAfter: number, mpAfter: number): string {
-  if (absorbed <= 0) return `  -> Dealt ${dmg} damage! ${defenderName} HP: ${hpAfter} | ${attackerName} Mana: ${mpAfter}/100`;
+// mpAfter/attackerName dropped (upgrades/40-uses-based-move-data-model.md
+// -- there's no shared mana pool left to report here; per-move uses render
+// on MoveButton instead, not in the battle log).
+function damageLogLine(defenderName: string, dmg: number, absorbed: number, hpAfter: number): string {
+  if (absorbed <= 0) return `  -> Dealt ${dmg} damage! ${defenderName} HP: ${hpAfter}`;
   if (absorbed >= dmg) return `  -> 🛡️ Shield absorbed all ${dmg} damage!`;
-  return `  -> 🛡️ Shield absorbed ${absorbed} damage! Dealt ${dmg - absorbed} damage! ${defenderName} HP: ${hpAfter} | ${attackerName} Mana: ${mpAfter}/100`;
+  return `  -> 🛡️ Shield absorbed ${absorbed} damage! Dealt ${dmg - absorbed} damage! ${defenderName} HP: ${hpAfter}`;
 }
 
 // Applied at the point atk/def/spd are actually read, not stored back onto
@@ -221,14 +224,20 @@ function moveHeader(casterName: string, move: Move, costStr: string): string {
   return `• ${casterName} used [${move.name}] (${detail} | ${costStr})!`;
 }
 
-// Mutates attacker/defender state in place. Mana cost is always paid,
-// whether the move connects or not — dodging/blinded-flailing still means
-// the move was cast. Damage math is byte-for-byte what it was before step
-// 21; the only new thing on a landed damage hit is rolling for status
-// inflict (upgrades/10) and shield absorption (upgrades/24). Buff/debuff
-// execution added in upgrades/24-battle-engine-buffs-and-debuffs.md; drain
-// added in upgrades/25-battle-engine-drain-moves.md; redirect added in
-// upgrades/26-battle-engine-redirect-self.md.
+// Mutates attacker/defender state in place. Damage math is byte-for-byte
+// what it was before step 21; the only new thing on a landed damage hit is
+// rolling for status inflict (upgrades/10) and shield absorption
+// (upgrades/24). Buff/debuff execution added in upgrades/24-battle-engine-
+// buffs-and-debuffs.md; drain added in upgrades/25-battle-engine-drain-
+// moves.md; redirect added in upgrades/26-battle-engine-redirect-self.md.
+//
+// TODO(upgrades/42-battle-engine-uses-execution.md): this no longer spends
+// anything -- mana_cost/mp were removed in upgrades/40-uses-based-move-
+// data-model.md, and decrementing the caster's moveUses entry for `move`
+// (and rejecting a call once it hits 0) is explicitly step 42's scope, not
+// step 40's (see that step's "what does NOT change" section). Until 42
+// lands, every move is effectively unlimited-use at execution time, same
+// as step 21 left damage execution unchanged while only the types moved.
 export function executeMove(
   attackerState: FighterState,
   defenderState: FighterState,
@@ -237,12 +246,7 @@ export function executeMove(
 ): MoveResult {
   const attacker = attackerState.pokemon;
   const defender = defenderState.pokemon;
-  const cost = move.mana_cost ?? 10;
-
-  attackerState.mp = Math.max(0, attackerState.mp - cost);
-  if (cost === 0) attackerState.mp = Math.min(attackerState.maxMp, attackerState.mp + 15);
-
-  const costStr = cost > 0 ? `-${cost} MP` : "+15 MP Energy Surge!";
+  const costStr = move.max_uses === null ? "unlimited uses" : `max ${move.max_uses} uses`;
   const header = moveHeader(attacker.name, move, costStr);
 
   if (opts?.forceMiss) {
@@ -291,7 +295,7 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
     `${header} ${effectivenessText(mult)}`,
     ...(selfHit ? [`  -> 🌀 ${attacker.name} is confused! It hurt itself in its confusion!`] : []),
     ...(allyHit ? [`  -> 🌀 ${attacker.name} is confused and attacks its own ally, ${defender.name}!`] : []),
-    damageLogLine(defender.name, attacker.name, dmg, absorbed, defenderState.hp, attackerState.mp),
+    damageLogLine(defender.name, dmg, absorbed, defenderState.hp),
   ];
 
   const statusInflicted: StatusKind[] = [];
@@ -341,14 +345,12 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
     // if it's far more than the defender's remaining HP. One-sided: the
     // defender doesn't separately lose the drained amount beyond the
     // damage already applied above.
+    // resource is always "hp" as of upgrades/40-uses-based-move-data-model
+    // .md (the "mp" variant's two catalog moves were reassigned) -- no
+    // branch needed anymore.
     const healAmount = Math.round(dmg * (move.drain.percentOfDamageDealt / 100));
-    if (move.drain.resource === "hp") {
-      attackerState.hp = Math.min(attackerState.maxHp, attackerState.hp + healAmount);
-      log.push(`  -> 🩸 ${attacker.name} drained ${healAmount} HP! (${attackerState.hp}/${attackerState.maxHp})`);
-    } else {
-      attackerState.mp = Math.min(attackerState.maxMp, attackerState.mp + healAmount);
-      log.push(`  -> 🔷 ${attacker.name} drained ${healAmount} MP! (${attackerState.mp}/${attackerState.maxMp})`);
-    }
+    attackerState.hp = Math.min(attackerState.maxHp, attackerState.hp + healAmount);
+    log.push(`  -> 🩸 ${attacker.name} drained ${healAmount} HP! (${attackerState.hp}/${attackerState.maxHp})`);
   }
 
   return { log, hit: true, dealt: dmg, statusInflicted };
@@ -356,8 +358,6 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
 
 // Targets the caster (self) by default, or an explicitly-chosen living
 // ally in a 3v3 team battle (upgrades/28-move-ui-and-ally-targeting.md).
-// Mana is still paid by the caster (already handled in executeMove above)
-// regardless of who the effect lands on.
 function executeBuff(casterState: FighterState, targetState: FighterState, move: BuffMove, header: string): MoveResult {
   const target = targetState.pokemon;
   const log = [header];
@@ -385,11 +385,8 @@ function executeBuff(casterState: FighterState, targetState: FighterState, move:
       log.push(`  -> 💚 ${target.name} healed ${amount} HP! (${targetState.hp}/${targetState.maxHp})`);
       break;
     }
-    case "restoreMana": {
-      targetState.mp = Math.min(targetState.maxMp, targetState.mp + buff.amount);
-      log.push(`  -> 🔷 ${target.name} restored ${buff.amount} MP! (${targetState.mp}/${targetState.maxMp})`);
-      break;
-    }
+    // "restoreMana" retired with the mp pool (upgrades/40-uses-based-move-
+    // data-model.md) -- Charge, its one catalog user, is now a statUp.
     case "shield": {
       // Additive -- a second shield cast while one is already up stacks
       // the pool, unlike statUp's refresh-not-stack (shields have no
@@ -433,11 +430,9 @@ function executeDebuff(defenderState: FighterState, move: DebuffMove, header: st
       log.push(`  -> 💢 ${defender.name}'s ${statName} fell to x${debuff.multiplier} for ${debuff.turns} turns!`);
       break;
     }
-    case "drainMana": {
-      defenderState.mp = Math.max(0, defenderState.mp - debuff.amount);
-      log.push(`  -> 🔻 ${defender.name} lost ${debuff.amount} MP! (${defenderState.mp}/${defenderState.maxMp})`);
-      break;
-    }
+    // "drainMana" retired with the mp pool (upgrades/40-uses-based-move-
+    // data-model.md) -- Mana Burn/Mind Sap, its two catalog users, are now
+    // a statDown and a guaranteed blind, respectively.
     case "removeShield": {
       defenderState.shieldPoints = 0;
       log.push(`  -> 💥 ${defender.name}'s shield was destroyed!`);
@@ -501,7 +496,10 @@ export interface RoundResult {
   events: BattleEvent[];
 }
 
-// Mutates fighter1State/fighter2State in place (HP/MP after the round). Pure otherwise.
+// Mutates fighter1State/fighter2State in place (HP/moveUses after the
+// round). Pure otherwise. No more round-start regen (upgrades/40-uses-
+// based-move-data-model.md) -- moveUses only ever goes down, reset only at
+// the next battle's buildFighterState() call.
 export function resolveRound(
   fighter1State: FighterState,
   fighter2State: FighterState,
@@ -510,9 +508,6 @@ export function resolveRound(
 ): RoundResult {
   const log: string[] = [];
   const events: BattleEvent[] = [];
-
-  fighter1State.mp = Math.min(fighter1State.maxMp, fighter1State.mp + 15);
-  fighter2State.mp = Math.min(fighter2State.maxMp, fighter2State.mp + 15);
 
   const p1Speed = freezeAdjusted(fighter1State.pokemon.spd, fighter1State) + randInt(-2, 2);
   const p2Speed = freezeAdjusted(fighter2State.pokemon.spd, fighter2State) + randInt(-2, 2);
@@ -560,13 +555,32 @@ export function resolveRound(
   return { log, over, winner, events };
 }
 
+// Per-move remaining-uses array (upgrades/40-uses-based-move-data-model
+// .md), index-parallel to `moves`. Every move starts at its own catalog
+// max_uses, except the moveset's own lowest-power `kind: "damage"` move
+// (drain moves have power too but live in the support pool, per the
+// existing DAMAGE_SLOTS/SUPPORT_SLOTS split in lib/collection.ts, so
+// they're not eligible here) -- that one move is always free this battle
+// regardless of its catalog value, guaranteeing every Pokemon keeps at
+// least one attack it can always use. Ties broken by first array
+// occurrence: reduce()'s strict less-than comparison never lets a later
+// equal-power move displace an earlier one.
+function buildMoveUses(moves: Move[]): (number | null)[] {
+  const damageMoves = moves
+    .map((move, index) => ({ move, index }))
+    .filter((entry): entry is { move: DamageMove; index: number } => entry.move.kind === "damage");
+  const freeIndex = damageMoves.length
+    ? damageMoves.reduce((lowest, entry) => (entry.move.power < lowest.move.power ? entry : lowest)).index
+    : -1;
+  return moves.map((move, index) => (index === freeIndex ? null : move.max_uses));
+}
+
 export function buildFighterState(pokemon: FighterState["pokemon"]): FighterState {
   const maxHp = Math.max(50, Math.round(pokemon.hp * 2.5));
   return {
     hp: maxHp,
     maxHp,
-    mp: 100,
-    maxMp: 100,
+    moveUses: buildMoveUses(pokemon.moves),
     pokemon,
     bleedTurns: 0,
     blindTurns: 0,
@@ -683,8 +697,8 @@ export function resolveTeamRound(
 
   const active1 = activeMember(team1State);
   const active2 = activeMember(team2State);
-  active1.mp = Math.min(active1.maxMp, active1.mp + 15);
-  active2.mp = Math.min(active2.maxMp, active2.mp + 15);
+  // No more round-start regen here either (upgrades/40-uses-based-move-
+  // data-model.md) -- same reasoning as resolveRound() above.
 
   const p1Speed = freezeAdjusted(active1.pokemon.spd, active1) + randInt(-2, 2);
   const p2Speed = freezeAdjusted(active2.pokemon.spd, active2) + randInt(-2, 2);

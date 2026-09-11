@@ -13,8 +13,12 @@ function validateAction(action: BattleAction, team: TeamState): string | null {
     if (active.hp <= 0) return "Your active Pokemon has fainted";
     const move = active.pokemon.moves[action.moveIndex];
     if (!move) return "Invalid move";
-    const cost = move.mana_cost ?? 10;
-    if (active.mp < cost) return "Not enough Mana";
+    // TODO(upgrades/42-battle-engine-uses-execution.md,
+    // upgrades/43-uses-ui-and-server-validation.md): reject once
+    // active.moveUses[action.moveIndex] is a depleted (0) non-null entry --
+    // out of scope for upgrades/40-uses-based-move-data-model.md, which
+    // only needs the mana_cost/mp fields this check used to read to stop
+    // existing (see that step's "what does NOT change" section).
     return null;
   }
   if (action.type === "switch") {

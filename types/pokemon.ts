@@ -18,7 +18,12 @@ export type StatModKey = "atk" | "def";
 interface BaseMove {
   name: string;
   type: PokemonType;
-  mana_cost: number;
+  // Per-battle cast limit (upgrades/40-uses-based-move-data-model.md),
+  // replacing the old shared mana_cost/mp pool -- null means unlimited this
+  // battle (either a catalog-authored always-free move, or the dynamic
+  // per-instance free-weakest-damage-move override buildFighterState()
+  // applies; see lib/battleEngine.ts).
+  max_uses: number | null;
   kind: MoveKind;
 }
 
@@ -31,7 +36,9 @@ export interface DamageMove extends BaseMove {
 export type BuffEffect =
   | { effect: "statUp"; stat: StatModKey; multiplier: number; turns: number }
   | { effect: "heal"; percentOfMaxHp: number } // instant, not a turn-counter
-  | { effect: "restoreMana"; amount: number } // instant
+  // "restoreMana" retired with the mp pool it restored (upgrades/40-uses-
+  // based-move-data-model.md) -- Charge, its one catalog user, was
+  // reassigned to statUp rather than replaced with a uses-based analog.
   | { effect: "shield"; amount: number } // adds to shieldPoints, no duration
   | { effect: "cleanse" }; // clears bleed/blind/poison/burn/freeze turns
 
@@ -42,7 +49,10 @@ export interface BuffMove extends BaseMove {
 
 export type DebuffEffect =
   | { effect: "statDown"; stat: StatModKey; multiplier: number; turns: number }
-  | { effect: "drainMana"; amount: number } // instant, subtracts from target's mp
+  // "drainMana" retired with the mp pool it drained (upgrades/40-uses-
+  // based-move-data-model.md) -- Mana Burn/Mind Sap, its two catalog users,
+  // were reassigned to statDown/inflictStatus rather than replaced with a
+  // uses-based analog.
   | { effect: "removeShield" } // instant, zeroes target's shieldPoints
   | { effect: "inflictStatus"; status: "bleed" | "blind" | "poison" | "burn" | "freeze" }; // guaranteed, bypasses the normal chance roll
 
@@ -55,7 +65,10 @@ export interface DrainMove extends BaseMove {
   kind: "drain";
   category: MoveCategory; // still deals damage using the existing formula
   power: number;
-  drain: { resource: "hp" | "mp"; percentOfDamageDealt: number }; // e.g. 50 = heal/restore 50% of the damage this hit dealt
+  // resource is always "hp" as of upgrades/40-uses-based-move-data-model.md
+  // -- the "mp" variant (Mind Siphon, Energy Drain) was reassigned to "hp"
+  // along with everything else that read from the now-removed mp pool.
+  drain: { resource: "hp"; percentOfDamageDealt: number }; // e.g. 50 = heal 50% of the damage this hit dealt
 }
 
 export interface RedirectMove extends BaseMove {
@@ -131,8 +144,13 @@ export interface Lootbox {
 export interface FighterState {
   hp: number;
   maxHp: number;
-  mp: number;
-  maxMp: number;
+  // Per-battle remaining uses, index-parallel to pokemon.moves (mirrors how
+  // AttackAction.moveIndex already addresses moves by index elsewhere).
+  // null = unlimited -- either the move's own max_uses is null, or it's
+  // this instance's dynamically-chosen free weakest damage move for this
+  // battle (upgrades/40-uses-based-move-data-model.md). Replaces mp/maxMp
+  // entirely -- there's no shared resource pool left to track.
+  moveUses: (number | null)[];
   // Always an actually-owned instance at runtime (buildFighterState() is
   // only ever called with OwnedPokemon — see BattleArena/OnlineBattle/
   // lock-in), never a bare species lookup — typed as such so shiny status
