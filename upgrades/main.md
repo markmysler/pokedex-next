@@ -143,11 +143,18 @@ full detail):
   using real `resolveTeamRound()` together with that same function (398
   genuine over-limit attempts correctly caught, 0 legal moves wrongly
   rejected). A manual browser pass is still worth doing before real
-  players see this. See step 43's file for the full accounting, including
-  a pre-existing (unrelated, out-of-scope) `resolveTeamRound` edge case
-  the validation harness surfaced: a simultaneous double-faint can leave
-  one side's `activeIndex` pointed at a fainted member for one extra beat,
-  since `awaitingForcedSwitch` can only track one side at a time.
+  players see this.
+- **A pre-existing `resolveTeamRound` softlock, found by step 43's own
+  validation and fixed the same day (2026-09-11), separately from this
+  migration's own step numbering:** a simultaneous double-faint (both
+  actives fainting the same round) could leave one player permanently
+  stuck — unable to attack (fainted) and unable to switch (not the
+  flagged slot) — since `awaitingForcedSwitch: RoomSlot | null` could only
+  track one side. Fixed without changing that field's wire shape: the
+  second side to fault in a round is now auto-switched to its first
+  living bench member immediately, inside `resolveTeamRound` itself,
+  rather than also deferred. Unrelated to mana/uses; see step 43's file
+  for the full writeup.
 
 ## Working through a step
 

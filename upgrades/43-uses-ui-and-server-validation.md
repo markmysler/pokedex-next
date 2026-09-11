@@ -138,16 +138,31 @@ deliberately left untouched — it's a historical record of that date's
 event, not a current-state claim, same reasoning archived `upgrades/`
 step files stay unedited after the fact.
 
-**Found during validation, out of scope to fix here:** `resolveTeamRound`'s
-single `awaitingForcedSwitch: RoomSlot | null` field can only track one
-side's forced switch — if both teams' active members faint in the same
-round, the other side's fainted-but-still-`activeIndex` state isn't
-flagged, so a caller polling immediately after would see a fainted
-"active" member for one extra beat. Pre-existing (predates this entire
-migration, unrelated to mana/uses), surfaced by this step's own simulated-
-battle validation harness hitting it, not something steps 40-43 introduced
-or need to fix. Worth a bug report/step of its own someday, not bundled in
-here.
+**Found during validation, fixed separately (2026-09-11, same day):**
+`resolveTeamRound`'s single `awaitingForcedSwitch: RoomSlot | null` field
+could only track one side's forced switch — if both teams' active members
+fainted in the same round (each from its own status tick, or one from a
+redirect self/ally-hit colliding with the other's status tick), the
+second side's fainted-but-still-`activeIndex` state silently overwrote (or
+lost) the first's, leaving that player permanently stuck: unable to attack
+(fainted-active rejected by `validateAction()`) and unable to switch
+either (the route's forced-switch gate only let the *flagged* slot act). A
+genuine softlock, not just a display inconsistency — pre-existing,
+predates this entire migration, unrelated to mana/uses, surfaced by this
+step's own simulated-battle validation harness hitting it. Fixed in
+`lib/battleEngine.ts` without changing `RoomState`/`TeamRoundResult`'s
+wire shape at all: whichever side faults *second* in the same round is now
+auto-switched to its first living bench member immediately inside
+`resolveTeamRound` (a new `resolveForcedSwitchConflict()` helper, same "no
+real choice, just proceed" spirit as a bot's own forced switch in
+`BattleArena.tsx`), rather than being deferred to a player who'd never get
+prompted. Validated with a deterministic reproduction (both actives forced
+to fatally bleed the same round, 200 trials, all 18 speed-order
+permutations effectively covered by RNG) confirming the deferred side
+correctly still awaits a real switch while the auto-switched side already
+has a living active, plus a 300-battle regression sweep with 0 new
+crashes. Not part of this migration's own step numbering (40-47) — a
+same-day standalone fix, committed separately.
 
 **Validation performed:** the server check has no UI or browser dependency
 (a pure function of `action`/`team`), so it was validated two ways rather

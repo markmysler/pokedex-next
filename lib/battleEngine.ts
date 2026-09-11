@@ -636,6 +636,15 @@ function isTeamWiped(team: TeamState): boolean {
   return team.members.every((m) => m.hp <= 0);
 }
 
+// Mirrors BattleArena.tsx's own bot-forced-switch auto-pick (a separate,
+// client-side copy for a different call site -- the two were never a
+// single shared definition to begin with, so this doesn't newly duplicate
+// anything that wasn't already duplicated).
+function firstAliveBenchIndex(team: TeamState): 0 | 1 | 2 | null {
+  const i = team.members.findIndex((m, idx) => idx !== team.activeIndex && m.hp > 0);
+  return i === -1 ? null : (i as 0 | 1 | 2);
+}
+
 // Redirect target selection (upgrades/27-battle-engine-redirect-allies.md)
 // -- rolls among the attacker's own living team members, including
 // themselves (step 26's self-only behavior is the size-1-living-member
@@ -702,6 +711,39 @@ function handleFaint(faintedSlot: RoomSlot, faintedTeam: TeamState, faintedName:
   return { over: false, winner: null, awaitingForcedSwitch: faintedSlot };
 }
 
+// A round can, in rare cases, need to force *both* sides to switch in the
+// same round -- e.g. each side's own status tick (bleed/poison/burn)
+// independently faints its active at the start of its own turn. The wire
+// protocol (RoomState.awaitingForcedSwitch: RoomSlot | null) only ever
+// defers *one* side's choice to the player, same as only one player at a
+// time gets prompted -- so naively overwriting `awaitingForcedSwitch` on a
+// second fault would silently lose the first side's pending prompt,
+// leaving that player permanently unable to act (their active is fainted,
+// so every future attack is rejected by validateAction(), but nothing
+// ever tells them to switch either). Caught by upgrades/43-uses-ui-and
+// -server-validation.md's own simulated-battle validation, fixed here:
+// whichever side faults *second* in the same round is auto-switched to
+// its first living bench member immediately, right here, instead of also
+// being deferred -- same "no real choice, just proceed" spirit as a bot's
+// own forced switch (BattleArena.tsx), extended to this one genuinely
+// simultaneous edge case for either player. The first side's prompt is
+// left untouched.
+function resolveForcedSwitchConflict(
+  outcome: FaintOutcome,
+  faintedTeam: TeamState,
+  log: string[],
+  currentAwaiting: RoomSlot | null
+): RoomSlot | null {
+  if (!outcome.awaitingForcedSwitch) return currentAwaiting;
+  if (currentAwaiting === null || currentAwaiting === outcome.awaitingForcedSwitch) return outcome.awaitingForcedSwitch;
+
+  const benchIndex = firstAliveBenchIndex(faintedTeam);
+  if (benchIndex !== null) {
+    log.push(...applySwitch(faintedTeam, benchIndex));
+  }
+  return currentAwaiting;
+}
+
 // Mutates team1State/team2State in place (activeIndex, HP/MP of whichever
 // members acted). Switches apply before attacks; an attacker whose own
 // active fainted earlier this same round can't act (mirrors the old
@@ -749,7 +791,7 @@ export function resolveTeamRound(
         const outcome = handleFaint(slot, atkTeam, atkState.pokemon.name, log);
         over = outcome.over;
         winner = outcome.winner;
-        if (outcome.awaitingForcedSwitch) awaitingForcedSwitch = outcome.awaitingForcedSwitch;
+        awaitingForcedSwitch = resolveForcedSwitchConflict(outcome, atkTeam, log, awaitingForcedSwitch);
         if (over) break;
         continue; // fainted from the tick, can't also attack this turn
       }
@@ -805,7 +847,7 @@ export function resolveTeamRound(
       const outcome = handleFaint(faintedSlot, faintedTeam, target.pokemon.name, log, isActive);
       over = outcome.over;
       winner = outcome.winner;
-      if (outcome.awaitingForcedSwitch) awaitingForcedSwitch = outcome.awaitingForcedSwitch;
+      awaitingForcedSwitch = resolveForcedSwitchConflict(outcome, faintedTeam, log, awaitingForcedSwitch);
       if (over) break;
     }
   }
