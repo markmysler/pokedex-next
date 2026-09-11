@@ -744,8 +744,8 @@ function resolveForcedSwitchConflict(
   return currentAwaiting;
 }
 
-// Mutates team1State/team2State in place (activeIndex, HP/MP of whichever
-// members acted). Switches apply before attacks; an attacker whose own
+// Mutates team1State/team2State in place (activeIndex, HP/moveUses of
+// whichever members acted). Switches apply before attacks; an attacker whose own
 // active fainted earlier this same round can't act (mirrors the old
 // resolveRound's "break on faint", generalized from "battle over" to
 // "this side's queued action doesn't happen").

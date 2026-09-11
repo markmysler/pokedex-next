@@ -158,7 +158,7 @@ export interface FighterState {
   pokemon: OwnedPokemon;
   // Status-effect layer (upgrades/10-battle-depth.md) — pure per-battle
   // state, never persisted beyond a battle, reset every battle exactly like
-  // hp/mp. Turn counters, not booleans: 0 means "not affected," refreshed
+  // hp/moveUses. Turn counters, not booleans: 0 means "not affected," refreshed
   // (not stacked) back to a fixed duration on re-inflict. Only ticks/decays
   // while this fighter is the *active* member of its team; a benched
   // Pokemon keeps its counters frozen until swapped back in.
@@ -217,7 +217,8 @@ export interface SwitchAction {
 export type BattleAction = AttackAction | SwitchAction;
 
 // Three owned Pokemon per side (see upgrades/05-3v3-battles.md). Members
-// keep their HP/MP across switches — switching out doesn't heal or reset.
+// keep their HP/moveUses across switches — switching out doesn't heal or
+// reset either.
 export interface TeamState {
   members: [FighterState, FighterState, FighterState];
   activeIndex: 0 | 1 | 2;

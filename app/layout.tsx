@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Pokédex Kanto - Web Edition",
-  description: "Kanto Pokedex with a mana-based battle arena and online PvP rooms",
+  description: "Kanto Pokedex with a per-move uses battle arena and online PvP rooms",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

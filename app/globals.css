@@ -303,8 +303,10 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 /* Completion banner's track stays a smooth fill (a percentage, not a device
    stat) but gets the pill/gradient hero treatment the segmented meters don't
    need (upgrades/34-collection-cluster-redesign.md) -- scoped modifiers so
-   the shared base classes above (still used by the battle HP/MP bars until
-   step 35/36 migrate those to SegmentedMeter) are untouched. */
+   the shared base classes above (used by the battle HP bar at the time --
+   an MP bar existed alongside it back then too, but that was retired
+   entirely in upgrades/40-uses-based-move-data-model.md, not just migrated
+   to SegmentedMeter) are untouched. */
 .progress-bar.completion { height: 14px; border-radius: var(--r-pill); background: var(--surface-3); }
 .progress-fill.completion { border-radius: var(--r-pill); background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
 
@@ -1270,10 +1272,12 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 }
 
 /* SEGMENTED METER (components/ui/SegmentedMeter.tsx, upgrades/31-shared-
-   ui-primitives.md) — the Game Boy-style HP/MP/stat readout that replaces
-   the old smooth .progress-fill gradient fill. Wired into every stat/HP/MP
+   ui-primitives.md) — the Game Boy-style HP/stat readout that replaces
+   the old smooth .progress-fill gradient fill. Wired into every stat/HP
    context app-wide by steps 34/35 (Pokédex/Inventory/LootboxReveal, then
-   FighterCard's active + compact bench sizes). */
+   FighterCard's active + compact bench sizes); an MP row was one of those
+   original contexts too, but that row was removed entirely (not just
+   restyled) in upgrades/40-uses-based-move-data-model.md. */
 .meter { display: grid; grid-template-columns: 58px 1fr 56px; align-items: center; gap: var(--s-3); font-size: 12px; margin: 5px 0; }
 .meter .m-label { font-weight: 700; color: var(--ink-soft); }
 .meter .m-value { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }

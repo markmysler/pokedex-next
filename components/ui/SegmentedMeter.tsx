@@ -1,9 +1,11 @@
 // Segmented, Game Boy-style meter (upgrades/31-shared-ui-primitives.md) --
 // replaces the old smooth-gradient .progress-fill/.stat-bar-fill pattern
-// for anything that reads like a device readout: HP/MP, base stats, the
-// lootbox reveal's staggered stat bars. Not wired into any consumer yet --
-// FighterCard/PokemonDetail/InventoryPageClient/LootboxRevealDialog pick
-// this up in later steps of this wave.
+// for anything that reads like a device readout: HP, base stats, the
+// lootbox reveal's staggered stat bars. (An MP row was also wired into
+// this at first, but that row was removed entirely in upgrades/40-uses-
+// based-move-data-model.md, not just restyled.) Not wired into any
+// consumer yet -- FighterCard/PokemonDetail/InventoryPageClient/
+// LootboxRevealDialog pick this up in later steps of this wave.
 interface SegmentedMeterProps {
   label: string;
   value: number;
