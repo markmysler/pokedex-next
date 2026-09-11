@@ -400,13 +400,13 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
               {[0, 1, 2, 3].map((i) => {
                 const move = you.pokemon.moves[i];
                 if (!move) return <button key={i} className="move-btn" disabled>--</button>;
-                const insufficientMana = you.moveUses[i] === 0;
+                const usesLeft = you.moveUses[i];
                 return (
                   <MoveButton
                     key={i}
                     move={move}
-                    disabled={!canAttackNow || insufficientMana}
-                    insufficientMana={insufficientMana}
+                    disabled={!canAttackNow || usesLeft === 0}
+                    usesLeft={usesLeft}
                     onClick={() => {
                       if (move.kind === "buff" && hasLivingAlly(battle.team1)) {
                         setPendingBuffMoveIndex(i);

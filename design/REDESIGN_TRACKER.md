@@ -48,7 +48,7 @@ Tracks progress of the modern/Pokémon-inspired redesign (see `DESIGN_SYSTEM.md`
 | `FighterCard` + `StatusBadges` | ✅ Done | segmented meters, semantic status colors |
 | `MoveButton` | ✅ Done | type color for damage, semantic color for buff/debuff/drain/redirect |
 | `Modal` / `Toast` | ✅ Done | same structural model, new tokens |
-| Segmented stat/HP/MP meter (new) | ✅ Done | replaces smooth `.progress-fill` gradient bars |
+| Segmented stat/HP meter (new) | ✅ Done | replaces smooth `.progress-fill` gradient bars; MP meter removed entirely in `upgrades/40-uses-based-move-data-model.md` (mana pool retired in favor of per-move uses) |
 | "Bezel tab" card header (new) | ✅ Done | replaces inline-emoji `<h3>` card headers app-wide |
 
 ## Status

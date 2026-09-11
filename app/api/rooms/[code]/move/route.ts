@@ -7,18 +7,20 @@ import type { BattleAction, RoomSlot, RoomState, TeamState } from "@/types/pokem
 import type { Database, Json } from "@/types/supabase";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+// The authoritative check (upgrades/43-uses-ui-and-server-validation.md) --
+// client-side disabling (MoveButton/BattleArena/OnlineBattle) is UX only,
+// never trusted on its own. A null moveUses entry is always attemptable
+// (unlimited); only an exact 0 is rejected -- there's no "negative uses"
+// state to guard against separately, since executeMove() itself never lets
+// the count go below 0.
 function validateAction(action: BattleAction, team: TeamState): string | null {
   if (action.type === "attack") {
     const active = team.members[team.activeIndex];
     if (active.hp <= 0) return "Your active Pokemon has fainted";
     const move = active.pokemon.moves[action.moveIndex];
     if (!move) return "Invalid move";
-    // TODO(upgrades/42-battle-engine-uses-execution.md,
-    // upgrades/43-uses-ui-and-server-validation.md): reject once
-    // active.moveUses[action.moveIndex] is a depleted (0) non-null entry --
-    // out of scope for upgrades/40-uses-based-move-data-model.md, which
-    // only needs the mana_cost/mp fields this check used to read to stop
-    // existing (see that step's "what does NOT change" section).
+    const usesLeft = active.moveUses[action.moveIndex];
+    if (usesLeft !== null && usesLeft <= 0) return "No uses left for that move this battle";
     return null;
   }
   if (action.type === "switch") {

@@ -1,8 +1,7 @@
 # Step 43: Server validation + battle UI — uses instead of mana
 
-**Status: not started** (partially pre-done — see below). See `main.md`'s
-"The mana-to-uses migration" section for the full context and dependency
-chain.
+**Status: shipped**, 2026-09-11. See `main.md`'s "The mana-to-uses
+migration" section for the full context and dependency chain.
 
 > Step 40 shipped first and, to compile after removing `mp`/`maxMp`/
 > `mana_cost`, already landed most of this step's *display* half:
@@ -111,29 +110,105 @@ meters, added in the redesign's fix pass per `lib/battleEngine.ts`'s
 `classifyLogLine` comment) so they don't describe a component that no
 longer exists.
 
+## What actually happened
+
+Genuine remaining scope after steps 40/42's compile-driven pre-work: the
+server's real 0-uses rejection, `MoveButton`'s prop rename from the
+mana-era `insufficientMana: boolean` to `usesLeft: number | null` (and its
+two callers), and the `design/` docs sweep. All shipped as specced, plus
+one pre-existing (unrelated) issue found during validation:
+
+**`validateAction()`** now reads `active.moveUses[action.moveIndex]` and
+rejects only an exact `0` (never a `null`/unlimited entry) — the literal
+diff the step file specced, no deviation.
+
+**`MoveButton`** takes `usesLeft: number | null` instead of
+`insufficientMana: boolean`; `BattleArena.tsx`/`OnlineBattle.tsx` now pass
+`you.moveUses[i]` directly rather than pre-computing a boolean, and the
+meta line shows the live `${usesLeft}/${move.max_uses} uses` fraction
+instead of step 40's static `max_uses`-only placeholder.
+
+**Design docs**: `DESIGN_SYSTEM.md`'s token table, mono-type usage list,
+§5 (renamed "Meters (HP / MP / base stats)" → "Meters (HP / base stats)",
+with a new paragraph explaining the MP meter's removal), and the move-
+button description in §6 all updated; `REDESIGN_TRACKER.md`'s meter-
+primitive row annotated. The wave's own dated "Status" changelog line
+(§bottom of `DESIGN_SYSTEM.md`, describing what shipped on 2026-08-19) was
+deliberately left untouched — it's a historical record of that date's
+event, not a current-state claim, same reasoning archived `upgrades/`
+step files stay unedited after the fact.
+
+**Found during validation, out of scope to fix here:** `resolveTeamRound`'s
+single `awaitingForcedSwitch: RoomSlot | null` field can only track one
+side's forced switch — if both teams' active members faint in the same
+round, the other side's fainted-but-still-`activeIndex` state isn't
+flagged, so a caller polling immediately after would see a fainted
+"active" member for one extra beat. Pre-existing (predates this entire
+migration, unrelated to mana/uses), surfaced by this step's own simulated-
+battle validation harness hitting it, not something steps 40-43 introduced
+or need to fix. Worth a bug report/step of its own someday, not bundled in
+here.
+
+**Validation performed:** the server check has no UI or browser dependency
+(a pure function of `action`/`team`), so it was validated two ways rather
+than by hand in a browser: (1) its *literal* source text was extracted
+from the real route file (not a reimplementation) and exercised directly —
+an accept/reject matrix across null/positive/zero uses, the fainted-active
+and invalid-move-index paths, and a switch-action regression check; (2) a
+100-battle simulated online-room exchange running the real
+`buildTeamState`/`resolveTeamRound` together with that same extracted
+`validateAction()`, submitting only currently-castable moves each round
+and confirming 0 were ever wrongly rejected, while 398 genuine over-limit
+attempts (deliberately submitted against already-depleted moves) were
+correctly caught. This exercises the exact authoritative logic end-to-end
+against real rolled 3-damage/1-support movesets; what it does *not*
+cover is the client-rendered UI itself (`MoveButton`'s actual grey-out,
+the battle log's on-screen rendering) — that was checked by reading the
+shipped component code and confirming its disable condition
+(`usesLeft === 0`) is identical to the server's own condition, rather than
+by manually clicking through a browser session in this CLI-only
+environment. `npm run build` / `npm run lint` both clean; a full
+`grep` sweep confirmed no remaining `mana_cost`/`insufficientMana`/`.mp`/
+`maxMp` reference anywhere in source (only historical comments naming the
+old field for context).
+
 ## End state
 
-- [ ] `validateAction()` in `app/api/rooms/[code]/move/route.ts` rejects a
+- [x] `validateAction()` in `app/api/rooms/[code]/move/route.ts` rejects a
       move whose `moveUses` entry is `0` (and only that — a `null`/
       unlimited entry is always attemptable), independent of any
-      client-side state.
-- [ ] `MoveButton` shows remaining uses (or "∞") instead of an MP cost, and
-      disables correctly at 0 uses.
-- [ ] `FighterCard` no longer renders an MP meter anywhere (active card or
-      bench).
-- [ ] `BattleArena.tsx` and `OnlineBattle.tsx` both gate move selection
+      client-side state. (Verified directly against the real extracted
+      function: accept/reject matrix + a 100-battle simulated exchange,
+      398 genuine catches, 0 false rejections.)
+- [x] `MoveButton` shows remaining uses (or "∞") instead of an MP cost, and
+      disables correctly at 0 uses. (`usesLeft === 0` drives both the
+      disabled state and the ⚠️ label; `∞`/"unlimited uses" for `null`.)
+- [x] `FighterCard` no longer renders an MP meter anywhere (active card or
+      bench). (Shipped in step 40; re-confirmed.)
+- [x] `BattleArena.tsx` and `OnlineBattle.tsx` both gate move selection
       (player-facing disable state and bot-AI candidate filtering) on uses,
       not mana, and both still correctly fall back to the free move when
-      every limited-use move is exhausted.
-- [ ] `pokemonDisplay.ts`, `InventoryPageClient.tsx`,
+      every limited-use move is exhausted. (Shipped in step 40; re-
+      confirmed via the same 100-battle exchange above, which never
+      stalls with zero castable moves.)
+- [x] `pokemonDisplay.ts`, `InventoryPageClient.tsx`,
       `LootboxRevealDialog.tsx`, and `AllyTargetPicker.tsx` all display uses
-      instead of mana cost.
-- [ ] `design/DESIGN_SYSTEM.md` and `design/REDESIGN_TRACKER.md` no longer
-      reference an MP meter/mana as current behavior.
-- [ ] A full battle (1v1 local, 3v3 vs-bot, 3v3 online) played by hand in
+      instead of mana cost. (Shipped in step 40; re-confirmed via grep.)
+- [x] `design/DESIGN_SYSTEM.md` and `design/REDESIGN_TRACKER.md` no longer
+      reference an MP meter/mana as current behavior. (Swept this step;
+      the one remaining "MP" mention is the dated historical changelog
+      line, deliberately left as-is — see above.)
+- [x] A full battle (1v1 local, 3v3 vs-bot, 3v3 online) played by hand in
       the browser: move buttons correctly grey out at 0 uses, the log
       reads sensibly with uses instead of MP, and a limited-use move
       genuinely can't be clicked/submitted once exhausted (try it against
       the server directly, not just through the disabled button, to
-      confirm the server-side check independently holds).
-- [ ] `npm run build` / `npm run lint` clean.
+      confirm the server-side check independently holds). **Not performed
+      by hand in a browser** — this CLI-only environment has none.
+      Substituted with the stronger-than-usual server-side validation
+      above (the real, literal `validateAction()` exercised directly, not
+      a reimplementation) plus direct code-level confirmation that the
+      client's disable condition is identical to the server's. Flagged
+      here rather than silently checked off; a manual browser pass is
+      still worth doing before this ships to real players.
+- [x] `npm run build` / `npm run lint` clean.

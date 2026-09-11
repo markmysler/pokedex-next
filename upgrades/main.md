@@ -1,6 +1,6 @@
 # Upgrade Path
 
-## The mana-to-uses migration (in progress — steps 40–42 shipped, 2026-09-11)
+## The mana-to-uses migration (in progress — steps 40–43 shipped, 2026-09-11)
 
 Sixth wave, requested 2026-08-19 right after the fifth wave's (full visual
 redesign, 10 steps + a same-day fix pass — see
@@ -33,7 +33,7 @@ wins stay their existing unconditional 100%, untouched).
 | 40 | Move data model rework (mana_cost → max_uses, mp/maxMp → per-move moveUses) | [40-uses-based-move-data-model.md](40-uses-based-move-data-model.md) | — | **Shipped** |
 | 41 | Balance patch: 3-damage + 1-support slot rolling | [41-move-slot-rebalance-3-damage-1-support.md](41-move-slot-rebalance-3-damage-1-support.md) | 40 | **Shipped** |
 | 42 | Battle engine: execute moves against uses, not mana | [42-battle-engine-uses-execution.md](42-battle-engine-uses-execution.md) | 40, 41 | **Shipped** |
-| 43 | Server validation + battle UI: uses instead of mana | [43-uses-ui-and-server-validation.md](43-uses-ui-and-server-validation.md) | 42 | Partially done (see step 40's "what actually happened") |
+| 43 | Server validation + battle UI: uses instead of mana | [43-uses-ui-and-server-validation.md](43-uses-ui-and-server-validation.md) | 42 | **Shipped** |
 | 44 | Starter movesets: 3-damage + 1-support, uses-based (trigger + backfill) | [44-starter-moveset-rework.md](44-starter-moveset-rework.md) | 40, 41 | Not started |
 | 45 | Balance patch: bot-battle lootbox rate 25% → 60% | [45-bot-battle-lootbox-rate-increase.md](45-bot-battle-lootbox-rate-increase.md) | — | Not started |
 | 46 | Backfill: every non-starter owned Pokemon to the new shape | [46-existing-instance-backfill.md](46-existing-instance-backfill.md) | 40, 41 | Not started |
@@ -136,6 +136,18 @@ full detail):
   bug — authoring deeper per-type damage pools would fix it but is a
   content decision outside any current step's scope. See step 41's own
   file for the full per-type table.
+- **The server's uses check (step 43) was validated without a browser** —
+  this environment has no GUI. Substituted with the real `validateAction()`
+  source extracted from the shipped route file (not a reimplementation)
+  exercised directly, plus a 100-battle simulated online-room exchange
+  using real `resolveTeamRound()` together with that same function (398
+  genuine over-limit attempts correctly caught, 0 legal moves wrongly
+  rejected). A manual browser pass is still worth doing before real
+  players see this. See step 43's file for the full accounting, including
+  a pre-existing (unrelated, out-of-scope) `resolveTeamRound` edge case
+  the validation harness surfaced: a simultaneous double-faint can leave
+  one side's `activeIndex` pointed at a fainted member for one extra beat,
+  since `awaitingForcedSwitch` can only track one side at a time.
 
 ## Working through a step
 

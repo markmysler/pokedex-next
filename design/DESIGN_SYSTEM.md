@@ -2,7 +2,7 @@
 
 Reference spec for the visual redesign. Full interactive mockups live in the artifacts linked from `REDESIGN_TRACKER.md`; this file is the implementation-ready token/behavior reference for whoever writes the CSS.
 
-**Direction**: warm, device-inspired neutrals (not the generic blue-purple dark-mode default) with one bold accent — Poké Red — and a segmented, Game Boy–style meter for HP/MP/stats instead of smooth gradient bars. Every panel wears a small overlapping "bezel tab" (icon chip + mono eyebrow label) instead of a generic rounded box with an inline icon. Mobile-first; desktop gets a fixed left rail, mobile gets a 5-item bottom tab bar instead of the current hamburger overlay.
+**Direction**: warm, device-inspired neutrals (not the generic blue-purple dark-mode default) with one bold accent — Poké Red — and a segmented, Game Boy–style meter for HP/stats instead of smooth gradient bars. Every panel wears a small overlapping "bezel tab" (icon chip + mono eyebrow label) instead of a generic rounded box with an inline icon. Mobile-first; desktop gets a fixed left rail, mobile gets a 5-item bottom tab bar instead of the current hamburger overlay.
 
 ## 1. Color tokens
 
@@ -31,9 +31,9 @@ Semantic (a **different** hue family from the accent, so "primary action" and "s
 | Token | Light | Dark | Meaning |
 |---|---|---|---|
 | `--good` | `#24875A` | `#3FDB8F` | win, caught, high HP |
-| `--warn` | `#A96A0E` | `#F0B93E` | pending, low mana |
+| `--warn` | `#A96A0E` | `#F0B93E` | pending, mid HP |
 | `--bad` | `#C24422` | `#FF8A5B` | loss, error, danger |
-| `--info` | `#2C69B8` | `#6FA6FF` | mana/MP, links |
+| `--info` | `#2C69B8` | `#6FA6FF` | drain moves, links |
 
 Type colors (18, categorical data — kept close to the current `lib/typeData.ts` values, nudged only where needed for AA contrast on a white chip): Normal `#A8A878`, Fire `#EE8130`, Water `#6390F0`, Grass `#7AC74C`, Electric `#F0C93C`, Ice `#7FD4CF`, Fighting `#C22E28`, Poison `#A33EA1`, Ground `#D6B44A`, Flying `#A890F0`, Psychic `#F95587`, Bug `#9DB026`, Rock `#B6A136`, Ghost `#735797`, Dragon `#6F35FC`, Dark `#6C5B52`, Steel `#8E8EA6`, Fairy `#D685AD`.
 
@@ -45,7 +45,7 @@ Three system-stack roles (no webfont dependency — this is a live product, not 
 
 - **Display** — `-apple-system, "Segoe UI Semibold", "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif`, weight 800, `letter-spacing: -0.01em`. Page titles, card titles, button labels.
 - **Body** — `-apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`, weight 400–600. Copy, form labels, list rows.
-- **Mono** — `"Cascadia Code", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace`, `font-variant-numeric: tabular-nums`. Anything that reads like a device readout: stat numbers, HP/MP, dex numbers, room codes, the battle log.
+- **Mono** — `"Cascadia Code", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace`, `font-variant-numeric: tabular-nums`. Anything that reads like a device readout: stat numbers, HP, move uses, dex numbers, room codes, the battle log.
 
 Scale: 34/22 display, 16/14 body, 12 caption, 13 mono-data. Headings get `text-wrap: balance`.
 
@@ -59,9 +59,17 @@ Scale: 34/22 display, 16/14 body, 12 caption, 13 mono-data. Headings get `text-w
 
 Every card gets a small pill overlapping its top-left edge: a 16–20px icon chip (solid accent or semantic color) + a mono, uppercase, letter-spaced eyebrow label, e.g. `📊 Base stats`. Replaces today's plain `<h3>📊 Base Stats</h3>` inline-emoji pattern everywhere: Pokédex/Inventory detail stat & moves panels, Dashboard cards, Friends/Trade panels, battle log header.
 
-## 5. Meters (HP / MP / base stats)
+## 5. Meters (HP / base stats)
 
-Segmented bar, not a smooth gradient fill: a 10-cell row (6 for the compact bench-member size, where 9-12 read as illegible slivers at that width), each cell independently lit or unlit, colored per context (`--good`/`--warn`/`--bad` shifting as HP drops, `--info` for MP). Numeric readout in mono type to the right, tabular-nums. Applies to: Pokédex/Inventory stat blocks, Lootbox reveal, FighterCard HP/MP (active + compact bench sizes), AllyTargetPicker.
+Segmented bar, not a smooth gradient fill: a 10-cell row (6 for the compact bench-member size, where 9-12 read as illegible slivers at that width), each cell independently lit or unlit, colored per context (`--good`/`--warn`/`--bad` shifting as HP drops). Numeric readout in mono type to the right, tabular-nums. Applies to: Pokédex/Inventory stat blocks, Lootbox reveal, FighterCard HP (active + compact bench sizes), AllyTargetPicker.
+
+**No more MP meter** (`upgrades/40-uses-based-move-data-model.md`): battles
+moved from a shared, regenerating mana pool to a per-move per-battle uses
+cap, so there's no single aggregate resource left to show a meter for.
+`FighterCard` and `AllyTargetPicker` both dropped their MP `SegmentedMeter`
+row entirely; a move's own remaining uses render as text on its
+`MoveButton` instead (§6 below), the same "each control shows its own
+cost" pattern MP previously followed at the per-move level anyway.
 
 **Deviation from the original spec**: base-stat rows (Pokédex/Inventory/Lootbox reveal) keep the pre-existing fixed per-stat palette (HP/Atk/Def/Sp.Atk/Sp.Def/Speed each their own color — the standard "stat radar" convention) rather than the Pokémon's type color as first specified — that data was already wired this way before the redesign, reads correctly regardless of which two types a Pokémon has, and matches the mental model every other Pokémon game's stat screen already uses. Changing it would have been a data/behavior change disguised as a restyle, out of scope for a visual wave.
 
@@ -71,7 +79,7 @@ Segmented bar, not a smooth gradient fill: a 10-cell row (6 for the compact benc
 - **Inputs** — 1.5px border, `--r-md`, accent focus ring (`box-shadow` halo, not just outline color).
 - **Type chips** — unchanged concept from today (pill, white text, type color fill), refined for contrast.
 - **Status chips** (battle) — same semantic palette as tokens above: bleed/blind/poison/burn/freeze keep distinct saturated hues; buff/debuff/shield/redirect map onto good/bad/info/warn respectively (see Battle cluster mockup for the full set).
-- **Move buttons** — damage moves keep type-color fill (data channel); buff/debuff/drain/redirect moves use semantic color + icon instead, so "what element" and "what kind of move" never compete for the same hue. Shipped as a two-line layout — name in display type, power/effect + MP cost in mono underneath, with a subtle top-highlight sheen — rather than one packed single-line label.
+- **Move buttons** — damage moves keep type-color fill (data channel); buff/debuff/drain/redirect moves use semantic color + icon instead, so "what element" and "what kind of move" never compete for the same hue. Shipped as a two-line layout — name in display type, power/effect + remaining uses (e.g. `2/3 uses`, or `unlimited uses` for the guaranteed free move) in mono underneath, with a subtle top-highlight sheen — rather than one packed single-line label. Showed MP cost in the same spot before `upgrades/40-uses-based-move-data-model.md` retired the mana pool.
 - **Navigation** — desktop: fixed 220px left rail, unchanged link set, active state = solid accent pill. Mobile (< 900px): bottom tab bar, 5 primary destinations (Dashboard/Inventory/Pokédex/Battle/More) + a "More" sheet holding Online, Friends, Notifications, History, Leaderboard, Profile — replaces the current slide-over hamburger, which doesn't fit a 10-item menu well at phone width.
 - **Modal / Toast** — same overlay + centered panel model as today's `Modal.tsx`/`Toast.tsx`, restyled onto the new radius/shadow/color tokens. Toast card sizes to its content (no stretch) and anchors bottom-right. No new library.
 - **Battle log** (bot + online) — background `--surface-3`, text `--ink`, so it's dark-screen/light-text in dark mode and flips to light-screen/dark-text in light mode, same as every other panel — it must **not** be hardcoded to a fixed dark terminal color, or it goes illegible (light-on-light) once the app is in dark theme. Each entry renders as its own line (`lib/battleEngine.ts`'s `classifyLogLine`), with victory lines in `--good`, defeat lines in `--bad`, and hit/effectiveness lines (`Normal Hit`, `SUPER EFFECTIVE!`, `Not very effective`, `NO EFFECT`) in `--accent-2` — fixed highlight colors in both themes, not theme-flipping surface colors, same convention as `.shiny-badge`.
