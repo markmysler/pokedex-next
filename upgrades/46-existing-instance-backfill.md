@@ -1,6 +1,6 @@
 # Step 46: Backfill — every non-starter owned Pokemon to 3 damage + 1 support, uses-based
 
-**Status: not started.** See `main.md`'s "The mana-to-uses migration"
+**Status: shipped.** See `main.md`'s "The mana-to-uses migration"
 section for the full context and dependency chain, and the "all existing
 Pokemon are in scope" key decision (this wave has **no** "leave existing
 instances alone" default — unlike `archive/v4/29-...md`, that question was
@@ -72,22 +72,83 @@ against the Supabase secret key.
 - Instance stats (hp/atk/def/spatk/spdef/spd/total) — untouched, this is a
   moveset-only migration.
 
+## What actually happened
+
+Matched the plan's mechanism exactly: a throwaway scratchpad script (not
+committed), transpiled from the real `lib/collection.ts`/`lib/data/
+movePool.ts`/`lib/pokedex.ts` via the same tsc-transpile-and-run technique
+used throughout this wave, run against the Supabase secret key.
+
+**Dry run found 48 non-starter rows**, all still on the old 2-damage+2-
+support/`mana_cost` shape (0 already migrated), spanning 37 distinct
+species. The "keep support slot 3, drop slot 4" rule from the plan was
+implemented as: sort the row's 2 support moves by their original array
+index, keep the lower one, drop the higher — deterministic, matches the
+plan's own wording exactly.
+
+**A finding beyond the plan's original scope:** the value-rescale step
+("looked up by name against the updated catalog, not re-derived from
+scratch") means every kept move gets its whole object replaced by the
+catalog's *current* definition for that name, not just its `mana_cost`
+key renamed in place. This turned out to matter beyond just `max_uses`:
+7 of the 48 rows carried one of the 5 support moves whose *effect* was
+reassigned during step 40 (`Charge`, `Mana Burn`, `Mind Sap`, `Mind
+Siphon`, `Energy Drain`) — and all 7 still had the literal stale
+pre-reassignment effect data persisted in their `moves` JSONB (e.g. a
+`Mind Siphon` row reading `drain.resource: "mp"`, a resource that no
+longer exists anywhere in the engine). This was a real dangling-data bug
+introduced by step 40 (which only updated the *catalog*, not already-
+persisted instances) that nothing in the original plan had flagged. The
+catalog-lookup-by-name rescale mechanism fixes it automatically as a
+side effect, for every affected row, whether the move ended up kept or
+dropped — confirmed by re-checking the computed plan before writing (0
+of the 7 retained stale data) and, for a stricter guarantee, in a
+follow-up query after the write.
+
+**The 3rd damage move was rolled by calling the real, unmodified
+`rollMoveset()`** (not a reimplementation, not an exported-just-for-this
+helper) with the row's own species `type1`/`type2`, taking the first
+`kind: "damage"` entry in its 3-damage output not already present in the
+row's final name set (retrying the whole call, up to 20 times, on the
+rare case all 3 collide) — this reuses the exact same 85%-own-type
+weighting every other roll in the game uses, with no duplicate code path.
+
+**Presented the exact count (48) and 5 sample before/after diffs to the
+user** before writing anything, per this step's own required process
+(mirroring step 44's); got explicit go-ahead specifically for the
+production write. Applied via individual `update()` calls per row (no
+batch/bulk endpoint needed at this volume): 48 succeeded, 0 failed.
+Re-ran the dry-run query afterward: 0 rows remain on the old shape, 48/48
+on the new one.
+
+**Battle spot-check**: fetched 6 of the freshly migrated rows and ran them
+through the real `buildFighterState()`/`resolveRound()`/`resolveTeamRound()`
+— 5 1v1 pairings to exhaustion (0 crashes, 3 with a move genuinely
+depleted mid-battle) plus one 3v3 (21 rounds, completed cleanly). Every
+fighter's free move (the dynamically-computed weakest damage move)
+confirmed never depleted across all pairings. `npm run build` / `npm run
+lint` clean (no source files changed this step — data-only migration).
+
 ## End state
 
-- [ ] Dry-run script counts every non-starter `pokemon_instances` row and
+- [x] Dry-run script counts every non-starter `pokemon_instances` row and
       confirms the pre-migration shape (2 damage + 2 support, `mana_cost`
-      keyed) for all of them before any write happens.
-- [ ] Exact count and change plan presented to the user; explicit
+      keyed) for all of them before any write happens. (48 rows, 100%
+      matching the expected shape.)
+- [x] Exact count and change plan presented to the user; explicit
       go-ahead obtained for the production write before executing.
-- [ ] Every non-starter row migrated to 3 damage + 1 support, `max_uses`
+- [x] Every non-starter row migrated to 3 damage + 1 support, `max_uses`
       keyed, with the 2 kept-as-is damage moves and 1 kept-as-is support
       move unchanged in name/effect (only their `max_uses` value changes),
       and the 2 newly-added/removed slots filled per the rules above.
-- [ ] Re-run of the dry-run query post-migration finds 0 remaining
-      candidates.
-- [ ] A handful of migrated instances spot-checked in a real battle
+      (Also fixed 7 rows' stale mp-effect data as a side effect of the
+      catalog-lookup rescale — see "What actually happened".)
+- [x] Re-run of the dry-run query post-migration finds 0 remaining
+      candidates. (0/48 on the old shape, 48/48 on the new shape.)
+- [x] A handful of migrated instances spot-checked in a real battle
       (1v1 and 3v3) play correctly — all 4 moves castable per their uses,
-      free move never runs out.
-- [ ] `main.md`'s step table updated to mark shipped steps once this and
+      free move never runs out. (6 real migrated instances, 5 1v1 + 1
+      3v3, 0 crashes, free move never depleted in any pairing.)
+- [x] `main.md`'s step table updated to mark shipped steps once this and
       the rest of the wave's checks pass.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.

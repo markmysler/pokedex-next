@@ -1,6 +1,6 @@
 # Upgrade Path
 
-## The mana-to-uses migration (in progress — steps 40–45 shipped, 2026-09-11)
+## The mana-to-uses migration (in progress — steps 40–46 shipped, 2026-09-11)
 
 Sixth wave, requested 2026-08-19 right after the fifth wave's (full visual
 redesign, 10 steps + a same-day fix pass — see
@@ -36,7 +36,7 @@ wins stay their existing unconditional 100%, untouched).
 | 43 | Server validation + battle UI: uses instead of mana | [43-uses-ui-and-server-validation.md](43-uses-ui-and-server-validation.md) | 42 | **Shipped** |
 | 44 | Starter movesets: 3-damage + 1-support, uses-based (trigger + backfill) | [44-starter-moveset-rework.md](44-starter-moveset-rework.md) | 40, 41 | **Shipped** |
 | 45 | Balance patch: bot-battle lootbox rate 25% → 60% | [45-bot-battle-lootbox-rate-increase.md](45-bot-battle-lootbox-rate-increase.md) | — | **Shipped** |
-| 46 | Backfill: every non-starter owned Pokemon to the new shape | [46-existing-instance-backfill.md](46-existing-instance-backfill.md) | 40, 41 | Not started |
+| 46 | Backfill: every non-starter owned Pokemon to the new shape | [46-existing-instance-backfill.md](46-existing-instance-backfill.md) | 40, 41 | **Shipped** |
 | 47 | Docs pass + roster-wide validation | [47-docs-and-roster-validation.md](47-docs-and-roster-validation.md) | 42, 43, 44, 46 | Not started |
 
 ## Why this order
@@ -170,6 +170,20 @@ full detail):
   (`FighterCard.tsx`'s "Blinded: 25% chance to miss" tooltip) is an
   unrelated status-effect constant (`BLIND_MISS_CHANCE`) and was correctly
   left untouched — see step 45's own file.
+- **Step 46 uncovered a real dangling-data bug step 40 had left behind**:
+  since step 40 only rewrote the *catalog* definitions of `Charge`/`Mana
+  Burn`/`Mind Sap`/`Mind Siphon`/`Energy Drain` (their effects reassigned
+  off the deleted mp pool), any already-owned Pokemon that had rolled one
+  of those 5 moves before that step shipped still carried the literal
+  stale effect shape (`restoreMana`/`drainMana`/`resource: "mp"`) frozen
+  in its persisted `pokemon_instances.moves` JSONB — 7 of the 48 non-
+  starter rows, confirmed. Step 46's own rescale mechanism (replace each
+  kept move wholesale via a catalog lookup by name, not just rename its
+  cost field) fixed all 7 as a side effect, with no extra step needed.
+  Starter rows never had this problem (step 44 replaced their whole
+  moveset, including any of these 5, outright). Worth keeping in mind for
+  any *future* catalog-effect reassignment: a catalog-only fix doesn't
+  reach data rolled before it shipped.
 - **A pre-existing `resolveTeamRound` softlock, found by step 43's own
   validation and fixed the same day (2026-09-11), separately from this
   migration's own step numbering:** a simultaneous double-faint (both
