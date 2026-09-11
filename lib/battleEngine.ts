@@ -224,6 +224,18 @@ function moveHeader(casterName: string, move: Move, costStr: string): string {
   return `• ${casterName} used [${move.name}] (${detail} | ${costStr})!`;
 }
 
+// Locates `move`'s slot in the caster's own moveset so its moveUses entry
+// can be read/decremented -- every call site threads the literal element
+// from pokemon.moves through (resolveTeamRound's action.moveIndex lookup,
+// resolveRound's move1/move2 params, both ultimately `pokemon.moves[i]`),
+// so reference equality reliably finds the right index without needing to
+// additionally thread an explicit index through resolveAttack/resolveRound/
+// resolveTeamRound's own signatures (upgrades/42-battle-engine-uses
+// -execution.md's own suggested alternative to this).
+function findMoveIndex(pokemon: FighterState["pokemon"], move: Move): number {
+  return pokemon.moves.indexOf(move);
+}
+
 // Mutates attacker/defender state in place. Damage math is byte-for-byte
 // what it was before step 21; the only new thing on a landed damage hit is
 // rolling for status inflict (upgrades/10) and shield absorption
@@ -231,13 +243,14 @@ function moveHeader(casterName: string, move: Move, costStr: string): string {
 // buffs-and-debuffs.md; drain added in upgrades/25-battle-engine-drain-
 // moves.md; redirect added in upgrades/26-battle-engine-redirect-self.md.
 //
-// TODO(upgrades/42-battle-engine-uses-execution.md): this no longer spends
-// anything -- mana_cost/mp were removed in upgrades/40-uses-based-move-
-// data-model.md, and decrementing the caster's moveUses entry for `move`
-// (and rejecting a call once it hits 0) is explicitly step 42's scope, not
-// step 40's (see that step's "what does NOT change" section). Until 42
-// lands, every move is effectively unlimited-use at execution time, same
-// as step 21 left damage execution unchanged while only the types moved.
+// Uses are spent regardless of whether the move connects (upgrades/42
+// -battle-engine-uses-execution.md) -- dodging/blinded-flailing still means
+// the move was cast, same "cost is always paid" rule mana followed before
+// it was removed in upgrades/40-uses-based-move-data-model.md. A move whose
+// uses are already 0 should never reach here -- the caller (step 43's
+// job) is responsible for only offering castable moves -- but this throws
+// rather than silently allowing an over-limit cast, same defensive-invariant
+// spirit as step 21's assertDamageMove().
 export function executeMove(
   attackerState: FighterState,
   defenderState: FighterState,
@@ -246,7 +259,18 @@ export function executeMove(
 ): MoveResult {
   const attacker = attackerState.pokemon;
   const defender = defenderState.pokemon;
-  const costStr = move.max_uses === null ? "unlimited uses" : `max ${move.max_uses} uses`;
+
+  const moveIndex = findMoveIndex(attacker, move);
+  const usesLeft = moveIndex === -1 ? null : attackerState.moveUses[moveIndex];
+  if (usesLeft === 0) {
+    throw new Error(`executeMove: ${attacker.name} has no uses left for ${move.name} -- caller should not have offered it`);
+  }
+  if (moveIndex !== -1 && usesLeft !== null) {
+    attackerState.moveUses[moveIndex] = usesLeft - 1;
+  }
+
+  const remaining = moveIndex === -1 ? null : attackerState.moveUses[moveIndex];
+  const costStr = move.max_uses === null ? "unlimited uses" : `${remaining}/${move.max_uses} uses left`;
   const header = moveHeader(attacker.name, move, costStr);
 
   if (opts?.forceMiss) {

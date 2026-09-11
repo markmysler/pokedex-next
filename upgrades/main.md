@@ -1,6 +1,6 @@
 # Upgrade Path
 
-## The mana-to-uses migration (in progress — steps 40–41 shipped, 2026-09-11)
+## The mana-to-uses migration (in progress — steps 40–42 shipped, 2026-09-11)
 
 Sixth wave, requested 2026-08-19 right after the fifth wave's (full visual
 redesign, 10 steps + a same-day fix pass — see
@@ -32,7 +32,7 @@ wins stay their existing unconditional 100%, untouched).
 |---|------|------|------------|--------|
 | 40 | Move data model rework (mana_cost → max_uses, mp/maxMp → per-move moveUses) | [40-uses-based-move-data-model.md](40-uses-based-move-data-model.md) | — | **Shipped** |
 | 41 | Balance patch: 3-damage + 1-support slot rolling | [41-move-slot-rebalance-3-damage-1-support.md](41-move-slot-rebalance-3-damage-1-support.md) | 40 | **Shipped** |
-| 42 | Battle engine: execute moves against uses, not mana | [42-battle-engine-uses-execution.md](42-battle-engine-uses-execution.md) | 40, 41 | Partially done (see step 40's "what actually happened") |
+| 42 | Battle engine: execute moves against uses, not mana | [42-battle-engine-uses-execution.md](42-battle-engine-uses-execution.md) | 40, 41 | **Shipped** |
 | 43 | Server validation + battle UI: uses instead of mana | [43-uses-ui-and-server-validation.md](43-uses-ui-and-server-validation.md) | 42 | Partially done (see step 40's "what actually happened") |
 | 44 | Starter movesets: 3-damage + 1-support, uses-based (trigger + backfill) | [44-starter-moveset-rework.md](44-starter-moveset-rework.md) | 40, 41 | Not started |
 | 45 | Balance patch: bot-battle lootbox rate 25% → 60% | [45-bot-battle-lootbox-rate-increase.md](45-bot-battle-lootbox-rate-increase.md) | — | Not started |
