@@ -56,7 +56,7 @@ async function recordBattleEnd(
   const loserTeam = winner === 1 ? team2 : team1;
 
   // Winner gets a lootbox every time (100%, unconditional — unlike bot
-  // battles' 25% roll). Both players get a match_results row so each
+  // battles' 60% roll). Both players get a match_results row so each
   // account's own history/dashboard reflects the result. The inserted row's
   // id is returned so the winner's result dialog can offer "Open it now"
   // (upgrades/04-lootbox-opening.md) directly on this exact lootbox.

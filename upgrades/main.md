@@ -1,6 +1,6 @@
 # Upgrade Path
 
-## The mana-to-uses migration (in progress — steps 40–43 shipped, step 44 code-complete pending deploy, 2026-09-11)
+## The mana-to-uses migration (in progress — steps 40–45 shipped, 2026-09-11)
 
 Sixth wave, requested 2026-08-19 right after the fifth wave's (full visual
 redesign, 10 steps + a same-day fix pass — see
@@ -34,8 +34,8 @@ wins stay their existing unconditional 100%, untouched).
 | 41 | Balance patch: 3-damage + 1-support slot rolling | [41-move-slot-rebalance-3-damage-1-support.md](41-move-slot-rebalance-3-damage-1-support.md) | 40 | **Shipped** |
 | 42 | Battle engine: execute moves against uses, not mana | [42-battle-engine-uses-execution.md](42-battle-engine-uses-execution.md) | 40, 41 | **Shipped** |
 | 43 | Server validation + battle UI: uses instead of mana | [43-uses-ui-and-server-validation.md](43-uses-ui-and-server-validation.md) | 42 | **Shipped** |
-| 44 | Starter movesets: 3-damage + 1-support, uses-based (trigger + backfill) | [44-starter-moveset-rework.md](44-starter-moveset-rework.md) | 40, 41 | Code complete, **pending deploy** (applies on next `main` push) |
-| 45 | Balance patch: bot-battle lootbox rate 25% → 60% | [45-bot-battle-lootbox-rate-increase.md](45-bot-battle-lootbox-rate-increase.md) | — | Not started |
+| 44 | Starter movesets: 3-damage + 1-support, uses-based (trigger + backfill) | [44-starter-moveset-rework.md](44-starter-moveset-rework.md) | 40, 41 | **Shipped** |
+| 45 | Balance patch: bot-battle lootbox rate 25% → 60% | [45-bot-battle-lootbox-rate-increase.md](45-bot-battle-lootbox-rate-increase.md) | — | **Shipped** |
 | 46 | Backfill: every non-starter owned Pokemon to the new shape | [46-existing-instance-backfill.md](46-existing-instance-backfill.md) | 40, 41 | Not started |
 | 47 | Docs pass + roster-wide validation | [47-docs-and-roster-validation.md](47-docs-and-roster-validation.md) | 42, 43, 44, 46 | Not started |
 
@@ -158,6 +158,18 @@ full detail):
   end state here, not a shortfall — don't try to work around it with an
   ad hoc REST-API equivalent for just the reachable half of a migration
   (tried once, correctly pushed back on — see step 44's own file).
+  Confirmed working end-to-end once `main` was actually pushed: a
+  follow-up dry-run read found all 21 starter rows migrated (0 remaining
+  on the old shape) and a real test signup received the new trigger's
+  starter kit correctly — see step 44's updated "What actually happened".
+- **Step 45's own scope grew slightly on discovery** — a sweep for stray
+  "25%" mentions beyond the two files the step's plan explicitly named
+  turned up three more prose comments plus one real player-facing string
+  (`WelcomeDialog.tsx`'s onboarding copy) still quoting the old bot-battle
+  rate. All fixed in the same step rather than left stale. A fifth match
+  (`FighterCard.tsx`'s "Blinded: 25% chance to miss" tooltip) is an
+  unrelated status-effect constant (`BLIND_MISS_CHANCE`) and was correctly
+  left untouched — see step 45's own file.
 - **A pre-existing `resolveTeamRound` softlock, found by step 43's own
   validation and fixed the same day (2026-09-11), separately from this
   migration's own step numbering:** a simultaneous double-faint (both

@@ -52,7 +52,7 @@ function startLog(battle: LocalBattleState): string[] {
 }
 
 // Returns whether a lootbox was actually granted (server-rolled — see
-// app/api/battles/bot-result/route.ts's 25% chance) and its id, so the
+// app/api/battles/bot-result/route.ts's 60% chance) and its id, so the
 // result dialog can say so truthfully instead of assuming "won = lootbox,"
 // and its "Open it now" (upgrades/04-lootbox-opening.md) can target this
 // exact lootbox.

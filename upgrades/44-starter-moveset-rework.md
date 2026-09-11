@@ -1,18 +1,12 @@
 # Step 44: Starter movesets — 3 damage + 1 support, uses-based
 
-**Status: code complete, pending deploy.** The migration file is written
-and validated as far as possible without applying it (see "What actually
-happened" below); its actual effect on the live database is deferred to
-the next push of `main` to GitHub, per this project's deploy model
-(confirmed with the user directly: "when the main branch is published to
-github the migrations are run automatically" — `supabase/config.toml`'s
-own comment already hinted at this: "not required for the GitHub
-integration to apply migrations"). This session was explicitly asked not
-to push, so the dry-run-confirmed 21 existing starter rows and the
-`handle_new_user()` trigger both remain on the old shape in production
-until that next deploy — not because anything failed, but by design. See
-`main.md`'s "The mana-to-uses migration" section for the full context and
-dependency chain, and the "Starters are in scope this time" key decision.
+**Status: shipped.** `main` was pushed and the GitHub integration applied
+the migration to production. Verified directly afterward: all 21 existing
+`is_starter = true` rows are now on the new `max_uses` shape (0 remain on
+the old `mana_cost` shape), and a fresh test signup (created and deleted
+via the service key) received the correct new kit from `handle_new_user()`
+for all three starters — see "What actually happened" below for the full
+verification.
 
 ## Why here
 
@@ -172,14 +166,14 @@ clean.
       `is_starter = true`, broken down by `pokemon_number` — presented to
       the user before any write was attempted, same dry-run-then-confirm
       process `archive/v4/29-...md` used. (21 rows: 7/7/7.)
-- [ ] Backfill applied; a follow-up read confirms 0 starter rows remain on
-      the old 4-damage/0-support, mana_cost-keyed shape. **Deferred to the
-      next `main` push** (this project's migrations apply via the GitHub
-      integration on push, confirmed with the user; this session was
-      asked not to push) — not applied in this session by design. Re-run
-      the dry-run query after the next deploy to confirm 0 remaining
-      old-shape rows.
-- [ ] A fresh signup (new test account, deleted after) receives the new
-      starter kit correctly from `handle_new_user()`. **Also deferred** —
-      the trigger isn't live in production until the same deploy.
+- [x] Backfill applied; a follow-up read confirms 0 starter rows remain on
+      the old 4-damage/0-support, mana_cost-keyed shape. Re-ran the same
+      dry-run query after `main` was pushed and deployed: 21/21 rows now
+      on the new `max_uses` shape, 0 on the old shape.
+- [x] A fresh signup (new test account, deleted after) receives the new
+      starter kit correctly from `handle_new_user()`. Verified directly:
+      created a real test account via the service key, confirmed all 3
+      starter rows (004/007/001) were granted with the correct 3-damage +
+      1-support `max_uses`-keyed moves, then deleted the account (cascade
+      cleanup confirmed, 0 leftover rows).
 - [x] `npm run build` / `npm run lint` clean.

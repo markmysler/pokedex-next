@@ -48,7 +48,7 @@ export default function WelcomeDialog() {
           <li>
             🏆 <strong>Winning battles</strong> earns more Lootboxes: an
             online win against a real player always drops one, a bot battle
-            win has a 25% chance.
+            win has a 60% chance.
           </li>
           <li>
             🔥 <strong>Trade Up</strong>, in your Inventory, lets you burn 5

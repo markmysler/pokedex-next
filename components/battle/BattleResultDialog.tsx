@@ -4,7 +4,7 @@ import Modal from "@/components/ui/Modal";
 
 interface BattleResultDialogProps {
   won: boolean;
-  // Truthful, not assumed — bot wins are only a 25% roll, so this is always
+  // Truthful, not assumed — bot wins are only a 60% roll, so this is always
   // read from what the server actually granted, never inferred from `won`
   // alone. Ignored entirely on a loss: losers never get one, in either mode.
   lootboxGranted: boolean;

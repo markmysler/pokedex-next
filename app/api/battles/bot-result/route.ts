@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import type { Json } from "@/types/supabase";
 
-const LOOTBOX_DROP_CHANCE = 0.25;
+const LOOTBOX_DROP_CHANCE = 0.6;
 
 interface TeamSnapshotEntry {
   number: string;
@@ -18,7 +18,7 @@ function isTeamSnapshot(value: unknown): value is TeamSnapshotEntry[] {
 }
 
 // Called once after every local (vs bot) battle ends — the client only ever
-// reports whether it won, never whether a lootbox should drop. The 25%
+// reports whether it won, never whether a lootbox should drop. The 60%
 // chance is rolled here, server-side, so it can't be forced from the client.
 export async function POST(request: Request) {
   const user = await getCurrentUser();
