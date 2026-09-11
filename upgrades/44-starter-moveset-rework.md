@@ -1,8 +1,18 @@
 # Step 44: Starter movesets — 3 damage + 1 support, uses-based
 
-**Status: not started.** See `main.md`'s "The mana-to-uses migration"
-section for the full context and dependency chain, and the "Starters are
-in scope this time" key decision.
+**Status: code complete, pending deploy.** The migration file is written
+and validated as far as possible without applying it (see "What actually
+happened" below); its actual effect on the live database is deferred to
+the next push of `main` to GitHub, per this project's deploy model
+(confirmed with the user directly: "when the main branch is published to
+github the migrations are run automatically" — `supabase/config.toml`'s
+own comment already hinted at this: "not required for the GitHub
+integration to apply migrations"). This session was explicitly asked not
+to push, so the dry-run-confirmed 21 existing starter rows and the
+`handle_new_user()` trigger both remain on the old shape in production
+until that next deploy — not because anything failed, but by design. See
+`main.md`'s "The mana-to-uses migration" section for the full context and
+dependency chain, and the "Starters are in scope this time" key decision.
 
 ## Why here
 
@@ -71,8 +81,7 @@ move with the lowest `power` gets treated as unlimited per step 40/42's
 free-move rule automatically, no special-casing needed for starters beyond
 picking which one to keep.)
 
-### `handle_new_user()` (new migration, e.g.
-`supabase/migrations/<timestamp>_starter_uses_rebalance.sql`)
+### `handle_new_user()` (`supabase/migrations/20260911000000_starter_uses_rebalance.sql`)
 
 Redefine the function with the new 4-move JSON per starter (now including
 `max_uses` instead of `mana_cost`, and the new support move) — same
@@ -95,18 +104,82 @@ cleaner.
 - The lootbox-grant-on-signup mechanic itself (`insert into lootboxes`) —
   untouched, only the `pokemon_instances` insert values change.
 
+## What actually happened
+
+Picked exactly the kits proposed above (no changes during implementation):
+Charmander keeps Scratch/Flamethrower/Fire Blast + adds Inferno Curse
+(Fire debuff — the only Fire-typed support move in the whole pool, a clean
+match); Squirtle keeps Tackle/Bubble Beam/Hydro Pump + adds Barrier
+(Psychic shield — the support pool has no Water-typed move at all, a
+pre-existing gap, same shallow-pool characteristic step 41's own file
+documents for several damage types); Bulbasaur keeps Tackle/Razor
+Leaf/Solar Beam + adds Cotton Guard (Grass def buff — Giga Drain was also
+Grass-typed and available, but Cotton Guard was picked for genuine kit
+variety over a second damage-dealing move). Every `max_uses` value is
+copied directly from the move's existing catalog entry, no starter-
+specific rescaling.
+
+**Dry run against production** (read-only, via the service key): 21
+`pokemon_instances` rows have `is_starter = true` — 7 Charmander, 7
+Squirtle, 7 Bulbasaur, across the 7 real accounts remaining after the
+earlier test-account cleanup (6 from that cleanup + 1 legitimate new
+signup, `nanni@gmail.com`, confirmed real by inspection — not a stray
+found mid-step). All 21 confirmed still on the old
+4-damage/`mana_cost`-keyed shape.
+
+**How this migration actually reaches production, confirmed with the
+user directly rather than assumed:** this project has no linked Supabase
+CLI session, no direct Postgres connection string, and no generic
+SQL-execution RPC in its migration history — so there was no way to run
+`create or replace function` (DDL) from this session even if a production
+write had been wanted here. Initially proposed doing the *backfill* half
+(a plain `UPDATE`, achievable via the REST API without DDL) as a
+standalone write; the user correctly pushed back — a migration file
+that already includes both halves should be applied as one real
+migration, not split into a hand-run workaround for the part that
+happens to be REST-reachable. Resolution: this project's migrations apply
+automatically when `main` is pushed to GitHub (`supabase/config.toml`'s
+own comment already hinted at this: "not required for the GitHub
+integration to apply migrations"; the user confirmed it directly). Since
+this session was explicitly told not to push, **the actual production
+application of this migration — both the trigger redefinition and the
+backfill — is deferred to the next deploy**, not performed here. This is
+a deliberate consequence of the no-push constraint, not a shortfall in
+the step's own implementation.
+
+**Validation performed without applying anything:** every embedded moves
+JSON blob (all 6 — 3 in `handle_new_user()`, 3 in the backfill `case`)
+extracted from the real migration file and confirmed to parse as valid
+JSON, exactly 4 moves, exactly 3 damage + 1 support, every move carrying
+`max_uses` and none carrying `mana_cost`. The exact same extracted
+movesets run through the real `buildFighterState()`: each starter's
+correct free move confirmed (Charmander/Squirtle/Bulbasaur's respective
+weakest surviving damage move — Scratch/Tackle/Tackle — each gets `null`;
+every other move's `moveUses` matches its catalog `max_uses` exactly). 100
+scripted battles using these exact kits (60 1v1 via `resolveRound`, 40
+all-starter 3v3 via `resolveTeamRound`) — 0 crashes, 29 with a starter's
+move genuinely exhausted mid-battle. `npm run build` / `npm run lint`
+clean.
+
 ## End state
 
-- [ ] `handle_new_user()` grants each starter with 3 damage + 1 support
+- [x] `handle_new_user()` grants each starter with 3 damage + 1 support
       moves, all carrying `max_uses` (no `mana_cost` field remains
-      anywhere in the function body).
-- [ ] A dry-run query against production (read-only, via the service key)
+      anywhere in the function body). (Verified by direct extraction +
+      JSON-shape validation of the actual migration file.)
+- [x] A dry-run query against production (read-only, via the service key)
       counts exactly how many existing `pokemon_instances` rows have
       `is_starter = true`, broken down by `pokemon_number` — presented to
-      the user before the backfill statement runs for real, same
-      dry-run-then-confirm process `archive/v4/29-...md` used.
+      the user before any write was attempted, same dry-run-then-confirm
+      process `archive/v4/29-...md` used. (21 rows: 7/7/7.)
 - [ ] Backfill applied; a follow-up read confirms 0 starter rows remain on
-      the old 4-damage/0-support, mana_cost-keyed shape.
+      the old 4-damage/0-support, mana_cost-keyed shape. **Deferred to the
+      next `main` push** (this project's migrations apply via the GitHub
+      integration on push, confirmed with the user; this session was
+      asked not to push) — not applied in this session by design. Re-run
+      the dry-run query after the next deploy to confirm 0 remaining
+      old-shape rows.
 - [ ] A fresh signup (new test account, deleted after) receives the new
-      starter kit correctly from `handle_new_user()`.
-- [ ] `npm run build` / `npm run lint` clean.
+      starter kit correctly from `handle_new_user()`. **Also deferred** —
+      the trigger isn't live in production until the same deploy.
+- [x] `npm run build` / `npm run lint` clean.
