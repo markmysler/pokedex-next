@@ -96,13 +96,51 @@ already uses.
 {normal|shiny}.gif` — 12 new files needed (normal + shiny for each of the 6
 species): `umbreon`, `houndour`, `houndoom`, `larvitar`, `pupitar`,
 `tyranitar` (all single-word names, no hyphenation edge cases like
-`mr-mime`/`nidoran-f`/`farfetchd` needed). Sourcing and adding these is real
-external asset work (finding good-quality animated gifs matching the
-existing sprite set's style/resolution), not something to solve from the
-codebase alone — treat as its own concrete sub-task when this step is
-actually implemented, with a fallback already in place (`Sprite.tsx` renders
-a "[No Image]" placeholder on load failure, so a missing file degrades
-gracefully rather than breaking the page).
+`mr-mime`/`nidoran-f`/`farfetchd` needed). A fallback is already in place
+(`Sprite.tsx` renders a "[No Image]" placeholder on load failure), so a
+missing file degrades gracefully rather than breaking the page — but the
+real files should still be sourced as part of this step, not left as a gap.
+
+**Source, confirmed with the user — the exact same source the existing 151
+species' sprites came from**: PokémonDB's animated Black/White sprites,
+`https://img.pokemondb.net/sprites/black-white/anim/{normal|shiny}/
+{name}.gif`, lowercase species name. The user provided the original Python
+download script used for the existing roster; reproduced below trimmed to
+this step's 6-species list and pointed at `public/images/` directly
+(same URL pattern and `{name}_{normal|shiny}.gif` output naming as the
+original, which already matches `Sprite.tsx`'s expected convention exactly
+— no rename step needed):
+
+```python
+import os
+import requests
+
+carpeta_destino = "public/images"  # this project's actual sprite folder
+os.makedirs(carpeta_destino, exist_ok=True)
+
+nombres = ["umbreon", "houndour", "houndoom", "larvitar", "pupitar", "tyranitar"]
+
+imagenes = []
+for nombre in nombres:
+    imagenes.append((f"https://img.pokemondb.net/sprites/black-white/anim/shiny/{nombre}.gif", f"{nombre}_shiny.gif"))
+    imagenes.append((f"https://img.pokemondb.net/sprites/black-white/anim/normal/{nombre}.gif", f"{nombre}_normal.gif"))
+
+for url, nombre_archivo in imagenes:
+    respuesta = requests.get(url)
+    if respuesta.status_code == 200:
+        ruta = os.path.join(carpeta_destino, nombre_archivo)
+        with open(ruta, 'wb') as f:
+            f.write(respuesta.content)
+        print(f"Descargada: {nombre_archivo}")
+    else:
+        print(f"Error al descargar {nombre_archivo} desde {url}")
+```
+
+12 requests total (6 species × normal/shiny) — small enough to just run
+directly against the real URLs when this step is implemented, no batching/
+rate-limit handling needed. Sanity-check each downloaded file opens as a
+valid animated gif before committing (PokémonDB 404s render as a small
+error-page response, not a gif, if a name is ever misspelled/missing).
 
 ### What does NOT change in this step
 
