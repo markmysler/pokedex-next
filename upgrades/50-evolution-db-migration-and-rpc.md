@@ -1,7 +1,9 @@
 # Step 50: Evolution — DB migration + `evolve_pokemon` RPC
 
-**Status: planned.** See `main.md`'s "Evolution, Psychic counterplay,
-and bilingual support" section for the full context and dependency chain.
+**Status: shipped (code-complete, applied and validated locally; pending
+deploy to production via push to `main` per this wave's own workflow).**
+See `main.md`'s "Evolution, Psychic counterplay, and bilingual support"
+section for the full context and dependency chain.
 
 ## Why here
 
@@ -97,23 +99,93 @@ Trade Up, which doesn't care what species the 5 are — evolution does.
 
 ## End state
 
-- [ ] Migration file created following the timestamp-ordering convention
+- [x] Migration file created following the timestamp-ordering convention
       every prior migration uses, with `evolve_pokemon(uuid, uuid[], text,
       jsonb, jsonb)` defined as above (or a close/justified variant decided
       during implementation).
-- [ ] Function re-validates ownership, non-starter status, and species-match
+- [x] Function re-validates ownership, non-starter status, and species-match
       against the actual rows, not a client-supplied assumption.
-- [ ] `grant execute ... to service_role` present (same grants-not-inherited
-      caveat every other function in this schema notes).
-- [ ] Per `main.md`'s "why this order" and the project's own migration
+- [x] `grant execute ... to service_role` present (same grants-not-inherited
+      caveat every other function in this schema notes) — **plus an
+      explicit `revoke ... from public, anon, authenticated`, added after a
+      real finding during local validation (see below).**
+- [x] Per `main.md`'s "why this order" and the project's own migration
       workflow: this migration applies to production via the Supabase
       GitHub integration on push to `main`, not a locally-run CLI/DDL
       session — written and validated offline here, confirmed live only
       once actually pushed (same constraint `archive/v6/main.md` documented
       for step 44's trigger). Code-complete-pending-deploy is the expected
-      end state for this step in isolation.
-- [ ] Once deployed: a real dry-run (5 real owned non-starter instances of
-      one species, on a test account) confirmed to delete the 5 and create
-      exactly 1 new instance of the right target species — gated behind an
-      explicit user go-ahead before running against real data, same as
-      every prior production-writing step.
+      end state for this step in isolation. Unlike step 44, this one *was*
+      exercisable end-to-end pre-deploy against the local Supabase instance
+      (this wave's whole reason for existing) — see below.
+- [ ] Once deployed to production: a real dry-run (5 real owned non-starter
+      instances of one species, on a test account) confirmed to delete the
+      5 and create exactly 1 new instance of the right target species —
+      gated behind an explicit user go-ahead before running against real
+      data, same as every prior production-writing step. Not done yet:
+      this migration hasn't been pushed to `main` (won't be until the whole
+      wave is validated locally, per the workflow) — the equivalent dry run
+      *has* already been done thoroughly against the local instance below.
+
+## What actually happened
+
+Implemented and validated end-to-end against the local Supabase instance on
+`v7` (`supabase/migrations/20260918000000_pokemon_evolution.sql`), applied
+via `npm run db:reset` (replays every migration from scratch, confirming no
+conflict with the existing 20 migrations).
+
+The function itself matches the planned SQL exactly (species-match check,
+delete+insert, `returning id`).
+
+### Real finding during validation: the `grant ... to service_role` pattern doesn't actually restrict access
+
+Testing this function through the REST API (`POST /rest/v1/rpc/
+evolve_pokemon`) with the public anon key — not just calling it directly in
+`psql`, which would have missed this — showed the anon key could execute
+it successfully and mutate real rows (deleted 5, created 1), despite the
+function only ever granting `execute` to `service_role`.
+
+Root cause, confirmed via `pg_proc.proacl`: **Supabase's local (and, since
+these are the same base migrations, presumably hosted) setup grants
+`EXECUTE` on every new `public`-schema function to `anon` and
+`authenticated` by default**, as separate explicit ACL entries alongside
+Postgres's own PUBLIC-execute default — neither is revoked by a
+`grant ... to service_role` statement, which is additive, not exclusive.
+`20260807000100_grants.sql`'s comment ("anon/authenticated intentionally
+get nothing") describes the *intent* everywhere in this schema, but every
+function using only that grant pattern — confirmed for `trade_up_pokemon`,
+`accept_trade`, and `submit_move` via the same `information_schema.
+routine_privileges` query — has actually been callable by anyone holding
+the public anon key (which ships in every client bundle) this whole time,
+bypassing all app-level auth by passing an arbitrary `p_user_id`.
+
+**This function was fixed before shipping**: added
+`revoke execute on function evolve_pokemon(...) from public, anon,
+authenticated;` before the grant. Re-verified live: anon key now gets
+`42501 permission denied for function evolve_pokemon`; service_role key
+still succeeds; `pg_proc.proacl` now shows only `postgres`/`service_role`.
+
+**The pre-existing gap in `trade_up_pokemon`/`accept_trade`/`submit_move`/
+etc. is a live production security issue, out of this step's scope to fix
+retroactively** (this step only owns the new function) — raised to the
+user directly as its own priority item, separate from this wave, since it
+affects the app right now regardless of whether this wave ships.
+
+### Full validation performed (local instance)
+
+- Happy path: seeded 5 real non-starter same-species instances (Pikachu)
+  for a freshly-signed-up test account, called `evolve_pokemon` — deleted
+  exactly the 5, created exactly 1 new instance of the target species
+  (Raichu) with the passed-in stats/moveset, starters and other species
+  untouched.
+- Guard: wrong array length (4 ids) → rejected.
+- Guard: mixed species (4 Pikachu + 1 Eevee) → rejected, nothing deleted.
+- Guard: starter included → rejected, nothing deleted.
+- Guard: an unowned/nonexistent id → rejected, nothing deleted.
+- Confirmed atomicity: every rejected call left the full original row set
+  intact (no partial delete before the exception).
+- Confirmed via REST API (not just direct `psql`) with both the anon key
+  (rejected, post-fix) and the service_role/secret key (succeeds) — the
+  same access path the real `/api/inventory/evolve` Route Handler (step 51)
+  will use.
+- `npm run lint` / `npm run build` clean.

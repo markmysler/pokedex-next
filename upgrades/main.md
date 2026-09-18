@@ -37,7 +37,7 @@ translated once, in their final form, not twice.
 |---|------|------|------------|--------|
 | 48 | Evolution: species data model (`evolvesInto`, Eevee's 3-way branch) | [48-evolution-data-model.md](48-evolution-data-model.md) | — | Shipped |
 | 49 | Evolution: derived-stat formula + moveset roll | [49-evolution-stat-derivation-and-moveset.md](49-evolution-stat-derivation-and-moveset.md) | 48 | Shipped |
-| 50 | Evolution: DB migration + `evolve_pokemon` RPC | [50-evolution-db-migration-and-rpc.md](50-evolution-db-migration-and-rpc.md) | 48 | Planned |
+| 50 | Evolution: DB migration + `evolve_pokemon` RPC | [50-evolution-db-migration-and-rpc.md](50-evolution-db-migration-and-rpc.md) | 48 | Shipped (pending deploy) |
 | 51 | Evolution: API route + Inventory UI/reveal | [51-evolution-api-and-inventory-ui.md](51-evolution-api-and-inventory-ui.md) | 49, 50 | Planned |
 | 52 | Psychic counterplay: Umbreon + Houndour/Houndoom + Larvitar/Pupitar/Tyranitar (full lines) + Dark damage moves + sprites | [52-psychic-counterplay-new-dark-species.md](52-psychic-counterplay-new-dark-species.md) | — | Planned |
 | 53 | i18n: `app/[lang]/` routing + dictionary infrastructure + toggle | [53-i18n-routing-and-toggle-infrastructure.md](53-i18n-routing-and-toggle-infrastructure.md) | — | Planned |
@@ -193,6 +193,34 @@ implementation — flag disagreement before step 48 starts):
   planning that this table already works that way, so step 57 only needs to
   make the existing render functions pull from the dictionary instead of
   hardcoded English — no schema change or migration.
+
+## ⚠ Security finding flagged during step 50 (pre-existing, out of this wave's scope)
+
+Validating step 50's `evolve_pokemon` RPC against the local Supabase
+instance surfaced a **live production security gap, unrelated to this
+wave**: Supabase's default schema privileges grant `EXECUTE` on every new
+`public`-schema function to `anon`/`authenticated` automatically (confirmed
+via `pg_proc.proacl`), which the `grant execute ... to service_role`
+pattern used by every prior RPC in this schema (`trade_up_pokemon`,
+`accept_trade`, `submit_move`, and now `evolve_pokemon` before it was
+fixed) does **not** revoke — that grant is additive, not exclusive. This
+was verified concretely: calling `evolve_pokemon` over the REST API with
+only the public anon key succeeded and mutated real rows, before a fix.
+
+**Practical impact**: anyone holding the public anon key (which ships in
+every client bundle, by design) can call `trade_up_pokemon`, `accept_trade`,
+or `submit_move` directly against production's REST API today, passing an
+arbitrary `p_user_id`, and bypass all app-level auth entirely.
+
+`evolve_pokemon` itself now explicitly revokes `public`/`anon`/
+`authenticated` before granting to `service_role` (see step 50's "What
+actually happened"), so it won't ship with this hole. The 3 pre-existing
+functions were **not** touched by this step (out of scope for a
+same-species evolution slice) — this needs its own hotfix migration
+(`revoke execute on function ... from public, anon, authenticated;` for
+each) applied independently of this wave, ideally sooner rather than
+later given it's already live. Flagged here for visibility; not actioned
+without the user's explicit go-ahead, same as any other production change.
 
 ## Working through a step
 
