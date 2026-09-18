@@ -39,7 +39,7 @@ translated once, in their final form, not twice.
 | 49 | Evolution: derived-stat formula + moveset roll | [49-evolution-stat-derivation-and-moveset.md](49-evolution-stat-derivation-and-moveset.md) | 48 | Shipped |
 | 50 | Evolution: DB migration + `evolve_pokemon` RPC | [50-evolution-db-migration-and-rpc.md](50-evolution-db-migration-and-rpc.md) | 48 | Shipped (pending deploy) |
 | 51 | Evolution: API route + Inventory UI/reveal | [51-evolution-api-and-inventory-ui.md](51-evolution-api-and-inventory-ui.md) | 49, 50 | Shipped |
-| 52 | Psychic counterplay: Umbreon + Houndour/Houndoom + Larvitar/Pupitar/Tyranitar (full lines) + Dark damage moves + sprites | [52-psychic-counterplay-new-dark-species.md](52-psychic-counterplay-new-dark-species.md) | — | Planned |
+| 52 | Psychic counterplay: Umbreon + Houndour/Houndoom + Larvitar/Pupitar/Tyranitar (full lines) + Dark damage moves + sprites | [52-psychic-counterplay-new-dark-species.md](52-psychic-counterplay-new-dark-species.md) | — | Shipped |
 | 53 | i18n: `app/[lang]/` routing + dictionary infrastructure + toggle | [53-i18n-routing-and-toggle-infrastructure.md](53-i18n-routing-and-toggle-infrastructure.md) | — | Planned |
 | 54 | i18n content: Account cluster (Login/Signup/Dashboard/Profile) | [54-i18n-account-cluster.md](54-i18n-account-cluster.md) | 53 | Planned |
 | 55 | i18n content: Collection cluster (Pokédex/Inventory/Lootbox + Evolve UI + new species) | [55-i18n-collection-cluster.md](55-i18n-collection-cluster.md) | 53, 51, 52 | Planned |

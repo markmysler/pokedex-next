@@ -1,6 +1,6 @@
 # Step 52: Psychic counterplay — Umbreon/Houndoom/Tyranitar full lines + Dark damage moves + sprites
 
-**Status: planned.** See `main.md`'s "Evolution, Psychic counterplay, and
+**Status: shipped.** See `main.md`'s "Evolution, Psychic counterplay, and
 bilingual support" section for the full context and dependency chain.
 
 ## Why here
@@ -157,26 +157,103 @@ error-page response, not a gif, if a name is ever misspelled/missing).
 
 ## End state
 
-- [ ] Umbreon, Houndour, Houndoom, Larvitar, Pupitar, Tyranitar all added to
+- [x] Umbreon, Houndour, Houndoom, Larvitar, Pupitar, Tyranitar all added to
       `lib/data/pokedex.json` with real canonical stats/types/evolvesInto,
       each with a populated moveset.
-- [ ] Eevee's (#133) existing `evolvesInto` array amended from 3 entries to
+- [x] Eevee's (#133) existing `evolvesInto` array amended from 3 entries to
       4, adding Umbreon.
-- [ ] At least 2 new Dark-type `DamageMove` entries added to
-      `lib/data/movePool.ts`, so Houndour/Houndoom/Umbreon's own-type damage
-      pool isn't empty.
-- [ ] 12 sprite files added to `public/images/` (normal + shiny for each of
+- [x] At least 2 new Dark-type `DamageMove` entries added — ended up in
+      `lib/data/pokedex.json` directly rather than `lib/data/movePool.ts`
+      (see "What actually happened" — the damage pool auto-derives from
+      species data, this file doesn't hand-author damage moves at all), so
+      Houndour/Houndoom/Umbreon/Tyranitar's own-type damage pool isn't empty.
+- [x] 12 sprite files added to `public/images/` (normal + shiny for each of
       the 6 species).
-- [ ] Dex-size-derived stats (`pokedexOwnedPct`, dashboard/leaderboard
+- [x] Dex-size-derived stats (`pokedexOwnedPct`, dashboard/leaderboard
       completion figures) reflect the new total (157) automatically —
       spot-check one to confirm, since this relies on no hardcoded `151`
       existing rather than a code change in this step.
-- [ ] A validation pass (same shape as `archive/v6/main.md`'s roster-wide
+- [x] A validation pass (same shape as `archive/v6/main.md`'s roster-wide
       rolls): simulate battles between Mewtwo and each of
       Umbreon/Houndoom/Tyranitar and confirm the Dark side takes 0 damage
       from any Psychic-type move Mewtwo uses, and deals 2x when it lands its
       own Dark-type move.
-- [ ] Eevee's 4-way branch spot-checked for roughly even (1/4 each)
+- [x] Eevee's 4-way branch spot-checked for roughly even (1/4 each)
       distribution over repeated evolve simulations, alongside step 51's own
       original 3-way check.
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+## What actually happened
+
+Implemented and validated on `v7`. Pure static data + assets, no DB/API
+involved, so validated independently of the local Supabase instance.
+
+- All 6 species appended to `lib/data/pokedex.json` after Mew (#151) —
+  physically at the end of the file (dex numbers 197-248 sort after 151
+  anyway), so the diff touches nothing in the existing 151 entries except
+  Eevee's `evolvesInto` array. Stats/types/evolution chain match the
+  planned table exactly.
+- **Movesets modeled directly on the existing convention, confirmed by
+  inspecting real non-starter multi-stage lines first** (Abra/Kadabra/
+  Alakazam, Gastly/Haunter/Gengar, Zubat/Golbat, Geodude/Rhyhorn/Onix):
+  every existing line uses an **identical 4-move set across every stage**
+  (2 moves per type, low + mid power, ~40-80 range), not scaling by
+  evolution stage or total stat — the plan's draft hadn't nailed this down,
+  so this was worth confirming before authoring anything. Applied exactly:
+  Umbreon (Bite/Crunch + Tackle/Scratch filler, matching the Eeveelution
+  sibling pattern precisely), Houndour = Houndoom (Ember/Flame Wheel +
+  Bite/Crunch, reusing existing Fire moves), Larvitar = Pupitar (Rock
+  Throw/Rock Slide/Mud-Slap/Dig, reusing the exact existing Geodude/Onix
+  moveset verbatim, per the plan's own note that these two need no new
+  moves). Tyranitar is the one deliberate exception to "identical across
+  the line" — justified, not arbitrary: it gains Dark at the final stage
+  (dropping Ground), so its type2 half of the moveset has to change
+  regardless; gets Rock Throw/Rock Slide (kept) + Bite/Dark Pulse (new),
+  giving the new move family a genuine low(40)/mid(65)/high(90) power
+  spread across the 4 species that needed one, as the plan asked for.
+- **New Dark damage moves ended up needing zero edits to
+  `lib/data/movePool.ts`**, contrary to the plan's original assumption:
+  confirmed by reading that file's actual source that `allMoves`/
+  `movesByType` (the damage pool `rollMoveset()` draws from) is
+  *auto-derived* by deduplicating every species' own `moves` array in
+  `pokedex.json` — `movePool.ts` only hand-authors the buff/debuff/drain/
+  redirect (support) pools, never damage moves directly. So adding Bite
+  (Dark/Physical/40/5), Crunch (Dark/Physical/65/4), and Dark Pulse
+  (Dark/Special/90/2) to the new species' own `pokedex.json` entries was
+  both necessary and sufficient — confirmed directly (see validation below).
+- Sprites: downloaded all 12 files for real using the user-provided
+  PokémonDB URL pattern (`upgrades/52-...md`'s own script), verified
+  distinct-but-similarly-sized normal/shiny pairs weren't an accidental
+  duplicate bug (compared MD5 hashes — genuinely different content, GIFs
+  of similar dimensions just compress to similar sizes) and visually
+  spot-checked Umbreon and Tyranitar's normal/shiny pairs directly.
+
+### Validation performed
+
+- Confirmed via direct computation of the real, unchanged `TYPE_MATCHUPS`
+  rows (`lib/typeData.ts` untouched, re-verified) through the actual
+  `getTypeMultiplier()` formula: Mewtwo's Psychic moves deal **0x** to
+  Umbreon, Houndoom, and Tyranitar (Psychic.Dark = 0.0, regardless of the
+  second type since it's multiplicative and the Dark factor alone zeroes
+  it), and each of those 3 deals **2x** back with any Dark move
+  (Dark.Psychic = 2.0) — the decisive counter, zero engine changes,
+  exactly as designed.
+- Confirmed the move-pool-starvation concern is actually resolved, not
+  just type-chart-correct in theory: simulated 5,000 damage-slot draws
+  (reproducing `rollOneMove`'s exact 85%-own-type logic) for each of the 4
+  Dark-needing species. Dark-move roll rates: Umbreon 86.3% (single Dark
+  type, matches `SAME_TYPE_CHANCE` almost exactly), Houndour 37.4% /
+  Houndoom 36.1% (split with the much larger roster-wide Fire pool, still
+  far from starved), Tyranitar 51.4% (split with the roster-wide Rock
+  pool). All previously would have been 0% before this step.
+- Confirmed `pokedexOrder.length` (used by `pokedexOwnedPct`, lootbox/bot
+  species rolls) is 157 automatically — no hardcoded `151` exists anywhere
+  in `app/`/`lib/`/`components/`/`types/` (re-confirmed via a full grep).
+- Eevee's now-4-way branch (`["134","135","136","197"]`), re-checked live
+  the same way step 51 checked the original 3-way: 40 real evolve calls
+  through the actual running route (fresh test account, local Supabase),
+  no code change needed beyond this step's own data edit — exactly the
+  guarantee `resolveEvolutionTarget()` (step 49) was designed around.
+  Result: 14 Umbreon / 7 Flareon / 8 Vaporeon / 11 Jolteon — all 4
+  branches hit, consistent with uniform random at this sample size.
+- `npm run lint` / `npm run build` clean.

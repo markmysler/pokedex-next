@@ -6384,7 +6384,8 @@
     "evolvesInto": [
       "134",
       "135",
-      "136"
+      "136",
+      "197"
     ]
   },
   "134": {
@@ -7246,6 +7247,294 @@
         "power": 40,
         "category": "Physical",
         "max_uses": 5,
+        "kind": "damage"
+      }
+    ],
+    "evolvesInto": null
+  },
+  "197": {
+    "number": "197",
+    "name": "Umbreon",
+    "type1": "Dark",
+    "type2": null,
+    "hp": 95,
+    "atk": 65,
+    "def": 110,
+    "spatk": 60,
+    "spdef": 130,
+    "spd": 65,
+    "total": 525,
+    "moves": [
+      {
+        "name": "Bite",
+        "type": "Dark",
+        "power": 40,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Crunch",
+        "type": "Dark",
+        "power": 65,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      },
+      {
+        "name": "Tackle",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Scratch",
+        "type": "Normal",
+        "power": 40,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      }
+    ],
+    "evolvesInto": null
+  },
+  "228": {
+    "number": "228",
+    "name": "Houndour",
+    "type1": "Dark",
+    "type2": "Fire",
+    "hp": 45,
+    "atk": 60,
+    "def": 30,
+    "spatk": 80,
+    "spdef": 50,
+    "spd": 65,
+    "total": 330,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      },
+      {
+        "name": "Bite",
+        "type": "Dark",
+        "power": 40,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Crunch",
+        "type": "Dark",
+        "power": 65,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      }
+    ],
+    "evolvesInto": "229"
+  },
+  "229": {
+    "number": "229",
+    "name": "Houndoom",
+    "type1": "Dark",
+    "type2": "Fire",
+    "hp": 75,
+    "atk": 90,
+    "def": 50,
+    "spatk": 110,
+    "spdef": 80,
+    "spd": 95,
+    "total": 500,
+    "moves": [
+      {
+        "name": "Ember",
+        "type": "Fire",
+        "power": 40,
+        "category": "Special",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Flame Wheel",
+        "type": "Fire",
+        "power": 60,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      },
+      {
+        "name": "Bite",
+        "type": "Dark",
+        "power": 40,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Crunch",
+        "type": "Dark",
+        "power": 65,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      }
+    ],
+    "evolvesInto": null
+  },
+  "246": {
+    "number": "246",
+    "name": "Larvitar",
+    "type1": "Rock",
+    "type2": "Ground",
+    "hp": 50,
+    "atk": 64,
+    "def": 50,
+    "spatk": 45,
+    "spdef": 50,
+    "spd": 41,
+    "total": 300,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      },
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      }
+    ],
+    "evolvesInto": "247"
+  },
+  "247": {
+    "number": "247",
+    "name": "Pupitar",
+    "type1": "Rock",
+    "type2": "Ground",
+    "hp": 70,
+    "atk": 84,
+    "def": 70,
+    "spatk": 65,
+    "spdef": 70,
+    "spd": 51,
+    "total": 410,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      },
+      {
+        "name": "Mud-Slap",
+        "type": "Ground",
+        "power": 20,
+        "category": "Special",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Dig",
+        "type": "Ground",
+        "power": 80,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      }
+    ],
+    "evolvesInto": "248"
+  },
+  "248": {
+    "number": "248",
+    "name": "Tyranitar",
+    "type1": "Rock",
+    "type2": "Dark",
+    "hp": 100,
+    "atk": 134,
+    "def": 110,
+    "spatk": 95,
+    "spdef": 100,
+    "spd": 61,
+    "total": 600,
+    "moves": [
+      {
+        "name": "Rock Throw",
+        "type": "Rock",
+        "power": 50,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Rock Slide",
+        "type": "Rock",
+        "power": 75,
+        "category": "Physical",
+        "max_uses": 4,
+        "kind": "damage"
+      },
+      {
+        "name": "Bite",
+        "type": "Dark",
+        "power": 40,
+        "category": "Physical",
+        "max_uses": 5,
+        "kind": "damage"
+      },
+      {
+        "name": "Dark Pulse",
+        "type": "Dark",
+        "power": 90,
+        "category": "Special",
+        "max_uses": 2,
         "kind": "damage"
       }
     ],
