@@ -22,6 +22,14 @@ interface LootboxRevealDialogProps {
   // the same onClose; the parent (InventoryPageClient) decides what "close"
   // means (advance the queue vs. actually closing the dialog).
   hasNext?: boolean;
+  // Evolution reuses this same drumroll -> sprite -> stats -> moves pacing
+  // rather than inventing new reveal choreography (upgrades/51-evolution-
+  // api-and-inventory-ui.md) -- only the drumroll copy differs, since
+  // "Opening lootbox..." doesn't fit a result that came from evolving 5
+  // Pokemon rather than opening a box. Defaults preserve the existing
+  // lootbox copy exactly, so every other call site is unaffected.
+  drumrollIcon?: string;
+  drumrollText?: string;
 }
 
 type Phase = "drumroll" | "sprite" | "stats" | "moves" | "done";
@@ -39,7 +47,13 @@ const STAT_INFO: Array<{ label: string; key: "hp" | "atk" | "def" | "spatk" | "s
   { label: "Speed", key: "spd", color: "#FA92B2" },
 ];
 
-export default function LootboxRevealDialog({ pokemon, onClose, hasNext }: LootboxRevealDialogProps) {
+export default function LootboxRevealDialog({
+  pokemon,
+  onClose,
+  hasNext,
+  drumrollIcon = "📦",
+  drumrollText = "Opening lootbox...",
+}: LootboxRevealDialogProps) {
   const [phase, setPhase] = useState<Phase>("drumroll");
   const [statsRevealed, setStatsRevealed] = useState(0);
   const [movesRevealed, setMovesRevealed] = useState(0);
@@ -116,8 +130,8 @@ export default function LootboxRevealDialog({ pokemon, onClose, hasNext }: Lootb
       <div className="lootbox-reveal" onClick={fullyRevealed ? undefined : skip}>
         {phase === "drumroll" && (
           <div className="lootbox-drumroll">
-            <div className="lootbox-drumroll-icon">📦</div>
-            <p>Opening lootbox...</p>
+            <div className="lootbox-drumroll-icon">{drumrollIcon}</div>
+            <p>{drumrollText}</p>
           </div>
         )}
 

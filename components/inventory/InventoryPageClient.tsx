@@ -12,9 +12,11 @@ import CardTab from "@/components/ui/CardTab";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName, movePower } from "@/lib/pokemonDisplay";
 import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
+import { getPokemon } from "@/lib/pokedex";
 import LootboxRevealDialog from "./LootboxRevealDialog";
 
 const TRADEUP_COUNT = 5;
+const EVOLVE_COUNT = 5;
 
 interface InventoryPageClientProps {
   initialPokemon: OwnedPokemon[];
@@ -60,12 +62,28 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   const [tradeUpSubmitting, setTradeUpSubmitting] = useState(false);
   const [tradeUpError, setTradeUpError] = useState<string | null>(null);
 
+  // Evolve (upgrades/51-evolution-api-and-inventory-ui.md) -- same "select 5
+  // of a kind" picker shape as Trade Up above, but scoped to one species at a
+  // time (evolveSpeciesNumber below) and only species with a real evolution.
+  // A separate reveal (evolveReveal) from the lootbox queue since evolving
+  // always produces exactly 1 result, never a batch.
+  const [evolveMode, setEvolveMode] = useState(false);
+  const [evolveSelected, setEvolveSelected] = useState<Set<string>>(new Set());
+  const [showEvolveConfirm, setShowEvolveConfirm] = useState(false);
+  const [evolveSubmitting, setEvolveSubmitting] = useState(false);
+  const [evolveError, setEvolveError] = useState<string | null>(null);
+  const [evolveReveal, setEvolveReveal] = useState<OwnedPokemon | null>(null);
+
   const filtered = useMemo(
     () => filterAndSortPokemon(pokemon, { search, typeFilter, sortBy }),
     [pokemon, search, typeFilter, sortBy]
   );
 
   const selected = pokemon.find((p) => p.id === selectedId) ?? null;
+  // Whatever species is already represented in evolveSelected, if any --
+  // null once the set is empty, meaning any evolvable species can start a
+  // fresh pick. Locks every other species out of the picker once set.
+  const evolveSpeciesNumber = pokemon.find((p) => evolveSelected.has(p.id))?.number ?? null;
 
   function selectPokemon(id: string) {
     setSelectedId(id);
@@ -154,6 +172,70 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
     setTradeUpMode((prev) => !prev);
     setTradeUpSelected(new Set());
     setTradeUpError(null);
+    // Trade Up and Evolve are mutually exclusive picker modes -- entering
+    // one exits the other, same as either exits plain selection.
+    setEvolveMode(false);
+    setEvolveSelected(new Set());
+    setEvolveError(null);
+  }
+
+  function toggleEvolveMode() {
+    setEvolveMode((prev) => !prev);
+    setEvolveSelected(new Set());
+    setEvolveError(null);
+    setTradeUpMode(false);
+    setTradeUpSelected(new Set());
+    setTradeUpError(null);
+  }
+
+  function evolveDisabledReason(p: OwnedPokemon): string | undefined {
+    if (p.isStarter) return "Starters can't evolve";
+    const species = getPokemon(p.number);
+    if (!species || species.evolvesInto === null) return "This Pokémon has no evolution";
+    if (evolveSpeciesNumber !== null && evolveSpeciesNumber !== p.number && !evolveSelected.has(p.id)) {
+      return "Select 5 of the same species";
+    }
+    return undefined;
+  }
+
+  function toggleEvolvePick(p: OwnedPokemon) {
+    if (evolveDisabledReason(p) !== undefined && !evolveSelected.has(p.id)) return;
+    setEvolveSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(p.id)) {
+        next.delete(p.id);
+        return next;
+      }
+      if (next.size < EVOLVE_COUNT) next.add(p.id);
+      return next;
+    });
+  }
+
+  async function confirmEvolve() {
+    setEvolveSubmitting(true);
+    setEvolveError(null);
+    const ids = Array.from(evolveSelected);
+    const res = await fetch("/api/inventory/evolve", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pokemonInstanceIds: ids }),
+    });
+    const data = await res.json();
+    setEvolveSubmitting(false);
+    if (data.error) {
+      setEvolveError(data.error);
+      return;
+    }
+    const evolved = data.pokemon as OwnedPokemon;
+    setPokemon((prev) => [evolved, ...prev.filter((p) => !evolveSelected.has(p.id))]);
+    setSelectedId(evolved.id);
+    setShowEvolveConfirm(false);
+    setEvolveMode(false);
+    setEvolveSelected(new Set());
+    // Same already-persisted-result reveal pattern as opening a lootbox --
+    // the evolve API call above already did the burn + roll + insert, this
+    // is just wiring the dialog to show what already happened.
+    setEvolveReveal(evolved);
   }
 
   function toggleTradeUpPick(p: OwnedPokemon) {
@@ -201,6 +283,16 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
           pokemon={revealQueue[0]}
           hasNext={revealQueue.length > 1}
           onClose={() => setRevealQueue((q) => q.slice(1))}
+        />
+      )}
+
+      {evolveReveal && (
+        <LootboxRevealDialog
+          key={evolveReveal.id}
+          pokemon={evolveReveal}
+          drumrollIcon="🧬"
+          drumrollText="Evolving..."
+          onClose={() => setEvolveReveal(null)}
         />
       )}
 
@@ -264,10 +356,14 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
         <button className={`btn-tradeup${tradeUpMode ? " active" : ""}`} onClick={toggleTradeUpMode}>
           🔥 Trade Up
         </button>
+        <button className={`btn-evolve${evolveMode ? " active" : ""}`} onClick={toggleEvolveMode}>
+          🧬 Evolve
+        </button>
         <div className="count-label">Showing: {filtered.length} of {pokemon.length}</div>
       </div>
 
       {tradeUpError && <p className="auth-error">{tradeUpError}</p>}
+      {evolveError && <p className="auth-error">{evolveError}</p>}
 
       <div className={`inventory-layout${mobileDetailOpen ? " mobile-detail-open" : ""}`}>
         <div className={viewMode === "grid" ? "pokemon-grid" : "pokemon-list"}>
@@ -277,15 +373,21 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
               key={p.id}
               pokemon={p}
               variant={viewMode}
-              selected={tradeUpMode ? tradeUpSelected.has(p.id) : p.id === selectedId}
-              onSelect={() => (tradeUpMode ? toggleTradeUpPick(p) : selectPokemon(p.id))}
-              disabled={tradeUpMode && p.isStarter}
-              disabledReason={tradeUpMode && p.isStarter ? "Starters can't be traded up" : undefined}
+              selected={tradeUpMode ? tradeUpSelected.has(p.id) : evolveMode ? evolveSelected.has(p.id) : p.id === selectedId}
+              onSelect={() => (tradeUpMode ? toggleTradeUpPick(p) : evolveMode ? toggleEvolvePick(p) : selectPokemon(p.id))}
+              disabled={tradeUpMode ? p.isStarter : evolveMode ? evolveDisabledReason(p) !== undefined : false}
+              disabledReason={
+                tradeUpMode
+                  ? (p.isStarter ? "Starters can't be traded up" : undefined)
+                  : evolveMode
+                    ? evolveDisabledReason(p)
+                    : undefined
+              }
             />
           ))}
         </div>
 
-        {selected && !tradeUpMode && (
+        {selected && !tradeUpMode && !evolveMode && (
           <div className="card inventory-detail">
             <button className="detail-back-btn" onClick={() => setMobileDetailOpen(false)}>← Back to list</button>
             <div id="card-header">
@@ -377,6 +479,40 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
               {tradeUpSubmitting ? "Trading Up…" : "Confirm"}
             </button>
             <button className="btn-secondary" disabled={tradeUpSubmitting} onClick={() => setShowTradeUpConfirm(false)}>
+              Cancel
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {evolveMode && (
+        <div className="card evolve-bar">
+          <span className="evolve-count">{evolveSelected.size}/{EVOLVE_COUNT} selected</span>
+          <button
+            className="btn-primary"
+            disabled={evolveSelected.size !== EVOLVE_COUNT}
+            onClick={() => setShowEvolveConfirm(true)}
+          >
+            🧬 Evolve
+          </button>
+        </div>
+      )}
+
+      {showEvolveConfirm && (
+        <Modal onClose={() => (evolveSubmitting ? null : setShowEvolveConfirm(false))}>
+          <h2>🧬 Confirm Evolution</h2>
+          <p>These 5 Pokémon will be permanently combined into 1 evolved Pokémon. This can&apos;t be undone.</p>
+          <ul className="evolve-confirm-list">
+            {pokemon.filter((p) => evolveSelected.has(p.id)).map((p) => (
+              <li key={p.id}>{displayName(p)} — #{p.number} {p.name} (Total {p.total})</li>
+            ))}
+          </ul>
+          {evolveError && <p className="auth-error">{evolveError}</p>}
+          <div className="trade-builder-actions">
+            <button className="btn-primary" disabled={evolveSubmitting} onClick={confirmEvolve}>
+              {evolveSubmitting ? "Evolving…" : "Confirm"}
+            </button>
+            <button className="btn-secondary" disabled={evolveSubmitting} onClick={() => setShowEvolveConfirm(false)}>
               Cancel
             </button>
           </div>

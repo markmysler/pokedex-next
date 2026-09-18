@@ -328,6 +328,16 @@ export interface Database {
         Args: { p_user_id: string; p_count: number };
         Returns: Database["public"]["Tables"]["lootboxes"]["Row"][];
       };
+      evolve_pokemon: {
+        Args: {
+          p_user_id: string;
+          p_instance_ids: string[];
+          p_target_number: string;
+          p_stats: Json;
+          p_moves: Json;
+        };
+        Returns: string;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

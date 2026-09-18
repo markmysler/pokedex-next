@@ -927,6 +927,25 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .btn-tradeup:hover { background: var(--accent-2); color: var(--accent-2-ink); }
 .btn-tradeup.active { background: var(--accent-2); color: var(--accent-2-ink); box-shadow: var(--shadow-1); }
 
+/* EVOLVE button (upgrades/51-evolution-api-and-inventory-ui.md) -- same
+   pill shape as TRADE UP above, --accent instead of --accent-2 so the two
+   conditionally-available "burn 5 for something" actions read as visually
+   distinct. Sits right after Trade Up, which keeps the margin-left: auto
+   that pushes both to the right of the view-toggle group. */
+.btn-evolve {
+  border-radius: var(--r-pill);
+  border: 1px solid var(--accent);
+  background: var(--surface);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-evolve:hover { background: var(--accent); color: var(--accent-ink); }
+.btn-evolve.active { background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-1); }
+
 .inventory-layout { display: grid; grid-template-columns: 1fr 340px; gap: 12px; align-items: start; }
 @media (max-width: 900px) {
   .inventory-layout { grid-template-columns: 1fr; }
@@ -985,6 +1004,24 @@ input:focus, #search-input:focus, select:focus, textarea:focus {
 .tradeup-count { font-weight: bold; }
 .tradeup-confirm-list { list-style: none; margin: 10px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .tradeup-confirm-list li { padding: 6px 8px; background: var(--surface); border-radius: 6px; font-size: 13px; }
+
+/* EVOLVE (upgrades/51-evolution-api-and-inventory-ui.md) -- identical
+   layout to TRADE-UP above, kept as separate rules (not a shared selector)
+   so either can be restyled independently later without fighting the other. */
+.evolve-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 10px 14px;
+}
+.evolve-count { font-weight: bold; }
+.evolve-confirm-list { list-style: none; margin: 10px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.evolve-confirm-list li { padding: 6px 8px; background: var(--surface); border-radius: 6px; font-size: 13px; }
 
 .pokemon-grid {
   display: grid;
