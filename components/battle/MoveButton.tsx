@@ -1,6 +1,9 @@
+"use client";
+
 import type { Move, MoveKind } from "@/types/pokemon";
 import { TYPE_COLORS } from "@/lib/typeData";
 import { moveEffectText, moveTooltip } from "@/lib/pokemonDisplay";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 interface MoveButtonProps {
   move: Move;
@@ -37,6 +40,7 @@ const KIND_COLOR: Record<Exclude<MoveKind, "damage">, string> = {
 };
 
 export default function MoveButton({ move, disabled, usesLeft, onClick }: MoveButtonProps) {
+  const dict = useDictionary();
   const icon = move.kind === "damage" ? "" : `${KIND_ICON[move.kind]} `;
   // Split into a name line (display font) and a meta line (mono) instead of
   // one combined string (upgrades/35-battle-shared-components-redesign.md's
@@ -47,9 +51,9 @@ export default function MoveButton({ move, disabled, usesLeft, onClick }: MoveBu
   // not -- fully replaces the old "${mana_cost} MP" text
   // (upgrades/40-uses-based-move-data-model.md's placeholder, superseded
   // here now that a real per-battle remaining count exists).
-  const usesText = usesLeft === null ? "unlimited uses" : `${usesLeft}/${move.max_uses} uses`;
+  const usesText = usesLeft === null ? dict.battle.moveTooltip.unlimitedUses : dict.battle.moveEffect.usesFraction(usesLeft, move.max_uses ?? usesLeft);
   const nameLine = depleted ? `⚠️ ${move.name}` : `${icon}${move.name}`;
-  const metaLine = depleted ? usesText : `${moveEffectText(move)} · ${usesText}`;
+  const metaLine = depleted ? usesText : `${moveEffectText(move, dict)} · ${usesText}`;
   const background = disabled ? "gray" : move.kind === "damage" ? TYPE_COLORS[move.type] ?? "#68A090" : KIND_COLOR[move.kind];
   // Same reasoning as FighterCard.tsx's status badges: --good/--bad/--info/
   // --warn run bright in dark theme, so the button's default white label
@@ -65,7 +69,7 @@ export default function MoveButton({ move, disabled, usesLeft, onClick }: MoveBu
       style={{ background, color }}
       disabled={disabled}
       onClick={onClick}
-      title={moveTooltip(move)}
+      title={moveTooltip(move, dict)}
     >
       <span className="move-btn-name">{nameLine}</span>
       <span className="move-btn-meta">{metaLine}</span>

@@ -1,6 +1,9 @@
+"use client";
+
 import type { FighterState } from "@/types/pokemon";
 import { displayName } from "@/lib/pokemonDisplay";
 import { isShinyInstance } from "@/lib/shiny";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 import Sprite from "@/components/Sprite";
 import SegmentedMeter from "@/components/ui/SegmentedMeter";
 
@@ -28,9 +31,11 @@ interface AllyTargetPickerProps {
 // member simply doesn't get a button here (nothing to disable, unlike the
 // switch-target bench row which still shows fainted members struck out).
 export default function AllyTargetPicker({ team, activeIndex, onSelect, onCancel }: AllyTargetPickerProps) {
+  const dict = useDictionary();
+  const t = dict.battle.allyPicker;
   return (
     <div className="ally-target-picker">
-      <div className="moves-caption">Choose a target:</div>
+      <div className="moves-caption">{t.chooseTarget}</div>
       <div className="bench-row">
         {team.map((member, i) => {
           if (member.hp <= 0) return null;
@@ -42,10 +47,10 @@ export default function AllyTargetPicker({ team, activeIndex, onSelect, onCancel
               type="button"
               className="bench-member"
               onClick={() => onSelect(i as 0 | 1 | 2)}
-              title={isSelf ? `Target yourself (${displayName(member.pokemon)})` : `Target ${displayName(member.pokemon)}`}
+              title={isSelf ? t.targetSelf(displayName(member.pokemon)) : t.targetOther(displayName(member.pokemon))}
             >
               <Sprite name={member.pokemon.name} form={shiny ? "shiny" : "normal"} className="bench-sprite" />
-              <span className="bench-name">{isSelf ? "Self" : displayName(member.pokemon)}</span>
+              <span className="bench-name">{isSelf ? t.self : displayName(member.pokemon)}</span>
               <SegmentedMeter label="HP" value={Math.max(0, member.hp)} max={member.maxHp} color={hpColor(Math.max(0, Math.min(1, member.hp / member.maxHp)))} segments={6} compact />
               {/* MP meter removed (upgrades/40-uses-based-move-data-model.md) --
                   no more aggregate resource to show; per-move uses render on
@@ -54,7 +59,7 @@ export default function AllyTargetPicker({ team, activeIndex, onSelect, onCancel
           );
         })}
       </div>
-      <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
+      <button type="button" className="btn-secondary" onClick={onCancel}>{dict.common.cancel}</button>
     </div>
   );
 }

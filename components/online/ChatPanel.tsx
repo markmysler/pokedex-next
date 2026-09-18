@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import CardTab from "@/components/ui/CardTab";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 export interface ChatMessage {
   text: string;
@@ -20,6 +21,8 @@ const MAX_MESSAGE_LENGTH = 300;
 // the parent's component state for the duration of the room, passed in as
 // props here.
 export default function ChatPanel({ messages, onSend }: ChatPanelProps) {
+  const dict = useDictionary();
+  const t = dict.battle.chat;
   const [draft, setDraft] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -37,14 +40,14 @@ export default function ChatPanel({ messages, onSend }: ChatPanelProps) {
 
   return (
     <div className="card chat-panel">
-      <CardTab icon="💬" label="Chat" />
+      <CardTab icon="💬" label={t.title} />
       <div className="chat-messages" ref={listRef}>
         {messages.length === 0 ? (
-          <p className="chat-empty">No messages yet — say hi!</p>
+          <p className="chat-empty">{t.empty}</p>
         ) : (
           messages.map((m, i) => (
             <div key={i} className={`chat-message${m.mine ? " mine" : ""}`}>
-              <span className="chat-sender">{m.mine ? "You" : m.senderDisplayName}:</span> {m.text}
+              <span className="chat-sender">{m.mine ? t.you : m.senderDisplayName}:</span> {m.text}
             </div>
           ))
         )}
@@ -53,10 +56,10 @@ export default function ChatPanel({ messages, onSend }: ChatPanelProps) {
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Type a message..."
+          placeholder={t.placeholder}
           maxLength={MAX_MESSAGE_LENGTH}
         />
-        <button className="btn-secondary" type="submit">Send</button>
+        <button className="btn-secondary" type="submit">{t.send}</button>
       </form>
     </div>
   );

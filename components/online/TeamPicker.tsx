@@ -6,6 +6,7 @@ import PokemonInstanceCard from "@/components/inventory/PokemonInstanceCard";
 import PokemonFilterBar from "@/components/pokemon/PokemonFilterBar";
 import CardTab from "@/components/ui/CardTab";
 import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 const TEAM_SIZE = 3;
 
@@ -16,6 +17,8 @@ interface TeamPickerProps {
 }
 
 export default function TeamPicker({ inventory, typesList, onSubmit }: TeamPickerProps) {
+  const dict = useDictionary();
+  const t = dict.battle.teamPicker;
   const [selected, setSelected] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -46,15 +49,15 @@ export default function TeamPicker({ inventory, typesList, onSubmit }: TeamPicke
     try {
       await onSubmit(selected);
     } catch {
-      setError("⚠️ Couldn't lock in your team — try again.");
+      setError(t.lockInError);
       setSubmitting(false);
     }
   }
 
   return (
     <div className="card team-picker">
-      <CardTab icon="🎯" label={`Pick your team (${selected.length}/${TEAM_SIZE})`} />
-      <p className="online-status">Choose 3 Pokémon. Your opponent won&apos;t see your picks until you both lock in.</p>
+      <CardTab icon="🎯" label={t.pickYourTeam(selected.length, TEAM_SIZE)} />
+      <p className="online-status">{t.chooseHint}</p>
 
       <PokemonFilterBar
         search={search}
@@ -64,6 +67,8 @@ export default function TeamPicker({ inventory, typesList, onSubmit }: TeamPicke
         sortBy={sortBy}
         onSortByChange={setSortBy}
         typesList={typesList}
+        dict={dict.common.filterBar}
+        allTypesLabel={dict.common.allTypesLabel}
       />
 
       <div className="pokemon-grid team-picker-grid">
@@ -83,14 +88,14 @@ export default function TeamPicker({ inventory, typesList, onSubmit }: TeamPicke
         })}
       </div>
 
-      {inventory.length === 0 && <p>You don&apos;t own any Pokémon yet.</p>}
-      {inventory.length > 0 && filtered.length === 0 && <p>No Pokémon match your filters.</p>}
+      {inventory.length === 0 && <p>{t.noPokemon}</p>}
+      {inventory.length > 0 && filtered.length === 0 && <p>{t.noMatches}</p>}
 
       <div className="team-lockbar">
-        <span className="team-lockbar-count">{selected.length}/{TEAM_SIZE} selected</span>
+        <span className="team-lockbar-count">{t.selectedCount(selected.length, TEAM_SIZE)}</span>
         {error && <span className="auth-error">{error}</span>}
         <button className="btn-primary" disabled={selected.length !== TEAM_SIZE || submitting} onClick={submit}>
-          {submitting ? "Locking in..." : "🎯 Lock In Team"}
+          {submitting ? t.lockingIn : t.lockInTeam}
         </button>
       </div>
     </div>

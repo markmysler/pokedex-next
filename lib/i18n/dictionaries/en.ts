@@ -15,6 +15,46 @@
 // takes that value and returns the whole sentence, so each locale is free to
 // place the value wherever its own word order needs it rather than being
 // forced into English's ordering via a fixed placeholder.
+// Pulled out to a standalone const, not just written inline under `common`
+// below, so battle.log's freezeTick() (upgrades/56-i18n-battle-cluster.md)
+// can reuse the exact same translated stat names without a self-reference
+// back into the `en` object literal it's still being constructed inside of.
+const STATS = {
+  hp: "HP",
+  atk: "Attack",
+  def: "Defense",
+  spatk: "Sp. Atk",
+  spdef: "Sp. Def",
+  spd: "Speed",
+};
+
+// Same reuse reasoning as STATS above -- battle.log's statusTick()/
+// statusInflicted() and lib/pokemonDisplay.ts's moveEffectText()/
+// moveTooltip() (via a dict param, upgrades/56-i18n-battle-cluster.md) all
+// need the same 5 status display names. One capitalized form ("Bleeding"),
+// lowercased at the start of a sentence by whoever renders it -- matches
+// English capitalization rules and is a harmless no-op for Spanish, which
+// capitalizes adjectives the same way regardless of sentence position.
+const STATUS_ADJECTIVE = {
+  bleed: "Bleeding",
+  blind: "Blinded",
+  poison: "Poisoned",
+  burn: "Burned",
+  freeze: "Frozen",
+};
+
+// The bare noun/verb form ("Bleed", not "Bleeding") -- used where the
+// original text used `status.charAt(0).toUpperCase() + status.slice(1)`
+// directly on the StatusKind literal (moveEffectText's short label,
+// moveTooltip's "guarantees {status} on the enemy" sentence).
+const STATUS_NOUN = {
+  bleed: "Bleed",
+  blind: "Blind",
+  poison: "Poison",
+  burn: "Burn",
+  freeze: "Freeze",
+};
+
 const en = {
   common: {
     appName: "Kanto Pokédex",
@@ -50,20 +90,20 @@ const en = {
     // duplicated per screen -- these render identically everywhere a stat
     // bar or a grid/list toggle shows up (upgrades/55-i18n-collection-
     // cluster.md).
-    stats: {
-      hp: "HP",
-      atk: "Attack",
-      def: "Defense",
-      spatk: "Sp. Atk",
-      spdef: "Sp. Def",
-      spd: "Speed",
-    },
+    stats: STATS,
     viewToggle: {
       grid: "▦ Grid",
       list: "☰ List",
     },
     backToList: "← Back to list",
     cancel: "Cancel",
+    // "Shiny" stays untranslated in both locales, same jargon-word call as
+    // ATK/DEF (battle.moveEffect.statAbbrev) -- caught as a leftover
+    // hardcoded string in 5 places (Dashboard, Inventory x3, FighterCard)
+    // while wiring step 56's FighterCard, fixed here for all of them at
+    // once rather than only the one this step technically owns.
+    shinyBadge: "✨ Shiny",
+    starterBadge: "⭐ Starter",
     // "All Types" is also a sentinel *value* compared via strict equality in
     // lib/pokemonFilters.ts/lib/pokedex.ts (untouched, out of scope) -- the
     // <select>'s displayed label is decoupled from its value wherever this
@@ -251,7 +291,247 @@ const en = {
       skip: "Skip",
     },
   },
-  battle: {},
+  battle: {
+    // upgrades/56-i18n-battle-cluster.md's cluster: Team Picker, Battle
+    // Arena (bot + online), Online Battle (setup/waiting/picking/battling/
+    // rematch), room/chat. The battle log itself is rendered from
+    // lib/battleEngine.ts's structured BattleLogEvent[] (that engine change
+    // is this step's own biggest piece -- it used to build English text
+    // directly) via lib/i18n/renderBattleLogEvent.ts, which reads every
+    // entry under `log` below.
+    statusAdjective: STATUS_ADJECTIVE,
+    statusNoun: STATUS_NOUN,
+    log: {
+      moveDetailDamage: (type: string, power: number) => `${type}, ${power} Pwr`,
+      unlimitedUses: "unlimited uses",
+      usesLeft: (remaining: number, max: number) => `${remaining}/${max} uses left`,
+      moveUsedLine: (attacker: string, move: string, detail: string, usesText: string) =>
+        `${attacker} used [${move}] (${detail} | ${usesText})!`,
+      // Fixed placeholder multiplier text regardless of the move's actual
+      // computed multiplier (e.g. a double-super-effective 4x hit still
+      // reads "(2.0x)") -- a pre-existing quirk of the original English
+      // copy, preserved as-is rather than "fixed" during a translation-only
+      // step.
+      superEffective: "⚡ SUPER EFFECTIVE! (2.0x)",
+      noEffect: "🛡️ NO EFFECT (0.0x)",
+      notVeryEffective: "🛡️ Not very effective... (0.5x)",
+      normalHit: "💥 Normal Hit (1.0x)",
+      dodged: (defender: string) => `💨 ${defender} dodged the attack!`,
+      blindMiss: (attacker: string) => `🌀 ${attacker} is blinded and flailed, missing the attack!`,
+      selfHit: (attacker: string) => `🌀 ${attacker} is confused! It hurt itself in its confusion!`,
+      allyHit: (attacker: string, ally: string) => `🌀 ${attacker} is confused and attacks its own ally, ${ally}!`,
+      dealtDamage: (target: string, amount: number, hpAfter: number) => `Dealt ${amount} damage! ${target} HP: ${hpAfter}`,
+      shieldAbsorbedAll: (amount: number) => `🛡️ Shield absorbed all ${amount} damage!`,
+      shieldAbsorbedPartial: (absorbed: number, dealt: number, target: string, hpAfter: number) =>
+        `🛡️ Shield absorbed ${absorbed} damage! Dealt ${dealt} damage! ${target} HP: ${hpAfter}`,
+      statusInflicted: (target: string, adjective: string) => `${target} is ${adjective}!`,
+      drained: (attacker: string, amount: number, hpAfter: number, maxHp: number) =>
+        `🩸 ${attacker} drained ${amount} HP! (${hpAfter}/${maxHp})`,
+      statUp: (target: string, statName: string, multiplier: number, turns: number) =>
+        `✨ ${target}'s ${statName} rose to x${multiplier} for ${turns} turns!`,
+      healed: (target: string, amount: number, hpAfter: number, maxHp: number) =>
+        `💚 ${target} healed ${amount} HP! (${hpAfter}/${maxHp})`,
+      shielded: (target: string, amount: number, total: number) =>
+        `🛡️ ${target} gained a ${amount}-point shield! (total: ${total})`,
+      cleansed: (target: string) => `🌿 ${target}'s status ailments were cleansed!`,
+      statDown: (target: string, statName: string, multiplier: number, turns: number) =>
+        `💢 ${target}'s ${statName} fell to x${multiplier} for ${turns} turns!`,
+      shieldDestroyed: (target: string) => `💥 ${target}'s shield was destroyed!`,
+      confused: (target: string, turns: number) => `🌀 ${target} is confused about who to attack, for ${turns} turns!`,
+      statusTick: (status: "bleed" | "poison" | "burn", target: string, amount: number, turnsLeft: number) => {
+        const emoji = status === "bleed" ? "🩸" : status === "poison" ? "☠️" : "🔥";
+        const noun = status;
+        const wornOff = status === "burn" ? "the burn wore off" : status === "bleed" ? "bleeding wore off" : "poison wore off";
+        const remaining = turnsLeft > 0 ? ` (${turnsLeft} turn${turnsLeft === 1 ? "" : "s"} left)` : ` — ${wornOff}.`;
+        return `${emoji} ${target} takes ${amount} ${noun} damage!${remaining}`;
+      },
+      freezeTick: (target: string, turnsLeft: number) => {
+        const remaining = turnsLeft > 0 ? ` (${turnsLeft} turn${turnsLeft === 1 ? "" : "s"} left)` : " — it thawed out.";
+        return `❄️ ${target} is frozen, sapping its ${STATS.atk}, ${STATS.def} and ${STATS.spd}!${remaining}`;
+      },
+      statModExpired: (target: string, statName: string, wasBuff: boolean) =>
+        `${wasBuff ? "💪" : "💢"} ${target}'s ${statName} ${wasBuff ? "boost" : "drop"} wore off!`,
+      confusionExpired: (target: string) => `🌀 Confused no longer — ${target}'s attacks aimed correctly again.`,
+      fainted: (pokemon: string) => `${pokemon} fainted!`,
+      faintedForcesSwitch: (pokemon: string, slot: number) => `${pokemon} fainted! Player ${slot} must send out another Pokémon.`,
+      switched: (from: string, to: string) => `↩️ ${from} is withdrawn! ${to}, go!`,
+    },
+    // lib/pokemonDisplay.ts's moveEffectText()/moveTooltip() -- shared with
+    // step 55 (coordinated there, see that step's "no changes needed"
+    // note: Collection cluster never calls these two, only Battle does).
+    moveEffect: {
+      // MoveButton's own meta-line format ("3/5 uses"), distinct from the
+      // battle log's usesLeft() ("3/5 uses left") -- same numbers, terser
+      // phrasing to fit the button.
+      usesFraction: (left: number, max: number) => `${left}/${max} uses`,
+      pwr: (power: number) => `${power} Pwr`,
+      drainShort: (power: number, pct: number) => `${power} Pwr, ${pct}% HP drain`,
+      confusedTurnsShort: (turns: number) => `${turns} turns confused`,
+      // ATK/DEF stay as compact HUD-style abbreviations in both locales
+      // (like HP) rather than the full translated stat words -- this is
+      // the same jargon-abbreviation call as keeping species/move/type
+      // names untranslated, just extended to these two battle-HUD labels
+      // (FighterCard's StatusBadges already hardcoded them the same way).
+      statAbbrev: { atk: "ATK", def: "DEF" },
+      statUpShort: (pct: number, statAbbrev: string, turns: number) => `+${pct}% ${statAbbrev}, ${turns} turns`,
+      healShort: (pct: number) => `+${pct}% HP`,
+      shieldShort: (amount: number) => `+${amount} Shield`,
+      cleanse: "Cleanse",
+      statDownShort: (pct: number, statAbbrev: string, turns: number) => `${pct}% ${statAbbrev}, ${turns} turns`,
+      removeShield: "Remove Shield",
+    },
+    moveTooltip: {
+      unlimitedUses: "unlimited uses",
+      usesPerBattle: (n: number) => `${n} uses per battle`,
+      base: (name: string, type: string, usesText: string) => `${name} (${type}-type, ${usesText})`,
+      categoryPhysical: "physical",
+      categorySpecial: "special",
+      damage: (base: string, category: string, power: number) => `${base}: a ${category} attack, ${power} power.`,
+      drain: (base: string, category: string, power: number, pct: number) =>
+        `${base}: a ${category} attack, ${power} power, that also restores ${pct}% of the raw damage dealt as HP to the user.`,
+      redirect: (base: string, turns: number) =>
+        `${base}: confuses the target for ${turns} turns -- while confused, its own attacks land on itself or a living ally instead of the opponent.`,
+      buffStatUp: (base: string, statName: string, multiplier: number, turns: number) =>
+        `${base}: raises the target's ${statName} to x${multiplier} for ${turns} turns.`,
+      buffHeal: (base: string, pct: number) => `${base}: heals the target for ${pct}% of its max HP.`,
+      buffShield: (base: string, amount: number) => `${base}: grants the target a ${amount}-point shield that absorbs incoming damage before HP.`,
+      buffCleanse: (base: string) => `${base}: cleanses bleed/blind/poison/burn/freeze from the target.`,
+      debuffStatDown: (base: string, statName: string, multiplier: number, turns: number) =>
+        `${base}: lowers the enemy's ${statName} to x${multiplier} for ${turns} turns.`,
+      debuffRemoveShield: (base: string) => `${base}: destroys the enemy's shield.`,
+      debuffInflictStatus: (base: string, status: string) =>
+        `${base}: guarantees ${status} on the enemy -- no chance roll, unlike the incidental version.`,
+    },
+    fighterCard: {
+      statusTooltip: {
+        bleed: "Bleeding: loses 5% of max HP at the start of each of its turns. Inflicted by physical-category hits; lasts 3 turns.",
+        blind: "Blinded: 25% chance to miss with its own attack each turn. Inflicted by special-category hits; lasts 3 turns.",
+        poison:
+          "Poisoned: loses 5% of max HP at the start of each of its turns. Inflicted by Poison-type moves; lasts 3 turns. Can stack with Bleeding since it's gated by move type, not category.",
+        burn:
+          "Burning: loses 5% of max HP at the start of each of its turns (10% against Grass-type Pokemon). Inflicted by Fire-type moves; lasts 3 turns. Can't be inflicted on Water-type Pokemon.",
+        freeze:
+          "Frozen: Attack, Special Attack, Defense, Special Defense and Speed all reduced by 30% while active. Inflicted by Ice-type moves; lasts 3 turns. Can't be inflicted on Fire-type Pokemon.",
+      },
+      atkModTooltip: (multiplier: number, pct: number, turns: number) =>
+        `Attack is x${multiplier} (${pct > 0 ? "+" : ""}${pct}%) for ${turns} more turn${turns === 1 ? "" : "s"}.`,
+      defModTooltip: (multiplier: number, pct: number, turns: number) =>
+        `Defense is x${multiplier} (${pct > 0 ? "+" : ""}${pct}%) for ${turns} more turn${turns === 1 ? "" : "s"}.`,
+      shieldTooltip: (points: number) => `A shield absorbs the next ${points} damage before HP is touched. No duration -- it just runs out.`,
+      redirectTooltip: (turns: number) =>
+        `Confused: this fighter's own attacks land on itself or a living ally instead of the opponent, for ${turns} more turn${turns === 1 ? "" : "s"}.`,
+      fainted: "💀 Fainted",
+      switchTo: (name: string) => `Switch to ${name}`,
+      faintedTitle: (name: string) => `${name} (fainted)`,
+      shieldLabel: "Shield",
+      confusedLabel: "Confused",
+    },
+    allyPicker: {
+      chooseTarget: "Choose a target:",
+      targetSelf: (name: string) => `Target yourself (${name})`,
+      targetOther: (name: string) => `Target ${name}`,
+      self: "Self",
+    },
+    resultDialog: {
+      victoryHeading: "🏆 Victory!",
+      victoryBody: "Your team battled hard and came out on top!",
+      lootboxEarned: "🎁 You earned a lootbox!",
+      noLootbox: "No lootbox this time — better luck next battle.",
+      defeatHeading: "💀 Defeat",
+      defeatBody: "Better luck next time!",
+      continue: "Continue",
+      openItNow: "📦 Open it now",
+    },
+    teamPicker: {
+      pickYourTeam: (selected: number, total: number) => `Pick your team (${selected}/${total})`,
+      chooseHint: "Choose 3 Pokémon. Your opponent won't see your picks until you both lock in.",
+      noPokemon: "You don't own any Pokémon yet.",
+      noMatches: "No Pokémon match your filters.",
+      selectedCount: (selected: number, total: number) => `${selected}/${total} selected`,
+      lockingIn: "Locking in...",
+      lockInTeam: "🎯 Lock In Team",
+      lockInError: "⚠️ Couldn't lock in your team — try again.",
+    },
+    chat: {
+      title: "Chat",
+      empty: "No messages yet — say hi!",
+      you: "You",
+      placeholder: "Type a message...",
+      send: "Send",
+    },
+    arena: {
+      title: "⚔️ Battle Arena",
+      needThree: "You need at least 3 Pokémon to start a 3v3 battle. This shouldn't normally happen — every account starts with 3 starters.",
+      startBanner: (you: string, opp: string) => `=== ⚔️ 3v3 BATTLE START: ${you} vs a wild ${opp} ===`,
+      yourTeam: (names: string) => `• Your team: ${names}`,
+      opponentTeam: (names: string) => `• Opponent's team: ${names}\n`,
+      selectPrompt: "👇 Select an Attack Move or switch Pokémon below.",
+      roundHeader: (n: number) => `\n--- 🥊 Round ${n} ---`,
+      noUsesLeft: (move: string) => `⚠️ No uses left for ${move} this battle!`,
+      victory: "\n🏆 VICTORY! The opponent's whole team fainted!",
+      defeat: "\n💀 DEFEAT! Your whole team fainted!",
+      couldntOpenLootbox: (error: string) => `⚠️ Couldn't open lootbox: ${error}`,
+      botTeamNote: "🎲 Bot team randomly generated, matched to your team's level",
+      changeTeam: "🔁 Change Team",
+      youPrefix: "You: ",
+      chooseNextPokemon: "Choose your next Pokémon:",
+      selectAttackMove: "Select Attack Move:",
+      pauseBattle: "⏸️ Pause Battle",
+      newBattle: "⚡ New Battle",
+      autoBattle: "⚡ Auto Battle",
+      resetBattle: "🔄 Reset Battle",
+      opponentChoosing: "Opponent is choosing a new Pokémon...",
+    },
+    online: {
+      title: "🌐 Online Battle",
+      setupLabel: "Online battle (3v3)",
+      createRoom: "🆕 Create Room",
+      or: "or",
+      joinCodePlaceholder: "Enter room code",
+      joinRoom: "Join Room",
+      waitingLabel: "Waiting for opponent",
+      cancel: "Cancel",
+      roomCreated: (code: string) => `Room created! Share code ${code} with your opponent. Waiting for them to join...`,
+      joinedPickTeam: "Joined room! Pick your team.",
+      roomCodeLabel: "Room Code:",
+      leaveRoom: "Leave Room",
+      teamLockedIn: "Team locked in",
+      waitingOpponentLockIn: "Waiting for your opponent to lock in their team...",
+      opponentJoinedPickTeam: "Opponent joined! Pick your team.",
+      opponentLockedInPickYours: "Opponent has locked in their team — pick yours!",
+      roomCodeShare: (code: string) => `Room Code: ${code} — share this with your opponent`,
+      youPrefix: "You: ",
+      opponentPrefix: "Opponent: ",
+      chooseNextPokemon: "Choose your next Pokémon:",
+      selectAttackMove: "Select Attack Move:",
+      opponentChoosing: "Opponent is choosing a new Pokémon...",
+      startBanner: (you: string, opp: string) => `=== ⚔️ 3v3 ONLINE BATTLE START: ${you} vs ${opp} ===`,
+      yourTeam: (names: string) => `• Your team: ${names}`,
+      opponentTeam: (names: string) => `• Opponent's team: ${names}\n`,
+      selectPrompt: "👇 Select an Attack Move or switch Pokémon below.",
+      roundHeader: (n: number) => `\n--- 🥊 Round ${n} ---`,
+      syncedFromServer: "(synced from server)",
+      victory: "\n🏆 VICTORY! The opponent's whole team fainted!",
+      defeat: "\n💀 DEFEAT! Your whole team fainted!",
+      youWon: "🏆 You won the battle!",
+      youLost: "💀 You lost the battle.",
+      yourPokemonFainted: "💀 Your Pokémon fainted! Choose your next Pokémon below.",
+      opponentPokemonFaintedWaiting: "Opponent's Pokémon fainted — waiting for them to send out a new one...",
+      selectNextMove: "👇 Select your next Attack Move or switch Pokémon!",
+      opponentLeft: "\n⚠️ Your opponent left the room.",
+      opponentDisconnected: "Opponent disconnected.",
+      actionSubmittedWaiting: "Action submitted — waiting for opponent...",
+      opponentActedWaiting: "Opponent has acted — waiting for you...",
+      couldntOpenLootbox: (error: string) => `⚠️ Couldn't open lootbox: ${error}`,
+      enterRoomCodeFirst: "⚠️ Enter a room code first.",
+      genericError: (error: string) => `⚠️ ${error}`,
+      rematch: "Rematch?",
+      requestRematch: "🔁 Request Rematch",
+      rematchRequestedWaiting: "Rematch requested — waiting for your opponent to accept...",
+      opponentWantsRematch: "Your opponent wants a rematch!",
+      acceptRematch: "✅ Accept Rematch",
+    },
+  },
   social: {},
 };
 // Deliberately not `as const`: that would infer every string as its own

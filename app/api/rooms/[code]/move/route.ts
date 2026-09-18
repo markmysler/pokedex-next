@@ -147,7 +147,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
     if (finalizeError) return NextResponse.json({ error: finalizeError.message }, { status: 500 });
 
     const payload = {
-      log: [`↩️ ${fromName} is withdrawn! ${toName}, go!`],
+      log: [{ type: "switched" as const, from: fromName, to: toName }],
       turnCount: newState.turnCount,
       team1: newState.team1,
       team2: newState.team2,

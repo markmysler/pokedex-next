@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import type { RoomSlot } from "@/types/pokemon";
-import type { BattleEvent } from "@/lib/battleEngine";
+import type { BattleEvent, BattleLogEvent } from "@/lib/battleEngine";
 
 export interface RoundResultPayload {
-  log: string[];
+  log: BattleLogEvent[];
   turnCount: number;
   team1: unknown;
   team2: unknown;

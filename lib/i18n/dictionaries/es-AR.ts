@@ -9,6 +9,33 @@
 // only UI chrome and prose gets translated.
 import type en from "./en";
 
+// Same reuse reasoning as en.ts's own STATS/STATUS_ADJECTIVE/STATUS_NOUN
+// consts -- battle.log's freezeTick()/statusTick() needs these same
+// translated words without a self-reference into the `esAR` object literal
+// it's still being constructed inside of.
+const STATS = {
+  hp: "PS",
+  atk: "Ataque",
+  def: "Defensa",
+  spatk: "At. Esp.",
+  spdef: "Def. Esp.",
+  spd: "Velocidad",
+};
+const STATUS_ADJECTIVE = {
+  bleed: "Sangrando",
+  blind: "Cegado",
+  poison: "Envenenado",
+  burn: "Quemado",
+  freeze: "Congelado",
+};
+const STATUS_NOUN = {
+  bleed: "Sangrado",
+  blind: "Ceguera",
+  poison: "Veneno",
+  burn: "Quemadura",
+  freeze: "Congelación",
+};
+
 const esAR: typeof en = {
   common: {
     appName: "Kanto Pokédex",
@@ -40,20 +67,15 @@ const esAR: typeof en = {
     },
     signOut: "Cerrar sesión",
     signingOut: "Cerrando sesión…",
-    stats: {
-      hp: "PS",
-      atk: "Ataque",
-      def: "Defensa",
-      spatk: "At. Esp.",
-      spdef: "Def. Esp.",
-      spd: "Velocidad",
-    },
+    stats: STATS,
     viewToggle: {
       grid: "▦ Grilla",
       list: "☰ Lista",
     },
     backToList: "← Volver a la lista",
     cancel: "Cancelar",
+    shinyBadge: "✨ Shiny",
+    starterBadge: "⭐ Inicial",
     allTypesLabel: "Todos los tipos",
     filterBar: {
       searchPlaceholder: "Buscar por nombre, # o apodo...",
@@ -224,7 +246,229 @@ const esAR: typeof en = {
       skip: "Saltar",
     },
   },
-  battle: {},
+  battle: {
+    // Adjectives below use the masculine-default form throughout (e.g.
+    // "está envenenado," not "-a") -- no per-species grammatical gender
+    // data exists anywhere in this codebase to agree with, same fallback
+    // real Pokémon game localizations use when a creature's gender is
+    // unknown or mixed at runtime.
+    statusAdjective: STATUS_ADJECTIVE,
+    statusNoun: STATUS_NOUN,
+    log: {
+      moveDetailDamage: (type: string, power: number) => `${type}, ${power} Pot.`,
+      unlimitedUses: "usos ilimitados",
+      usesLeft: (remaining: number, max: number) => `${remaining}/${max} usos restantes`,
+      moveUsedLine: (attacker: string, move: string, detail: string, usesText: string) =>
+        `${attacker} usó [${move}] (${detail} | ${usesText})!`,
+      superEffective: "⚡ ¡SÚPER EFECTIVO! (2.0x)",
+      noEffect: "🛡️ SIN EFECTO (0.0x)",
+      notVeryEffective: "🛡️ No muy efectivo... (0.5x)",
+      normalHit: "💥 Golpe normal (1.0x)",
+      dodged: (defender: string) => `💨 ¡${defender} esquivó el ataque!`,
+      blindMiss: (attacker: string) => `🌀 ¡${attacker} está cegado y falló el ataque!`,
+      selfHit: (attacker: string) => `🌀 ¡${attacker} está confundido! ¡Se lastimó a sí mismo en su confusión!`,
+      allyHit: (attacker: string, ally: string) => `🌀 ¡${attacker} está confundido y ataca a su propio aliado, ${ally}!`,
+      dealtDamage: (target: string, amount: number, hpAfter: number) => `¡Hizo ${amount} de daño! PS de ${target}: ${hpAfter}`,
+      shieldAbsorbedAll: (amount: number) => `🛡️ ¡El escudo absorbió los ${amount} de daño!`,
+      shieldAbsorbedPartial: (absorbed: number, dealt: number, target: string, hpAfter: number) =>
+        `🛡️ ¡El escudo absorbió ${absorbed} de daño! ¡Hizo ${dealt} de daño! PS de ${target}: ${hpAfter}`,
+      statusInflicted: (target: string, adjective: string) => `¡${target} quedó ${adjective}!`,
+      drained: (attacker: string, amount: number, hpAfter: number, maxHp: number) =>
+        `🩸 ¡${attacker} drenó ${amount} PS! (${hpAfter}/${maxHp})`,
+      statUp: (target: string, statName: string, multiplier: number, turns: number) =>
+        `✨ ¡${statName} de ${target} subió a x${multiplier} por ${turns} turnos!`,
+      healed: (target: string, amount: number, hpAfter: number, maxHp: number) =>
+        `💚 ¡${target} recuperó ${amount} PS! (${hpAfter}/${maxHp})`,
+      shielded: (target: string, amount: number, total: number) =>
+        `🛡️ ¡${target} ganó un escudo de ${amount} puntos! (total: ${total})`,
+      cleansed: (target: string) => `🌿 ¡Los estados alterados de ${target} fueron curados!`,
+      statDown: (target: string, statName: string, multiplier: number, turns: number) =>
+        `💢 ¡${statName} de ${target} bajó a x${multiplier} por ${turns} turnos!`,
+      shieldDestroyed: (target: string) => `💥 ¡El escudo de ${target} fue destruido!`,
+      confused: (target: string, turns: number) => `🌀 ¡${target} está confundido sobre a quién atacar, por ${turns} turnos!`,
+      statusTick: (status: "bleed" | "poison" | "burn", target: string, amount: number, turnsLeft: number) => {
+        const emoji = status === "bleed" ? "🩸" : status === "poison" ? "☠️" : "🔥";
+        const noun = status === "bleed" ? "sangrado" : status === "poison" ? "veneno" : "quemadura";
+        const wornOff = status === "bleed" ? "el sangrado se detuvo" : status === "poison" ? "el veneno se disipó" : "la quemadura se curó";
+        const remaining = turnsLeft > 0 ? ` (quedan ${turnsLeft} turno${turnsLeft === 1 ? "" : "s"})` : ` — ${wornOff}.`;
+        return `${emoji} ¡${target} recibe ${amount} de daño por ${noun}!${remaining}`;
+      },
+      freezeTick: (target: string, turnsLeft: number) => {
+        const remaining = turnsLeft > 0 ? ` (quedan ${turnsLeft} turno${turnsLeft === 1 ? "" : "s"})` : " — se descongeló.";
+        return `❄️ ¡${target} está congelado, lo que reduce su ${STATS.atk}, ${STATS.def} y ${STATS.spd}!${remaining}`;
+      },
+      statModExpired: (target: string, statName: string, wasBuff: boolean) =>
+        `${wasBuff ? "💪" : "💢"} ¡${wasBuff ? "El aumento" : "La baja"} de ${statName} de ${target} se agotó!`,
+      confusionExpired: (target: string) => `🌀 Ya no está confundido — los ataques de ${target} volvieron a apuntar bien.`,
+      fainted: (pokemon: string) => `¡${pokemon} se debilitó!`,
+      faintedForcesSwitch: (pokemon: string, slot: number) => `¡${pokemon} se debilitó! El Jugador ${slot} debe enviar otro Pokémon.`,
+      switched: (from: string, to: string) => `↩️ ¡${from} vuelve! ¡Adelante, ${to}!`,
+    },
+    moveEffect: {
+      usesFraction: (left: number, max: number) => `${left}/${max} usos`,
+      pwr: (power: number) => `${power} Pot.`,
+      drainShort: (power: number, pct: number) => `${power} Pot., ${pct}% drenaje de PS`,
+      confusedTurnsShort: (turns: number) => `${turns} turnos confundido`,
+      statAbbrev: { atk: "ATK", def: "DEF" },
+      statUpShort: (pct: number, statAbbrev: string, turns: number) => `+${pct}% ${statAbbrev}, ${turns} turnos`,
+      healShort: (pct: number) => `+${pct}% PS`,
+      shieldShort: (amount: number) => `+${amount} escudo`,
+      cleanse: "Curar",
+      statDownShort: (pct: number, statAbbrev: string, turns: number) => `${pct}% ${statAbbrev}, ${turns} turnos`,
+      removeShield: "Destruir escudo",
+    },
+    moveTooltip: {
+      unlimitedUses: "usos ilimitados",
+      usesPerBattle: (n: number) => `${n} usos por batalla`,
+      base: (name: string, type: string, usesText: string) => `${name} (tipo ${type}, ${usesText})`,
+      categoryPhysical: "físico",
+      categorySpecial: "especial",
+      damage: (base: string, category: string, power: number) => `${base}: un ataque ${category}, ${power} de poder.`,
+      drain: (base: string, category: string, power: number, pct: number) =>
+        `${base}: un ataque ${category}, ${power} de poder, que además restaura ${pct}% del daño bruto hecho como PS para quien lo usa.`,
+      redirect: (base: string, turns: number) =>
+        `${base}: confunde al objetivo por ${turns} turnos -- mientras está confundido, sus propios ataques caen sobre sí mismo o un aliado con vida en vez del rival.`,
+      buffStatUp: (base: string, statName: string, multiplier: number, turns: number) =>
+        `${base}: sube el/la ${statName} del objetivo a x${multiplier} por ${turns} turnos.`,
+      buffHeal: (base: string, pct: number) => `${base}: cura al objetivo el ${pct}% de sus PS máximos.`,
+      buffShield: (base: string, amount: number) => `${base}: le da al objetivo un escudo de ${amount} puntos que absorbe el daño antes que los PS.`,
+      buffCleanse: (base: string) => `${base}: cura sangrado/ceguera/veneno/quemadura/congelación del objetivo.`,
+      debuffStatDown: (base: string, statName: string, multiplier: number, turns: number) =>
+        `${base}: baja el/la ${statName} del rival a x${multiplier} por ${turns} turnos.`,
+      debuffRemoveShield: (base: string) => `${base}: destruye el escudo del rival.`,
+      debuffInflictStatus: (base: string, status: string) =>
+        `${base}: garantiza ${status} en el rival -- sin tirada de probabilidad, a diferencia de la versión incidental.`,
+    },
+    fighterCard: {
+      statusTooltip: {
+        bleed: "Sangrado: pierde 5% de sus PS máximos al empezar cada uno de sus turnos. Lo provocan golpes de categoría física; dura 3 turnos.",
+        blind: "Ceguera: 25% de probabilidad de fallar su propio ataque cada turno. La provocan golpes de categoría especial; dura 3 turnos.",
+        poison:
+          "Veneno: pierde 5% de sus PS máximos al empezar cada uno de sus turnos. Lo provocan movimientos de tipo Veneno; dura 3 turnos. Puede combinarse con Sangrado porque depende del tipo de movimiento, no de la categoría.",
+        burn:
+          "Quemadura: pierde 5% de sus PS máximos al empezar cada uno de sus turnos (10% contra Pokémon de tipo Planta). La provocan movimientos de tipo Fuego; dura 3 turnos. No se le puede provocar a un Pokémon de tipo Agua.",
+        freeze:
+          "Congelado: Ataque, Ataque Especial, Defensa, Defensa Especial y Velocidad se reducen todos un 30% mientras está activo. Lo provocan movimientos de tipo Hielo; dura 3 turnos. No se le puede provocar a un Pokémon de tipo Fuego.",
+      },
+      atkModTooltip: (multiplier: number, pct: number, turns: number) =>
+        `El Ataque está en x${multiplier} (${pct > 0 ? "+" : ""}${pct}%) por ${turns} turno${turns === 1 ? "" : "s"} más.`,
+      defModTooltip: (multiplier: number, pct: number, turns: number) =>
+        `La Defensa está en x${multiplier} (${pct > 0 ? "+" : ""}${pct}%) por ${turns} turno${turns === 1 ? "" : "s"} más.`,
+      shieldTooltip: (points: number) => `Un escudo absorbe los próximos ${points} de daño antes de tocar los PS. No tiene duración -- simplemente se agota.`,
+      redirectTooltip: (turns: number) =>
+        `Confundido: los ataques de este Pokémon caen sobre sí mismo o un aliado con vida en vez del rival, por ${turns} turno${turns === 1 ? "" : "s"} más.`,
+      fainted: "💀 Debilitado",
+      switchTo: (name: string) => `Cambiar a ${name}`,
+      faintedTitle: (name: string) => `${name} (debilitado)`,
+      shieldLabel: "Escudo",
+      confusedLabel: "Confundido",
+    },
+    allyPicker: {
+      chooseTarget: "Elegí un objetivo:",
+      targetSelf: (name: string) => `Elegirte a vos mismo (${name})`,
+      targetOther: (name: string) => `Elegir a ${name}`,
+      self: "Vos mismo",
+    },
+    resultDialog: {
+      victoryHeading: "🏆 ¡Victoria!",
+      victoryBody: "¡Tu equipo peleó con todo y salió arriba!",
+      lootboxEarned: "🎁 ¡Ganaste una lootbox!",
+      noLootbox: "Esta vez no hubo lootbox — mejor suerte en la próxima.",
+      defeatHeading: "💀 Derrota",
+      defeatBody: "¡Mejor suerte la próxima vez!",
+      continue: "Continuar",
+      openItNow: "📦 Abrirla ahora",
+    },
+    teamPicker: {
+      pickYourTeam: (selected: number, total: number) => `Elegí tu equipo (${selected}/${total})`,
+      chooseHint: "Elegí 3 Pokémon. Tu rival no va a ver tus elecciones hasta que los dos confirmen.",
+      noPokemon: "Todavía no tenés ningún Pokémon.",
+      noMatches: "Ningún Pokémon coincide con tus filtros.",
+      selectedCount: (selected: number, total: number) => `${selected}/${total} seleccionados`,
+      lockingIn: "Confirmando...",
+      lockInTeam: "🎯 Confirmar equipo",
+      lockInError: "⚠️ No se pudo confirmar tu equipo — intentá de nuevo.",
+    },
+    chat: {
+      title: "Chat",
+      empty: "Todavía no hay mensajes — ¡saludá!",
+      you: "Vos",
+      placeholder: "Escribí un mensaje...",
+      send: "Enviar",
+    },
+    arena: {
+      title: "⚔️ Arena de Batalla",
+      needThree: "Necesitás al menos 3 Pokémon para empezar una batalla 3v3. Esto no debería pasar normalmente — toda cuenta empieza con 3 iniciales.",
+      startBanner: (you: string, opp: string) => `=== ⚔️ EMPIEZA LA BATALLA 3v3: ${you} vs un ${opp} salvaje ===`,
+      yourTeam: (names: string) => `• Tu equipo: ${names}`,
+      opponentTeam: (names: string) => `• Equipo rival: ${names}\n`,
+      selectPrompt: "👇 Elegí un movimiento de ataque o cambiá de Pokémon abajo.",
+      roundHeader: (n: number) => `\n--- 🥊 Ronda ${n} ---`,
+      noUsesLeft: (move: string) => `⚠️ ¡No quedan usos de ${move} en esta batalla!`,
+      victory: "\n🏆 ¡VICTORIA! ¡Todo el equipo rival se debilitó!",
+      defeat: "\n💀 ¡DERROTA! ¡Todo tu equipo se debilitó!",
+      couldntOpenLootbox: (error: string) => `⚠️ No se pudo abrir la lootbox: ${error}`,
+      botTeamNote: "🎲 Equipo rival generado al azar, a la altura de tu equipo",
+      changeTeam: "🔁 Cambiar equipo",
+      youPrefix: "Vos: ",
+      chooseNextPokemon: "Elegí tu próximo Pokémon:",
+      selectAttackMove: "Elegí un movimiento de ataque:",
+      pauseBattle: "⏸️ Pausar batalla",
+      newBattle: "⚡ Nueva batalla",
+      autoBattle: "⚡ Batalla automática",
+      resetBattle: "🔄 Reiniciar batalla",
+      opponentChoosing: "El rival está eligiendo un nuevo Pokémon...",
+    },
+    online: {
+      title: "🌐 Batalla Online",
+      setupLabel: "Batalla online (3v3)",
+      createRoom: "🆕 Crear sala",
+      or: "o",
+      joinCodePlaceholder: "Ingresá el código de sala",
+      joinRoom: "Unirse a sala",
+      waitingLabel: "Esperando al rival",
+      cancel: "Cancelar",
+      roomCreated: (code: string) => `¡Sala creada! Compartí el código ${code} con tu rival. Esperando a que se una...`,
+      joinedPickTeam: "¡Te uniste a la sala! Elegí tu equipo.",
+      roomCodeLabel: "Código de sala:",
+      leaveRoom: "Salir de la sala",
+      teamLockedIn: "Equipo confirmado",
+      waitingOpponentLockIn: "Esperando a que tu rival confirme su equipo...",
+      opponentJoinedPickTeam: "¡Tu rival se unió! Elegí tu equipo.",
+      opponentLockedInPickYours: "Tu rival ya confirmó su equipo — ¡elegí el tuyo!",
+      roomCodeShare: (code: string) => `Código de sala: ${code} — compartilo con tu rival`,
+      youPrefix: "Vos: ",
+      opponentPrefix: "Rival: ",
+      chooseNextPokemon: "Elegí tu próximo Pokémon:",
+      selectAttackMove: "Elegí un movimiento de ataque:",
+      opponentChoosing: "El rival está eligiendo un nuevo Pokémon...",
+      startBanner: (you: string, opp: string) => `=== ⚔️ EMPIEZA LA BATALLA ONLINE 3v3: ${you} vs ${opp} ===`,
+      yourTeam: (names: string) => `• Tu equipo: ${names}`,
+      opponentTeam: (names: string) => `• Equipo rival: ${names}\n`,
+      selectPrompt: "👇 Elegí un movimiento de ataque o cambiá de Pokémon abajo.",
+      roundHeader: (n: number) => `\n--- 🥊 Ronda ${n} ---`,
+      syncedFromServer: "(sincronizado desde el servidor)",
+      victory: "\n🏆 ¡VICTORIA! ¡Todo el equipo rival se debilitó!",
+      defeat: "\n💀 ¡DERROTA! ¡Todo tu equipo se debilitó!",
+      youWon: "🏆 ¡Ganaste la batalla!",
+      youLost: "💀 Perdiste la batalla.",
+      yourPokemonFainted: "💀 ¡Tu Pokémon se debilitó! Elegí tu próximo Pokémon abajo.",
+      opponentPokemonFaintedWaiting: "El Pokémon rival se debilitó — esperando a que envíe uno nuevo...",
+      selectNextMove: "👇 ¡Elegí tu próximo movimiento de ataque o cambiá de Pokémon!",
+      opponentLeft: "\n⚠️ Tu rival dejó la sala.",
+      opponentDisconnected: "El rival se desconectó.",
+      actionSubmittedWaiting: "Acción enviada — esperando al rival...",
+      opponentActedWaiting: "El rival ya actuó — esperando tu turno...",
+      couldntOpenLootbox: (error: string) => `⚠️ No se pudo abrir la lootbox: ${error}`,
+      enterRoomCodeFirst: "⚠️ Ingresá un código de sala primero.",
+      genericError: (error: string) => `⚠️ ${error}`,
+      rematch: "¿Revancha?",
+      requestRematch: "🔁 Pedir revancha",
+      rematchRequestedWaiting: "Revancha pedida — esperando a que tu rival acepte...",
+      opponentWantsRematch: "¡Tu rival quiere revancha!",
+      acceptRematch: "✅ Aceptar revancha",
+    },
+  },
   social: {},
 };
 

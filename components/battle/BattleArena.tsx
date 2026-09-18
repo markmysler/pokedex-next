@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { BattleAction, FighterState, OwnedPokemon, RoomSlot, TeamState } from "@/types/pokemon";
-import { buildTeamState, classifyLogLine, hasLivingAlly, resolveTeamRound } from "@/lib/battleEngine";
+import { buildTeamState, hasLivingAlly, resolveTeamRound } from "@/lib/battleEngine";
 import { rollBotTeam } from "@/lib/collection";
+import { useDictionary } from "@/lib/i18n/useDictionary";
+import { renderBattleLogEvent, type RenderedLogLine } from "@/lib/i18n/renderBattleLogEvent";
+import type { Dictionary } from "@/lib/i18n/getDictionary";
 import TeamPicker from "@/components/online/TeamPicker";
 import FighterCard from "./FighterCard";
 import MoveButton from "./MoveButton";
@@ -40,14 +43,15 @@ function freshBattle(myTeam: OwnedPokemon[]): LocalBattleState {
   };
 }
 
-function startLog(battle: LocalBattleState): string[] {
+function startLog(battle: LocalBattleState, dict: Dictionary): RenderedLogLine[] {
+  const t = dict.battle.arena;
   const you = battle.team1.members[battle.team1.activeIndex].pokemon;
   const opp = battle.team2.members[battle.team2.activeIndex].pokemon;
   return [
-    `=== ⚔️ 3v3 BATTLE START: ${you.name} vs a wild ${opp.name} ===`,
-    `• Your team: ${battle.team1.members.map((m) => m.pokemon.name).join(", ")}`,
-    `• Opponent's team: ${battle.team2.members.map((m) => m.pokemon.name).join(", ")}\n`,
-    "👇 Select an Attack Move or switch Pokémon below.",
+    { text: t.startBanner(you.name, opp.name) },
+    { text: t.yourTeam(battle.team1.members.map((m) => m.pokemon.name).join(", ")) },
+    { text: t.opponentTeam(battle.team2.members.map((m) => m.pokemon.name).join(", ")) },
+    { text: t.selectPrompt },
   ];
 }
 
@@ -117,6 +121,8 @@ function firstAliveBenchIndex(team: TeamState): 0 | 1 | 2 | null {
 }
 
 export default function BattleArena({ inventory: initialInventory, typesList }: BattleArenaProps) {
+  const dict = useDictionary();
+  const t = dict.battle.arena;
   // Local copy, not just the prop directly -- `initialInventory` is a
   // server-render snapshot from when the page first loaded. A lootbox
   // opened mid-session (right after a win, via "Open it now" below)
@@ -127,7 +133,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   const [phase, setPhase] = useState<Phase>("picking");
   const [myTeam, setMyTeam] = useState<OwnedPokemon[] | null>(null);
   const [battle, setBattle] = useState<LocalBattleState | null>(null);
-  const [log, setLog] = useState<string[]>([]);
+  const [log, setLog] = useState<RenderedLogLine[]>([]);
   const [autoRunning, setAutoRunning] = useState(false);
   const [resultDialog, setResultDialog] = useState<{ won: boolean; lootboxGranted: boolean; lootboxId: string | null } | null>(null);
   const [revealPokemon, setRevealPokemon] = useState<OwnedPokemon | null>(null);
@@ -137,7 +143,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   const [pendingBuffMoveIndex, setPendingBuffMoveIndex] = useState<number | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
-  function appendLog(lines: string[]) {
+  function appendLog(lines: RenderedLogLine[]) {
     setLog((prev) => [...prev, ...lines]);
   }
 
@@ -149,7 +155,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     const res = await fetch(`/api/inventory/lootboxes/${lootboxId}/open`, { method: "POST" });
     const data = await res.json();
     if (data.error) {
-      appendLog([`⚠️ Couldn't open lootbox: ${data.error}`]);
+      appendLog([{ text: t.couldntOpenLootbox(data.error) }]);
       return;
     }
     const opened = data.pokemon as OwnedPokemon;
@@ -168,7 +174,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     setPendingBuffMoveIndex(null);
     const fresh = freshBattle(team);
     setBattle(fresh);
-    setLog(startLog(fresh));
+    setLog(startLog(fresh, dict));
     setPhase("battling");
   }
 
@@ -180,7 +186,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     setPendingBuffMoveIndex(null);
     const fresh = freshBattle(myTeam);
     setBattle(fresh);
-    setLog(startLog(fresh));
+    setLog(startLog(fresh, dict));
   }
 
   function changeTeam() {
@@ -209,7 +215,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
       const toName = target.pokemon.name;
       const team1: TeamState = { members: battle.team1.members, activeIndex: action.teamIndex };
       const nextTurn = battle.turnCount + 1;
-      appendLog([`\n--- 🥊 Round ${nextTurn} ---`, `↩️ ${fromName} is withdrawn! ${toName}, go!`]);
+      appendLog([{ text: t.roundHeader(nextTurn) }, renderBattleLogEvent({ type: "switched", from: fromName, to: toName }, dict)]);
       setBattle({ ...battle, team1, awaitingForcedSwitch: null, turnCount: nextTurn });
       return;
     }
@@ -220,7 +226,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
       if (!move) return;
       const usesLeft = active.moveUses[action.moveIndex];
       if (usesLeft === 0) {
-        appendLog([`⚠️ No uses left for ${move.name} this battle!`]);
+        appendLog([{ text: t.noUsesLeft(move.name) }]);
         return;
       }
     } else {
@@ -234,7 +240,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     const nextTurn = battle.turnCount + 1;
     const result = resolveTeamRound(team1, team2, action, action2);
 
-    appendLog([`\n--- 🥊 Round ${nextTurn} ---`, ...result.log]);
+    appendLog([{ text: t.roundHeader(nextTurn) }, ...result.log.map((event) => renderBattleLogEvent(event, dict))]);
 
     // One sound per structured event (upgrades/10-battle-depth.md's `events`
     // array) rather than parsing the log strings above.
@@ -247,7 +253,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     if (result.over) {
       setAutoRunning(false);
       const won = result.winner === 1;
-      appendLog([won ? "\n🏆 VICTORY! The opponent's whole team fainted!" : "\n💀 DEFEAT! Your whole team fainted!"]);
+      appendLog([{ text: won ? t.victory : t.defeat, kind: won ? "win" : "loss" }]);
       if (won) playVictorySound();
       else playDefeatSound();
       // Server rolls the lootbox chance itself — this only ever reports
@@ -288,11 +294,12 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
       const toName = battle.team2.members[teamIndex].pokemon.name;
       const team2: TeamState = { members: battle.team2.members, activeIndex: teamIndex };
       const nextTurn = battle.turnCount + 1;
-      appendLog([`\n--- 🥊 Round ${nextTurn} ---`, `↩️ ${fromName} is withdrawn! ${toName}, go!`]);
+      appendLog([{ text: t.roundHeader(nextTurn) }, renderBattleLogEvent({ type: "switched", from: fromName, to: toName }, dict)]);
       setBattle({ ...battle, team2, awaitingForcedSwitch: null, turnCount: nextTurn });
     }, 600);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [battle]);
 
   // Auto-battle scheduling: this effect's own cleanup (returned setTimeout
@@ -325,7 +332,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   if (inventory.length < 3) {
     return (
       <div className="card">
-        <p>You need at least 3 Pokémon to start a 3v3 battle. This shouldn&apos;t normally happen — every account starts with 3 starters.</p>
+        <p>{t.needThree}</p>
       </div>
     );
   }
@@ -352,7 +359,19 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
         />
       )}
       {revealPokemon && (
-        <LootboxRevealDialog pokemon={revealPokemon} onClose={() => setRevealPokemon(null)} />
+        <LootboxRevealDialog
+          pokemon={revealPokemon}
+          onClose={() => setRevealPokemon(null)}
+          drumrollText={dict.collection.lootboxReveal.openingLootboxText}
+          dict={{
+            stats: dict.common.stats,
+            shinyBadge: dict.common.shinyBadge,
+            movesLabel: dict.collection.movesLabel,
+            totalLabel: dict.collection.totalLabel,
+            moveLine: dict.collection.moveLine,
+            lootboxReveal: dict.collection.lootboxReveal,
+          }}
+        />
       )}
 
       <div className="card select-bar">
@@ -360,14 +379,14 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
           <div className="vs-text">⚡ 3v3 VS ⚡</div>
         </div>
         <div className="fighter-select">
-          <div className="online-status">🎲 Bot team randomly generated, matched to your team&apos;s level</div>
+          <div className="online-status">{t.botTeamNote}</div>
         </div>
-        <button className="btn-secondary" onClick={changeTeam}>🔁 Change Team</button>
+        <button className="btn-secondary" onClick={changeTeam}>{t.changeTeam}</button>
       </div>
 
       <div className="arena-frame">
         <FighterCard
-          title="You: "
+          title={t.youPrefix}
           pokemon={you.pokemon}
           hp={you.hp}
           maxHp={you.maxHp}
@@ -382,7 +401,7 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
           defModTurns={you.defModTurns}
           shieldPoints={you.shieldPoints}
           redirectTurns={you.redirectTurns}
-          movesCaption={myForcedSwitch ? "Choose your next Pokémon:" : "Select Attack Move:"}
+          movesCaption={myForcedSwitch ? t.chooseNextPokemon : t.selectAttackMove}
           team={battle.team1.members}
           activeIndex={battle.team1.activeIndex}
           onSwitchTo={canSwitchNow ? (i) => submitAction({ type: "switch", teamIndex: i as 0 | 1 | 2 }) : undefined}
@@ -446,14 +465,14 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
       <div className="card log-container">
         <div className="action-row">
           <button className="btn-primary" onClick={toggleAutoBattle}>
-            {autoRunning ? "⏸️ Pause Battle" : battle.over ? "⚡ New Battle" : "⚡ Auto Battle"}
+            {autoRunning ? t.pauseBattle : battle.over ? t.newBattle : t.autoBattle}
           </button>
-          <button className="btn-secondary" onClick={resetBattle}>🔄 Reset Battle</button>
+          <button className="btn-secondary" onClick={resetBattle}>{t.resetBattle}</button>
         </div>
-        <div className="online-status">{blockedByBotSwitch ? "Opponent is choosing a new Pokémon..." : ""}</div>
+        <div className="online-status">{blockedByBotSwitch ? t.opponentChoosing : ""}</div>
         <div className="battle-log" ref={logRef}>
-          {log.map((line, i) => (
-            <div key={i} className={classifyLogLine(line)}>{line}</div>
+          {log.map((entry, i) => (
+            <div key={i} className={entry.kind}>{entry.text}</div>
           ))}
         </div>
       </div>

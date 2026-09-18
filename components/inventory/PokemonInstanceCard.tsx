@@ -1,8 +1,11 @@
+"use client";
+
 import type { OwnedPokemon } from "@/types/pokemon";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName } from "@/lib/pokemonDisplay";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 interface PokemonInstanceCardProps {
   pokemon: OwnedPokemon;
@@ -26,6 +29,7 @@ interface PokemonInstanceCardProps {
 }
 
 export default function PokemonInstanceCard({ pokemon, variant, selected, onSelect, pickOrder, disabled, disabledReason }: PokemonInstanceCardProps) {
+  const dict = useDictionary();
   const shiny = isShinyInstance(pokemon);
   const name = displayName(pokemon);
   const handleClick = disabled ? undefined : onSelect;
@@ -35,7 +39,7 @@ export default function PokemonInstanceCard({ pokemon, variant, selected, onSele
     const label = pokemon.nickname ? `${pokemon.nickname} (#${pokemon.number} ${pokemon.name})` : `#${pokemon.number}  ${pokemon.name}`;
     return (
       <div className={`pokemon-row${selected ? " selected" : ""}${disabled ? " disabled" : ""}`} onClick={handleClick} title={title}>
-        {`${label.padEnd(28)} Total ${pokemon.total}${pokemon.isStarter ? " ⭐" : ""}${shiny ? " ✨" : ""}`}
+        {`${label.padEnd(28)} ${dict.collection.totalLabel(pokemon.total)}${pokemon.isStarter ? " ⭐" : ""}${shiny ? " ✨" : ""}`}
       </div>
     );
   }
@@ -49,11 +53,11 @@ export default function PokemonInstanceCard({ pokemon, variant, selected, onSele
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
       {(pokemon.isStarter || shiny) && (
         <div className="grid-card-badges">
-          {pokemon.isStarter && <span className="starter-badge">⭐ Starter</span>}
-          {shiny && <span className="shiny-badge">✨ Shiny</span>}
+          {pokemon.isStarter && <span className="starter-badge">{dict.common.starterBadge}</span>}
+          {shiny && <span className="shiny-badge">{dict.common.shinyBadge}</span>}
         </div>
       )}
-      <div className="grid-card-total">Total {pokemon.total}</div>
+      <div className="grid-card-total">{dict.collection.totalLabel(pokemon.total)}</div>
     </div>
   );
 }

@@ -44,6 +44,7 @@ interface LootboxRevealDialogProps {
 // to assemble a full Dictionary-shaped fallback.
 interface LootboxRevealDict {
   stats: Dictionary["common"]["stats"];
+  shinyBadge: Dictionary["common"]["shinyBadge"];
   movesLabel: Dictionary["collection"]["movesLabel"];
   totalLabel: Dictionary["collection"]["totalLabel"];
   moveLine: Dictionary["collection"]["moveLine"];
@@ -52,6 +53,7 @@ interface LootboxRevealDict {
 
 const FALLBACK_DICT: LootboxRevealDict = {
   stats: { hp: "HP", atk: "Attack", def: "Defense", spatk: "Sp. Atk", spdef: "Sp. Def", spd: "Speed" },
+  shinyBadge: "✨ Shiny",
   movesLabel: "Moves",
   totalLabel: (total) => `Total: ${total}`,
   moveLine: (name, type, power, maxUses) =>
@@ -167,7 +169,7 @@ export default function LootboxRevealDialog({
           <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="lootbox-reveal-sprite" />
           <h2>#{pokemon.number} {pokemon.name}</h2>
           <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center />
-          {shiny && <span className="shiny-badge">✨ Shiny</span>}
+          {shiny && <span className="shiny-badge">{dict.shinyBadge}</span>}
 
           <div className="lootbox-stats">
             {STAT_INFO.map(({ label, key, color }, i) => {

@@ -73,8 +73,8 @@ export default async function DashboardPage() {
                     <div>{displayName(p)}</div>
                     {p.nickname && <div className="detail-species-line">#{p.number} {p.name}</div>}
                     <TypeBadges type1={p.type1} type2={p.type2} center small />
-                    {shiny && <span className="shiny-badge">✨ Shiny</span>}
-                    <div className="total-stats">Total {p.total}</div>
+                    {shiny && <span className="shiny-badge">{dict.common.shinyBadge}</span>}
+                    <div className="total-stats">{dict.collection.totalLabel(p.total)}</div>
                   </div>
                 );
               })}

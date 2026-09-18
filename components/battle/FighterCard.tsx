@@ -1,9 +1,13 @@
+"use client";
+
 import type { OwnedPokemon } from "@/types/pokemon";
 import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
 import SegmentedMeter from "@/components/ui/SegmentedMeter";
 import { isShinyInstance } from "@/lib/shiny";
 import { displayName } from "@/lib/pokemonDisplay";
+import { useDictionary } from "@/lib/i18n/useDictionary";
+import type { Dictionary } from "@/lib/i18n/getDictionary";
 
 // Same green->amber->red HP-percentage logic as before, just feeding
 // SegmentedMeter's color prop with tokens instead of an inline hex style
@@ -63,18 +67,6 @@ interface FighterCardProps {
   onSwitchTo?: (teamIndex: number) => void;
 }
 
-// Native `title` tooltips, same as .account-name's existing pattern
-// (components/nav/SideNav.tsx) -- no tooltip library, just the mechanics
-// from lib/battleEngine.ts spelled out so a hover explains what the badge
-// actually does, not just its name (upgrades/10-battle-depth.md).
-const STATUS_TOOLTIPS: Record<"bleed" | "blind" | "poison" | "burn" | "freeze", string> = {
-  bleed: "Bleeding: loses 5% of max HP at the start of each of its turns. Inflicted by physical-category hits; lasts 3 turns.",
-  blind: "Blinded: 25% chance to miss with its own attack each turn. Inflicted by special-category hits; lasts 3 turns.",
-  poison: "Poisoned: loses 5% of max HP at the start of each of its turns. Inflicted by Poison-type moves; lasts 3 turns. Can stack with Bleeding since it's gated by move type, not category.",
-  burn: "Burning: loses 5% of max HP at the start of each of its turns (10% against Grass-type Pokemon). Inflicted by Fire-type moves; lasts 3 turns. Can't be inflicted on Water-type Pokemon.",
-  freeze: "Frozen: Attack, Special Attack, Defense, Special Defense and Speed all reduced by 30% while active. Inflicted by Ice-type moves; lasts 3 turns. Can't be inflicted on Fire-type Pokemon.",
-};
-
 // Small badge row shared by the active card and bench members
 // (upgrades/10-battle-depth.md, extended by
 // upgrades/19-burn-and-freeze-status-effects.md and, for atkMod/defMod/
@@ -94,6 +86,7 @@ function StatusBadges({
   shieldPoints,
   redirectTurns,
   compact,
+  dict,
 }: {
   bleedTurns?: number;
   blindTurns?: number;
@@ -107,7 +100,9 @@ function StatusBadges({
   shieldPoints?: number;
   redirectTurns?: number;
   compact?: boolean;
+  dict: Dictionary;
 }) {
+  const t = dict.battle.fighterCard;
   const hasAtkMod = Boolean(atkMod && atkMod !== 1);
   const hasDefMod = Boolean(defMod && defMod !== 1);
   const hasShield = Boolean(shieldPoints && shieldPoints > 0);
@@ -121,29 +116,29 @@ function StatusBadges({
   // mode, and <div> isn't valid phrasing content inside a <button>.
   return (
     <span className={compact ? "status-badges compact" : "status-badges"}>
-      {Boolean(bleedTurns) && <span className="status-badge bleed" title={STATUS_TOOLTIPS.bleed}>🩸 Bleeding ({bleedTurns})</span>}
-      {Boolean(blindTurns) && <span className="status-badge blind" title={STATUS_TOOLTIPS.blind}>🌀 Blinded ({blindTurns})</span>}
-      {Boolean(poisonTurns) && <span className="status-badge poison" title={STATUS_TOOLTIPS.poison}>☠️ Poisoned ({poisonTurns})</span>}
-      {Boolean(burnTurns) && <span className="status-badge burn" title={STATUS_TOOLTIPS.burn}>🔥 Burning ({burnTurns})</span>}
-      {Boolean(freezeTurns) && <span className="status-badge freeze" title={STATUS_TOOLTIPS.freeze}>❄️ Frozen ({freezeTurns})</span>}
+      {Boolean(bleedTurns) && <span className="status-badge bleed" title={t.statusTooltip.bleed}>🩸 {dict.battle.statusAdjective.bleed} ({bleedTurns})</span>}
+      {Boolean(blindTurns) && <span className="status-badge blind" title={t.statusTooltip.blind}>🌀 {dict.battle.statusAdjective.blind} ({blindTurns})</span>}
+      {Boolean(poisonTurns) && <span className="status-badge poison" title={t.statusTooltip.poison}>☠️ {dict.battle.statusAdjective.poison} ({poisonTurns})</span>}
+      {Boolean(burnTurns) && <span className="status-badge burn" title={t.statusTooltip.burn}>🔥 {dict.battle.statusAdjective.burn} ({burnTurns})</span>}
+      {Boolean(freezeTurns) && <span className="status-badge freeze" title={t.statusTooltip.freeze}>❄️ {dict.battle.statusAdjective.freeze} ({freezeTurns})</span>}
       {hasAtkMod && (
-        <span className={`status-badge ${atkPct > 0 ? "buff" : "debuff"}`} title={`Attack is x${atkMod} (${atkPct > 0 ? "+" : ""}${atkPct}%) for ${atkModTurns} more turn${atkModTurns === 1 ? "" : "s"}.`}>
-          ⚔️ ATK {atkPct > 0 ? "+" : ""}{atkPct}% ({atkModTurns})
+        <span className={`status-badge ${atkPct > 0 ? "buff" : "debuff"}`} title={t.atkModTooltip(atkMod ?? 1, atkPct, atkModTurns ?? 0)}>
+          ⚔️ {dict.battle.moveEffect.statAbbrev.atk} {atkPct > 0 ? "+" : ""}{atkPct}% ({atkModTurns})
         </span>
       )}
       {hasDefMod && (
-        <span className={`status-badge ${defPct > 0 ? "buff" : "debuff"}`} title={`Defense is x${defMod} (${defPct > 0 ? "+" : ""}${defPct}%) for ${defModTurns} more turn${defModTurns === 1 ? "" : "s"}.`}>
-          🛡️ DEF {defPct > 0 ? "+" : ""}{defPct}% ({defModTurns})
+        <span className={`status-badge ${defPct > 0 ? "buff" : "debuff"}`} title={t.defModTooltip(defMod ?? 1, defPct, defModTurns ?? 0)}>
+          🛡️ {dict.battle.moveEffect.statAbbrev.def} {defPct > 0 ? "+" : ""}{defPct}% ({defModTurns})
         </span>
       )}
       {hasShield && (
-        <span className="status-badge shield" title={`A shield absorbs the next ${shieldPoints} damage before HP is touched. No duration -- it just runs out.`}>
-          💠 Shield ({shieldPoints})
+        <span className="status-badge shield" title={t.shieldTooltip(shieldPoints ?? 0)}>
+          💠 {t.shieldLabel} ({shieldPoints})
         </span>
       )}
       {hasRedirect && (
-        <span className="status-badge redirect" title={`Confused: this fighter's own attacks land on itself or a living ally instead of the opponent, for ${redirectTurns} more turn${redirectTurns === 1 ? "" : "s"}.`}>
-          🌀 Confused ({redirectTurns})
+        <span className="status-badge redirect" title={t.redirectTooltip(redirectTurns ?? 0)}>
+          🌀 {t.confusedLabel} ({redirectTurns})
         </span>
       )}
     </span>
@@ -172,6 +167,7 @@ export default function FighterCard({
   activeIndex,
   onSwitchTo,
 }: FighterCardProps) {
+  const dict = useDictionary();
   const shiny = isShinyInstance(pokemon);
 
   return (
@@ -179,7 +175,7 @@ export default function FighterCard({
       <h3><span className="fighter-name-tab">{title}{displayName(pokemon)}</span></h3>
       {pokemon.nickname && <div className="fighter-species-line">#{pokemon.number} {pokemon.name}</div>}
       <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
-      {shiny && <span className="shiny-badge">✨ Shiny</span>}
+      {shiny && <span className="shiny-badge">{dict.common.shinyBadge}</span>}
       <StatusBadges
         bleedTurns={bleedTurns}
         blindTurns={blindTurns}
@@ -192,6 +188,7 @@ export default function FighterCard({
         defModTurns={defModTurns}
         shieldPoints={shieldPoints}
         redirectTurns={redirectTurns}
+        dict={dict}
       />
       <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="battle-sprite" />
 
@@ -217,12 +214,12 @@ export default function FighterCard({
                 className={`bench-member${fainted ? " fainted" : ""}`}
                 disabled={!clickable}
                 onClick={() => clickable && onSwitchTo?.(i)}
-                title={fainted ? `${displayName(member.pokemon)} (fainted)` : `Switch to ${displayName(member.pokemon)}`}
+                title={fainted ? dict.battle.fighterCard.faintedTitle(displayName(member.pokemon)) : dict.battle.fighterCard.switchTo(displayName(member.pokemon))}
               >
                 <Sprite name={member.pokemon.name} form={benchShiny ? "shiny" : "normal"} className="bench-sprite" />
                 <span className="bench-name">{benchShiny ? "✨ " : ""}{displayName(member.pokemon)}</span>
                 {fainted ? (
-                  <span className="bench-hp">💀 Fainted</span>
+                  <span className="bench-hp">{dict.battle.fighterCard.fainted}</span>
                 ) : (
                   <>
                     <SegmentedMeter label="HP" value={Math.max(0, member.hp)} max={member.maxHp} color={hpColor(Math.max(0, Math.min(1, member.hp / member.maxHp)))} segments={6} compact />
@@ -242,6 +239,7 @@ export default function FighterCard({
                     shieldPoints={member.shieldPoints}
                     redirectTurns={member.redirectTurns}
                     compact
+                    dict={dict}
                   />
                 )}
               </button>

@@ -290,7 +290,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
   // 5 pieces (upgrades/55-i18n-collection-cluster.md), not the whole
   // Dictionary, since BattleArena.tsx/OnlineBattle.tsx's own call sites
   // (Battle cluster, step 56) pass no dict at all yet.
-  const lootboxRevealDict = { stats: common.stats, movesLabel: c.movesLabel, totalLabel: c.totalLabel, moveLine: c.moveLine, lootboxReveal: c.lootboxReveal };
+  const lootboxRevealDict = { stats: common.stats, shinyBadge: common.shinyBadge, movesLabel: c.movesLabel, totalLabel: c.totalLabel, moveLine: c.moveLine, lootboxReveal: c.lootboxReveal };
 
   return (
     <div className="page">
@@ -442,7 +442,7 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
               )}
               {renameError && <p className="auth-error">{renameError}</p>}
               <TypeBadges type1={selected.type1} type2={selected.type2} />
-              {isShinyInstance(selected) && <span className="shiny-badge">✨ Shiny</span>}
+              {isShinyInstance(selected) && <span className="shiny-badge">{common.shinyBadge}</span>}
             </div>
             <Sprite name={selected.name} form={isShinyInstance(selected) ? "shiny" : "normal"} className="sprite-img" />
             <div id="card-stats">

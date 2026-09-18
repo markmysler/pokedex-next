@@ -1,4 +1,4 @@
-import type { BattleAction, BuffMove, DamageMove, DebuffMove, DrainMove, FighterState, RedirectMove, RoomSlot, TeamState, Move, PokemonType } from "@/types/pokemon";
+import type { BattleAction, BuffMove, DamageMove, DebuffMove, DrainMove, FighterState, RedirectMove, RoomSlot, TeamState, Move, MoveCategory, PokemonType, StatModKey } from "@/types/pokemon";
 import { getTypeMultiplier } from "./typeData";
 
 function randInt(min: number, max: number): number {
@@ -11,25 +11,54 @@ function clamp(n: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, n));
 }
 
-export function effectivenessText(mult: number): string {
-  if (mult >= 2.0) return "⚡ SUPER EFFECTIVE! (2.0x)";
-  if (mult === 0.0) return "🛡️ NO EFFECT (0.0x)";
-  if (mult < 1.0) return "🛡️ Not very effective... (0.5x)";
-  return "💥 Normal Hit (1.0x)";
-}
-
-// Per-line battle-log highlighting (upgrades/main.md's DESIGN_SYSTEM.md §6
-// originally specified this; it never made it into the shipped markup
-// until a post-wave audit caught the gap). Both BattleArena.tsx and
-// OnlineBattle.tsx render one line of `log` per array entry and apply
-// whichever class this returns -- shared here rather than duplicated so
-// the two consumers can't drift on what counts as a "win" or a "hit" line.
-export function classifyLogLine(line: string): "win" | "loss" | "hit" | undefined {
-  if (line.includes("VICTORY")) return "win";
-  if (line.includes("DEFEAT")) return "loss";
-  if (/Hit|EFFECT/i.test(line)) return "hit";
-  return undefined;
-}
+// Structured battle-log events (upgrades/56-i18n-battle-cluster.md) --
+// replaces every previous `log: string[]` with `log: BattleLogEvent[]`.
+// This engine builds no English (or any-language) text at all anymore; it
+// only reports *what happened*, as plain data. lib/i18n/renderBattleLogEvent
+// .ts turns one of these into a localized sentence (plus a win/loss/hit CSS
+// class) at display time, in BattleArena.tsx/OnlineBattle.tsx. This also
+// fixes a real bug the old string-based design had: classifyLogLine() used
+// to detect a "hit" line by matching the English substrings "Hit"/"EFFECT"
+// in the (translated) log text -- which would have silently broken in
+// es-AR, since a Spanish sentence never contains those English words.
+// Classification is now decided directly from each event's own `type`,
+// never by pattern-matching rendered text.
+export type BattleLogEvent =
+  | {
+      type: "moveUsed";
+      attacker: string;
+      move: string;
+      moveType: PokemonType;
+      category: MoveCategory | null;
+      power: number | null;
+      usesRemaining: number | null;
+      maxUses: number | null;
+      // Only set for a damage/drain move that actually resolved (not a
+      // dodge/blind miss, and never for buff/debuff/redirect) -- mirrors
+      // the old design's "header + effectivenessText() combined into one
+      // line" grouping exactly, just as data instead of concatenated text.
+      effectivenessMultiplier?: number;
+    }
+  | { type: "dodged"; defender: string }
+  | { type: "blindMiss"; attacker: string }
+  | { type: "selfHit"; attacker: string }
+  | { type: "allyHit"; attacker: string; ally: string }
+  | { type: "damageDealt"; target: string; amount: number; absorbedByShield: number; hpAfter: number }
+  | { type: "statusInflicted"; status: StatusKind; target: string }
+  | { type: "drained"; attacker: string; amount: number; hpAfter: number; maxHp: number }
+  | { type: "statUp"; target: string; stat: StatModKey; multiplier: number; turns: number }
+  | { type: "healed"; target: string; amount: number; hpAfter: number; maxHp: number }
+  | { type: "shielded"; target: string; amount: number; total: number }
+  | { type: "cleansed"; target: string }
+  | { type: "statDown"; target: string; stat: StatModKey; multiplier: number; turns: number }
+  | { type: "shieldDestroyed"; target: string }
+  | { type: "confused"; target: string; turns: number }
+  | { type: "statusTick"; status: "bleed" | "poison" | "burn"; target: string; amount: number; turnsLeft: number }
+  | { type: "freezeTick"; target: string; turnsLeft: number }
+  | { type: "statModExpired"; target: string; stat: StatModKey; wasBuff: boolean }
+  | { type: "confusionExpired"; target: string }
+  | { type: "fainted"; pokemon: string; forcesSwitch: RoomSlot | null }
+  | { type: "switched"; from: string; to: string };
 
 // --- Status effects (upgrades/10-battle-depth.md) --------------------------
 // Additive layer on top of the existing damage formula, which is unchanged
@@ -68,20 +97,6 @@ function setStatusTurns(state: FighterState, status: StatusKind, turns: number):
   else state.freezeTurns = turns;
 }
 
-// Shared exact wording with the existing chance-based infliction in
-// executeMove()'s damage branch, so a guaranteed debuff-inflicted status
-// (upgrades/24-battle-engine-buffs-and-debuffs.md) reads identically to an
-// incidental one.
-function statusInflictLogLine(status: StatusKind, targetName: string): string {
-  switch (status) {
-    case "bleed": return `  -> 🩸 ${targetName} is bleeding!`;
-    case "blind": return `  -> 🌀 ${targetName} is blinded!`;
-    case "poison": return `  -> ☠️ ${targetName} is poisoned!`;
-    case "burn": return `  -> 🔥 ${targetName} is burned!`;
-    case "freeze": return `  -> ❄️ ${targetName} is frozen!`;
-  }
-}
-
 // Shield-aware damage application (upgrades/24-battle-engine-buffs-and
 // -debuffs.md) -- shared by regular damage moves and (step 25) drain moves.
 // Absorbs into shieldPoints before HP, partial or full. Returns how much
@@ -92,15 +107,6 @@ function applyDamage(state: FighterState, dmg: number): number {
   const remaining = dmg - absorbedByShield;
   state.hp = Math.max(0, state.hp - remaining);
   return absorbedByShield;
-}
-
-// mpAfter/attackerName dropped (upgrades/40-uses-based-move-data-model.md
-// -- there's no shared mana pool left to report here; per-move uses render
-// on MoveButton instead, not in the battle log).
-function damageLogLine(defenderName: string, dmg: number, absorbed: number, hpAfter: number): string {
-  if (absorbed <= 0) return `  -> Dealt ${dmg} damage! ${defenderName} HP: ${hpAfter}`;
-  if (absorbed >= dmg) return `  -> 🛡️ Shield absorbed all ${dmg} damage!`;
-  return `  -> 🛡️ Shield absorbed ${absorbed} damage! Dealt ${dmg - absorbed} damage! ${defenderName} HP: ${hpAfter}`;
 }
 
 // Applied at the point atk/def/spd are actually read, not stored back onto
@@ -131,37 +137,33 @@ function rollInflictChance(atkStat: number, defStat: number): number {
 
 // Applied at the start of the *active* member's turn — never to a benched
 // Pokemon, which keeps its counters frozen until swapped back in. Mutates
-// `state` in place; returns the tick's log lines (empty if not afflicted).
-function applyStatusTick(state: FighterState): string[] {
-  const log: string[] = [];
+// `state` in place; returns the tick's log events (empty if not afflicted).
+function applyStatusTick(state: FighterState): BattleLogEvent[] {
+  const log: BattleLogEvent[] = [];
   if (state.hp <= 0) return log;
 
   if (state.bleedTurns > 0) {
     const dmg = Math.max(1, Math.round(state.maxHp * BLEED_TICK_RATIO));
     state.hp = Math.max(0, state.hp - dmg);
     state.bleedTurns -= 1;
-    const remaining = state.bleedTurns > 0 ? ` (${state.bleedTurns} turn${state.bleedTurns === 1 ? "" : "s"} left)` : " — bleeding wore off.";
-    log.push(`  -> 🩸 ${state.pokemon.name} takes ${dmg} bleed damage!${remaining}`);
+    log.push({ type: "statusTick", status: "bleed", target: state.pokemon.name, amount: dmg, turnsLeft: state.bleedTurns });
   }
   if (state.hp > 0 && state.poisonTurns > 0) {
     const dmg = Math.max(1, Math.round(state.maxHp * POISON_TICK_RATIO));
     state.hp = Math.max(0, state.hp - dmg);
     state.poisonTurns -= 1;
-    const remaining = state.poisonTurns > 0 ? ` (${state.poisonTurns} turn${state.poisonTurns === 1 ? "" : "s"} left)` : " — poison wore off.";
-    log.push(`  -> ☠️ ${state.pokemon.name} takes ${dmg} poison damage!${remaining}`);
+    log.push({ type: "statusTick", status: "poison", target: state.pokemon.name, amount: dmg, turnsLeft: state.poisonTurns });
   }
   if (state.hp > 0 && state.burnTurns > 0) {
     const ratio = hasType(state.pokemon, "Grass") ? BURN_TICK_RATIO_VS_GRASS : BURN_TICK_RATIO;
     const dmg = Math.max(1, Math.round(state.maxHp * ratio));
     state.hp = Math.max(0, state.hp - dmg);
     state.burnTurns -= 1;
-    const remaining = state.burnTurns > 0 ? ` (${state.burnTurns} turn${state.burnTurns === 1 ? "" : "s"} left)` : " — the burn wore off.";
-    log.push(`  -> 🔥 ${state.pokemon.name} takes ${dmg} burn damage!${remaining}`);
+    log.push({ type: "statusTick", status: "burn", target: state.pokemon.name, amount: dmg, turnsLeft: state.burnTurns });
   }
   if (state.hp > 0 && state.freezeTurns > 0) {
     state.freezeTurns -= 1;
-    const remaining = state.freezeTurns > 0 ? ` (${state.freezeTurns} turn${state.freezeTurns === 1 ? "" : "s"} left)` : " — it thawed out.";
-    log.push(`  -> ❄️ ${state.pokemon.name} is frozen, sapping its Attack, Defense and Speed!${remaining}`);
+    log.push({ type: "freezeTick", target: state.pokemon.name, turnsLeft: state.freezeTurns });
   }
   // Buff/debuff stat modifiers (upgrades/24-battle-engine-buffs-and-debuffs
   // .md) decay the same way as the five statuses above -- only shieldPoints
@@ -171,7 +173,7 @@ function applyStatusTick(state: FighterState): string[] {
     state.atkModTurns -= 1;
     if (state.atkModTurns === 0) {
       const wasBuff = state.atkMod > 1;
-      log.push(`  -> ${wasBuff ? "💪" : "💢"} ${state.pokemon.name}'s Attack ${wasBuff ? "boost" : "drop"} wore off!`);
+      log.push({ type: "statModExpired", target: state.pokemon.name, stat: "atk", wasBuff });
       state.atkMod = 1;
     }
   }
@@ -179,7 +181,7 @@ function applyStatusTick(state: FighterState): string[] {
     state.defModTurns -= 1;
     if (state.defModTurns === 0) {
       const wasBuff = state.defMod > 1;
-      log.push(`  -> ${wasBuff ? "💪" : "💢"} ${state.pokemon.name}'s Defense ${wasBuff ? "boost" : "drop"} wore off!`);
+      log.push({ type: "statModExpired", target: state.pokemon.name, stat: "def", wasBuff });
       state.defMod = 1;
     }
   }
@@ -188,14 +190,14 @@ function applyStatusTick(state: FighterState): string[] {
   if (state.hp > 0 && state.redirectTurns > 0) {
     state.redirectTurns -= 1;
     if (state.redirectTurns === 0) {
-      log.push(`  -> 🌀 Confused no longer — ${state.pokemon.name}'s attacks aimed correctly again.`);
+      log.push({ type: "confusionExpired", target: state.pokemon.name });
     }
   }
   return log;
 }
 
 export interface MoveResult {
-  log: string[];
+  log: BattleLogEvent[];
   hit: boolean;
   dealt: number;
   statusInflicted: StatusKind[];
@@ -215,13 +217,6 @@ interface ExecuteMoveOptions {
   // -move-ui-and-ally-targeting.md) -- undefined means self (the only
   // valid target in 1v1, or when the caster has no living ally).
   buffTarget?: FighterState;
-}
-
-// Power/category only exist on damage (and, from step 25, drain) moves —
-// everything else's header just shows the type.
-function moveHeader(casterName: string, move: Move, costStr: string): string {
-  const detail = move.kind === "damage" || move.kind === "drain" ? `${move.type}, ${move.power} Pwr` : move.type;
-  return `• ${casterName} used [${move.name}] (${detail} | ${costStr})!`;
 }
 
 // Locates `move`'s slot in the caster's own moveset so its moveUses entry
@@ -270,28 +265,42 @@ export function executeMove(
   }
 
   const remaining = moveIndex === -1 ? null : attackerState.moveUses[moveIndex];
-  const costStr = move.max_uses === null ? "unlimited uses" : `${remaining}/${move.max_uses} uses left`;
-  const header = moveHeader(attacker.name, move, costStr);
+  const headerEvent: Extract<BattleLogEvent, { type: "moveUsed" }> = {
+    type: "moveUsed",
+    attacker: attacker.name,
+    move: move.name,
+    moveType: move.type,
+    category: move.kind === "damage" || move.kind === "drain" ? move.category : null,
+    power: move.kind === "damage" || move.kind === "drain" ? move.power : null,
+    usesRemaining: remaining,
+    maxUses: move.max_uses,
+  };
 
   if (opts?.forceMiss) {
-    const missLine =
+    const missEvent: BattleLogEvent =
       opts.missReason === "dodge"
-        ? `  -> 💨 ${defender.name} dodged the attack!`
-        : `  -> 🌀 ${attacker.name} is blinded and flailed, missing the attack!`;
-    return { log: [header, missLine], hit: false, dealt: 0, statusInflicted: [] };
+        ? { type: "dodged", defender: defender.name }
+        : { type: "blindMiss", attacker: attacker.name };
+    return { log: [headerEvent, missEvent], hit: false, dealt: 0, statusInflicted: [] };
   }
 
-  if (move.kind === "damage" || move.kind === "drain") return executeDamage(attackerState, defenderState, move, header, opts?.redirectKind);
-  if (move.kind === "buff") return executeBuff(attackerState, opts?.buffTarget ?? attackerState, move, header);
-  if (move.kind === "debuff") return executeDebuff(defenderState, move, header);
-  return executeRedirect(defenderState, move, header);
+  if (move.kind === "damage" || move.kind === "drain") return executeDamage(attackerState, defenderState, move, headerEvent, opts?.redirectKind);
+  if (move.kind === "buff") return executeBuff(attackerState, opts?.buffTarget ?? attackerState, move, headerEvent);
+  if (move.kind === "debuff") return executeDebuff(defenderState, move, headerEvent);
+  return executeRedirect(defenderState, move, headerEvent);
 }
 
 // Shared by DamageMove and DrainMove (upgrades/25-battle-engine-drain
 // -moves.md) -- a drain move is a damage move with one extra effect
 // attached, not a different damage model. Same atkStat/defStat/type-mult/
 // RNG-roll math and shield-aware applyDamage() either way.
-function executeDamage(attackerState: FighterState, defenderState: FighterState, move: DamageMove | DrainMove, header: string, redirectKind?: "self" | "ally"): MoveResult {
+function executeDamage(
+  attackerState: FighterState,
+  defenderState: FighterState,
+  move: DamageMove | DrainMove,
+  headerEvent: Extract<BattleLogEvent, { type: "moveUsed" }>,
+  redirectKind?: "self" | "ally"
+): MoveResult {
   const attacker = attackerState.pokemon;
   const defender = defenderState.pokemon;
   const mult = getTypeMultiplier(move.type, defender.type1, defender.type2);
@@ -315,11 +324,11 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
   // "friendly fire" phrasing so it doesn't read like the opponent did it.
   const selfHit = redirectKind === "self" || attackerState === defenderState;
   const allyHit = redirectKind === "ally";
-  const log = [
-    `${header} ${effectivenessText(mult)}`,
-    ...(selfHit ? [`  -> 🌀 ${attacker.name} is confused! It hurt itself in its confusion!`] : []),
-    ...(allyHit ? [`  -> 🌀 ${attacker.name} is confused and attacks its own ally, ${defender.name}!`] : []),
-    damageLogLine(defender.name, dmg, absorbed, defenderState.hp),
+  const log: BattleLogEvent[] = [
+    { ...headerEvent, effectivenessMultiplier: mult },
+    ...(selfHit ? [{ type: "selfHit", attacker: attacker.name } as const] : []),
+    ...(allyHit ? [{ type: "allyHit", attacker: attacker.name, ally: defender.name } as const] : []),
+    { type: "damageDealt", target: defender.name, amount: dmg, absorbedByShield: absorbed, hpAfter: defenderState.hp },
   ];
 
   const statusInflicted: StatusKind[] = [];
@@ -328,12 +337,12 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
     if (!isSpecial && Math.random() < inflictChance) {
       defenderState.bleedTurns = STATUS_DURATION;
       statusInflicted.push("bleed");
-      log.push(statusInflictLogLine("bleed", defender.name));
+      log.push({ type: "statusInflicted", status: "bleed", target: defender.name });
     }
     if (isSpecial && Math.random() < inflictChance) {
       defenderState.blindTurns = STATUS_DURATION;
       statusInflicted.push("blind");
-      log.push(statusInflictLogLine("blind", defender.name));
+      log.push({ type: "statusInflicted", status: "blind", target: defender.name });
     }
     // Poison-type moves roll independently of category — a physical
     // Poison-type move can inflict both bleed and poison on the same hit,
@@ -342,7 +351,7 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
     if (move.type === "Poison" && Math.random() < inflictChance) {
       defenderState.poisonTurns = STATUS_DURATION;
       statusInflicted.push("poison");
-      log.push(statusInflictLogLine("poison", defender.name));
+      log.push({ type: "statusInflicted", status: "poison", target: defender.name });
     }
     // Fire/Ice-typed moves roll independently too, each with a type-based
     // immunity a Water/Fire-type target respectively is naturally immune to
@@ -352,12 +361,12 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
     if (move.type === "Fire" && !hasType(defender, "Water") && Math.random() < inflictChance) {
       defenderState.burnTurns = STATUS_DURATION;
       statusInflicted.push("burn");
-      log.push(statusInflictLogLine("burn", defender.name));
+      log.push({ type: "statusInflicted", status: "burn", target: defender.name });
     }
     if (move.type === "Ice" && !hasType(defender, "Fire") && Math.random() < inflictChance) {
       defenderState.freezeTurns = STATUS_DURATION;
       statusInflicted.push("freeze");
-      log.push(statusInflictLogLine("freeze", defender.name));
+      log.push({ type: "statusInflicted", status: "freeze", target: defender.name });
     }
   }
 
@@ -374,7 +383,7 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
     // branch needed anymore.
     const healAmount = Math.round(dmg * (move.drain.percentOfDamageDealt / 100));
     attackerState.hp = Math.min(attackerState.maxHp, attackerState.hp + healAmount);
-    log.push(`  -> 🩸 ${attacker.name} drained ${healAmount} HP! (${attackerState.hp}/${attackerState.maxHp})`);
+    log.push({ type: "drained", attacker: attacker.name, amount: healAmount, hpAfter: attackerState.hp, maxHp: attackerState.maxHp });
   }
 
   return { log, hit: true, dealt: dmg, statusInflicted };
@@ -382,9 +391,9 @@ function executeDamage(attackerState: FighterState, defenderState: FighterState,
 
 // Targets the caster (self) by default, or an explicitly-chosen living
 // ally in a 3v3 team battle (upgrades/28-move-ui-and-ally-targeting.md).
-function executeBuff(casterState: FighterState, targetState: FighterState, move: BuffMove, header: string): MoveResult {
+function executeBuff(casterState: FighterState, targetState: FighterState, move: BuffMove, headerEvent: BattleLogEvent): MoveResult {
   const target = targetState.pokemon;
-  const log = [header];
+  const log: BattleLogEvent[] = [headerEvent];
   const buff = move.buff;
 
   switch (buff.effect) {
@@ -399,14 +408,13 @@ function executeBuff(casterState: FighterState, targetState: FighterState, move:
         targetState.defMod = buff.multiplier;
         targetState.defModTurns = buff.turns;
       }
-      const statName = buff.stat === "atk" ? "Attack" : "Defense";
-      log.push(`  -> ✨ ${target.name}'s ${statName} rose to x${buff.multiplier} for ${buff.turns} turns!`);
+      log.push({ type: "statUp", target: target.name, stat: buff.stat, multiplier: buff.multiplier, turns: buff.turns });
       break;
     }
     case "heal": {
       const amount = Math.round((targetState.maxHp * buff.percentOfMaxHp) / 100);
       targetState.hp = Math.min(targetState.maxHp, targetState.hp + amount);
-      log.push(`  -> 💚 ${target.name} healed ${amount} HP! (${targetState.hp}/${targetState.maxHp})`);
+      log.push({ type: "healed", target: target.name, amount, hpAfter: targetState.hp, maxHp: targetState.maxHp });
       break;
     }
     // "restoreMana" retired with the mp pool (upgrades/40-uses-based-move-
@@ -416,7 +424,7 @@ function executeBuff(casterState: FighterState, targetState: FighterState, move:
       // the pool, unlike statUp's refresh-not-stack (shields have no
       // duration to conflict over).
       targetState.shieldPoints += buff.amount;
-      log.push(`  -> 🛡️ ${target.name} gained a ${buff.amount}-point shield! (total: ${targetState.shieldPoints})`);
+      log.push({ type: "shielded", target: target.name, amount: buff.amount, total: targetState.shieldPoints });
       break;
     }
     case "cleanse": {
@@ -425,7 +433,7 @@ function executeBuff(casterState: FighterState, targetState: FighterState, move:
       targetState.poisonTurns = 0;
       targetState.burnTurns = 0;
       targetState.freezeTurns = 0;
-      log.push(`  -> 🌿 ${target.name}'s status ailments were cleansed!`);
+      log.push({ type: "cleansed", target: target.name });
       break;
     }
   }
@@ -435,9 +443,9 @@ function executeBuff(casterState: FighterState, targetState: FighterState, move:
 
 // Always targets the opponent's active member -- same implicit targeting
 // damage moves already use, no picker needed (main.md's key decision).
-function executeDebuff(defenderState: FighterState, move: DebuffMove, header: string): MoveResult {
+function executeDebuff(defenderState: FighterState, move: DebuffMove, headerEvent: BattleLogEvent): MoveResult {
   const defender = defenderState.pokemon;
-  const log = [header];
+  const log: BattleLogEvent[] = [headerEvent];
   const debuff = move.debuff;
   const statusInflicted: StatusKind[] = [];
 
@@ -450,8 +458,7 @@ function executeDebuff(defenderState: FighterState, move: DebuffMove, header: st
         defenderState.defMod = debuff.multiplier;
         defenderState.defModTurns = debuff.turns;
       }
-      const statName = debuff.stat === "atk" ? "Attack" : "Defense";
-      log.push(`  -> 💢 ${defender.name}'s ${statName} fell to x${debuff.multiplier} for ${debuff.turns} turns!`);
+      log.push({ type: "statDown", target: defender.name, stat: debuff.stat, multiplier: debuff.multiplier, turns: debuff.turns });
       break;
     }
     // "drainMana" retired with the mp pool (upgrades/40-uses-based-move-
@@ -459,7 +466,7 @@ function executeDebuff(defenderState: FighterState, move: DebuffMove, header: st
     // a statDown and a guaranteed blind, respectively.
     case "removeShield": {
       defenderState.shieldPoints = 0;
-      log.push(`  -> 💥 ${defender.name}'s shield was destroyed!`);
+      log.push({ type: "shieldDestroyed", target: defender.name });
       break;
     }
     case "inflictStatus": {
@@ -467,7 +474,7 @@ function executeDebuff(defenderState: FighterState, move: DebuffMove, header: st
       // executeDamage() above still does; that stays untouched.
       setStatusTurns(defenderState, debuff.status, STATUS_DURATION);
       statusInflicted.push(debuff.status);
-      log.push(statusInflictLogLine(debuff.status, defender.name));
+      log.push({ type: "statusInflicted", status: debuff.status, target: defender.name });
       break;
     }
   }
@@ -480,10 +487,10 @@ function executeDebuff(defenderState: FighterState, move: DebuffMove, header: st
 // UI. *Consuming* it (making the afflicted fighter's own next attacks land
 // on themselves) is resolveRound()/resolveTeamRound()'s job, not this
 // function's -- it just sets the counter.
-function executeRedirect(defenderState: FighterState, move: RedirectMove, header: string): MoveResult {
+function executeRedirect(defenderState: FighterState, move: RedirectMove, headerEvent: BattleLogEvent): MoveResult {
   const defender = defenderState.pokemon;
   defenderState.redirectTurns = move.turns;
-  const log = [header, `  -> 🌀 ${defender.name} is confused about who to attack, for ${move.turns} turns!`];
+  const log: BattleLogEvent[] = [headerEvent, { type: "confused", target: defender.name, turns: move.turns }];
   return { log, hit: true, dealt: 0, statusInflicted: [] };
 }
 
@@ -514,7 +521,7 @@ export interface BattleEvent {
 }
 
 export interface RoundResult {
-  log: string[];
+  log: BattleLogEvent[];
   over: boolean;
   winner: RoomSlot | null;
   events: BattleEvent[];
@@ -530,7 +537,7 @@ export function resolveRound(
   move1: Move,
   move2: Move
 ): RoundResult {
-  const log: string[] = [];
+  const log: BattleLogEvent[] = [];
   const events: BattleEvent[] = [];
 
   const p1Speed = freezeAdjusted(fighter1State.pokemon.spd, fighter1State) + randInt(-2, 2);
@@ -679,7 +686,7 @@ function resolveBuffTarget(atkTeam: TeamState, atkState: FighterState, teamIndex
 }
 
 export interface TeamRoundResult {
-  log: string[];
+  log: BattleLogEvent[];
   over: boolean;
   winner: RoomSlot | null;
   awaitingForcedSwitch: RoomSlot | null;
@@ -699,15 +706,15 @@ interface FaintOutcome {
 // pre-step-27 call site's actual behavior) is the only thing that differs:
 // a benched member fainting doesn't force a switch, since the team's
 // active member is unaffected and can still act this round.
-function handleFaint(faintedSlot: RoomSlot, faintedTeam: TeamState, faintedName: string, log: string[], isActive = true): FaintOutcome {
+function handleFaint(faintedSlot: RoomSlot, faintedTeam: TeamState, faintedName: string, log: BattleLogEvent[], isActive = true): FaintOutcome {
   if (isTeamWiped(faintedTeam)) {
     return { over: true, winner: faintedSlot === 1 ? 2 : 1, awaitingForcedSwitch: null };
   }
   if (!isActive) {
-    log.push(`  -> ${faintedName} fainted!`);
+    log.push({ type: "fainted", pokemon: faintedName, forcesSwitch: null });
     return { over: false, winner: null, awaitingForcedSwitch: null };
   }
-  log.push(`  -> ${faintedName} fainted! Player ${faintedSlot} must send out another Pokémon.`);
+  log.push({ type: "fainted", pokemon: faintedName, forcesSwitch: faintedSlot });
   return { over: false, winner: null, awaitingForcedSwitch: faintedSlot };
 }
 
@@ -731,7 +738,7 @@ function handleFaint(faintedSlot: RoomSlot, faintedTeam: TeamState, faintedName:
 function resolveForcedSwitchConflict(
   outcome: FaintOutcome,
   faintedTeam: TeamState,
-  log: string[],
+  log: BattleLogEvent[],
   currentAwaiting: RoomSlot | null
 ): RoomSlot | null {
   if (!outcome.awaitingForcedSwitch) return currentAwaiting;
@@ -755,7 +762,7 @@ export function resolveTeamRound(
   action1: BattleAction,
   action2: BattleAction
 ): TeamRoundResult {
-  const log: string[] = [];
+  const log: BattleLogEvent[] = [];
   const events: BattleEvent[] = [];
 
   if (action1.type === "switch") log.push(...applySwitch(team1State, action1.teamIndex));
@@ -855,9 +862,9 @@ export function resolveTeamRound(
   return { log, over, winner, awaitingForcedSwitch, events };
 }
 
-function applySwitch(team: TeamState, teamIndex: 0 | 1 | 2): string[] {
+function applySwitch(team: TeamState, teamIndex: 0 | 1 | 2): BattleLogEvent[] {
   const from = activeMember(team).pokemon.name;
   team.activeIndex = teamIndex;
   const to = activeMember(team).pokemon.name;
-  return [`↩️ ${from} is withdrawn! ${to}, go!`];
+  return [{ type: "switched", from, to }];
 }

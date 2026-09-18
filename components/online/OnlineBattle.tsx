@@ -11,7 +11,9 @@ import CardTab from "@/components/ui/CardTab";
 import TeamPicker from "./TeamPicker";
 import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
-import { classifyLogLine, hasLivingAlly, type BattleEvent } from "@/lib/battleEngine";
+import { hasLivingAlly, type BattleEvent, type BattleLogEvent } from "@/lib/battleEngine";
+import { useDictionary } from "@/lib/i18n/useDictionary";
+import { renderBattleLogEvent, type RenderedLogLine } from "@/lib/i18n/renderBattleLogEvent";
 import { playAttackSound, playDodgeSound, playFaintSound, playVictorySound, playDefeatSound } from "@/lib/sound";
 
 interface OnlineBattleProps {
@@ -33,6 +35,8 @@ interface OnlineBattleState {
 const POLL_INTERVAL_MS = 2500;
 
 export default function OnlineBattle({ inventory: initialInventory, displayName, typesList }: OnlineBattleProps) {
+  const dict = useDictionary();
+  const t = dict.battle.online;
   // Local copy, not just the prop directly -- `initialInventory` is a
   // server-render snapshot from when /online first loaded. A lootbox opened
   // mid-session (e.g. right after a win, via the "Open it now" flow below)
@@ -48,7 +52,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
   const [status, setStatus] = useState("");
   const [turnStatus, setTurnStatus] = useState("");
   const [battle, setBattle] = useState<OnlineBattleState | null>(null);
-  const [log, setLog] = useState<string[]>([]);
+  const [log, setLog] = useState<RenderedLogLine[]>([]);
   const [moveLocked, setMoveLocked] = useState(false);
   const [rematchRequestedBy, setRematchRequestedBy] = useState<RoomSlot | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -103,14 +107,15 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     setRoomCode(upperCode);
     if (isHost) {
       setPhase("waiting");
-      setStatus(`Room created! Share code ${upperCode} with your opponent. Waiting for them to join...`);
+      setStatus(t.roomCreated(upperCode));
     } else {
       setPhase("picking");
-      setStatus("Joined room! Pick your team.");
+      setStatus(t.joinedPickTeam);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function appendLog(lines: string[]) {
+  function appendLog(lines: RenderedLogLine[]) {
     setLog((prev) => [...prev, ...lines]);
     requestAnimationFrame(() => logRef.current?.scrollTo({ top: logRef.current.scrollHeight }));
   }
@@ -121,11 +126,11 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     const youActive = you.members[you.activeIndex].pokemon.name;
     const oppActive = opp.members[opp.activeIndex].pokemon.name;
     setLog([
-      `=== ⚔️ 3v3 ONLINE BATTLE START: ${youActive} vs ${oppActive} ===`,
-      `• Your team: ${you.members.map((m) => m.pokemon.name).join(", ")}`,
-      `• Opponent's team: ${opp.members.map((m) => m.pokemon.name).join(", ")}\n`,
+      { text: t.startBanner(youActive, oppActive) },
+      { text: t.yourTeam(you.members.map((m) => m.pokemon.name).join(", ")) },
+      { text: t.opponentTeam(opp.members.map((m) => m.pokemon.name).join(", ")) },
     ]);
-    setTurnStatus("👇 Select an Attack Move or switch Pokémon below.");
+    setTurnStatus(t.selectPrompt);
   }
 
   function applyBattleStart(team1: TeamState, team2: TeamState) {
@@ -145,7 +150,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     over: boolean;
     winner: RoomSlot | null;
     awaitingForcedSwitch: RoomSlot | null;
-    log?: string[];
+    log?: BattleLogEvent[];
     // Same "only present via the broadcast/HTTP paths" caveat as
     // lootboxId below — the poll backstop reads persisted RoomState, which
     // has no ephemeral per-round data. Sounds simply don't fire for that
@@ -170,7 +175,10 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     });
     setMoveLocked(false);
     setPendingBuffMoveIndex(null);
-    appendLog([`\n--- 🥊 Round ${payload.turnCount} ---`, ...(payload.log ?? ["(synced from server)"])]);
+    appendLog([
+      { text: t.roundHeader(payload.turnCount) },
+      ...(payload.log ? payload.log.map((event) => renderBattleLogEvent(event, dict)) : [{ text: t.syncedFromServer }]),
+    ]);
 
     // One sound per structured event (upgrades/10-battle-depth.md's `events`
     // array) rather than parsing the log strings above — undefined via the
@@ -183,10 +191,10 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
 
     if (payload.over) {
       const won = payload.winner === mySlotRef.current;
-      appendLog([won ? "\n🏆 VICTORY! The opponent's whole team fainted!" : "\n💀 DEFEAT! Your whole team fainted!"]);
+      appendLog([{ text: won ? t.victory : t.defeat, kind: won ? "win" : "loss" }]);
       if (won) playVictorySound();
       else playDefeatSound();
-      setTurnStatus(won ? "🏆 You won the battle!" : "💀 You lost the battle.");
+      setTurnStatus(won ? t.youWon : t.youLost);
       // Trigger the result dialog from here, not a separate effect watching
       // battle?.over — this function only runs once per real turnCount
       // transition (dedup check above), so a naive effect would instead
@@ -194,22 +202,22 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
       // since battle.over stays true for the rest of the session.
       setResultDialog({ won, lootboxGranted: won && Boolean(payload.lootboxGranted), lootboxId: won ? (payload.lootboxId ?? null) : null });
     } else if (payload.awaitingForcedSwitch === mySlotRef.current) {
-      setTurnStatus("💀 Your Pokémon fainted! Choose your next Pokémon below.");
+      setTurnStatus(t.yourPokemonFainted);
     } else if (payload.awaitingForcedSwitch) {
-      setTurnStatus("Opponent's Pokémon fainted — waiting for them to send out a new one...");
+      setTurnStatus(t.opponentPokemonFaintedWaiting);
     } else {
-      setTurnStatus("👇 Select your next Attack Move or switch Pokémon!");
+      setTurnStatus(t.selectNextMove);
     }
   }
 
   const { sendChatMessage } = useRoomChannel(roomCode, {
     onOpponentJoined: () => {
       resetForRematch();
-      setStatus("Opponent joined! Pick your team.");
+      setStatus(t.opponentJoinedPickTeam);
     },
     onPlayerLockedIn: ({ slot }) => {
       if (slot !== mySlotRef.current && !lockedInRef.current) {
-        setStatus("Opponent has locked in their team — pick yours!");
+        setStatus(t.opponentLockedInPickYours);
       }
     },
     onBattleStart: (payload) => {
@@ -232,13 +240,13 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     },
     onOpponentMoveSubmitted: () => {
       setMoveLocked((locked) => {
-        if (!locked) setTurnStatus("Opponent has acted — waiting for you...");
+        if (!locked) setTurnStatus(t.opponentActedWaiting);
         return locked;
       });
     },
     onOpponentLeft: () => {
-      appendLog(["\n⚠️ Your opponent left the room."]);
-      setTurnStatus("Opponent disconnected.");
+      appendLog([{ text: t.opponentLeft }]);
+      setTurnStatus(t.opponentDisconnected);
       setTimeout(resetToSetup, 2000);
     },
     onRematchRequested: ({ slot }) => {
@@ -365,7 +373,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     const res = await fetch(`/api/inventory/lootboxes/${lootboxId}/open`, { method: "POST" });
     const data = await res.json();
     if (data.error) {
-      appendLog([`⚠️ Couldn't open lootbox: ${data.error}`]);
+      appendLog([{ text: t.couldntOpenLootbox(data.error) }]);
       return;
     }
     const opened = data.pokemon as OwnedPokemon;
@@ -377,28 +385,28 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
   async function createRoom() {
     const res = await fetch("/api/rooms", { method: "POST" });
     const data = await res.json();
-    if (data.error) return setStatus(`⚠️ ${data.error}`);
+    if (data.error) return setStatus(t.genericError(data.error));
 
     setMySlot(1);
     mySlotRef.current = 1;
     setRoomCode(data.roomCode);
     setPhase("waiting");
-    setStatus(`Room created! Share code ${data.roomCode} with your opponent. Waiting for them to join...`);
+    setStatus(t.roomCreated(data.roomCode));
   }
 
   async function joinRoom() {
     const code = roomCodeInput.trim().toUpperCase();
-    if (!code) return setStatus("⚠️ Enter a room code first.");
+    if (!code) return setStatus(t.enterRoomCodeFirst);
 
     const res = await fetch(`/api/rooms/${code}/join`, { method: "POST" });
     const data = await res.json();
-    if (data.error) return setStatus(`⚠️ ${data.error}`);
+    if (data.error) return setStatus(t.genericError(data.error));
 
     setMySlot(2);
     mySlotRef.current = 2;
     setRoomCode(data.roomCode);
     setPhase("picking");
-    setStatus("Joined room! Pick your team.");
+    setStatus(t.joinedPickTeam);
   }
 
   async function leaveRoom() {
@@ -422,7 +430,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     if (data.battleStarted && data.state) {
       applyBattleStart(data.state.team1, data.state.team2);
     } else {
-      setStatus("Locked in! Waiting for your opponent to lock in their team...");
+      setStatus(t.waitingOpponentLockIn);
     }
   }
 
@@ -433,7 +441,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     if (!isMyForcedSwitch) {
       if (moveLocked || battle.awaitingForcedSwitch) return; // my turn to act is blocked right now
       setMoveLocked(true);
-      setTurnStatus("Action submitted — waiting for opponent...");
+      setTurnStatus(t.actionSubmittedWaiting);
     }
 
     const res = await fetch(`/api/rooms/${roomCode}/move`, {
@@ -444,7 +452,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     const data = await res.json();
     if (data.error) {
       setMoveLocked(false);
-      setTurnStatus(`⚠️ ${data.error}`);
+      setTurnStatus(t.genericError(data.error));
       return;
     }
     if (data.resolved) {
@@ -467,7 +475,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     if (!roomCode) return;
     const res = await fetch(`/api/rooms/${roomCode}/rematch/request`, { method: "POST" });
     const data = await res.json();
-    if (data.error) return setStatus(`⚠️ ${data.error}`);
+    if (data.error) return setStatus(t.genericError(data.error));
     setRematchRequestedBy(mySlot);
   }
 
@@ -475,26 +483,35 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     if (!roomCode) return;
     const res = await fetch(`/api/rooms/${roomCode}/rematch/accept`, { method: "POST" });
     const data = await res.json();
-    if (data.error) return setStatus(`⚠️ ${data.error}`);
+    if (data.error) return setStatus(t.genericError(data.error));
     resetForRematch();
   }
+
+  const lootboxRevealDict = {
+    stats: dict.common.stats,
+    shinyBadge: dict.common.shinyBadge,
+    movesLabel: dict.collection.movesLabel,
+    totalLabel: dict.collection.totalLabel,
+    moveLine: dict.collection.moveLine,
+    lootboxReveal: dict.collection.lootboxReveal,
+  };
 
   if (!roomCode) {
     return (
       <div className="card" id="online-setup">
-        <CardTab icon="🌐" label="Online battle (3v3)" />
+        <CardTab icon="🌐" label={t.setupLabel} />
         <div className="online-actions">
-          <button className="btn-primary" onClick={createRoom}>🆕 Create Room</button>
+          <button className="btn-primary" onClick={createRoom}>{t.createRoom}</button>
         </div>
-        <div className="online-divider"><span>or</span></div>
+        <div className="online-divider"><span>{t.or}</span></div>
         <div className="online-join-row">
           <input
             value={roomCodeInput}
             onChange={(e) => setRoomCodeInput(e.target.value)}
             maxLength={6}
-            placeholder="Enter room code"
+            placeholder={t.joinCodePlaceholder}
           />
-          <button className="btn-secondary" onClick={joinRoom}>Join Room</button>
+          <button className="btn-secondary" onClick={joinRoom}>{t.joinRoom}</button>
         </div>
         <div className="online-status">{status}</div>
       </div>
@@ -505,10 +522,10 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     return (
       <>
         <div className="card" id="online-setup">
-          <CardTab icon="🌐" label="Waiting for opponent" />
+          <CardTab icon="🌐" label={t.waitingLabel} />
           <p className="friend-code-display">{roomCode}</p>
           <div className="online-status">{status}</div>
-          <button className="btn-secondary" onClick={leaveRoom}>Cancel</button>
+          <button className="btn-secondary" onClick={leaveRoom}>{t.cancel}</button>
         </div>
         <ChatPanel messages={chatMessages} onSend={sendChat} />
       </>
@@ -519,13 +536,13 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     return (
       <>
         <div className="card select-bar">
-          <div>Room Code: <span className="room-code-chip">{roomCode}</span></div>
-          <button className="btn-secondary" onClick={leaveRoom}>Leave Room</button>
+          <div>{t.roomCodeLabel} <span className="room-code-chip">{roomCode}</span></div>
+          <button className="btn-secondary" onClick={leaveRoom}>{t.leaveRoom}</button>
         </div>
         {myLockedIn ? (
           <div className="card">
-            <CardTab icon="✅" label="Team locked in" color="var(--good)" />
-            <div className="online-status">{status || "Waiting for your opponent to lock in their team..."}</div>
+            <CardTab icon="✅" label={t.teamLockedIn} color="var(--good)" />
+            <div className="online-status">{status || t.waitingOpponentLockIn}</div>
           </div>
         ) : (
           <TeamPicker inventory={inventory} typesList={typesList} onSubmit={lockIn} />
@@ -558,17 +575,22 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
         />
       )}
       {revealPokemon && (
-        <LootboxRevealDialog pokemon={revealPokemon} onClose={() => setRevealPokemon(null)} />
+        <LootboxRevealDialog
+          pokemon={revealPokemon}
+          onClose={() => setRevealPokemon(null)}
+          drumrollText={dict.collection.lootboxReveal.openingLootboxText}
+          dict={lootboxRevealDict}
+        />
       )}
 
       <div className="card select-bar">
-        <div>Room Code: <span className="room-code-chip">{roomCode}</span> — share this with your opponent</div>
-        <button className="btn-secondary" onClick={leaveRoom}>Leave Room</button>
+        <div>{t.roomCodeShare(roomCode)}</div>
+        <button className="btn-secondary" onClick={leaveRoom}>{t.leaveRoom}</button>
       </div>
 
       <div className="arena-frame">
         <FighterCard
-          title="You: "
+          title={t.youPrefix}
           pokemon={you.pokemon}
           hp={you.hp}
           maxHp={you.maxHp}
@@ -583,7 +605,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
           defModTurns={you.defModTurns}
           shieldPoints={you.shieldPoints}
           redirectTurns={you.redirectTurns}
-          movesCaption={myForcedSwitch ? "Choose your next Pokémon:" : "Select Attack Move:"}
+          movesCaption={myForcedSwitch ? t.chooseNextPokemon : t.selectAttackMove}
           team={youTeamState.members}
           activeIndex={youTeamState.activeIndex}
           onSwitchTo={canSwitchNow ? (i) => submitAction({ type: "switch", teamIndex: i as 0 | 1 | 2 }) : undefined}
@@ -623,7 +645,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
         </FighterCard>
 
         <FighterCard
-          title="Opponent: "
+          title={t.opponentPrefix}
           pokemon={opp.pokemon}
           hp={opp.hp}
           maxHp={opp.maxHp}
@@ -645,27 +667,27 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
       </div>
 
       <div className="card log-container">
-        <div className="online-status">{blockedByOpponentSwitch ? "Opponent is choosing a new Pokémon..." : turnStatus}</div>
+        <div className="online-status">{blockedByOpponentSwitch ? t.opponentChoosing : turnStatus}</div>
         <div className="battle-log" ref={logRef}>
-          {log.map((line, i) => (
-            <div key={i} className={classifyLogLine(line)}>{line}</div>
+          {log.map((entry, i) => (
+            <div key={i} className={entry.kind}>{entry.text}</div>
           ))}
         </div>
       </div>
 
       {battle.over && (
         <div className="card rematch-panel">
-          <CardTab icon="🔁" label="Rematch?" />
+          <CardTab icon="🔁" label={t.rematch} />
           {rematchRequestedBy === null && (
-            <button className="btn-primary" onClick={requestRematch}>🔁 Request Rematch</button>
+            <button className="btn-primary" onClick={requestRematch}>{t.requestRematch}</button>
           )}
           {rematchRequestedBy === mySlot && (
-            <div className="online-status">Rematch requested — waiting for your opponent to accept...</div>
+            <div className="online-status">{t.rematchRequestedWaiting}</div>
           )}
           {rematchRequestedBy !== null && rematchRequestedBy !== mySlot && (
             <>
-              <div className="online-status">Your opponent wants a rematch!</div>
-              <button className="btn-primary" onClick={acceptRematch}>✅ Accept Rematch</button>
+              <div className="online-status">{t.opponentWantsRematch}</div>
+              <button className="btn-primary" onClick={acceptRematch}>{t.acceptRematch}</button>
             </>
           )}
         </div>
