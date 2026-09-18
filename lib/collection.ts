@@ -18,7 +18,10 @@ function randNormal(): number {
 // reuse the exact same spread when modeling this same roll distribution,
 // instead of duplicating the number (upgrades/03-shiny-pokemon.md).
 export const STAT_SPREAD_RATIO = 0.12;
-const STAT_FLOOR_RATIO = 0.5;
+// Exported alongside STAT_SPREAD_RATIO for the same reason (lib/evolution.ts
+// re-clamps a derived stat the same way rollStatAround() clamps a fresh
+// roll -- upgrades/49-evolution-stat-derivation-and-moveset.md).
+export const STAT_FLOOR_RATIO = 0.5;
 
 export function rollStatAround(center: number): number {
   const spread = center * STAT_SPREAD_RATIO;

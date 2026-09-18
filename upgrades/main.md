@@ -36,7 +36,7 @@ translated once, in their final form, not twice.
 | # | Step | File | Depends on | Status |
 |---|------|------|------------|--------|
 | 48 | Evolution: species data model (`evolvesInto`, Eevee's 3-way branch) | [48-evolution-data-model.md](48-evolution-data-model.md) | — | Shipped |
-| 49 | Evolution: derived-stat formula + moveset roll | [49-evolution-stat-derivation-and-moveset.md](49-evolution-stat-derivation-and-moveset.md) | 48 | Planned |
+| 49 | Evolution: derived-stat formula + moveset roll | [49-evolution-stat-derivation-and-moveset.md](49-evolution-stat-derivation-and-moveset.md) | 48 | Shipped |
 | 50 | Evolution: DB migration + `evolve_pokemon` RPC | [50-evolution-db-migration-and-rpc.md](50-evolution-db-migration-and-rpc.md) | 48 | Planned |
 | 51 | Evolution: API route + Inventory UI/reveal | [51-evolution-api-and-inventory-ui.md](51-evolution-api-and-inventory-ui.md) | 49, 50 | Planned |
 | 52 | Psychic counterplay: Umbreon + Houndour/Houndoom + Larvitar/Pupitar/Tyranitar (full lines) + Dark damage moves + sprites | [52-psychic-counterplay-new-dark-species.md](52-psychic-counterplay-new-dark-species.md) | — | Planned |

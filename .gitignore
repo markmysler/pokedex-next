@@ -37,6 +37,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# supabase CLI local runtime state (created by `npm run db:start` --
+# machine-local, not shared config; supabase/config.toml and
+# supabase/migrations/ are the only tracked parts of this folder)
+supabase/.branches/
+supabase/.temp/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

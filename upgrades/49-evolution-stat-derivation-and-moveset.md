@@ -1,6 +1,6 @@
 # Step 49: Evolution — derived-stat formula + moveset roll
 
-**Status: planned.** See `main.md`'s "Evolution, Psychic counterplay,
+**Status: shipped.** See `main.md`'s "Evolution, Psychic counterplay,
 and bilingual support" section for the full context and dependency chain.
 
 ## Why here
@@ -93,19 +93,57 @@ RNG here any more than `rollStatAround` needs one).
 
 ## End state
 
-- [ ] `lib/evolution.ts` exports a function that takes 5 burned instances
+- [x] `lib/evolution.ts` exports a function that takes 5 burned instances
       (same species) + the resolved evolved species and returns
       `RolledStats`-shaped stats via the z-score formula above.
-- [ ] Eevee's branch resolves via a uniform random pick over
+- [x] Eevee's branch resolves via a uniform random pick over
       `evolvesInto.length` entries (3 at this step; step 52 grows it to 4
       with no logic change required here) before derivation runs.
-- [ ] Moveset comes from a plain `rollMoveset()` call on the evolved
+- [x] Moveset comes from a plain `rollMoveset()` call on the evolved
       species — explicitly not derived.
-- [ ] A throwaway validation script (same pattern step 40/41 used):
+- [x] A throwaway validation script (same pattern step 40/41 used):
       simulate burning 5 near-max-roll instances of several species and
       confirm the derived result skews high (ideally shiny-eligible some
       meaningful fraction of the time); simulate 5 near-min-roll instances
       and confirm it skews low but still respects the evolved species'
       floor. No hard pass/fail threshold required, just "does the direction
       make sense."
-- [ ] `npm run build` / `npm run lint` clean.
+- [x] `npm run build` / `npm run lint` clean.
+
+## What actually happened
+
+Implemented on `v7` exactly as planned. Pure computation, no DB touched —
+validated independently of the local Supabase stack (which finished coming
+up in the background around the same time, confirmed separately via
+`npm run db:status`).
+
+- `STAT_FLOOR_RATIO` exported from `lib/collection.ts` alongside the
+  already-exported `STAT_SPREAD_RATIO`, per the plan (no duplicated
+  constant).
+- New `lib/evolution.ts` exports `deriveEvolvedStats(burned, evolvedSpecies)`
+  (the z-score formula above, typed exactly as `DerivedStats = Pick<
+  RolledStats, "hp"|"atk"|"def"|"spatk"|"spdef"|"spd">`) and
+  `resolveEvolutionTarget(evolvesInto)` (uniform pick over however many
+  entries the array holds, or the plain string itself). Moveset is
+  deliberately *not* wrapped here — callers call `rollMoveset()`
+  (`lib/collection.ts`) directly on the resolved evolved species, as
+  planned.
+- Throwaway validation script (scratchpad, not committed) duplicated the
+  formula against real `pokedex.json` data for 4 chains (Pikachu→Raichu,
+  Charmander→Charmeleon, Magikarp→Gyarados, Abra→Kadabra), each at a fixed
+  synthetic z of ±2.5 across all 5 burned instances:
+  - High (+2.5): derived totals landed ~30-40% above the evolved species'
+    base total (e.g. Magikarp→Gyarados: 705 vs. base 540), with a
+    stat-vs-evolved-species z-score of ~5.6-6.2 — comfortably above the
+    shiny threshold (0.9061) on its own, so combined with a fresh
+    `rollMoveset()` roll the simulated shiny rate was 100% (99.95% for
+    Abra→Kadabra) across 2000 trials each.
+  - Low (-2.5): derived totals landed well below base (e.g. Pikachu→Raichu:
+    342 vs. base 485) with 0% simulated shiny rate, and comfortably above
+    the hard floor (not clamped at this z) — separately confirmed the floor
+    itself clamps correctly at more extreme z (checked z=-4.167, the exact
+    boundary where `STAT_FLOOR_RATIO` engages, and z=-6 well past it: both
+    correctly floor at `Math.round(center * 0.5)`).
+  - Eevee's branch pick: 30,000 trials over its 3-entry array landed
+    ~9,891-10,116 each (expected ~10,000) — uniform, as intended.
+- `npm run lint` clean, `npm run build` clean.
