@@ -94,6 +94,14 @@ export interface Pokemon {
   spd: number;
   total: number;
   moves: Move[];
+  // The immediate next evolutionary stage, by dex number — null for a
+  // Pokemon with no further evolution (either a final stage, or one that
+  // never evolves in Gen 1 at all). A plain string for every species except
+  // Eevee, whose 3-way branch (Vaporeon/Jolteon/Flareon) is resolved by a
+  // uniform random pick server-side at evolve time (upgrades/main.md's key
+  // decisions) — this is deliberately NOT a player choice, so it's typed as
+  // an array here rather than adding a separate "branches" field.
+  evolvesInto: string | string[] | null;
 }
 
 export type Pokedex = Record<string, Pokemon>;

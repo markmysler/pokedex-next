@@ -1,6 +1,6 @@
 # Step 48: Evolution — species data model
 
-**Status: planned.** See `main.md`'s "Evolution, Psychic counterplay,
+**Status: shipped.** See `main.md`'s "Evolution, Psychic counterplay,
 and bilingual support" section for the full context and dependency chain.
 
 ## Why here
@@ -136,12 +136,44 @@ deliberate simplification confirmed with the user during planning (see
 
 ## End state
 
-- [ ] `Pokemon.evolvesInto: string | string[] | null` added to
+- [x] `Pokemon.evolvesInto: string | string[] | null` added to
       `types/pokemon.ts`.
-- [ ] All 151 entries in `lib/data/pokedex.json` have `evolvesInto` set per
+- [x] All 151 entries in `lib/data/pokedex.json` have `evolvesInto` set per
       the table above (or `null`), no other field touched.
-- [ ] `npm run build` / `npm run lint` clean — this step only adds an
+- [x] `npm run build` / `npm run lint` clean — this step only adds an
       optional-in-practice field, nothing should break from it existing.
-- [ ] A quick script check: every non-null `evolvesInto` value (including
+- [x] A quick script check: every non-null `evolvesInto` value (including
       each element of Eevee's array) resolves to a real key in
       `lib/data/pokedex.json`.
+
+## What actually happened
+
+Implemented and validated exactly as planned, on the `v7` branch, no DB
+involved (this step is pure static species data, so it didn't need the
+local Supabase stack — that was still pulling Docker images in the
+background while this step was validated).
+
+- Added the `evolvesInto` field to `Pokemon` in `types/pokemon.ts`, same
+  doc comment as drafted above.
+- Wrote a one-off Node script to populate all 151 `lib/data/pokedex.json`
+  entries: 70 non-null (matching the 70-row table exactly) + 81 `null`.
+  The script rebuilt the file entry-by-entry in the *original on-disk key
+  order* rather than round-tripping through `JSON.stringify(parsedObject)`
+  — plain `JSON.parse`+`JSON.stringify` would have silently reordered
+  species "100"-"151" to the front, since JS engines always enumerate
+  integer-like string keys in ascending numeric order first regardless of
+  insertion order. Confirmed via `git diff --stat`: 305 insertions / 150
+  deletions, i.e. exactly one new `"evolvesInto"` line per species plus the
+  changed closing bracket — no incidental reordering or reformatting.
+- Validated every non-null target (including both entries of Eevee's
+  3-way array) resolves to a real `lib/data/pokedex.json` key, and that
+  the table's 70 listed rows match the 70 non-null entries written.
+- `npm run lint` clean, `npm run build` clean (TypeScript + full static/
+  dynamic route generation, 30 pages).
+- Spot-checked known chains directly off the written JSON: Bulbasaur→002,
+  Venusaur→null, Pikachu→026, Eevee→[134,135,136], Vaporeon→null,
+  Mewtwo/Mew→null, Charizard/Blastoise→null.
+
+## End state (confirmed)
+
+All 4 boxes above are checked and verified on disk on the `v7` branch.

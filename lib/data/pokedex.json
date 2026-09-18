@@ -44,7 +44,8 @@
         "max_uses": 1,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "002"
   },
   "002": {
     "number": "002",
@@ -91,7 +92,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "003"
   },
   "003": {
     "number": "003",
@@ -138,7 +140,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "004": {
     "number": "004",
@@ -185,7 +188,8 @@
         "max_uses": 2,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "005"
   },
   "005": {
     "number": "005",
@@ -232,7 +236,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "006"
   },
   "006": {
     "number": "006",
@@ -279,7 +284,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "007": {
     "number": "007",
@@ -326,7 +332,8 @@
         "max_uses": 2,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "008"
   },
   "008": {
     "number": "008",
@@ -373,7 +380,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "009"
   },
   "009": {
     "number": "009",
@@ -420,7 +428,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "010": {
     "number": "010",
@@ -467,7 +476,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "011"
   },
   "011": {
     "number": "011",
@@ -514,7 +524,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "012"
   },
   "012": {
     "number": "012",
@@ -561,7 +572,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "013": {
     "number": "013",
@@ -608,7 +620,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "014"
   },
   "014": {
     "number": "014",
@@ -655,7 +668,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "015"
   },
   "015": {
     "number": "015",
@@ -702,7 +716,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "016": {
     "number": "016",
@@ -749,7 +764,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "017"
   },
   "017": {
     "number": "017",
@@ -796,7 +812,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "018"
   },
   "018": {
     "number": "018",
@@ -843,7 +860,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "019": {
     "number": "019",
@@ -890,7 +908,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "020"
   },
   "020": {
     "number": "020",
@@ -937,7 +956,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "021": {
     "number": "021",
@@ -984,7 +1004,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "022"
   },
   "022": {
     "number": "022",
@@ -1031,7 +1052,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "023": {
     "number": "023",
@@ -1078,7 +1100,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "024"
   },
   "024": {
     "number": "024",
@@ -1125,7 +1148,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "025": {
     "number": "025",
@@ -1172,7 +1196,8 @@
         "max_uses": 2,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "026"
   },
   "026": {
     "number": "026",
@@ -1219,7 +1244,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "027": {
     "number": "027",
@@ -1266,7 +1292,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "028"
   },
   "028": {
     "number": "028",
@@ -1313,7 +1340,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "029": {
     "number": "029",
@@ -1360,7 +1388,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "030"
   },
   "030": {
     "number": "030",
@@ -1407,7 +1436,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "031"
   },
   "031": {
     "number": "031",
@@ -1454,7 +1484,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "032": {
     "number": "032",
@@ -1501,7 +1532,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "033"
   },
   "033": {
     "number": "033",
@@ -1548,7 +1580,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "034"
   },
   "034": {
     "number": "034",
@@ -1595,7 +1628,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "035": {
     "number": "035",
@@ -1642,7 +1676,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "036"
   },
   "036": {
     "number": "036",
@@ -1689,7 +1724,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "037": {
     "number": "037",
@@ -1736,7 +1772,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "038"
   },
   "038": {
     "number": "038",
@@ -1783,7 +1820,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "039": {
     "number": "039",
@@ -1830,7 +1868,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "040"
   },
   "040": {
     "number": "040",
@@ -1877,7 +1916,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "041": {
     "number": "041",
@@ -1924,7 +1964,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "042"
   },
   "042": {
     "number": "042",
@@ -1971,7 +2012,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "043": {
     "number": "043",
@@ -2018,7 +2060,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "044"
   },
   "044": {
     "number": "044",
@@ -2065,7 +2108,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "045"
   },
   "045": {
     "number": "045",
@@ -2112,7 +2156,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "046": {
     "number": "046",
@@ -2159,7 +2204,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "047"
   },
   "047": {
     "number": "047",
@@ -2206,7 +2252,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "048": {
     "number": "048",
@@ -2253,7 +2300,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "049"
   },
   "049": {
     "number": "049",
@@ -2300,7 +2348,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "050": {
     "number": "050",
@@ -2347,7 +2396,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "051"
   },
   "051": {
     "number": "051",
@@ -2394,7 +2444,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "052": {
     "number": "052",
@@ -2441,7 +2492,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "053"
   },
   "053": {
     "number": "053",
@@ -2488,7 +2540,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "054": {
     "number": "054",
@@ -2535,7 +2588,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "055"
   },
   "055": {
     "number": "055",
@@ -2582,7 +2636,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "056": {
     "number": "056",
@@ -2629,7 +2684,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "057"
   },
   "057": {
     "number": "057",
@@ -2676,7 +2732,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "058": {
     "number": "058",
@@ -2723,7 +2780,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "059"
   },
   "059": {
     "number": "059",
@@ -2770,7 +2828,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "060": {
     "number": "060",
@@ -2817,7 +2876,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "061"
   },
   "061": {
     "number": "061",
@@ -2864,7 +2924,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "062"
   },
   "062": {
     "number": "062",
@@ -2911,7 +2972,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "063": {
     "number": "063",
@@ -2958,7 +3020,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "064"
   },
   "064": {
     "number": "064",
@@ -3005,7 +3068,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "065"
   },
   "065": {
     "number": "065",
@@ -3052,7 +3116,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "066": {
     "number": "066",
@@ -3099,7 +3164,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "067"
   },
   "067": {
     "number": "067",
@@ -3146,7 +3212,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "068"
   },
   "068": {
     "number": "068",
@@ -3193,7 +3260,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "069": {
     "number": "069",
@@ -3240,7 +3308,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "070"
   },
   "070": {
     "number": "070",
@@ -3287,7 +3356,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "071"
   },
   "071": {
     "number": "071",
@@ -3334,7 +3404,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "072": {
     "number": "072",
@@ -3381,7 +3452,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "073"
   },
   "073": {
     "number": "073",
@@ -3428,7 +3500,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "074": {
     "number": "074",
@@ -3475,7 +3548,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "075"
   },
   "075": {
     "number": "075",
@@ -3522,7 +3596,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "076"
   },
   "076": {
     "number": "076",
@@ -3569,7 +3644,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "077": {
     "number": "077",
@@ -3616,7 +3692,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "078"
   },
   "078": {
     "number": "078",
@@ -3663,7 +3740,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "079": {
     "number": "079",
@@ -3710,7 +3788,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "080"
   },
   "080": {
     "number": "080",
@@ -3757,7 +3836,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "081": {
     "number": "081",
@@ -3804,7 +3884,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "082"
   },
   "082": {
     "number": "082",
@@ -3851,7 +3932,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "083": {
     "number": "083",
@@ -3898,7 +3980,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "084": {
     "number": "084",
@@ -3945,7 +4028,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "085"
   },
   "085": {
     "number": "085",
@@ -3992,7 +4076,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "086": {
     "number": "086",
@@ -4039,7 +4124,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "087"
   },
   "087": {
     "number": "087",
@@ -4086,7 +4172,8 @@
         "max_uses": 2,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "088": {
     "number": "088",
@@ -4133,7 +4220,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "089"
   },
   "089": {
     "number": "089",
@@ -4180,7 +4268,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "090": {
     "number": "090",
@@ -4227,7 +4316,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "091"
   },
   "091": {
     "number": "091",
@@ -4274,7 +4364,8 @@
         "max_uses": 2,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "092": {
     "number": "092",
@@ -4321,7 +4412,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "093"
   },
   "093": {
     "number": "093",
@@ -4368,7 +4460,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "094"
   },
   "094": {
     "number": "094",
@@ -4415,7 +4508,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "095": {
     "number": "095",
@@ -4462,7 +4556,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "096": {
     "number": "096",
@@ -4509,7 +4604,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "097"
   },
   "097": {
     "number": "097",
@@ -4556,7 +4652,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "098": {
     "number": "098",
@@ -4603,7 +4700,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "099"
   },
   "099": {
     "number": "099",
@@ -4650,7 +4748,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "100": {
     "number": "100",
@@ -4697,7 +4796,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "101"
   },
   "101": {
     "number": "101",
@@ -4744,7 +4844,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "102": {
     "number": "102",
@@ -4791,7 +4892,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "103"
   },
   "103": {
     "number": "103",
@@ -4838,7 +4940,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "104": {
     "number": "104",
@@ -4885,7 +4988,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "105"
   },
   "105": {
     "number": "105",
@@ -4932,7 +5036,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "106": {
     "number": "106",
@@ -4979,7 +5084,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "107": {
     "number": "107",
@@ -5026,7 +5132,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "108": {
     "number": "108",
@@ -5073,7 +5180,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "109": {
     "number": "109",
@@ -5120,7 +5228,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "110"
   },
   "110": {
     "number": "110",
@@ -5167,7 +5276,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "111": {
     "number": "111",
@@ -5214,7 +5324,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "112"
   },
   "112": {
     "number": "112",
@@ -5261,7 +5372,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "113": {
     "number": "113",
@@ -5308,7 +5420,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "114": {
     "number": "114",
@@ -5355,7 +5468,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "115": {
     "number": "115",
@@ -5402,7 +5516,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "116": {
     "number": "116",
@@ -5449,7 +5564,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "117"
   },
   "117": {
     "number": "117",
@@ -5496,7 +5612,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "118": {
     "number": "118",
@@ -5543,7 +5660,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "119"
   },
   "119": {
     "number": "119",
@@ -5590,7 +5708,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "120": {
     "number": "120",
@@ -5637,7 +5756,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "121"
   },
   "121": {
     "number": "121",
@@ -5684,7 +5804,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "122": {
     "number": "122",
@@ -5731,7 +5852,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "123": {
     "number": "123",
@@ -5778,7 +5900,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "124": {
     "number": "124",
@@ -5825,7 +5948,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "125": {
     "number": "125",
@@ -5872,7 +5996,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "126": {
     "number": "126",
@@ -5919,7 +6044,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "127": {
     "number": "127",
@@ -5966,7 +6092,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "128": {
     "number": "128",
@@ -6013,7 +6140,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "129": {
     "number": "129",
@@ -6060,7 +6188,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "130"
   },
   "130": {
     "number": "130",
@@ -6107,7 +6236,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "131": {
     "number": "131",
@@ -6154,7 +6284,8 @@
         "max_uses": 2,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "132": {
     "number": "132",
@@ -6201,7 +6332,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "133": {
     "number": "133",
@@ -6248,6 +6380,11 @@
         "max_uses": 4,
         "kind": "damage"
       }
+    ],
+    "evolvesInto": [
+      "134",
+      "135",
+      "136"
     ]
   },
   "134": {
@@ -6295,7 +6432,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "135": {
     "number": "135",
@@ -6342,7 +6480,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "136": {
     "number": "136",
@@ -6389,7 +6528,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "137": {
     "number": "137",
@@ -6436,7 +6576,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "138": {
     "number": "138",
@@ -6483,7 +6624,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "139"
   },
   "139": {
     "number": "139",
@@ -6530,7 +6672,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "140": {
     "number": "140",
@@ -6577,7 +6720,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "141"
   },
   "141": {
     "number": "141",
@@ -6624,7 +6768,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "142": {
     "number": "142",
@@ -6671,7 +6816,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "143": {
     "number": "143",
@@ -6718,7 +6864,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "144": {
     "number": "144",
@@ -6765,7 +6912,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "145": {
     "number": "145",
@@ -6812,7 +6960,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "146": {
     "number": "146",
@@ -6859,7 +7008,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "147": {
     "number": "147",
@@ -6906,7 +7056,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "148"
   },
   "148": {
     "number": "148",
@@ -6953,7 +7104,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": "149"
   },
   "149": {
     "number": "149",
@@ -7000,7 +7152,8 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "150": {
     "number": "150",
@@ -7047,7 +7200,8 @@
         "max_uses": 4,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   },
   "151": {
     "number": "151",
@@ -7094,6 +7248,7 @@
         "max_uses": 5,
         "kind": "damage"
       }
-    ]
+    ],
+    "evolvesInto": null
   }
 }
