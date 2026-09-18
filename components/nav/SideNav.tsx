@@ -5,20 +5,24 @@ import { usePathname, useRouter } from "next/navigation";
 import SignOutButton from "@/components/auth/SignOutButton";
 import { setMuted } from "@/lib/sound";
 import { localeFromPathname, stripLocale, type Locale } from "@/lib/i18n/locale";
+import type { Dictionary } from "@/lib/i18n/getDictionary";
 import Link from "@/components/LocaleLink";
 
+// `key` indexes into dict.nav (this component's `dict` prop) for the
+// translated label -- the href/icon stay fixed, only the label is locale-
+// dependent (upgrades/54-i18n-account-cluster.md).
 const LINKS = [
-  { href: "/dashboard", label: "Dashboard", icon: "🏠" },
-  { href: "/inventory", label: "Inventory", icon: "🎒" },
-  { href: "/pokedex", label: "Pokédex", icon: "📖" },
-  { href: "/battle", label: "Battle", icon: "⚔️" },
-  { href: "/online", label: "Online", icon: "🌐" },
-  { href: "/friends", label: "Friends", icon: "🤝" },
-  { href: "/notifications", label: "Notifications", icon: "🔔" },
-  { href: "/history", label: "History", icon: "📜" },
-  { href: "/leaderboard", label: "Leaderboard", icon: "🏆" },
-  { href: "/profile", label: "Profile", icon: "👤" },
-];
+  { href: "/dashboard", key: "dashboard", icon: "🏠" },
+  { href: "/inventory", key: "inventory", icon: "🎒" },
+  { href: "/pokedex", key: "pokedex", icon: "📖" },
+  { href: "/battle", key: "battle", icon: "⚔️" },
+  { href: "/online", key: "online", icon: "🌐" },
+  { href: "/friends", key: "friends", icon: "🤝" },
+  { href: "/notifications", key: "notifications", icon: "🔔" },
+  { href: "/history", key: "history", icon: "📜" },
+  { href: "/leaderboard", key: "leaderboard", icon: "🏆" },
+  { href: "/profile", key: "profile", icon: "👤" },
+] as const satisfies readonly { href: string; key: keyof Dictionary["common"]["nav"]; icon: string }[];
 
 // The 4 routes that get their own mobile tab (upgrades/32-navigation-
 // shell-rework.md) -- the ones a trainer reaches for constantly (check the
@@ -30,9 +34,15 @@ interface SideNavProps {
   displayName: string;
   pendingFriendRequestCount?: number;
   unreadNotificationCount?: number;
+  dict: Dictionary["common"];
 }
 
-export default function SideNav({ displayName, pendingFriendRequestCount = 0, unreadNotificationCount = 0 }: SideNavProps) {
+export default function SideNav({
+  displayName,
+  pendingFriendRequestCount = 0,
+  unreadNotificationCount = 0,
+  dict,
+}: SideNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   // The nav's own LINKS array holds bare app paths ("/dashboard"), but
@@ -107,38 +117,40 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
   const accountBlock = (
     <>
       <div className="theme-row">
-        <span>Theme:</span>
+        <span>{dict.theme.label}</span>
         <label className="switch">
           <input type="checkbox" checked={theme === "dark"} onChange={toggleTheme} />
           <span className="slider" />
         </label>
-        <span>{theme === "dark" ? "Dark" : "Light"}</span>
+        <span>{theme === "dark" ? dict.theme.dark : dict.theme.light}</span>
       </div>
 
       <div className="theme-row">
-        <span>Sound:</span>
+        <span>{dict.sound.label}</span>
         <button
           type="button"
           className="btn-secondary sound-toggle"
           onClick={toggleSound}
-          aria-label={soundOn ? "Mute sound" : "Unmute sound"}
+          aria-label={soundOn ? dict.sound.mute : dict.sound.unmute}
         >
           {soundOn ? "🔊" : "🔇"}
         </button>
       </div>
 
       <div className="theme-row">
-        <span>Language:</span>
+        <span>{dict.language.label}</span>
         <label className="switch">
           <input type="checkbox" checked={locale === "es-AR"} onChange={toggleLanguage} />
           <span className="slider" />
         </label>
+        {/* The language codes themselves (EN/ES) aren't translated content
+            -- they're the two options the toggle switches between. */}
         <span>{locale === "en" ? "EN" : "ES"}</span>
       </div>
 
       <div className="account-row">
         <span className="account-name" title={displayName}>👤 {displayName}</span>
-        <SignOutButton />
+        <SignOutButton dict={dict} />
       </div>
     </>
   );
@@ -157,7 +169,7 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
               href={link.href}
               className={`nav-link${localePath === link.href ? " active" : ""}`}
             >
-              <span className="nav-link-icon">{link.icon}</span> {link.label}
+              <span className="nav-link-icon">{link.icon}</span> {dict.nav[link.key]}
               {link.href === "/friends" && pendingFriendRequestCount > 0 && (
                 <span className="nav-link-badge">{pendingFriendRequestCount}</span>
               )}
@@ -180,7 +192,7 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
             className={`tab-item${localePath === link.href ? " active" : ""}`}
           >
             <span className="tab-item-icon">{link.icon}</span>
-            {link.label}
+            {dict.nav[link.key]}
           </Link>
         ))}
         <button
@@ -191,7 +203,7 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
           aria-expanded={moreOpen}
         >
           <span className="tab-item-icon">⋯</span>
-          More
+          {dict.nav.more}
           {hasUnread && <span className="tab-item-dot" aria-hidden="true" />}
         </button>
       </nav>
@@ -208,7 +220,7 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
                   className={`nav-link${localePath === link.href ? " active" : ""}`}
                   onClick={() => setMoreOpen(false)}
                 >
-                  <span className="nav-link-icon">{link.icon}</span> {link.label}
+                  <span className="nav-link-icon">{link.icon}</span> {dict.nav[link.key]}
                   {link.href === "/friends" && pendingFriendRequestCount > 0 && (
                     <span className="nav-link-badge">{pendingFriendRequestCount}</span>
                   )}

@@ -1,72 +1,13 @@
-"use client";
+import { Suspense } from "react";
+import { getDictionary } from "@/lib/i18n/getDictionary";
+import LoginForm from "@/components/auth/LoginForm";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
-import { localeFromPathname, withLocale } from "@/lib/i18n/locale";
-import Link from "@/components/LocaleLink";
+export default async function LoginPage() {
+  const dict = await getDictionary();
 
-export default function LoginPage() {
   return (
     <Suspense fallback={null}>
-      <LoginForm />
+      <LoginForm dict={dict.account.login} />
     </Suspense>
-  );
-}
-
-function LoginForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const locale = localeFromPathname(usePathname());
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setPending(true);
-    setError(null);
-
-    const supabase = getSupabaseBrowserClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    setPending(false);
-    if (error) {
-      setError(error.message);
-      return;
-    }
-
-    router.replace(withLocale(locale, searchParams.get("next") || "/"));
-    router.refresh();
-  }
-
-  return (
-    <div className="auth-page">
-      <form className="card auth-form" onSubmit={handleSubmit}>
-        <h1>🔴 Log in</h1>
-        <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-          />
-        </label>
-        {error && <p className="auth-error">{error}</p>}
-        <button className="btn-primary" type="submit" disabled={pending}>
-          {pending ? "Logging in…" : "Log in"}
-        </button>
-        <p className="auth-switch">
-          Don&apos;t have an account? <Link href="/signup">Sign up</Link>
-        </p>
-      </form>
-    </div>
   );
 }

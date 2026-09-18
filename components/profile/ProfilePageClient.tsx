@@ -3,14 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CardTab from "@/components/ui/CardTab";
+import type { Dictionary } from "@/lib/i18n/getDictionary";
 
 interface ProfilePageClientProps {
   email: string;
   initialDisplayName: string;
   friendCode: string;
+  dict: Dictionary["account"]["profile"];
 }
 
-export default function ProfilePageClient({ email, initialDisplayName, friendCode }: ProfilePageClientProps) {
+export default function ProfilePageClient({ email, initialDisplayName, friendCode, dict }: ProfilePageClientProps) {
   const router = useRouter();
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [saving, setSaving] = useState(false);
@@ -43,23 +45,23 @@ export default function ProfilePageClient({ email, initialDisplayName, friendCod
 
   return (
     <div className="page">
-      <h1 className="page-title">👤 Profile</h1>
+      <h1 className="page-title">{dict.heading}</h1>
 
       <div className="card profile-card">
         <div className="profile-header">
           <div className="avatar-lg">👤</div>
           <div>
-            <div className="profile-header-name">{displayName || "Trainer"}</div>
+            <div className="profile-header-name">{displayName || dict.trainerFallback}</div>
             <div className="profile-header-email">{email}</div>
           </div>
         </div>
         <form className="auth-form profile-form" onSubmit={handleSave}>
           <label>
-            Email
+            {dict.email}
             <input value={email} disabled />
           </label>
           <label>
-            Display name
+            {dict.displayName}
             <input
               value={displayName}
               onChange={(e) => {
@@ -73,16 +75,16 @@ export default function ProfilePageClient({ email, initialDisplayName, friendCod
           </label>
           {error && <p className="auth-error">{error}</p>}
           <button className="btn-primary" type="submit" disabled={saving}>
-            {saving ? "Saving…" : "Save"}
+            {saving ? dict.saving : dict.save}
           </button>
-          {saved && <p className="notes-status">Saved ✓</p>}
+          {saved && <p className="notes-status">{dict.saved}</p>}
         </form>
       </div>
 
       <div className="card profile-card">
-        <CardTab icon="🔑" label="Your friend code" />
+        <CardTab icon="🔑" label={dict.friendCode} />
         <p className="friend-code-display">{friendCode}</p>
-        <p className="online-status">Share this code with a friend so they can add you on the Friends page.</p>
+        <p className="online-status">{dict.friendCodeNote}</p>
       </div>
     </div>
   );

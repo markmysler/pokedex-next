@@ -41,7 +41,7 @@ translated once, in their final form, not twice.
 | 51 | Evolution: API route + Inventory UI/reveal | [51-evolution-api-and-inventory-ui.md](51-evolution-api-and-inventory-ui.md) | 49, 50 | Shipped |
 | 52 | Psychic counterplay: Umbreon + Houndour/Houndoom + Larvitar/Pupitar/Tyranitar (full lines) + Dark damage moves + sprites | [52-psychic-counterplay-new-dark-species.md](52-psychic-counterplay-new-dark-species.md) | — | Shipped |
 | 53 | i18n: `app/[lang]/` routing + dictionary infrastructure + toggle | [53-i18n-routing-and-toggle-infrastructure.md](53-i18n-routing-and-toggle-infrastructure.md) | — | Shipped |
-| 54 | i18n content: Account cluster (Login/Signup/Dashboard/Profile) | [54-i18n-account-cluster.md](54-i18n-account-cluster.md) | 53 | Planned |
+| 54 | i18n content: Account cluster (Login/Signup/Dashboard/Profile) | [54-i18n-account-cluster.md](54-i18n-account-cluster.md) | 53 | Shipped |
 | 55 | i18n content: Collection cluster (Pokédex/Inventory/Lootbox + Evolve UI + new species) | [55-i18n-collection-cluster.md](55-i18n-collection-cluster.md) | 53, 51, 52 | Planned |
 | 56 | i18n content: Battle cluster (Team Picker/Arena/Online+chat) | [56-i18n-battle-cluster.md](56-i18n-battle-cluster.md) | 53 | Planned |
 | 57 | i18n content: Social cluster (Friends/Trade/Notifications/History/Leaderboard) + onboarding copy | [57-i18n-social-cluster.md](57-i18n-social-cluster.md) | 53 | Planned |

@@ -8,6 +8,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import FriendNotifications from "@/components/friends/FriendNotifications";
 import WelcomeDialog from "@/components/onboarding/WelcomeDialog";
 import { getUnreadNotificationCount } from "@/lib/notifications";
+import { getDictionary } from "@/lib/i18n/getDictionary";
 
 // Shared shell for every authenticated page (dashboard/inventory/pokedex/
 // battle/online/history/profile) — proxy.ts already redirects unauthenticated
@@ -18,7 +19,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect(`/${await lang()}/login`);
 
   const supabase = getSupabaseServerClient();
-  const [{ data: profile }, { count: pendingFriendRequestCount }, unreadNotificationCount] = await Promise.all([
+  const [{ data: profile }, { count: pendingFriendRequestCount }, unreadNotificationCount, dict] = await Promise.all([
     supabase.from("profiles").select("display_name").eq("user_id", user.id).single(),
     supabase
       .from("friendships")
@@ -26,9 +27,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       .eq("addressee_id", user.id)
       .eq("status", "pending"),
     getUnreadNotificationCount(supabase, user.id),
+    getDictionary(),
   ]);
 
-  const displayName = profile?.display_name ?? user.email ?? "Trainer";
+  const displayName = profile?.display_name ?? user.email ?? dict.account.profile.trainerFallback;
 
   return (
     <div className="app-shell">
@@ -36,6 +38,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         displayName={displayName}
         pendingFriendRequestCount={pendingFriendRequestCount ?? 0}
         unreadNotificationCount={unreadNotificationCount}
+        dict={dict.common}
       />
       {/* ToastProvider/FriendNotifications are Client Components mounted
           here (wrapping children) since this layout itself is a Server
@@ -44,7 +47,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <ToastProvider>
         <FriendNotifications userId={user.id} />
         <Suspense fallback={null}>
-          <WelcomeDialog />
+          <WelcomeDialog dict={dict.account.welcome} />
         </Suspense>
         <main className="app-main">{children}</main>
       </ToastProvider>

@@ -5,6 +5,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
 import { getDashboardStats } from "@/lib/dashboardStats";
 import { getMatchHistoryForUser } from "@/lib/history";
+import { getDictionary } from "@/lib/i18n/getDictionary";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
 import CardTab from "@/components/ui/CardTab";
@@ -25,6 +26,8 @@ export default async function DashboardPage() {
   if (!user) return null;
 
   const currentLang = await lang();
+  const dict = await getDictionary();
+  const t = dict.account.dashboard;
   const supabase = getSupabaseServerClient();
 
   const [{ pokemon }, matchHistory, stats] = await Promise.all([
@@ -42,24 +45,24 @@ export default async function DashboardPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">🏠 Dashboard</h1>
+      <h1 className="page-title">{t.heading}</h1>
 
       {/* The 4 numbers a trainer actually checks at a glance, promoted out
           of the Battle Stats/Collection Stats cards below (upgrades/33-
           account-cluster-redesign.md) — same `stats` object, just a
           different layout, not a new query. */}
       <div className="stat-strip">
-        <div className="stat-tile"><div className="stat-tile-n">{stats.botWins}</div><div className="stat-tile-l">Bot wins</div></div>
-        <div className="stat-tile"><div className="stat-tile-n">{pct(stats.botWinPct)}</div><div className="stat-tile-l">Bot win rate</div></div>
-        <div className="stat-tile"><div className="stat-tile-n">{stats.onlineWins}</div><div className="stat-tile-l">Online wins</div></div>
-        <div className="stat-tile"><div className="stat-tile-n">{stats.pokedexOwnedPct.toFixed(1)}%</div><div className="stat-tile-l">Dex owned</div></div>
+        <div className="stat-tile"><div className="stat-tile-n">{stats.botWins}</div><div className="stat-tile-l">{t.statBotWins}</div></div>
+        <div className="stat-tile"><div className="stat-tile-n">{pct(stats.botWinPct)}</div><div className="stat-tile-l">{t.statBotWinRate}</div></div>
+        <div className="stat-tile"><div className="stat-tile-n">{stats.onlineWins}</div><div className="stat-tile-l">{t.statOnlineWins}</div></div>
+        <div className="stat-tile"><div className="stat-tile-n">{stats.pokedexOwnedPct.toFixed(1)}%</div><div className="stat-tile-l">{t.statDexOwned}</div></div>
       </div>
 
       <div className="dashboard-grid">
         <div className="card">
-          <CardTab icon="⭐" label="Your team" />
+          <CardTab icon="⭐" label={t.yourTeam} />
           {topPokemon.length === 0 ? (
-            <p>You don&apos;t own any Pokémon yet.</p>
+            <p>{t.noPokemon}</p>
           ) : (
             <div className="dashboard-team">
               {topPokemon.map((p) => {
@@ -78,45 +81,45 @@ export default async function DashboardPage() {
             </div>
           )}
           <p className="dashboard-note">
-            Showing your {topPokemon.length} strongest Pokémon by total stats · {pokemon.length} owned total.{" "}
-            <Link href={`/${currentLang}/inventory`}>View inventory →</Link>
+            {t.strongestNote(topPokemon.length, pokemon.length)}{" "}
+            <Link href={`/${currentLang}/inventory`}>{t.viewInventory}</Link>
           </p>
         </div>
 
         <div className="card">
-          <CardTab icon="⚔️" label="Battle stats" />
+          <CardTab icon="⚔️" label={t.battleStats} />
           <div className="dashboard-stats-grid">
-            <div><strong>{stats.botLosses}</strong> bot losses</div>
-            <div><strong>{stats.onlineLosses}</strong> online losses</div>
-            <div><strong>{pct(stats.onlineWinPct)}</strong> online win rate</div>
+            <div><strong>{stats.botLosses}</strong> {t.botLosses}</div>
+            <div><strong>{stats.onlineLosses}</strong> {t.onlineLosses}</div>
+            <div><strong>{pct(stats.onlineWinPct)}</strong> {t.onlineWinRate}</div>
           </div>
         </div>
 
         <div className="card">
-          <CardTab icon="🎒" label="Collection stats" />
+          <CardTab icon="🎒" label={t.collectionStats} />
           <div className="dashboard-stats-grid">
-            <div><strong>{stats.lootboxesOpened}</strong> lootboxes opened</div>
-            <div><strong>{stats.pokemonReleased}</strong> Pokémon released</div>
-            <div><strong>{stats.mostUsedPokemon ? `${stats.mostUsedPokemon.name} (${stats.mostUsedPokemon.count})` : "—"}</strong> most used</div>
-            <div><strong>{stats.mostOwnedPokemon ? `${stats.mostOwnedPokemon.name} (${stats.mostOwnedPokemon.count})` : "—"}</strong> most owned</div>
+            <div><strong>{stats.lootboxesOpened}</strong> {t.lootboxesOpened}</div>
+            <div><strong>{stats.pokemonReleased}</strong> {t.pokemonReleased}</div>
+            <div><strong>{stats.mostUsedPokemon ? `${stats.mostUsedPokemon.name} (${stats.mostUsedPokemon.count})` : "—"}</strong> {t.mostUsed}</div>
+            <div><strong>{stats.mostOwnedPokemon ? `${stats.mostOwnedPokemon.name} (${stats.mostOwnedPokemon.count})` : "—"}</strong> {t.mostOwned}</div>
           </div>
         </div>
 
         <div className="card">
-          <CardTab icon="🏆" label="Recent matches" color="var(--good)" />
+          <CardTab icon="🏆" label={t.recentMatches} color="var(--good)" />
           {recentMatches.length === 0 ? (
-            <p>No matches played yet. <Link href={`/${currentLang}/battle`}>Battle a bot →</Link></p>
+            <p>{t.noMatches} <Link href={`/${currentLang}/battle`}>{t.battleABot}</Link></p>
           ) : (
             <ul className="match-list">
               {recentMatches.map((m) => (
                 <li key={m.id} className={`match-row${m.won ? " win" : " loss"}`}>
-                  {m.won ? "🏆 Won" : "💀 Lost"} vs {m.opponentLabel} —{" "}
+                  {m.won ? t.won : t.lost} {t.vs} {m.opponentLabel} —{" "}
                   {new Date(m.playedAt).toLocaleString()}
                 </li>
               ))}
             </ul>
           )}
-          <p className="dashboard-note"><Link href={`/${currentLang}/history`}>Full history →</Link></p>
+          <p className="dashboard-note"><Link href={`/${currentLang}/history`}>{t.fullHistory}</Link></p>
         </div>
       </div>
     </div>
