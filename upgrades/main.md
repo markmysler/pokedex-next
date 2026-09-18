@@ -194,33 +194,52 @@ implementation — flag disagreement before step 48 starts):
   make the existing render functions pull from the dictionary instead of
   hardcoded English — no schema change or migration.
 
-## ⚠ Security finding flagged during step 50 (pre-existing, out of this wave's scope)
+## ⚠ Security finding from step 50 — fixed (standalone, outside the wave's step numbering)
 
 Validating step 50's `evolve_pokemon` RPC against the local Supabase
 instance surfaced a **live production security gap, unrelated to this
-wave**: Supabase's default schema privileges grant `EXECUTE` on every new
+wave**: Supabase's own project provisioning grants `EXECUTE` on every new
 `public`-schema function to `anon`/`authenticated` automatically (confirmed
-via `pg_proc.proacl`), which the `grant execute ... to service_role`
-pattern used by every prior RPC in this schema (`trade_up_pokemon`,
-`accept_trade`, `submit_move`, and now `evolve_pokemon` before it was
-fixed) does **not** revoke — that grant is additive, not exclusive. This
-was verified concretely: calling `evolve_pokemon` over the REST API with
-only the public anon key succeeded and mutated real rows, before a fix.
+via `pg_proc.proacl`/`pg_default_acl`), which the `grant execute ... to
+service_role` pattern used by every prior RPC in this schema
+(`trade_up_pokemon`, `accept_trade`, `submit_move`, `increment_released_
+count`, `claim_lootboxes`, and `evolve_pokemon` before it was fixed) does
+**not** revoke — that grant is additive, not exclusive. Verified concretely:
+calling these RPCs over the REST API with only the public anon key
+succeeded and mutated real rows, before the fix below.
 
-**Practical impact**: anyone holding the public anon key (which ships in
-every client bundle, by design) can call `trade_up_pokemon`, `accept_trade`,
-or `submit_move` directly against production's REST API today, passing an
-arbitrary `p_user_id`, and bypass all app-level auth entirely.
+**Practical impact (now fixed, see below)**: anyone holding the public anon
+key (ships in every client bundle, by design) could call these RPCs
+directly against production's REST API, passing an arbitrary `p_user_id`,
+bypassing all app-level auth entirely.
 
-`evolve_pokemon` itself now explicitly revokes `public`/`anon`/
-`authenticated` before granting to `service_role` (see step 50's "What
-actually happened"), so it won't ship with this hole. The 3 pre-existing
-functions were **not** touched by this step (out of scope for a
-same-species evolution slice) — this needs its own hotfix migration
-(`revoke execute on function ... from public, anon, authenticated;` for
-each) applied independently of this wave, ideally sooner rather than
-later given it's already live. Flagged here for visibility; not actioned
-without the user's explicit go-ahead, same as any other production change.
+**Fixed, per the user's explicit go-ahead, before continuing to step 51**:
+new migration `supabase/migrations/20260918010000_rpc_execute_lockdown.sql`
+explicitly revokes `public`/`anon`/`authenticated` execute on all 8
+existing sensitive functions (the 6 above + `evolve_pokemon` again,
+idempotently + `handle_new_user`, defensively — it's a trigger function so
+wasn't actually reachable this way, but costs nothing to lock down too).
+Verified on the local instance: all 8 now show only `postgres`/
+`service_role` in `pg_proc.proacl`; anon key gets `42501 permission denied`
+on every one tested over REST; `service_role` calls still succeed
+(regression-checked `trade_up_pokemon`'s happy path). This migration
+applies to production the same way every other one does — once pushed to
+`main`, the same fix lands there.
+
+**Also discovered while writing the fix, worth keeping in mind for every
+future step that adds a new Postgres function**: `alter default privileges
+... revoke execute on functions from public` does **not** reliably prevent
+this from recurring — tested directly (see the migration's own comments):
+a brand-new function, created immediately after fully rebuilding the
+default ACL to exclude `PUBLIC`, still got `PUBLIC` execute automatically
+anyway. This environment appears to apply an unconditional PUBLIC-execute
+default to new functions that default-privilege customization can't
+suppress. **The only reliable mitigation found: every new function that
+shouldn't be public-callable must include its own explicit `revoke execute
+on function ... from public, anon, authenticated;` immediately after
+creation** — same as `evolve_pokemon`'s own migration and this hotfix both
+do. Worth remembering for step 51 onward if any future step adds another
+Postgres function.
 
 ## Working through a step
 
