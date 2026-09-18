@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Pokedex, UserPokedexData } from "@/types/pokemon";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 import CompletionBanner from "./CompletionBanner";
 import PokemonDetail from "./PokemonDetail";
 import TypeBadges from "@/components/TypeBadges";
@@ -18,6 +19,13 @@ interface PokedexPageClientProps {
 }
 
 export default function PokedexPageClient({ pokedex, order, typesList, initialUserData }: PokedexPageClientProps) {
+  // Read client-side (upgrades/55-i18n-collection-cluster.md) rather than
+  // via a Server Component prop -- several entries here are functions
+  // (e.g. showingCount, computed from this component's own filter state),
+  // and functions can't cross the Server->Client prop boundary.
+  const dict = useDictionary();
+  const t = dict.collection.pokedex;
+  const common = dict.common;
   const [userData, setUserData] = useState(initialUserData);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
@@ -73,49 +81,49 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
 
   return (
     <div className="page">
-      <h1 className="page-title">📖 Pokédex</h1>
-      <CompletionBanner acquiredCount={acquiredCount} total={order.length} />
+      <h1 className="page-title">{t.heading}</h1>
+      <CompletionBanner acquiredCount={acquiredCount} total={order.length} dict={dict} />
 
       <div className="card inventory-toolbar">
         <div className="search">
           <input
             id="search-input"
             type="text"
-            placeholder="Search Name or #..."
+            placeholder={t.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <div className="filter-col">
-          <label>Type Filter:</label>
+          <label>{t.typeFilterLabel}</label>
           <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-            {typesList.map((t) => (
-              <option key={t} value={t}>{t}</option>
+            {typesList.map((type) => (
+              <option key={type} value={type}>{type === "All Types" ? common.allTypesLabel : type}</option>
             ))}
           </select>
         </div>
         <div className="filter-col">
-          <label>Status Filter:</label>
+          <label>{t.statusFilterLabel}</label>
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}>
-            <option>All</option>
-            <option>Caught</option>
-            <option>Missing</option>
+            <option value="All">{t.statusAll}</option>
+            <option value="Caught">{t.statusCaught}</option>
+            <option value="Missing">{t.statusMissing}</option>
           </select>
         </div>
         <div className="filter-col">
-          <label>Min Total Stats:</label>
+          <label>{t.minTotalStatsLabel}</label>
           <select value={statFilter} onChange={(e) => setStatFilter(e.target.value as StatFilter)}>
-            <option>Any</option>
-            <option>300+</option>
-            <option>400+</option>
-            <option>500+</option>
+            <option value="Any">{t.statAny}</option>
+            <option value="300+">300+</option>
+            <option value="400+">400+</option>
+            <option value="500+">500+</option>
           </select>
         </div>
         <div className="view-toggle">
-          <button className={viewMode === "grid" ? "active" : ""} onClick={() => setViewMode("grid")}>▦ Grid</button>
-          <button className={viewMode === "list" ? "active" : ""} onClick={() => setViewMode("list")}>☰ List</button>
+          <button className={viewMode === "grid" ? "active" : ""} onClick={() => setViewMode("grid")}>{common.viewToggle.grid}</button>
+          <button className={viewMode === "list" ? "active" : ""} onClick={() => setViewMode("list")}>{common.viewToggle.list}</button>
         </div>
-        <div className="count-label">Showing: {filtered.length} of {order.length} Pokémon</div>
+        <div className="count-label">{t.showingCount(filtered.length, order.length)}</div>
       </div>
 
       <div className={`inventory-layout${mobileDetailOpen ? " mobile-detail-open" : ""}`}>
@@ -143,7 +151,7 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
                 <Sprite name={p.name} form="normal" className="grid-card-sprite" />
                 <div className="grid-card-name">#{p.number} {p.name}</div>
                 <TypeBadges type1={p.type1} type2={p.type2} center small />
-                <div className="grid-card-total">{acquired ? "🟢 Caught" : "⚪ Uncaught"}</div>
+                <div className="grid-card-total">{acquired ? t.caughtBadge : t.uncaughtBadge}</div>
               </div>
             );
           })}
@@ -151,12 +159,13 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
 
         {selectedPokemon && (
           <div className="inventory-detail">
-            <button className="detail-back-btn" onClick={() => setMobileDetailOpen(false)}>← Back to list</button>
+            <button className="detail-back-btn" onClick={() => setMobileDetailOpen(false)}>{common.backToList}</button>
             <PokemonDetail
               key={selectedPokemon.number}
               pokemon={selectedPokemon}
               entry={selectedEntry}
               onNotesChange={(notes) => handleNotesChange(selectedPokemon.number, notes)}
+              dict={dict}
             />
           </div>
         )}
