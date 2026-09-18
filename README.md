@@ -87,6 +87,45 @@ npm run start   # run a production build
 npm run lint    # eslint
 ```
 
+## Developing against a local Supabase instance
+
+Real players use this app — no feature work happens directly against
+production. The workflow:
+
+1. Work on a dedicated branch, never `main` directly, and don't push it
+   until the whole wave is validated (see [upgrades/](upgrades/)'s own
+   per-wave process). This keeps the branch — and anything Vercel or
+   Supabase would otherwise auto-deploy from it — entirely local until
+   you're ready.
+2. Start a local Supabase stack (requires [Docker
+   Desktop](https://www.docker.com/products/docker-desktop/) running):
+
+   ```bash
+   npm run db:start   # supabase start -- pulls images on first run, then
+                       # applies every migration in supabase/migrations/
+                       # against a fresh local Postgres instance
+   ```
+
+   Other lifecycle commands: `npm run db:stop`, `npm run db:status`,
+   `npm run db:reset` (wipes and replays every migration from scratch —
+   the fast way to check a new migration applies cleanly).
+3. Point `.env.local` at the values `supabase status` prints (`API URL` →
+   `NEXT_PUBLIC_SUPABASE_URL`, `anon key` → `NEXT_PUBLIC_SUPABASE_
+   PUBLISHABLE_KEY`, `service_role key` → `SUPABASE_SECRET_KEY`) instead of
+   your real project's. `.env.local` is gitignored, so this never touches
+   what's deployed — back up your production values first if
+   `.env.local` currently holds them (e.g. `cp .env.local
+   .env.local.production.bak`, also gitignored) so switching back later is
+   a copy, not a trip to the Supabase dashboard.
+4. `npm run dev` as normal — now talking entirely to the local instance.
+   Sign up a fresh test account (the `handle_new_user` trigger seeds
+   starters the same way it does in production) rather than needing any
+   special seed data.
+5. Once every step in the wave is implemented and validated locally, merge
+   to `main` locally and push — that single push is what triggers the real
+   Supabase GitHub integration (migrations) and Vercel deploy (production
+   code), only once, with everything already proven out.
+
 ## Project structure
 
 ```
