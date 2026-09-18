@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import { useToast } from "@/components/ui/Toast";
+import { localeFromPathname, withLocale, type Locale } from "@/lib/i18n/locale";
 
 interface FriendNotificationsProps {
   userId: string;
@@ -18,6 +19,7 @@ interface FriendNotificationsProps {
 export default function FriendNotifications({ userId }: FriendNotificationsProps) {
   const { push } = useToast();
   const router = useRouter();
+  const locale = localeFromPathname(usePathname());
   const pushRef = useRef(push);
 
   useEffect(() => {
@@ -41,14 +43,14 @@ export default function FriendNotifications({ userId }: FriendNotificationsProps
       .on("broadcast", { event: "battle-invite" }, ({ payload }) => {
         const p = payload as { fromDisplayName: string; roomCode: string };
         pushRef.current(
-          <BattleInviteToast fromDisplayName={p.fromDisplayName} roomCode={p.roomCode} router={router} pushRef={pushRef} />,
+          <BattleInviteToast fromDisplayName={p.fromDisplayName} roomCode={p.roomCode} router={router} locale={locale} pushRef={pushRef} />,
           20000
         );
       })
       .on("broadcast", { event: "friend-message" }, ({ payload }) => {
         const p = payload as { friendshipId: string; senderDisplayName: string; text: string };
         pushRef.current(
-          <FriendMessageToast friendshipId={p.friendshipId} senderDisplayName={p.senderDisplayName} text={p.text} router={router} />
+          <FriendMessageToast friendshipId={p.friendshipId} senderDisplayName={p.senderDisplayName} text={p.text} router={router} locale={locale} />
         );
       })
       .on("broadcast", { event: "trade-offer" }, ({ payload }) => {
@@ -60,6 +62,7 @@ export default function FriendNotifications({ userId }: FriendNotificationsProps
             text="proposed a trade!"
             icon="🔄"
             router={router}
+            locale={locale}
           />
         );
       })
@@ -72,7 +75,7 @@ export default function FriendNotifications({ userId }: FriendNotificationsProps
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId, router]);
+  }, [userId, router, locale]);
 
   return null;
 }
@@ -81,10 +84,11 @@ interface BattleInviteToastProps {
   fromDisplayName: string;
   roomCode: string;
   router: ReturnType<typeof useRouter>;
+  locale: Locale;
   pushRef: RefObject<(content: ReactNode, durationMs?: number) => void>;
 }
 
-function BattleInviteToast({ fromDisplayName, roomCode, router, pushRef }: BattleInviteToastProps) {
+function BattleInviteToast({ fromDisplayName, roomCode, router, locale, pushRef }: BattleInviteToastProps) {
   async function accept() {
     const res = await fetch(`/api/rooms/${roomCode}/join`, { method: "POST" });
     const data = await res.json();
@@ -92,7 +96,7 @@ function BattleInviteToast({ fromDisplayName, roomCode, router, pushRef }: Battl
       pushRef.current(<span>⚠️ Couldn&apos;t join {fromDisplayName}&apos;s battle: {data.error}</span>);
       return;
     }
-    router.push(`/online?code=${roomCode}`);
+    router.push(withLocale(locale, `/online?code=${roomCode}`));
   }
 
   return (
@@ -109,17 +113,18 @@ interface FriendMessageToastProps {
   text: string;
   icon?: string;
   router: ReturnType<typeof useRouter>;
+  locale: Locale;
 }
 
 // Surfaces a friend DM (or a new trade offer, reusing the same shape) from
 // anywhere in the app, not just an open chat window — same "toast/badge
 // when the recipient's chat window isn't open" requirement step 5's friend
 // requests already established (upgrades/12-friend-chat-trading.md).
-function FriendMessageToast({ friendshipId, senderDisplayName, text, icon = "💬", router }: FriendMessageToastProps) {
+function FriendMessageToast({ friendshipId, senderDisplayName, text, icon = "💬", router, locale }: FriendMessageToastProps) {
   return (
     <span className="toast-invite">
       {icon} <strong>{senderDisplayName}</strong>: {text}
-      <button className="btn-primary toast-action" onClick={() => router.push(`/friends/${friendshipId}`)}>
+      <button className="btn-primary toast-action" onClick={() => router.push(withLocale(locale, `/friends/${friendshipId}`))}>
         Open
       </button>
     </span>

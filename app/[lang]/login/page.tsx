@@ -1,9 +1,10 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
+import { localeFromPathname, withLocale } from "@/lib/i18n/locale";
+import Link from "@/components/LocaleLink";
 
 export default function LoginPage() {
   return (
@@ -16,6 +17,7 @@ export default function LoginPage() {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const locale = localeFromPathname(usePathname());
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,7 @@ function LoginForm() {
       return;
     }
 
-    router.replace(searchParams.get("next") || "/");
+    router.replace(withLocale(locale, searchParams.get("next") || "/"));
     router.refresh();
   }
 

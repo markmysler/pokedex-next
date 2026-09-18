@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import SignOutButton from "@/components/auth/SignOutButton";
 import { setMuted } from "@/lib/sound";
+import { localeFromPathname, stripLocale, type Locale } from "@/lib/i18n/locale";
+import Link from "@/components/LocaleLink";
 
 const LINKS = [
   { href: "/dashboard", label: "Dashboard", icon: "🏠" },
@@ -33,6 +34,13 @@ interface SideNavProps {
 
 export default function SideNav({ displayName, pendingFriendRequestCount = 0, unreadNotificationCount = 0 }: SideNavProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  // The nav's own LINKS array holds bare app paths ("/dashboard"), but
+  // `pathname` (from usePathname()) is always locale-prefixed now -- strip
+  // it once so every "is this the active link" comparison below still
+  // works the same as before the i18n routing change.
+  const localePath = stripLocale(pathname);
+  const locale = localeFromPathname(pathname);
   // Mobile-only "More" sheet (upgrades/32-navigation-shell-rework.md) --
   // replaces the old hamburger drawer's `open` state; the desktop rail
   // itself has no open/closed state anymore, it's just always visible
@@ -57,7 +65,7 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
   // Friends/Notifications live inside "More" on mobile (upgrades/32-
   // navigation-shell-rework.md) -- so a route within there still lights
   // up the More tab as the active one, same as any other tab would.
-  const moreActive = moreLinks.some((link) => link.href === pathname);
+  const moreActive = moreLinks.some((link) => link.href === localePath);
 
   function toggleTheme() {
     setTheme((t) => (t === "dark" ? "light" : "dark"));
@@ -67,6 +75,29 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
     const next = !soundOn;
     setMuted(!next);
     setSoundOn(next);
+  }
+
+  // Language toggle (upgrades/53-i18n-routing-and-toggle-infrastructure.md)
+  // -- same theme-row pattern as Theme/Sound above, a 2-state EN/ES switch
+  // in the same accountBlock. Persists to localStorage (the user's explicit
+  // ask) and its server-readable cookie twin (proxy.ts can't read
+  // localStorage), then navigates to the same route with the URL segment
+  // swapped so the Server Component tree re-renders in the new language
+  // immediately -- no flash-of-wrong-language to correct for, since the
+  // locale comes from the URL itself, not a value read client-side after
+  // the fact (node_modules/next/dist/docs/01-app/02-guides/preventing-
+  // flash-before-hydration.md's inline-script technique is for values
+  // *unavailable* at SSR time; that's not the case here).
+  function toggleLanguage() {
+    const nextLocale: Locale = locale === "en" ? "es-AR" : "en";
+    try {
+      localStorage.setItem("lang", nextLocale);
+    } catch {
+      // Unavailable in some private/locked-down browser contexts -- the
+      // cookie below still lets the server pick it up next visit either way.
+    }
+    document.cookie = `lang=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    router.push(`/${nextLocale}${localePath === "/" ? "" : localePath}`);
   }
 
   // Shared between the desktop rail's footer and the mobile "More" sheet
@@ -96,6 +127,15 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
         </button>
       </div>
 
+      <div className="theme-row">
+        <span>Language:</span>
+        <label className="switch">
+          <input type="checkbox" checked={locale === "es-AR"} onChange={toggleLanguage} />
+          <span className="slider" />
+        </label>
+        <span>{locale === "en" ? "EN" : "ES"}</span>
+      </div>
+
       <div className="account-row">
         <span className="account-name" title={displayName}>👤 {displayName}</span>
         <SignOutButton />
@@ -115,7 +155,7 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
             <Link
               key={link.href}
               href={link.href}
-              className={`nav-link${pathname === link.href ? " active" : ""}`}
+              className={`nav-link${localePath === link.href ? " active" : ""}`}
             >
               <span className="nav-link-icon">{link.icon}</span> {link.label}
               {link.href === "/friends" && pendingFriendRequestCount > 0 && (
@@ -137,7 +177,7 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
           <Link
             key={link.href}
             href={link.href}
-            className={`tab-item${pathname === link.href ? " active" : ""}`}
+            className={`tab-item${localePath === link.href ? " active" : ""}`}
           >
             <span className="tab-item-icon">{link.icon}</span>
             {link.label}
@@ -165,7 +205,7 @@ export default function SideNav({ displayName, pendingFriendRequestCount = 0, un
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`nav-link${pathname === link.href ? " active" : ""}`}
+                  className={`nav-link${localePath === link.href ? " active" : ""}`}
                   onClick={() => setMoreOpen(false)}
                 >
                   <span className="nav-link-icon">{link.icon}</span> {link.label}

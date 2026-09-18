@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
+import { localeFromPathname, withLocale } from "@/lib/i18n/locale";
+import Link from "@/components/LocaleLink";
 
 export default function SignupPage() {
   const router = useRouter();
+  const locale = localeFromPathname(usePathname());
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +40,7 @@ export default function SignupPage() {
       // ?welcome=1 param (not a persisted "has seen onboarding" flag --
       // this moment is already unambiguous) triggers WelcomeDialog once,
       // right after account creation.
-      router.replace("/dashboard?welcome=1");
+      router.replace(withLocale(locale, "/dashboard?welcome=1"));
       router.refresh();
     } else {
       // Email confirmation is required — no session until the link is

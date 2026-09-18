@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import { lang } from "next/root-params";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import SideNav from "@/components/nav/SideNav";
@@ -14,7 +15,7 @@ import { getUnreadNotificationCount } from "@/lib/notifications";
 // since Server Components can in principle be reached directly.
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  if (!user) redirect(`/${await lang()}/login`);
 
   const supabase = getSupabaseServerClient();
   const [{ data: profile }, { count: pendingFriendRequestCount }, unreadNotificationCount] = await Promise.all([

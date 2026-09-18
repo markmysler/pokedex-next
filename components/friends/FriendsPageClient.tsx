@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import type { FriendsData } from "@/lib/friends";
 import CardTab from "@/components/ui/CardTab";
+import { localeFromPathname, withLocale } from "@/lib/i18n/locale";
+import Link from "@/components/LocaleLink";
 
 interface FriendsPageClientProps {
   myFriendCode: string;
@@ -13,6 +14,7 @@ interface FriendsPageClientProps {
 
 export default function FriendsPageClient({ myFriendCode, initial }: FriendsPageClientProps) {
   const router = useRouter();
+  const locale = localeFromPathname(usePathname());
   const [data, setData] = useState(initial);
   const [codeInput, setCodeInput] = useState("");
   const [status, setStatus] = useState("");
@@ -75,7 +77,7 @@ export default function FriendsPageClient({ myFriendCode, initial }: FriendsPage
     const invite = await inviteRes.json();
     setBusyId(null);
     if (invite.error) return setStatus(`⚠️ ${invite.error}`);
-    router.push(`/online?code=${room.roomCode}&host=1`);
+    router.push(withLocale(locale, `/online?code=${room.roomCode}&host=1`));
   }
 
   return (

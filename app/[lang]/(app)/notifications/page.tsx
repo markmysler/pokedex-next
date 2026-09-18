@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { lang } from "next/root-params";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getNotificationsForUser, type NotificationEntry } from "@/lib/notifications";
@@ -41,6 +42,7 @@ export default async function NotificationsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const currentLang = await lang();
   const supabase = getSupabaseServerClient();
   const notifications = await getNotificationsForUser(supabase, user.id);
 
@@ -70,7 +72,7 @@ export default async function NotificationsPage() {
                     )
                   ) : (
                     rendered.href && (
-                      <Link className="btn-secondary" href={rendered.href}>
+                      <Link className="btn-secondary" href={`/${currentLang}${rendered.href}`}>
                         Open
                       </Link>
                     )

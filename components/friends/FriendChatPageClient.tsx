@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 import type { OwnedPokemon } from "@/types/pokemon";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import ChatPanel, { type ChatMessage } from "@/components/online/ChatPanel";

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { lang } from "next/root-params";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
@@ -7,11 +8,12 @@ import { typesList } from "@/lib/pokedex";
 import FriendChatPageClient from "@/components/friends/FriendChatPageClient";
 import type { OwnedPokemon } from "@/types/pokemon";
 
-export default async function FriendChatPage({ params }: PageProps<"/friends/[id]">) {
+export default async function FriendChatPage({ params }: PageProps<"/[lang]/friends/[id]">) {
   const { id } = await params;
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const currentLang = await lang();
   const supabase = getSupabaseServerClient();
 
   const friendship = await getFriendshipForUser(supabase, id, user.id);
@@ -21,7 +23,7 @@ export default async function FriendChatPage({ params }: PageProps<"/friends/[id
         <h1 className="page-title">🤝 Friends</h1>
         <div className="card">
           <p>This friendship doesn&apos;t exist, isn&apos;t confirmed yet, or isn&apos;t yours to view.</p>
-          <Link href="/friends">← Back to Friends</Link>
+          <Link href={`/${currentLang}/friends`}>← Back to Friends</Link>
         </div>
       </div>
     );

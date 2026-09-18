@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
+import { localeFromPathname, withLocale } from "@/lib/i18n/locale";
 
 export default function SignOutButton() {
   const router = useRouter();
+  const locale = localeFromPathname(usePathname());
   const [pending, setPending] = useState(false);
 
   async function handleSignOut() {
     setPending(true);
     const supabase = getSupabaseBrowserClient();
     await supabase.auth.signOut();
-    router.replace("/login");
+    router.replace(withLocale(locale, "/login"));
     router.refresh();
   }
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { localeFromPathname, withLocale } from "@/lib/i18n/locale";
 
 interface BattleInviteAcceptButtonProps {
   roomCode: string;
@@ -16,6 +17,7 @@ interface BattleInviteAcceptButtonProps {
 // surfaced here as an inline error, same as the toast does.
 export default function BattleInviteAcceptButton({ roomCode }: BattleInviteAcceptButtonProps) {
   const router = useRouter();
+  const locale = localeFromPathname(usePathname());
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -29,7 +31,7 @@ export default function BattleInviteAcceptButton({ roomCode }: BattleInviteAccep
       setError(data.error);
       return;
     }
-    router.push(`/online?code=${roomCode}`);
+    router.push(withLocale(locale, `/online?code=${roomCode}`));
   }
 
   return (

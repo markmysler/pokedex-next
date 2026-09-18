@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { lang } from "next/root-params";
 import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
@@ -23,6 +24,7 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const currentLang = await lang();
   const supabase = getSupabaseServerClient();
 
   const [{ pokemon }, matchHistory, stats] = await Promise.all([
@@ -77,7 +79,7 @@ export default async function DashboardPage() {
           )}
           <p className="dashboard-note">
             Showing your {topPokemon.length} strongest Pokémon by total stats · {pokemon.length} owned total.{" "}
-            <Link href="/inventory">View inventory →</Link>
+            <Link href={`/${currentLang}/inventory`}>View inventory →</Link>
           </p>
         </div>
 
@@ -103,7 +105,7 @@ export default async function DashboardPage() {
         <div className="card">
           <CardTab icon="🏆" label="Recent matches" color="var(--good)" />
           {recentMatches.length === 0 ? (
-            <p>No matches played yet. <Link href="/battle">Battle a bot →</Link></p>
+            <p>No matches played yet. <Link href={`/${currentLang}/battle`}>Battle a bot →</Link></p>
           ) : (
             <ul className="match-list">
               {recentMatches.map((m) => (
@@ -114,7 +116,7 @@ export default async function DashboardPage() {
               ))}
             </ul>
           )}
-          <p className="dashboard-note"><Link href="/history">Full history →</Link></p>
+          <p className="dashboard-note"><Link href={`/${currentLang}/history`}>Full history →</Link></p>
         </div>
       </div>
     </div>
