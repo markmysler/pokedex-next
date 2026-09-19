@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { localeFromPathname, withLocale } from "@/lib/i18n/locale";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 interface BattleInviteAcceptButtonProps {
   roomCode: string;
@@ -16,6 +17,8 @@ interface BattleInviteAcceptButtonProps {
 // concurrent join between that check and this click is still possible --
 // surfaced here as an inline error, same as the toast does.
 export default function BattleInviteAcceptButton({ roomCode }: BattleInviteAcceptButtonProps) {
+  const dict = useDictionary();
+  const t = dict.social.notifications;
   const router = useRouter();
   const locale = localeFromPathname(usePathname());
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +40,7 @@ export default function BattleInviteAcceptButton({ roomCode }: BattleInviteAccep
   return (
     <div className="notification-action">
       <button className="btn-primary" onClick={accept} disabled={busy}>
-        {busy ? "Joining…" : "Accept"}
+        {busy ? t.joining : t.accept}
       </button>
       {error && <p className="auth-error">{error}</p>}
     </div>

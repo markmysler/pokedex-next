@@ -97,6 +97,10 @@ const en = {
     },
     backToList: "← Back to list",
     cancel: "Cancel",
+    // PokemonMultiPicker's default emptyMessage -- every real call site
+    // (Team Chat/Trade's builder, upgrades/57-i18n-social-cluster.md)
+    // passes its own, so this only shows if a future caller doesn't.
+    nothingHere: "Nothing here.",
     // "Shiny" stays untranslated in both locales, same jargon-word call as
     // ATK/DEF (battle.moveEffect.statAbbrev) -- caught as a leftover
     // hardcoded string in 5 places (Dashboard, Inventory x3, FighterCard)
@@ -532,7 +536,118 @@ const en = {
       acceptRematch: "✅ Accept Rematch",
     },
   },
-  social: {},
+  social: {
+    // upgrades/57-i18n-social-cluster.md's cluster: Friends, Friend Chat &
+    // Trade, Notifications, History, Leaderboard. Two things stay
+    // untranslated on purpose: a friend's own display name, and any
+    // user-generated content (a chat message's `text`, `friend-message`'s
+    // notification body) -- both are the sender's actual words/name, not
+    // app copy.
+    friends: {
+      heading: "🤝 Friends",
+      yourFriendCode: "Your friend code",
+      shareCodeNote: "Share this code with a friend so they can add you.",
+      addFriend: "Add a friend",
+      codePlaceholder: "Enter friend code",
+      sendRequest: "Send Request",
+      enterCodeFirst: "⚠️ Enter a friend code first.",
+      nowFriends: "✅ You're now friends!",
+      requestSent: "Friend request sent!",
+      genericError: (error: string) => `⚠️ ${error}`,
+      incomingRequests: "Incoming requests",
+      outgoingRequests: "Outgoing requests",
+      accept: "Accept",
+      decline: "Decline",
+      cancelRequest: "Cancel",
+      friendsCount: (n: number) => `Friends (${n})`,
+      noFriendsYet: "No friends yet — send a request above to get started.",
+      battle: "⚔️ Battle",
+      chat: "💬 Chat",
+      remove: "Remove",
+      // Same fallback used for a message sender and a trade partner whose
+      // account no longer exists -- mirrors the pre-existing "a Bot"/"a
+      // departed player" pair this step also moved out of lib/history.ts.
+      departedPlayer: "a departed player",
+    },
+    // Friend Chat & Trade (the /friends/[id] page) -- ChatPanel itself
+    // reuses battle.chat (identical widget, Team Chat and Friend Chat are
+    // the same component), so only the trade-builder chrome and this
+    // page's own strings live here.
+    chat: {
+      backToFriends: "← Back to Friends",
+      friendNotFound: "This friendship doesn't exist, isn't confirmed yet, or isn't yours to view.",
+      friendFallback: "Friend",
+      trades: "Trades",
+      noPendingTrades: "No pending trades.",
+      youProposed: "You proposed:",
+      friendProposed: (name: string) => `${name} proposed:`,
+      youGive: "You give",
+      friendGives: (name: string) => `${name} gives`,
+      accept: "Accept",
+      decline: "Decline",
+      cancelOffer: "Cancel",
+      proposeTrade: "➕ Propose Trade",
+      yourPokemonSelected: (n: number) => `Your Pokémon (${n} selected)`,
+      friendPokemonSelected: (name: string, n: number) => `${name}'s Pokémon (${n} selected)`,
+      noOwnedPokemon: "You don't own any Pokémon yet.",
+      friendNoOwnedPokemon: (name: string) => `${name} doesn't own any Pokémon yet.`,
+      startersCantBeTraded: "Starters can't be traded",
+      sendTradeOffer: "Send Trade Offer",
+      proposing: "Proposing…",
+      pickAtLeastOne: "Pick at least one Pokémon from each side.",
+      systemSender: "System",
+      messageFailed: (error: string) => `⚠️ Message failed to send: ${error}`,
+    },
+    notifications: {
+      heading: "🔔 Notifications",
+      empty: "No notifications yet.",
+      open: "Open",
+      inviteUnavailable: "This invite is no longer available.",
+      accept: "Accept",
+      joining: "Joining…",
+      // Bodies are the sentence's tail only -- every caller renders the
+      // actor's name in bold ahead of it (`<strong>{name}</strong> {body}`),
+      // same split renderNotification() and FriendNotifications.tsx's toast
+      // already used before translation, just now driven from here instead
+      // of inline JSX in a `switch (n.kind)`.
+      friendRequestBody: "sent you a friend request.",
+      friendRequestAcceptedBody: "accepted your friend request!",
+      tradeProposedBody: "proposed a trade.",
+      tradeResolved: (status: "accepted" | "declined" | "cancelled") => `A trade was ${status}.`,
+      battleInviteBody: "invited you to battle!",
+      // Longer live-toast-only variants (FriendNotifications.tsx) -- same
+      // event, a bit more context since a toast isn't sitting next to a
+      // browsable Friends/Notifications page the way the persisted-list
+      // rendering already is.
+      toastFriendRequestBody: "sent you a friend request. Check the Friends page to respond.",
+      toastTradeProposedBody: "proposed a trade!",
+      toastJoinFailed: (name: string, error: string) => `⚠️ Couldn't join ${name}'s battle: ${error}`,
+    },
+    history: {
+      heading: "📜 Battle History",
+      noMatches: "No matches played yet.",
+      won: "Won",
+      lost: "Lost",
+      vs: "vs",
+      // "Online" and "Bot" are identical in both locales -- not a missed
+      // translation, "vs" and "bot" are the same established loanwords
+      // account.dashboard already uses inside Spanish sentences
+      // ("Victorias vs bot"); this is just the standalone Title Case badge
+      // form of the same words.
+      onlineMode: "Online",
+      botMode: "vs Bot",
+      roomSuffix: (code: string) => ` — room ${code}`,
+      yourTeamSuffix: (names: string) => ` · Your team: ${names}`,
+      opponentBot: "a Bot",
+      opponentDeparted: "a departed player",
+    },
+    leaderboard: {
+      heading: "🏆 Leaderboard",
+      noTrainers: "No trainers yet.",
+      youSuffix: " (you)",
+      wins: (n: number) => `${n} online win${n === 1 ? "" : "s"}`,
+    },
+  },
 };
 // Deliberately not `as const`: that would infer every string as its own
 // literal type, and the Dictionary type (getDictionary.ts derives it from

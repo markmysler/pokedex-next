@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "@/components/LocaleLink";
 import type { OwnedPokemon } from "@/types/pokemon";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 import ChatPanel, { type ChatMessage } from "@/components/online/ChatPanel";
 import PokemonMultiPicker from "@/components/pokemon/PokemonMultiPicker";
 import PokemonInstanceCard from "@/components/inventory/PokemonInstanceCard";
@@ -55,6 +56,8 @@ export default function FriendChatPageClient({
   friendInventory,
   typesList,
 }: FriendChatPageClientProps) {
+  const dict = useDictionary();
+  const t = dict.social.chat;
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [trades, setTrades] = useState<PendingTrade[]>(initialTrades);
   const [showBuilder, setShowBuilder] = useState(false);
@@ -95,7 +98,7 @@ export default function FriendChatPageClient({
   }, [friendshipId, myUserId, refreshTrades]);
 
   async function sendMessage(text: string) {
-    setMessages((prev) => [...prev, { text, senderDisplayName: "You", mine: true }]);
+    setMessages((prev) => [...prev, { text, senderDisplayName: dict.battle.chat.you, mine: true }]);
     const res = await fetch(`/api/friends/${friendshipId}/messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -103,7 +106,7 @@ export default function FriendChatPageClient({
     });
     const data = await res.json();
     if (data.error) {
-      setMessages((prev) => [...prev, { text: `⚠️ Message failed to send: ${data.error}`, senderDisplayName: "System", mine: false }]);
+      setMessages((prev) => [...prev, { text: t.messageFailed(data.error), senderDisplayName: t.systemSender, mine: false }]);
     }
   }
 
@@ -116,7 +119,7 @@ export default function FriendChatPageClient({
 
   async function proposeTrade() {
     if (myOffered.length === 0 || requested.length === 0) {
-      setTradeError("Pick at least one Pokémon from each side.");
+      setTradeError(t.pickAtLeastOne);
       return;
     }
     setProposing(true);
@@ -149,42 +152,42 @@ export default function FriendChatPageClient({
 
   return (
     <>
-      <p><Link href="/friends">← Back to Friends</Link></p>
+      <p><Link href="/friends">{t.backToFriends}</Link></p>
 
       <div className="card">
-        <CardTab icon="🔄" label="Trades" />
+        <CardTab icon="🔄" label={t.trades} />
         {tradeError && <p className="auth-error">{tradeError}</p>}
 
-        {trades.length === 0 && !showBuilder && <p>No pending trades.</p>}
+        {trades.length === 0 && !showBuilder && <p>{t.noPendingTrades}</p>}
 
-        {trades.map((t) => (
-          <div key={t.id} className="trade-row">
+        {trades.map((trade) => (
+          <div key={trade.id} className="trade-row">
             <div className="trade-row-header">
-              {t.isMine ? "You proposed:" : `${friendDisplayName} proposed:`}
+              {trade.isMine ? t.youProposed : t.friendProposed(friendDisplayName)}
             </div>
             <div className="trade-row-pokemon">
               <div className="trade-row-side">
-                <h4>{t.isMine ? "You give" : `${friendDisplayName} gives`}</h4>
-                <TradeSideCards pokemon={t.offered} />
+                <h4>{trade.isMine ? t.youGive : t.friendGives(friendDisplayName)}</h4>
+                <TradeSideCards pokemon={trade.offered} />
               </div>
               <div className="trade-row-arrow">⇄</div>
               <div className="trade-row-side">
-                <h4>{t.isMine ? `${friendDisplayName} gives` : "You give"}</h4>
-                <TradeSideCards pokemon={t.requested} />
+                <h4>{trade.isMine ? t.friendGives(friendDisplayName) : t.youGive}</h4>
+                <TradeSideCards pokemon={trade.requested} />
               </div>
             </div>
             <div className="trade-row-actions">
-              {t.isMine ? (
-                <button className="btn-secondary" disabled={busyTradeId === t.id} onClick={() => resolveTrade(t.id, "decline")}>
-                  Cancel
+              {trade.isMine ? (
+                <button className="btn-secondary" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "decline")}>
+                  {t.cancelOffer}
                 </button>
               ) : (
                 <>
-                  <button className="btn-primary" disabled={busyTradeId === t.id} onClick={() => resolveTrade(t.id, "accept")}>
-                    Accept
+                  <button className="btn-primary" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "accept")}>
+                    {t.accept}
                   </button>
-                  <button className="btn-secondary" disabled={busyTradeId === t.id} onClick={() => resolveTrade(t.id, "decline")}>
-                    Decline
+                  <button className="btn-secondary" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "decline")}>
+                    {t.decline}
                   </button>
                 </>
               )}
@@ -193,31 +196,31 @@ export default function FriendChatPageClient({
         ))}
 
         {!showBuilder ? (
-          <button className="btn-primary" onClick={() => setShowBuilder(true)}>➕ Propose Trade</button>
+          <button className="btn-primary" onClick={() => setShowBuilder(true)}>{t.proposeTrade}</button>
         ) : (
           <div className="trade-builder">
-            <h3>Your Pokémon ({myOffered.length} selected)</h3>
+            <h3>{t.yourPokemonSelected(myOffered.length)}</h3>
             <PokemonMultiPicker
               inventory={myInventory}
               typesList={typesList}
               selected={myOffered}
               onToggle={toggleOffered}
-              emptyMessage="You don't own any Pokémon yet."
+              emptyMessage={t.noOwnedPokemon}
             />
-            <h3>{friendDisplayName}&apos;s Pokémon ({requested.length} selected)</h3>
+            <h3>{t.friendPokemonSelected(friendDisplayName, requested.length)}</h3>
             <PokemonMultiPicker
               inventory={friendInventory}
               typesList={typesList}
               selected={requested}
               onToggle={toggleRequested}
-              emptyMessage={`${friendDisplayName} doesn't own any Pokémon yet.`}
+              emptyMessage={t.friendNoOwnedPokemon(friendDisplayName)}
             />
             <div className="trade-builder-actions">
               <button className="btn-primary" disabled={proposing} onClick={proposeTrade}>
-                {proposing ? "Proposing…" : "Send Trade Offer"}
+                {proposing ? t.proposing : t.sendTradeOffer}
               </button>
               <button className="btn-secondary" onClick={() => { setShowBuilder(false); setMyOffered([]); setRequested([]); setTradeError(""); }}>
-                Cancel
+                {dict.common.cancel}
               </button>
             </div>
           </div>

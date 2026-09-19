@@ -5,6 +5,7 @@ import type { OwnedPokemon } from "@/types/pokemon";
 import PokemonInstanceCard from "@/components/inventory/PokemonInstanceCard";
 import PokemonFilterBar from "@/components/pokemon/PokemonFilterBar";
 import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 interface PokemonMultiPickerProps {
   inventory: OwnedPokemon[];
@@ -21,7 +22,12 @@ interface PokemonMultiPickerProps {
 // PokemonFilterBar, filterAndSortPokemon) rather than duplicating that grid
 // a third time.
 export default function PokemonMultiPicker({ inventory, typesList, selected, onToggle, emptyMessage }: PokemonMultiPickerProps) {
+  const dict = useDictionary();
   const [search, setSearch] = useState("");
+  // "All Types" is the sentinel *value* PokemonFilterBar/filterAndSortPokemon
+  // compare against, kept untranslated same as every other call site
+  // (TeamPicker/PokedexPageClient/InventoryPageClient) -- only the
+  // *displayed* option label is translated, via allTypesLabel below.
   const [typeFilter, setTypeFilter] = useState("All Types");
   const [sortBy, setSortBy] = useState<SortKey>("total-desc");
 
@@ -40,6 +46,8 @@ export default function PokemonMultiPicker({ inventory, typesList, selected, onT
         sortBy={sortBy}
         onSortByChange={setSortBy}
         typesList={typesList}
+        dict={dict.common.filterBar}
+        allTypesLabel={dict.common.allTypesLabel}
       />
       <div className="pokemon-grid trade-picker-grid">
         {filtered.map((p) => (
@@ -50,12 +58,12 @@ export default function PokemonMultiPicker({ inventory, typesList, selected, onT
             selected={selected.includes(p.id)}
             onSelect={() => onToggle(p.id)}
             disabled={p.isStarter}
-            disabledReason={p.isStarter ? "Starters can't be traded" : undefined}
+            disabledReason={p.isStarter ? dict.social.chat.startersCantBeTraded : undefined}
           />
         ))}
       </div>
-      {inventory.length === 0 && <p>{emptyMessage ?? "Nothing here."}</p>}
-      {inventory.length > 0 && filtered.length === 0 && <p>No Pokémon match your filters.</p>}
+      {inventory.length === 0 && <p>{emptyMessage ?? dict.common.nothingHere}</p>}
+      {inventory.length > 0 && filtered.length === 0 && <p>{dict.collection.inventory.noMatches}</p>}
     </div>
   );
 }

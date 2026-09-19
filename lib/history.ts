@@ -6,7 +6,13 @@ export interface MatchHistoryEntry {
   id: string;
   mode: "bot" | "online";
   won: boolean;
-  opponentLabel: string;
+  // Split into a kind + a resolved name instead of a single pre-rendered
+  // "a Bot"/"a departed player" label (upgrades/57-i18n-social-cluster.md)
+  // -- baking English text into this data-layer module would've meant
+  // every caller (Dashboard, History) inherited an untranslatable string
+  // regardless of locale. Callers render the localized label themselves.
+  opponentKind: "bot" | "player";
+  opponentName: string | null;
   roomCode: string | null;
   teamSnapshot: { number: string; name: string }[] | null;
   playedAt: string;
@@ -40,7 +46,8 @@ export async function getMatchHistoryForUser(
     id: r.id,
     mode: r.mode,
     won: r.won,
-    opponentLabel: r.mode === "bot" ? "a Bot" : (nameById.get(r.opponent) ?? "a departed player"),
+    opponentKind: r.mode === "bot" ? "bot" : "player",
+    opponentName: r.mode === "bot" ? null : (nameById.get(r.opponent) ?? null),
     roomCode: r.room_code,
     teamSnapshot: (r.team_snapshot as { number: string; name: string }[] | null) ?? null,
     playedAt: r.played_at,

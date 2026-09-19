@@ -111,12 +111,15 @@ export default async function DashboardPage() {
             <p>{t.noMatches} <Link href={`/${currentLang}/battle`}>{t.battleABot}</Link></p>
           ) : (
             <ul className="match-list">
-              {recentMatches.map((m) => (
-                <li key={m.id} className={`match-row${m.won ? " win" : " loss"}`}>
-                  {m.won ? t.won : t.lost} {t.vs} {m.opponentLabel} —{" "}
-                  {new Date(m.playedAt).toLocaleString()}
-                </li>
-              ))}
+              {recentMatches.map((m) => {
+                const opponentLabel = m.opponentKind === "bot" ? dict.social.history.opponentBot : (m.opponentName ?? dict.social.history.opponentDeparted);
+                return (
+                  <li key={m.id} className={`match-row${m.won ? " win" : " loss"}`}>
+                    {m.won ? t.won : t.lost} {t.vs} {opponentLabel} —{" "}
+                    {new Date(m.playedAt).toLocaleString()}
+                  </li>
+                );
+              })}
             </ul>
           )}
           <p className="dashboard-note"><Link href={`/${currentLang}/history`}>{t.fullHistory}</Link></p>

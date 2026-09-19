@@ -5,6 +5,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
 import { getInventoryForUser } from "@/lib/inventory";
 import { typesList } from "@/lib/pokedex";
+import { getDictionary } from "@/lib/i18n/getDictionary";
 import FriendChatPageClient from "@/components/friends/FriendChatPageClient";
 import type { OwnedPokemon } from "@/types/pokemon";
 
@@ -14,16 +15,17 @@ export default async function FriendChatPage({ params }: PageProps<"/[lang]/frie
   if (!user) return null;
 
   const currentLang = await lang();
+  const dict = await getDictionary();
   const supabase = getSupabaseServerClient();
 
   const friendship = await getFriendshipForUser(supabase, id, user.id);
   if (!friendship || friendship.status !== "accepted") {
     return (
       <div className="page">
-        <h1 className="page-title">🤝 Friends</h1>
+        <h1 className="page-title">{dict.social.friends.heading}</h1>
         <div className="card">
-          <p>This friendship doesn&apos;t exist, isn&apos;t confirmed yet, or isn&apos;t yours to view.</p>
-          <Link href={`/${currentLang}/friends`}>← Back to Friends</Link>
+          <p>{dict.social.chat.friendNotFound}</p>
+          <Link href={`/${currentLang}/friends`}>{dict.social.chat.backToFriends}</Link>
         </div>
       </div>
     );
@@ -50,7 +52,7 @@ export default async function FriendChatPage({ params }: PageProps<"/[lang]/frie
 
   const initialMessages = (messagesRes.data ?? []).map((r) => ({
     text: r.text,
-    senderDisplayName: nameById.get(r.sender_id) ?? "a departed player",
+    senderDisplayName: nameById.get(r.sender_id) ?? dict.social.friends.departedPlayer,
     mine: r.sender_id === user.id,
   }));
 
@@ -70,11 +72,11 @@ export default async function FriendChatPage({ params }: PageProps<"/[lang]/frie
 
   return (
     <div className="page">
-      <h1 className="page-title">💬 {friendProfile?.display_name ?? "Friend"}</h1>
+      <h1 className="page-title">💬 {friendProfile?.display_name ?? dict.social.chat.friendFallback}</h1>
       <FriendChatPageClient
         friendshipId={id}
         myUserId={user.id}
-        friendDisplayName={friendProfile?.display_name ?? "a departed player"}
+        friendDisplayName={friendProfile?.display_name ?? dict.social.friends.departedPlayer}
         initialMessages={initialMessages}
         initialTrades={initialTrades}
         myInventory={myInventory.pokemon}
