@@ -57,11 +57,3 @@ export function getTypeMultiplier(
   const m2 = defenderType2 ? table[defenderType2] ?? 1.0 : 1.0;
   return m1 * m2;
 }
-
-export function getManaCost(power: number): number {
-  if (power >= 120) return 45;
-  if (power >= 90) return 30;
-  if (power >= 60) return 20;
-  if (power >= 40) return 10;
-  return 0;
-}

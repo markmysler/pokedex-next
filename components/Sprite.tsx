@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 interface SpriteProps {
   name: string;
@@ -9,13 +10,14 @@ interface SpriteProps {
 }
 
 export default function Sprite({ name, form, className }: SpriteProps) {
+  const dict = useDictionary();
   const [failed, setFailed] = useState(false);
   const src = `/images/${name.toLowerCase()}_${form}.gif`;
 
   if (failed) {
     return (
       <div className={className} style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "var(--text-muted)" }}>
-        [No Image]
+        {dict.common.noImage}
       </div>
     );
   }
@@ -25,7 +27,7 @@ export default function Sprite({ name, form, className }: SpriteProps) {
     <img
       className={className}
       src={src}
-      alt={`${name} ${form} sprite`}
+      alt={dict.ui.spriteAlt(name, form)}
       loading="lazy"
       decoding="async"
       onError={() => setFailed(true)}

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 interface ModalProps {
   onClose: () => void;
@@ -13,13 +14,14 @@ interface ModalProps {
 // small custom components" decision). No focus-trap library: same
 // position: fixed pattern SideNav.tsx's mobile nav-overlay already uses.
 export default function Modal({ onClose, large, children }: ModalProps) {
+  const dict = useDictionary();
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
         className={`card modal-panel${large ? " modal-panel-large" : ""}`}
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close" onClick={onClose} aria-label="Close">✕</button>
+        <button className="modal-close" onClick={onClose} aria-label={dict.common.close}>✕</button>
         {children}
       </div>
     </div>

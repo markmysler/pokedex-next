@@ -1,12 +1,17 @@
 # Kanto Pokédex — Web Edition
 
 A full-stack Pokémon collection and battle game covering the original 151
-Kanto species: browse the Pokédex, roll and collect your own Pokémon from
-lootboxes, and battle them against AI or other players in real time.
+Kanto species plus 6 Dark-type additions for Psychic counterplay: browse
+the Pokédex, roll and collect your own Pokémon from lootboxes, evolve them,
+and battle them against AI or other players in real time — in English or
+Argentinian Spanish.
 
 ## Features
 
-- **Pokédex** — all 151 Kanto species with base stats, types, and moves.
+- **Pokédex** — the 151 Kanto species plus 6 Dark-type additions (Umbreon;
+  Houndour → Houndoom; Larvitar → Pupitar → Tyranitar — Psychic's only
+  hard counter, added since Dark didn't otherwise exist in Kanto), 157
+  species total, with base stats, types, and moves.
 - **Collection** — lootboxes roll a Pokémon with its own randomized stats
   and moveset, centered on (but independently varying from) its species'
   base stats, so no two of the same species are ever quite identical.
@@ -26,8 +31,10 @@ lootboxes, and battle them against AI or other players in real time.
   - Every rolled or backfilled moveset guarantees 3 damage moves + 1
     support move.
 - **Collection management** — Inventory with per-Pokémon detail, Trade Up
-  (burn 5 unwanted Pokémon for 1 guaranteed lootbox), and friend-to-friend
-  trading.
+  (burn 5 unwanted Pokémon for 1 guaranteed lootbox), Evolution (burn 5
+  same-species Pokémon for 1 guaranteed instance of its evolution, stats
+  derived from the 5 burned instances rather than freshly rolled), and
+  friend-to-friend trading.
 - **Social** — friends list with invites, direct trading, a chat/message
   thread per friend, and a global leaderboard.
 - **Progress tracking** — Dashboard stat strip, match history, and
@@ -35,6 +42,10 @@ lootboxes, and battle them against AI or other players in real time.
 - **Starters** — every new account picks one of Bulbasaur, Charmander, or
   Squirtle as a permanent starter (can't be traded or discarded) with a
   hand-authored moveset.
+- **Bilingual** — English and Argentinian Spanish, toggled from the same
+  account block as the Sound toggle; the whole app is translated (species/
+  move names and a handful of established jargon terms stay untranslated
+  in both).
 
 ## Tech stack
 
@@ -129,15 +140,22 @@ production. The workflow:
 ## Project structure
 
 ```
-app/                  Next.js App Router pages and API routes
-  (app)/               authenticated screens (battle, inventory, pokedex,
-                        dashboard, friends, online, leaderboard, etc.)
-  api/                 server routes (battles, rooms, friends, inventory, ...)
-  login/, signup/      auth screens
+app/
+  [lang]/              every page, under an EN/ES-AR URL segment (/en/...,
+                        /es-AR/...) -- see next/root-params in
+                        node_modules/next/dist/docs/
+    (app)/              authenticated screens (battle, inventory, pokedex,
+                         dashboard, friends, online, leaderboard, etc.)
+    login/, signup/     auth screens
+  api/                 server routes (battles, rooms, friends, inventory,
+                       ...) -- not under [lang]; Route Handlers don't render
+                       user-facing text, so they don't need a locale
 components/           React components, grouped by feature area
 lib/                  business logic — battle engine, collection/roll
-                       logic, Supabase clients, dashboard/leaderboard/
-                       history queries
+                       logic, evolution, Supabase clients, dashboard/
+                       leaderboard/history queries
+  i18n/                dictionaries (en.ts/es-AR.ts), getDictionary()
+                       (Server Components) / useDictionary() (Client)
 types/                shared TypeScript types (Pokémon, moves, battle state)
 supabase/migrations/  versioned SQL schema, applied in order
 design/               design system spec and per-screen redesign tracker

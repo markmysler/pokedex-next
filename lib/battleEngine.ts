@@ -311,7 +311,17 @@ function executeDamage(
 
   const rawDmg = ((2 * 50) / 5 + 2) * (atkStat / Math.max(1, defStat)) * move.power / 50 + 2;
   const rng = randUniform(0.85, 1.15);
-  const dmg = Math.max(1, Math.floor(rawDmg * mult * rng));
+  // A true type immunity (mult === 0, e.g. Psychic vs. Dark) must deal
+  // exactly 0 -- the pre-existing `Math.max(1, ...)` floor below exists so
+  // a merely *weak* hit (0.5x, or a low-power move against a bulky
+  // defender) never silently rounds down to 0 and reads as "nothing
+  // happened," but applied unconditionally it also floored a genuine 0x
+  // immunity up to 1 damage, contradicting the "NO EFFECT (0.0x)" log line
+  // shown for the exact same hit (upgrades/58-docs-and-roster-validation.md
+  // -- found by this step's own Psychic-vs-Dark roster validation, a
+  // pre-existing bug not introduced by this wave but only ever exercised
+  // by a true 0x matchup once Dark existed in the roster to test against).
+  const dmg = mult === 0 ? 0 : Math.max(1, Math.floor(rawDmg * mult * rng));
 
   const absorbed = applyDamage(defenderState, dmg);
 

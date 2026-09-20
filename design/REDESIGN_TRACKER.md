@@ -25,7 +25,7 @@ Tracks progress of the modern/Pokémon-inspired redesign (see `DESIGN_SYSTEM.md`
 | 3 | Dashboard | `/dashboard` | ✅ Done | new 4-tile stat strip replaces prose stat cards |
 | 4 | Profile | `/profile` | ✅ Done | avatar + form + friend code plate |
 | 5 | Pokédex (list+detail) | `/pokedex` | ✅ Done | mobile: grid → full-screen detail sheet |
-| 6 | Inventory (list+detail) | `/inventory` | ✅ Done | lootbox banner promoted to gold hero card |
+| 6 | Inventory (list+detail) | `/inventory` | ✅ Done | lootbox banner promoted to gold hero card; Evolve button + confirm dialog added in `upgrades/51-evolution-api-and-inventory-ui.md` (v7), same visual treatment as the pre-existing Trade Up button/dialog it sits beside |
 | 7 | Lootbox reveal | modal | ✅ Done | drumroll → sprite → stats → moves, unchanged pacing |
 | 8 | Team Picker | pre-battle | ✅ Done | shared by Battle + Online |
 | 9 | Battle Arena (bot) | `/battle` | ✅ Done | fighters stack on mobile instead of shrinking |
@@ -40,7 +40,7 @@ Tracks progress of the modern/Pokémon-inspired redesign (see `DESIGN_SYSTEM.md`
 
 | Component | Status | Notes |
 |---|---|---|
-| App shell (rail nav / bottom tabs) | ✅ Done | breakpoint moves from 720px hamburger → 900px rail/tab-bar split |
+| App shell (rail nav / bottom tabs) | ✅ Done | breakpoint moves from 720px hamburger → 900px rail/tab-bar split; EN/ES-AR language toggle added to `SideNav`'s account block in `upgrades/53-i18n-routing-and-toggle-infrastructure.md` (v7), same row treatment as the pre-existing Sound toggle it sits beside |
 | `Sprite` | ✅ Done | frame/background treatment only, same `<img>` behavior |
 | `TypeBadges` | ✅ Done | refined contrast, same 18-color mapping |
 | `PokemonInstanceCard` (grid + list) | ✅ Done | |
@@ -54,3 +54,5 @@ Tracks progress of the modern/Pokémon-inspired redesign (see `DESIGN_SYSTEM.md`
 ## Status
 
 Wave complete as of 2026-08-19. See `upgrades/archive/v5/main.md` for the full step-by-step implementation history, validation notes, and the key decisions made along the way (design direction, token choices, and several judgment calls documented as they came up). `upgrades/main.md` now points here as "no active wave."
+
+**Since this wave, per `upgrades/archive/v6/main.md`'s note that this doc "stays current going forward, independent of any wave's lifecycle":** v6 (mana-to-uses migration) changed the segmented meter's underlying data model, not its visual spec (already noted in the Segmented meter row above). v7 (evolution, Psychic counterplay, bilingual support — `upgrades/archive/v7/main.md`) added the Evolve UI and language toggle (both noted inline above) and moved every route in this table under an `app/[lang]/` URL segment (e.g. `/inventory` → `/en/inventory` or `/es-AR/inventory`) — a routing change with no visual/component impact, so route cells above are left as their pre-`[lang]` path for readability rather than rewritten with a locale prefix. Neither wave re-verified every screen against this tracker's original mockups; each wave's own step files (linked above) are the source of truth for what actually changed and why.

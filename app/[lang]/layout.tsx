@@ -5,7 +5,13 @@ import { hasLocale, LOCALES } from "@/lib/i18n/locale";
 
 export const metadata: Metadata = {
   title: "Pokédex Kanto - Web Edition",
-  description: "Kanto Pokedex with a per-move uses battle arena and online PvP rooms",
+  // Real user/SEO-facing text, not a code comment -- kept in sync with
+  // shipped features the same way step 47 caught this same field
+  // advertising a retired mana system (upgrades/47-... in archive/v6).
+  // Static/English-only regardless of locale: Metadata here is a plain
+  // export, not a per-request generateMetadata(), and no step in this
+  // wave scoped localizing it.
+  description: "Kanto Pokedex with evolution, a per-move uses battle arena, and online PvP rooms -- in English or Argentinian Spanish",
 };
 
 // Every route lives under app/[lang]/ now (upgrades/53-i18n-routing-and-

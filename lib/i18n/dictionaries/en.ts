@@ -101,6 +101,21 @@ const en = {
     // (Team Chat/Trade's builder, upgrades/57-i18n-social-cluster.md)
     // passes its own, so this only shows if a future caller doesn't.
     nothingHere: "Nothing here.",
+    // Modal.tsx/Toast.tsx's close buttons and Sprite.tsx's broken-image
+    // fallback -- app-wide shared chrome used by every dialog/toast/sprite
+    // in the app, found still hardcoded during step 58's full i18n sweep
+    // (upgrades/58-docs-and-roster-validation.md): a screen reader
+    // announced "Close"/"Dismiss" in English regardless of locale, and a
+    // missing sprite image showed untranslated bracketed text. Plain
+    // strings only, deliberately -- `common` as a whole is passed as a
+    // Server->Client prop to SideNav (app/[lang]/(app)/layout.tsx), so
+    // nothing under it may ever be a function (see `ui.spriteAlt` below
+    // for where a function-valued entry needed for the same sweep had to
+    // live instead -- this broke exactly that way once, caught before
+    // shipping by a live HTTP check, not by build/lint).
+    close: "Close",
+    dismiss: "Dismiss",
+    noImage: "[No Image]",
     // "Shiny" stays untranslated in both locales, same jargon-word call as
     // ATK/DEF (battle.moveEffect.statAbbrev) -- caught as a leftover
     // hardcoded string in 5 places (Dashboard, Inventory x3, FighterCard)
@@ -647,6 +662,15 @@ const en = {
       youSuffix: " (you)",
       wins: (n: number) => `${n} online win${n === 1 ? "" : "s"}`,
     },
+  },
+  // A function-valued entry Sprite.tsx (used app-wide, way below the
+  // per-cluster split above) needs, kept out of `common` specifically
+  // because `common` as a whole is passed as a Server->Client prop to
+  // SideNav (see `common.close`'s comment) and so must stay function-free
+  // -- Sprite.tsx reads this directly via its own useDictionary() call
+  // instead, same self-fetch pattern as every other function-valued slice.
+  ui: {
+    spriteAlt: (name: string, form: string) => `${name} ${form} sprite`,
   },
 };
 // Deliberately not `as const`: that would infer every string as its own

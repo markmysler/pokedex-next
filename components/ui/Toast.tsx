@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 
 interface ToastEntry {
   id: number;
@@ -19,6 +20,7 @@ const DEFAULT_DURATION_MS = 8000;
 // "Modals and toasts are small custom components" decision) — a plain
 // fixed-position stack of .card-styled notifications, not a UI-kit import.
 export function ToastProvider({ children }: { children: ReactNode }) {
+  const dict = useDictionary();
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
   const nextId = useRef(0);
 
@@ -42,7 +44,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div key={t.id} className="card toast-card">
             {t.content}
-            <button className="toast-close" onClick={() => dismiss(t.id)} aria-label="Dismiss">✕</button>
+            <button className="toast-close" onClick={() => dismiss(t.id)} aria-label={dict.common.dismiss}>✕</button>
           </div>
         ))}
       </div>

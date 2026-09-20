@@ -75,6 +75,9 @@ const esAR: typeof en = {
     backToList: "← Volver a la lista",
     cancel: "Cancelar",
     nothingHere: "Nada por acá.",
+    close: "Cerrar",
+    dismiss: "Descartar",
+    noImage: "[Sin imagen]",
     shinyBadge: "✨ Shiny",
     starterBadge: "⭐ Inicial",
     allTypesLabel: "Todos los tipos",
@@ -557,6 +560,9 @@ const esAR: typeof en = {
       youSuffix: " (vos)",
       wins: (n: number) => `${n} victoria${n === 1 ? "" : "s"} online`,
     },
+  },
+  ui: {
+    spriteAlt: (name: string, form: string) => `sprite ${form} de ${name}`,
   },
 };
 
