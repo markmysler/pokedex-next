@@ -37,7 +37,7 @@ export default function PokemonMultiPicker({ inventory, typesList, selected, onT
   );
 
   return (
-    <div>
+    <div className="stack" style={{ gap: 10 }}>
       <PokemonFilterBar
         search={search}
         onSearchChange={setSearch}
@@ -47,12 +47,14 @@ export default function PokemonMultiPicker({ inventory, typesList, selected, onT
         onSortByChange={setSortBy}
         typesList={typesList}
       />
-      <div className="pokemon-grid trade-picker-grid">
+      <div className="pgrid pgrid-sm picker-grid">
         {filtered.map((p) => (
           <PokemonInstanceCard
             key={p.id}
             pokemon={p}
             variant="grid"
+            compact
+            selectable
             selected={selected.includes(p.id)}
             onSelect={() => onToggle(p.id)}
             disabled={p.isStarter}
@@ -60,8 +62,8 @@ export default function PokemonMultiPicker({ inventory, typesList, selected, onT
           />
         ))}
       </div>
-      {inventory.length === 0 && <p>{emptyMessage ?? dict.common.nothingHere}</p>}
-      {inventory.length > 0 && filtered.length === 0 && <p>{dict.collection.inventory.noMatches}</p>}
+      {inventory.length === 0 && <p className="empty">{emptyMessage ?? dict.common.nothingHere}</p>}
+      {inventory.length > 0 && filtered.length === 0 && <p className="empty">{dict.collection.inventory.noMatches}</p>}
     </div>
   );
 }

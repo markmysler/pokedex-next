@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import type { BattleAction, OwnedPokemon, TeamState } from "@/types/pokemon";
 import type { BotBattleState, BotBattleTurn } from "@/lib/botBattle";
 import { useDictionary } from "@/lib/i18n/useDictionary";
@@ -18,6 +19,9 @@ import { playAttackSound, playDodgeSound, playFaintSound, playVictorySound, play
 interface BattleArenaProps {
   inventory: OwnedPokemon[];
   typesList: string[];
+  // Home's "Quick battle" (/battle?team=best): start straight away with
+  // these three instead of showing the team picker.
+  quickTeamIds?: string[];
 }
 
 type Phase = "picking" | "battling";
@@ -77,7 +81,7 @@ function firstAliveBenchIndex(team: TeamState): 0 | 1 | 2 | null {
   return i === -1 ? null : (i as 0 | 1 | 2);
 }
 
-export default function BattleArena({ inventory: initialInventory, typesList }: BattleArenaProps) {
+export default function BattleArena({ inventory: initialInventory, typesList, quickTeamIds }: BattleArenaProps) {
   const dict = useDictionary();
   const t = dict.battle.arena;
   const { setCount: setCaseCount } = useCaseCount();
@@ -94,6 +98,17 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   const [resultDialog, setResultDialog] = useState<{ won: boolean; lootboxGranted: boolean; lootboxId: string | null } | null>(null);
   const [revealPokemon, setRevealPokemon] = useState<OwnedPokemon | null>(null);
   const turnSeq = useRef(0);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Quick battle from Home: start once, then drop ?team=best from the URL
+  // so a reload doesn't start another battle.
+  useEffect(() => {
+    if (quickTeamIds?.length !== 3) return;
+    router.replace(pathname, { scroll: false });
+    startBattle(quickTeamIds).catch((err: Error) => setNotice(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function openLootboxNow(lootboxId: string) {
     const res = await fetch(`/api/inventory/lootboxes/${lootboxId}/open`, { method: "POST" });

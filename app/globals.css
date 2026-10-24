@@ -180,8 +180,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .page-head .eyebrow { display: block; margin-bottom: 4px; }
 .page-head-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
-.panel,
-.card /* transitional alias, removed once every screen uses .panel */ {
+.panel {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
