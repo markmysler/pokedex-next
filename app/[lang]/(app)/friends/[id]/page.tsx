@@ -7,6 +7,7 @@ import { getInventoryForUser } from "@/lib/inventory";
 import { typesList } from "@/lib/pokedex";
 import { getDictionary } from "@/lib/i18n/getDictionary";
 import FriendChatPageClient from "@/components/friends/FriendChatPageClient";
+import Icon from "@/components/ui/Icon";
 import type { OwnedPokemon } from "@/types/pokemon";
 
 export default async function FriendChatPage({ params }: PageProps<"/[lang]/friends/[id]">) {
@@ -21,11 +22,13 @@ export default async function FriendChatPage({ params }: PageProps<"/[lang]/frie
   const friendship = await getFriendshipForUser(supabase, id, user.id);
   if (!friendship || friendship.status !== "accepted") {
     return (
-      <div className="page">
-        <h1 className="page-title">{dict.social.friends.heading}</h1>
-        <div className="card">
-          <p>{dict.social.chat.friendNotFound}</p>
-          <Link href={`/${currentLang}/friends`}>{dict.social.chat.backToFriends}</Link>
+      <div className="page page-narrow">
+        <div className="panel">
+          <div className="empty">
+            <Icon name="users" size={32} />
+            <p>{dict.social.chat.friendNotFound}</p>
+            <Link href={`/${currentLang}/friends`} className="btn-secondary">{dict.social.chat.backToFriends}</Link>
+          </div>
         </div>
       </div>
     );
@@ -72,7 +75,14 @@ export default async function FriendChatPage({ params }: PageProps<"/[lang]/frie
 
   return (
     <div className="page">
-      <h1 className="page-title">💬 {friendProfile?.display_name ?? dict.social.chat.friendFallback}</h1>
+      <div className="page-head">
+        <div>
+          <Link href={`/${currentLang}/friends`} className="back-link">
+            <Icon name="chevronLeft" size={14} /> {dict.social.chat.backToFriends}
+          </Link>
+          <h1>{friendProfile?.display_name ?? dict.social.chat.friendFallback}</h1>
+        </div>
+      </div>
       <FriendChatPageClient
         friendshipId={id}
         myUserId={user.id}

@@ -1,13 +1,15 @@
 import type { OwnedPokemon } from "@/types/pokemon";
+import { instanceRarity, RARITY_RANK } from "./rarity";
 
 // "unsorted" preserves the incoming array's order (created_at desc, as
 // fetched) -- Inventory's existing default, kept as-is so this step doesn't
 // alter Inventory's current behavior. TeamPicker uses "total-desc" instead,
 // the more useful default once there are hundreds of Pokemon to pick from.
-export type SortKey = "unsorted" | "total-desc" | "total-asc" | "name-asc" | "number-asc";
+export type SortKey = "unsorted" | "grade-desc" | "total-desc" | "total-asc" | "name-asc" | "number-asc";
 
 export const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
   { value: "unsorted", label: "Default order" },
+  { value: "grade-desc", label: "Rarity (rarest first)" },
   { value: "total-desc", label: "Total (high to low)" },
   { value: "total-asc", label: "Total (low to high)" },
   { value: "name-asc", label: "Name (A-Z)" },
@@ -35,6 +37,10 @@ export function filterAndSortPokemon(
   const sorted = [...filtered];
   switch (opts.sortBy) {
     case "unsorted":
+      break;
+    // Display-only grade (lib/rarity.ts), strongest roll first within a grade.
+    case "grade-desc":
+      sorted.sort((a, b) => RARITY_RANK[instanceRarity(b)] - RARITY_RANK[instanceRarity(a)] || b.total - a.total);
       break;
     case "total-desc":
       sorted.sort((a, b) => b.total - a.total);

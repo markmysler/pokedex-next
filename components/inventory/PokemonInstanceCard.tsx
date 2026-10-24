@@ -3,7 +3,9 @@
 import type { OwnedPokemon } from "@/types/pokemon";
 import Sprite from "@/components/Sprite";
 import TypeBadges from "@/components/TypeBadges";
+import Icon from "@/components/ui/Icon";
 import { isShinyInstance } from "@/lib/shiny";
+import { instanceRarity } from "@/lib/rarity";
 import { displayName } from "@/lib/pokemonDisplay";
 import { useDictionary } from "@/lib/i18n/useDictionary";
 
@@ -12,52 +14,91 @@ interface PokemonInstanceCardProps {
   variant: "grid" | "list";
   selected: boolean;
   onSelect: () => void;
-  // Team-picker only (upgrades/09-team-picker-parity.md) -- 1-based pick
-  // order, renders the ".team-picker-order" badge when provided. Undefined
-  // everywhere else (Inventory), so that usage is unaffected.
+  // Team picker only: 1-based pick order, shown as a numbered badge.
   pickOrder?: number;
-  // Trade-up mode (upgrades/14-pokemon-tradeup.md) and the friend trade
-  // builder (upgrades/12-friend-chat-trading.md, starters excluded from
-  // trading entirely per later request) -- renders dimmed and ignores
-  // clicks, so starters are visibly *why* unavailable rather than looking
-  // like a bug (they're just not in the filtered list).
+  // Multi-select contexts (collection selection, trade builder): shows a
+  // checkbox so "selected" reads as "ticked" rather than "being viewed".
+  selectable?: boolean;
+  // Smaller sprite and type, for dense pickers (trade builder).
+  compact?: boolean;
+  // Dimmed and inert, with the reason as a tooltip and accessible
+  // description -- starters in trade-up/trading, wrong species in evolve.
   disabled?: boolean;
-  // Shown as a native tooltip on the disabled card, explaining why -- same
-  // "hover for the mechanic" convention as the battle status badges
-  // (components/battle/FighterCard.tsx). No effect unless disabled.
   disabledReason?: string;
 }
 
-export default function PokemonInstanceCard({ pokemon, variant, selected, onSelect, pickOrder, disabled, disabledReason }: PokemonInstanceCardProps) {
+// The collection atom (redesign wave v9): a button whose bottom band and
+// glow are the instance's rarity grade (lib/rarity.ts), so a strong pull
+// stands out in any grid without opening it.
+export default function PokemonInstanceCard({
+  pokemon,
+  variant,
+  selected,
+  onSelect,
+  pickOrder,
+  selectable,
+  compact,
+  disabled,
+  disabledReason,
+}: PokemonInstanceCardProps) {
   const dict = useDictionary();
   const shiny = isShinyInstance(pokemon);
+  const rarity = instanceRarity(pokemon);
   const name = displayName(pokemon);
-  const handleClick = disabled ? undefined : onSelect;
   const title = disabled ? disabledReason : undefined;
+  const flags = (
+    <>
+      {shiny && <Icon name="star" size={14} fill="currentColor" label={dict.common.shinyBadge} />}
+      {pokemon.isStarter && <Icon name="heart" size={14} className="starter" label={dict.common.starterBadge} />}
+    </>
+  );
 
   if (variant === "list") {
-    const label = pokemon.nickname ? `${pokemon.nickname} (#${pokemon.number} ${pokemon.name})` : `#${pokemon.number}  ${pokemon.name}`;
     return (
-      <div className={`pokemon-row${selected ? " selected" : ""}${disabled ? " disabled" : ""}`} onClick={handleClick} title={title}>
-        {`${label.padEnd(28)} ${dict.collection.totalLabel(pokemon.total)}${pokemon.isStarter ? " ⭐" : ""}${shiny ? " ✨" : ""}`}
-      </div>
+      <button
+        type="button"
+        className={`prow rarity-${rarity}${disabled ? " is-disabled" : ""}`}
+        aria-pressed={selected}
+        aria-disabled={disabled || undefined}
+        onClick={disabled ? undefined : onSelect}
+        title={title}
+      >
+        <span className="prow-band" />
+        <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="" />
+        <span className="prow-name">
+          {name}
+          <span className="faint mono">#{pokemon.number}{pokemon.nickname ? ` ${pokemon.name}` : ""}</span>
+        </span>
+        <span className="row" style={{ color: "var(--r-shiny)", gap: 4 }}>{flags}</span>
+        <span className="pcard-total">{pokemon.total}</span>
+      </button>
     );
   }
 
   return (
-    <div className={`pokemon-grid-card${selected ? " selected" : ""}${disabled ? " disabled" : ""}`} onClick={handleClick} title={title}>
-      {pickOrder !== undefined && <div className="team-picker-order">#{pickOrder}</div>}
-      <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="grid-card-sprite" />
-      <div className="grid-card-name">{name}</div>
-      {pokemon.nickname && <div className="grid-card-species">#{pokemon.number} {pokemon.name}</div>}
-      <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />
-      {(pokemon.isStarter || shiny) && (
-        <div className="grid-card-badges">
-          {pokemon.isStarter && <span className="starter-badge">{dict.common.starterBadge}</span>}
-          {shiny && <span className="shiny-badge">{dict.common.shinyBadge}</span>}
-        </div>
+    <button
+      type="button"
+      className={`pcard rarity-${rarity}${compact ? " pcard-compact" : ""}${disabled ? " is-disabled" : ""}`}
+      aria-pressed={selected}
+      aria-disabled={disabled || undefined}
+      onClick={disabled ? undefined : onSelect}
+      title={title}
+    >
+      {pickOrder !== undefined ? (
+        <span className="pcard-order">{pickOrder}</span>
+      ) : (
+        selectable && (
+          <span className="pcard-check" aria-hidden="true">
+            {selected && <Icon name="check" size={14} strokeWidth={3} />}
+          </span>
+        )
       )}
-      <div className="grid-card-total">{dict.collection.totalLabel(pokemon.total)}</div>
-    </div>
+      <span className="pcard-flags">{flags}</span>
+      <Sprite name={pokemon.name} form={shiny ? "shiny" : "normal"} className="pcard-sprite" />
+      <span className="pcard-name">{name}</span>
+      {pokemon.nickname && <span className="pcard-sub">#{pokemon.number} {pokemon.name}</span>}
+      {!compact && <TypeBadges type1={pokemon.type1} type2={pokemon.type2} center small />}
+      <span className="pcard-total">{dict.collection.totalLabel(pokemon.total)}</span>
+    </button>
   );
 }

@@ -4,33 +4,23 @@ import type { Move, MoveKind } from "@/types/pokemon";
 import { TYPE_COLORS } from "@/lib/typeData";
 import { moveEffectText, moveTooltip } from "@/lib/pokemonDisplay";
 import { useDictionary } from "@/lib/i18n/useDictionary";
+import Icon, { type IconName } from "@/components/ui/Icon";
 
 interface MoveButtonProps {
   move: Move;
   disabled: boolean;
-  // Per-battle remaining uses for this exact move (upgrades/43-uses-ui-and
-  // -server-validation.md) -- null means unlimited (this instance's own
-  // free weakest damage move, or a catalog-unlimited move). Replaces the
-  // old insufficientMana boolean; the button is "can't be cast right now"
-  // exactly when this is 0.
   usesLeft: number | null;
   onClick: () => void;
 }
 
-// Distinct from damage moves' own per-type color -- semantic tokens
-// (upgrades/31-shared-ui-primitives.md, design/DESIGN_SYSTEM.md §6) rather
-// than ad hoc hexes, so "what kind of move is this" reads through the same
-// good/bad/info/warn vocabulary as everything else in the app: buff=good
-// (a beneficial effect), debuff=bad (a harmful one), drain=info (fitting
-// drain's life-steal theme; --info was the mana meter's hue pre-upgrades/
-// 40-uses-based-move-data-model.md, kept for drain regardless),
-// redirect=warn (matches FighterCard.tsx's status-badge.redirect, both
-// being the same "confused" concept).
-const KIND_ICON: Record<Exclude<MoveKind, "damage">, string> = {
-  buff: "✨",
-  debuff: "💢",
-  drain: "🩸",
-  redirect: "🌀",
+// Non-damage moves get an icon and a semantic stripe instead of their type
+// colour, so "what element" and "what kind of move" never compete for the
+// same hue (design/DESIGN_SYSTEM.md).
+const KIND_ICON: Record<Exclude<MoveKind, "damage">, IconName> = {
+  buff: "sparkle",
+  debuff: "alert",
+  drain: "heart",
+  redirect: "refresh",
 };
 const KIND_COLOR: Record<Exclude<MoveKind, "damage">, string> = {
   buff: "var(--good)",
@@ -38,41 +28,42 @@ const KIND_COLOR: Record<Exclude<MoveKind, "damage">, string> = {
   drain: "var(--info)",
   redirect: "var(--warn)",
 };
+const MAX_PIPS = 8;
 
+// One of the four big move buttons in the action dock (redesign wave v9):
+// name and type up top, effect and remaining uses (as pips) underneath.
 export default function MoveButton({ move, disabled, usesLeft, onClick }: MoveButtonProps) {
   const dict = useDictionary();
-  const icon = move.kind === "damage" ? "" : `${KIND_ICON[move.kind]} `;
-  // Split into a name line (display font) and a meta line (mono) instead of
-  // one combined string (upgrades/35-battle-shared-components-redesign.md's
-  // "movebtn-style layout") -- same information as before, just laid out on
-  // two lines rather than packed into a single label.
-  const depleted = usesLeft === 0;
-  // Live remaining/catalog-max fraction when limited, "unlimited uses" when
-  // not -- fully replaces the old "${mana_cost} MP" text
-  // (upgrades/40-uses-based-move-data-model.md's placeholder, superseded
-  // here now that a real per-battle remaining count exists).
-  const usesText = usesLeft === null ? dict.battle.moveTooltip.unlimitedUses : dict.battle.moveEffect.usesFraction(usesLeft, move.max_uses ?? usesLeft);
-  const nameLine = depleted ? `⚠️ ${move.name}` : `${icon}${move.name}`;
-  const metaLine = depleted ? usesText : `${moveEffectText(move, dict)} · ${usesText}`;
-  const background = disabled ? "gray" : move.kind === "damage" ? TYPE_COLORS[move.type] ?? "#68A090" : KIND_COLOR[move.kind];
-  // Same reasoning as FighterCard.tsx's status badges: --good/--bad/--info/
-  // --warn run bright in dark theme, so the button's default white label
-  // (.move-btn's base color) would fail contrast there -- --accent-ink
-  // already encodes the right dark/light flip for "text on a token fill."
-  // Damage moves are unaffected (TYPE_COLORS isn't part of this contrast
-  // fix, pre-existing behavior, out of scope here).
-  const color = !disabled && move.kind !== "damage" ? "var(--accent-ink)" : undefined;
+  const stripe = move.kind === "damage" ? TYPE_COLORS[move.type] ?? "#68A090" : KIND_COLOR[move.kind];
+  const max = move.max_uses ?? usesLeft;
+  const usesLabel = usesLeft === null ? dict.battle.moveTooltip.unlimitedUses : dict.battle.moveEffect.usesFraction(usesLeft, max ?? usesLeft);
 
   return (
     <button
-      className="move-btn"
-      style={{ background, color }}
+      type="button"
+      className={`move-btn${usesLeft === 0 ? " is-depleted" : ""}`}
+      style={{ "--stripe": stripe } as React.CSSProperties}
       disabled={disabled}
       onClick={onClick}
       title={moveTooltip(move, dict)}
     >
-      <span className="move-btn-name">{nameLine}</span>
-      <span className="move-btn-meta">{metaLine}</span>
+      <span className="move-btn-top">
+        <span className="move-btn-name">
+          {move.kind !== "damage" && <Icon name={KIND_ICON[move.kind]} size={15} />}
+          {move.name}
+        </span>
+        <span className="type-chip" style={{ background: TYPE_COLORS[move.type] ?? "#68A090" }}>{move.type}</span>
+      </span>
+      <span className="move-btn-meta">
+        <span>{moveEffectText(move, dict)}</span>
+        {usesLeft === null || max === null || max > MAX_PIPS ? (
+          <span className="mono" aria-label={usesLabel}>{usesLeft === null ? "∞" : `${usesLeft}/${max}`}</span>
+        ) : (
+          <span className="uses-pips" role="img" aria-label={usesLabel}>
+            {Array.from({ length: max }, (_, i) => <span key={i} className={i < usesLeft ? "on" : undefined} />)}
+          </span>
+        )}
+      </span>
     </button>
   );
 }

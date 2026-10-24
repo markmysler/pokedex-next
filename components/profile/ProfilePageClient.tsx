@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import CardTab from "@/components/ui/CardTab";
+import CopyCode from "@/components/ui/CopyCode";
+import Icon from "@/components/ui/Icon";
 import type { Dictionary } from "@/lib/i18n/getDictionary";
 
 interface ProfilePageClientProps {
@@ -43,49 +44,56 @@ export default function ProfilePageClient({ email, initialDisplayName, friendCod
     router.refresh();
   }
 
-  return (
-    <div className="page">
-      <h1 className="page-title">{dict.heading}</h1>
+  const initials = (displayName || dict.trainerFallback).trim().slice(0, 2).toUpperCase();
 
-      <div className="card profile-card">
-        <div className="profile-header">
-          <div className="avatar-lg">👤</div>
-          <div>
-            <div className="profile-header-name">{displayName || dict.trainerFallback}</div>
-            <div className="profile-header-email">{email}</div>
-          </div>
+  return (
+    <div className="page page-narrow">
+      <div className="profile-hero">
+        <span className="avatar avatar-lg">{initials}</span>
+        <div style={{ minWidth: 0 }}>
+          <h1>{displayName || dict.trainerFallback}</h1>
+          <span className="muted small">{email}</span>
         </div>
-        <form className="auth-form profile-form" onSubmit={handleSave}>
-          <label>
-            {dict.email}
-            <input value={email} disabled />
-          </label>
-          <label>
-            {dict.displayName}
-            <input
-              value={displayName}
-              onChange={(e) => {
-                setDisplayName(e.target.value);
-                setSaved(false);
-              }}
-              minLength={2}
-              maxLength={30}
-              required
-            />
-          </label>
-          {error && <p className="auth-error">{error}</p>}
+      </div>
+
+      <form className="panel stack" onSubmit={handleSave} style={{ gap: 16 }}>
+        <h2 style={{ fontSize: 16 }}>{dict.accountTitle}</h2>
+        <label className="field">
+          <span>{dict.displayName}</span>
+          <input
+            value={displayName}
+            onChange={(e) => {
+              setDisplayName(e.target.value);
+              setSaved(false);
+            }}
+            minLength={2}
+            maxLength={30}
+            required
+          />
+        </label>
+        <label className="field">
+          <span>{dict.email}</span>
+          <input value={email} disabled />
+          <span className="small faint" style={{ fontWeight: 400 }}>{dict.emailNote}</span>
+        </label>
+        {error && <p className="alert alert-error" role="alert">{error}</p>}
+        <div className="row">
           <button className="btn-primary" type="submit" disabled={saving}>
             {saving ? dict.saving : dict.save}
           </button>
-          {saved && <p className="notes-status">{dict.saved}</p>}
-        </form>
-      </div>
+          {saved && (
+            <span className="small" style={{ color: "var(--good)" }} role="status">
+              <Icon name="check" size={14} /> {dict.saved}
+            </span>
+          )}
+        </div>
+      </form>
 
-      <div className="card profile-card">
-        <CardTab icon="🔑" label={dict.friendCode} />
-        <p className="friend-code-display">{friendCode}</p>
-        <p className="online-status">{dict.friendCodeNote}</p>
-      </div>
+      <section className="panel stack">
+        <h2 style={{ fontSize: 16 }}>{dict.friendCode}</h2>
+        <CopyCode code={friendCode} copyLabel={dict.copy} copiedLabel={dict.copied} />
+        <p className="small muted">{dict.friendCodeNote}</p>
+      </section>
     </div>
   );
 }

@@ -1,365 +1,219 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Lootbox, OwnedPokemon } from "@/types/pokemon";
+import type { OwnedPokemon } from "@/types/pokemon";
 import { useDictionary } from "@/lib/i18n/useDictionary";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import PokemonInstanceCard from "./PokemonInstanceCard";
+import OwnedPokemonDetail, { EVOLVE_COUNT } from "./OwnedPokemonDetail";
+import LootboxRevealDialog from "./LootboxRevealDialog";
 import PokemonFilterBar from "@/components/pokemon/PokemonFilterBar";
-import TypeBadges from "@/components/TypeBadges";
-import Sprite from "@/components/Sprite";
+import SectionTabs from "@/components/nav/SectionTabs";
+import { useCaseCount } from "@/components/nav/CaseCount";
 import Modal from "@/components/ui/Modal";
-import SegmentedMeter from "@/components/ui/SegmentedMeter";
-import CardTab from "@/components/ui/CardTab";
-import { isShinyInstance } from "@/lib/shiny";
-import { displayName, movePower } from "@/lib/pokemonDisplay";
+import Icon from "@/components/ui/Icon";
+import Sprite from "@/components/Sprite";
+import { useToast } from "@/components/ui/Toast";
+import Link from "@/components/LocaleLink";
+import { displayName } from "@/lib/pokemonDisplay";
 import { filterAndSortPokemon, type SortKey } from "@/lib/pokemonFilters";
 import { getPokemon } from "@/lib/pokedex";
-import LootboxRevealDialog from "./LootboxRevealDialog";
 
 const TRADEUP_COUNT = 5;
-const EVOLVE_COUNT = 5;
 
 interface InventoryPageClientProps {
   initialPokemon: OwnedPokemon[];
-  initialLootboxes: Lootbox[];
   typesList: string[];
 }
 
-export default function InventoryPageClient({ initialPokemon, initialLootboxes, typesList }: InventoryPageClientProps) {
-  // Read client-side (upgrades/55-i18n-collection-cluster.md) rather than
-  // via a Server Component prop -- several entries here are functions
-  // (e.g. showingCount, moveLine, computed from this component's own
-  // state), and functions can't cross the Server->Client prop boundary.
-  // LootboxRevealDialog below is a Client Component too, so handing it a
-  // slice of this same object is a plain in-browser prop pass, not a
-  // boundary crossing -- no restriction there.
+type Confirm = "tradeup" | "evolve" | "release" | null;
+
+// My Pokémon (redesign wave v9). Browse in a grid with the selected
+// Pokémon's details beside it; tick "Select" to pick several, and an action
+// bar offers Trade up and Evolve, saying what each still needs. This
+// replaces the old Trade Up / Evolve modes you had to discover. Opening
+// lootboxes moved to its own screen (/open).
+export default function InventoryPageClient({ initialPokemon, typesList }: InventoryPageClientProps) {
   const dict = useDictionary();
   const t = dict.collection.inventory;
-  const c = dict.collection;
   const common = dict.common;
-  const stats = common.stats;
-  const STAT_INFO: Array<{ label: string; key: "hp" | "atk" | "def" | "spatk" | "spdef" | "spd"; color: string }> = [
-    { label: stats.hp, key: "hp", color: "#FF5959" },
-    { label: stats.atk, key: "atk", color: "#F5AC78" },
-    { label: stats.def, key: "def", color: "#FAE078" },
-    { label: stats.spatk, key: "spatk", color: "#9DB7F5" },
-    { label: stats.spdef, key: "spdef", color: "#A7DB8D" },
-    { label: stats.spd, key: "spd", color: "#FA92B2" },
-  ];
+  const wide = useMediaQuery("(min-width: 1100px)");
+  const toast = useToast();
+  const { count: caseCount, setCount: setCaseCount } = useCaseCount();
 
   const [pokemon, setPokemon] = useState(initialPokemon);
-  const [lootboxes, setLootboxes] = useState(initialLootboxes);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
-  // "unsorted" keeps Inventory's existing insertion-order default
-  // (upgrades/09-team-picker-parity.md) — TeamPicker defaults differently.
   const [sortBy, setSortBy] = useState<SortKey>("unsorted");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedId, setSelectedId] = useState<string | null>(initialPokemon[0]?.id ?? null);
-  // Only affects <900px (see .mobile-detail-open in globals.css) -- desktop's
-  // split pane always shows both, so this is inert there.
-  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
-  const [openingId, setOpeningId] = useState<string | null>(null);
+  // Narrow screens show the detail in a dialog instead of a side panel.
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const [selecting, setSelecting] = useState(false);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [confirm, setConfirm] = useState<Confirm>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [revealQueue, setRevealQueue] = useState<OwnedPokemon[]>([]);
-  const [openQty, setOpenQty] = useState(1);
-  const [openingMany, setOpeningMany] = useState(false);
-  const [renamingId, setRenamingId] = useState<string | null>(null);
-  const [nicknameInput, setNicknameInput] = useState("");
-  const [renaming, setRenaming] = useState(false);
-  const [renameError, setRenameError] = useState<string | null>(null);
-
-  const [tradeUpMode, setTradeUpMode] = useState(false);
-  const [tradeUpSelected, setTradeUpSelected] = useState<Set<string>>(new Set());
-  const [showTradeUpConfirm, setShowTradeUpConfirm] = useState(false);
-  const [tradeUpSubmitting, setTradeUpSubmitting] = useState(false);
-  const [tradeUpError, setTradeUpError] = useState<string | null>(null);
-
-  // Evolve (upgrades/51-evolution-api-and-inventory-ui.md) -- same "select 5
-  // of a kind" picker shape as Trade Up above, but scoped to one species at a
-  // time (evolveSpeciesNumber below) and only species with a real evolution.
-  // A separate reveal (evolveReveal) from the lootbox queue since evolving
-  // always produces exactly 1 result, never a batch.
-  const [evolveMode, setEvolveMode] = useState(false);
-  const [evolveSelected, setEvolveSelected] = useState<Set<string>>(new Set());
-  const [showEvolveConfirm, setShowEvolveConfirm] = useState(false);
-  const [evolveSubmitting, setEvolveSubmitting] = useState(false);
-  const [evolveError, setEvolveError] = useState<string | null>(null);
   const [evolveReveal, setEvolveReveal] = useState<OwnedPokemon | null>(null);
 
-  const filtered = useMemo(
-    () => filterAndSortPokemon(pokemon, { search, typeFilter, sortBy }),
-    [pokemon, search, typeFilter, sortBy]
-  );
-
+  const filtered = useMemo(() => filterAndSortPokemon(pokemon, { search, typeFilter, sortBy }), [pokemon, search, typeFilter, sortBy]);
   const selected = pokemon.find((p) => p.id === selectedId) ?? null;
-  // Whatever species is already represented in evolveSelected, if any --
-  // null once the set is empty, meaning any evolvable species can start a
-  // fresh pick. Locks every other species out of the picker once set.
-  const evolveSpeciesNumber = pokemon.find((p) => evolveSelected.has(p.id))?.number ?? null;
+  const pickedPokemon = picked.map((id) => pokemon.find((p) => p.id === id)).filter((p): p is OwnedPokemon => Boolean(p));
 
-  function selectPokemon(id: string) {
-    setSelectedId(id);
-    setRenamingId(null);
-    setRenameError(null);
-    setMobileDetailOpen(true);
+  const pickedSpecies = pickedPokemon[0]?.number ?? null;
+  const sameSpecies = pickedPokemon.length > 0 && pickedPokemon.every((p) => p.number === pickedSpecies);
+  const pickedEvolvable = sameSpecies && pickedSpecies !== null && getPokemon(pickedSpecies)?.evolvesInto != null;
+  const canTradeUp = pickedPokemon.length === TRADEUP_COUNT && pickedPokemon.every((p) => !p.isStarter);
+  const canEvolve = pickedPokemon.length === EVOLVE_COUNT && pickedEvolvable;
+
+  let hint: string = t.selectionHint;
+  if (canTradeUp && canEvolve) hint = t.readyHint;
+  else if (canTradeUp) hint = t.readyTradeUpOnly;
+  else if (pickedPokemon.length > 0) hint = pickedEvolvable ? t.evolveNeeds(pickedPokemon.length, pickedPokemon[0].name) : t.tradeUpNeeds(pickedPokemon.length);
+
+  function sameSpeciesCount(p: OwnedPokemon): number {
+    return pokemon.filter((x) => x.number === p.number && !x.isStarter).length;
   }
 
-  function startRenaming(p: OwnedPokemon) {
-    setRenamingId(p.id);
-    setNicknameInput(p.nickname ?? "");
-    setRenameError(null);
+  function onCardClick(p: OwnedPokemon) {
+    if (selecting) {
+      setPicked((prev) => (prev.includes(p.id) ? prev.filter((id) => id !== p.id) : prev.length < TRADEUP_COUNT ? [...prev, p.id] : prev));
+      return;
+    }
+    setSelectedId(p.id);
+    setDetailOpen(true);
   }
 
-  async function handleRenameSave(e: React.FormEvent) {
-    e.preventDefault();
-    if (!renamingId) return;
-    setRenaming(true);
-    setRenameError(null);
-    const res = await fetch(`/api/inventory/pokemon/${renamingId}`, {
+  function toggleSelecting() {
+    setSelecting((s) => !s);
+    setPicked([]);
+    setError(null);
+  }
+
+  async function rename(id: string, nickname: string): Promise<string | null> {
+    const res = await fetch(`/api/inventory/pokemon/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nickname: nicknameInput }),
+      body: JSON.stringify({ nickname }),
     });
     const data = await res.json();
-    setRenaming(false);
-    if (data.error) return setRenameError(data.error);
-    setPokemon((prev) => prev.map((p) => (p.id === renamingId ? { ...p, nickname: data.nickname } : p)));
-    setRenamingId(null);
+    if (data.error) return data.error as string;
+    setPokemon((prev) => prev.map((p) => (p.id === id ? { ...p, nickname: data.nickname } : p)));
+    return null;
   }
 
-  async function handleDiscard(id: string) {
+  // Preselects the 5 strongest copies: the evolved Pokémon's stats are
+  // derived from the 5 burned (lib/evolution.ts), so these give the best
+  // result. The player still reviews them in the confirm dialog.
+  function evolveNow(p: OwnedPokemon) {
+    const best = pokemon
+      .filter((x) => x.number === p.number && !x.isStarter)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, EVOLVE_COUNT)
+      .map((x) => x.id);
+    setSelecting(true);
+    setPicked(best);
+    setDetailOpen(false);
     setError(null);
-    const res = await fetch(`/api/inventory/pokemon/${id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.error) return setError(data.error);
-    setPokemon((prev) => prev.filter((p) => p.id !== id));
-    if (selectedId === id) {
-      setSelectedId(null);
-      setMobileDetailOpen(false);
-    }
+    setConfirm("evolve");
   }
 
-  async function handleOpen(id: string) {
+  async function submit() {
+    if (!confirm) return;
+    setSubmitting(true);
     setError(null);
-    setOpeningId(id);
-    const res = await fetch(`/api/inventory/lootboxes/${id}/open`, { method: "POST" });
-    const data = await res.json();
-    setOpeningId(null);
-    if (data.error) return setError(data.error);
-    setLootboxes((prev) => prev.filter((l) => l.id !== id));
-    setPokemon((prev) => [data.pokemon as OwnedPokemon, ...prev]);
-    setSelectedId((data.pokemon as OwnedPokemon).id);
-    // The card-pack reveal (upgrades/04-lootbox-opening.md) shows this same
-    // already-persisted result — opening the dialog is wiring, not a new
-    // fetch, and the roll above has already happened by this point.
-    setRevealQueue([data.pokemon as OwnedPokemon]);
-  }
-
-  async function handleOpenMany(qty: number) {
-    setError(null);
-    setOpeningMany(true);
-    const res = await fetch("/api/inventory/lootboxes/open-many", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ count: qty }),
-    });
-    const data = await res.json();
-    setOpeningMany(false);
-    if (data.error) return setError(data.error);
-    const opened = data.pokemon as OwnedPokemon[];
-    // The batch endpoint only claims (and reports) however many were
-    // actually still available — trust its returned count, not the
-    // requested qty, to decide how many lootboxes to drop locally.
-    setLootboxes((prev) => prev.slice(opened.length));
-    setPokemon((prev) => [...opened, ...prev]);
-    if (opened.length > 0) setSelectedId(opened[0].id);
-    setOpenQty(1);
-    // Queued reveal: LootboxRevealDialog is keyed on revealQueue[0].id below,
-    // so shifting the queue on close forces a full remount, resetting the
-    // dialog's internal phase back to "drumroll" for the next box for free.
-    setRevealQueue(opened);
-  }
-
-  function toggleTradeUpMode() {
-    setTradeUpMode((prev) => !prev);
-    setTradeUpSelected(new Set());
-    setTradeUpError(null);
-    // Trade Up and Evolve are mutually exclusive picker modes -- entering
-    // one exits the other, same as either exits plain selection.
-    setEvolveMode(false);
-    setEvolveSelected(new Set());
-    setEvolveError(null);
-  }
-
-  function toggleEvolveMode() {
-    setEvolveMode((prev) => !prev);
-    setEvolveSelected(new Set());
-    setEvolveError(null);
-    setTradeUpMode(false);
-    setTradeUpSelected(new Set());
-    setTradeUpError(null);
-  }
-
-  function evolveDisabledReason(p: OwnedPokemon): string | undefined {
-    if (p.isStarter) return t.startersCantEvolve;
-    const species = getPokemon(p.number);
-    if (!species || species.evolvesInto === null) return t.noEvolutionForSpecies;
-    if (evolveSpeciesNumber !== null && evolveSpeciesNumber !== p.number && !evolveSelected.has(p.id)) {
-      return t.selectSameSpecies;
-    }
-    return undefined;
-  }
-
-  function toggleEvolvePick(p: OwnedPokemon) {
-    if (evolveDisabledReason(p) !== undefined && !evolveSelected.has(p.id)) return;
-    setEvolveSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(p.id)) {
-        next.delete(p.id);
-        return next;
+    try {
+      if (confirm === "release" && selected) {
+        const res = await fetch(`/api/inventory/pokemon/${selected.id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        setPokemon((prev) => prev.filter((p) => p.id !== selected.id));
+        setSelectedId(null);
+        setDetailOpen(false);
+      } else {
+        const res = await fetch(confirm === "tradeup" ? "/api/inventory/tradeup" : "/api/inventory/evolve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pokemonInstanceIds: picked }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        if (confirm === "tradeup") {
+          setPokemon((prev) => prev.filter((p) => !picked.includes(p.id)));
+          setCaseCount((c) => c + 1);
+          toast.push(
+            <div className="row" style={{ gap: 10 }}>
+              <span>{t.tradeUpDone}</span>
+              <Link href="/open" className="btn-primary btn-sm">{t.openCase}</Link>
+            </div>
+          );
+        } else {
+          const evolved = data.pokemon as OwnedPokemon;
+          setPokemon((prev) => [evolved, ...prev.filter((p) => !picked.includes(p.id))]);
+          setSelectedId(evolved.id);
+          setEvolveReveal(evolved);
+        }
+        setSelecting(false);
+        setPicked([]);
       }
-      if (next.size < EVOLVE_COUNT) next.add(p.id);
-      return next;
-    });
-  }
-
-  async function confirmEvolve() {
-    setEvolveSubmitting(true);
-    setEvolveError(null);
-    const ids = Array.from(evolveSelected);
-    const res = await fetch("/api/inventory/evolve", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pokemonInstanceIds: ids }),
-    });
-    const data = await res.json();
-    setEvolveSubmitting(false);
-    if (data.error) {
-      setEvolveError(data.error);
-      return;
+      setConfirm(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSubmitting(false);
     }
-    const evolved = data.pokemon as OwnedPokemon;
-    setPokemon((prev) => [evolved, ...prev.filter((p) => !evolveSelected.has(p.id))]);
-    setSelectedId(evolved.id);
-    setShowEvolveConfirm(false);
-    setEvolveMode(false);
-    setEvolveSelected(new Set());
-    // Same already-persisted-result reveal pattern as opening a lootbox --
-    // the evolve API call above already did the burn + roll + insert, this
-    // is just wiring the dialog to show what already happened.
-    setEvolveReveal(evolved);
   }
 
-  function toggleTradeUpPick(p: OwnedPokemon) {
-    if (p.isStarter) return;
-    setTradeUpSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(p.id)) {
-        next.delete(p.id);
-      } else if (next.size < TRADEUP_COUNT) {
-        next.add(p.id);
-      }
-      return next;
-    });
-  }
+  const detail = selected && (
+    <OwnedPokemonDetail
+      key={selected.id}
+      pokemon={selected}
+      sameSpeciesCount={sameSpeciesCount(selected)}
+      onRename={(nickname) => rename(selected.id, nickname)}
+      onRelease={() => { setError(null); setConfirm("release"); }}
+      onEvolveNow={() => evolveNow(selected)}
+    />
+  );
 
-  async function confirmTradeUp() {
-    setTradeUpSubmitting(true);
-    setTradeUpError(null);
-    const ids = Array.from(tradeUpSelected);
-    const res = await fetch("/api/inventory/tradeup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pokemonInstanceIds: ids }),
-    });
-    const data = await res.json();
-    setTradeUpSubmitting(false);
-    if (data.error) {
-      setTradeUpError(data.error);
-      return;
-    }
-    setPokemon((prev) => prev.filter((p) => !tradeUpSelected.has(p.id)));
-    setLootboxes((prev) => [...prev, { id: data.lootboxId, openedAt: null, createdAt: new Date().toISOString() }]);
-    setShowTradeUpConfirm(false);
-    setTradeUpMode(false);
-    setTradeUpSelected(new Set());
-  }
-
-  // Narrow slice passed to LootboxRevealDialog -- it only ever needs these
-  // 5 pieces (upgrades/55-i18n-collection-cluster.md), not the whole
-  // Dictionary, since BattleArena.tsx/OnlineBattle.tsx's own call sites
-  // (Battle cluster, step 56) pass no dict at all yet.
-  const lootboxRevealDict = { stats: common.stats, shinyBadge: common.shinyBadge, movesLabel: c.movesLabel, totalLabel: c.totalLabel, moveLine: c.moveLine, lootboxReveal: c.lootboxReveal };
+  const confirmCopy = {
+    tradeup: { heading: t.tradeUpConfirmHeading, body: t.tradeUpConfirmBody, cta: t.tradeUpConfirmConfirm, busy: t.tradeUpConfirmConfirming },
+    evolve: { heading: t.evolveConfirmHeading, body: t.evolveConfirmBody, cta: t.evolveConfirmConfirm, busy: t.evolveConfirmConfirming },
+    release: { heading: t.releaseConfirmHeading, body: selected ? t.releaseConfirmBody(displayName(selected)) : "", cta: t.release, busy: t.releasing },
+  };
 
   return (
     <div className="page">
-      <h1 className="page-title">{t.heading}</h1>
+      <div className="page-head">
+        <div>
+          <span className="eyebrow">{dict.shell.groups.collection}</span>
+          <h1>
+            {t.heading} <span className="faint mono" style={{ fontSize: 18 }}>{t.showingCount(filtered.length, pokemon.length)}</span>
+          </h1>
+        </div>
+        <div className="page-head-actions">
+          <div className="seg" role="group">
+            <button type="button" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")} aria-label={common.viewToggle.grid}>
+              <Icon name="grid" size={16} />
+            </button>
+            <button type="button" aria-pressed={viewMode === "list"} onClick={() => setViewMode("list")} aria-label={common.viewToggle.list}>
+              <Icon name="list" size={16} />
+            </button>
+          </div>
+          <button type="button" className={selecting ? "btn-primary" : "btn-secondary"} aria-pressed={selecting} onClick={toggleSelecting}>
+            <Icon name={selecting ? "check" : "grid"} size={16} /> {selecting ? t.doneSelecting : t.select}
+          </button>
+        </div>
+      </div>
+      <SectionTabs section="collection" />
 
-      {revealQueue.length > 0 && (
-        <LootboxRevealDialog
-          key={revealQueue[0].id}
-          pokemon={revealQueue[0]}
-          hasNext={revealQueue.length > 1}
-          onClose={() => setRevealQueue((q) => q.slice(1))}
-          drumrollText={c.lootboxReveal.openingLootboxText}
-          dict={lootboxRevealDict}
-        />
-      )}
-
-      {evolveReveal && (
-        <LootboxRevealDialog
-          key={evolveReveal.id}
-          pokemon={evolveReveal}
-          drumrollIcon="🧬"
-          drumrollText={c.lootboxReveal.evolvingText}
-          onClose={() => setEvolveReveal(null)}
-          dict={lootboxRevealDict}
-        />
-      )}
-
-      {lootboxes.length > 0 && (
-        <div className="card lootbox-hero">
-          <CardTab icon="📦" label={t.unopenedLootboxes(lootboxes.length)} color="var(--accent-2)" />
-          {lootboxes.length === 1 ? (
-            <div className="lootbox-row">
-              <button
-                className="btn-primary"
-                onClick={() => handleOpen(lootboxes[0].id)}
-                disabled={openingId === lootboxes[0].id}
-              >
-                {openingId === lootboxes[0].id ? t.opening : t.openLootbox}
-              </button>
-            </div>
-          ) : (
-            <div className="lootbox-batch-row">
-              <p>{t.unopenedCountNote(lootboxes.length)}</p>
-              <div className="lootbox-qty-stepper">
-                <input
-                  type="number"
-                  min={1}
-                  max={lootboxes.length}
-                  value={openQty}
-                  onChange={(e) => {
-                    const n = Number(e.target.value);
-                    if (Number.isInteger(n)) setOpenQty(Math.min(Math.max(1, n), lootboxes.length));
-                  }}
-                  disabled={openingMany}
-                />
-              </div>
-              <button
-                className="btn-primary"
-                onClick={() => handleOpenMany(Math.min(Math.max(1, openQty), lootboxes.length))}
-                disabled={openingMany}
-              >
-                {openingMany ? t.opening : t.openNLootboxes(openQty)}
-              </button>
-            </div>
-          )}
+      {caseCount > 0 && (
+        <div className="cases-banner">
+          <Icon name="case" />
+          <span>{t.casesBanner(caseCount)}</span>
+          <Link href="/open" className="btn-primary btn-sm">{t.casesBannerCta}</Link>
         </div>
       )}
-
-      {error && <p className="auth-error">{error}</p>}
 
       <PokemonFilterBar
         search={search}
@@ -369,176 +223,78 @@ export default function InventoryPageClient({ initialPokemon, initialLootboxes, 
         sortBy={sortBy}
         onSortByChange={setSortBy}
         typesList={typesList}
-        dict={common.filterBar}
-        allTypesLabel={common.allTypesLabel}
       />
-      <div className="card inventory-toolbar">
-        <div className="view-toggle">
-          <button className={viewMode === "grid" ? "active" : ""} onClick={() => setViewMode("grid")}>{common.viewToggle.grid}</button>
-          <button className={viewMode === "list" ? "active" : ""} onClick={() => setViewMode("list")}>{common.viewToggle.list}</button>
-        </div>
-        <button className={`btn-tradeup${tradeUpMode ? " active" : ""}`} onClick={toggleTradeUpMode}>
-          {t.tradeUpButton}
-        </button>
-        <button className={`btn-evolve${evolveMode ? " active" : ""}`} onClick={toggleEvolveMode}>
-          {t.evolveButton}
-        </button>
-        <div className="count-label">{t.showingCount(filtered.length, pokemon.length)}</div>
-      </div>
 
-      {tradeUpError && <p className="auth-error">{tradeUpError}</p>}
-      {evolveError && <p className="auth-error">{evolveError}</p>}
+      {error && !confirm && <p className="alert alert-error" role="alert">{error}</p>}
 
-      <div className={`inventory-layout${mobileDetailOpen ? " mobile-detail-open" : ""}`}>
-        <div className={viewMode === "grid" ? "pokemon-grid" : "pokemon-list"}>
-          {filtered.length === 0 && <p>{t.noMatches}</p>}
+      <div className="collection-layout">
+        <div className={viewMode === "grid" ? "pgrid" : "plist panel panel-flush"}>
+          {filtered.length === 0 && <p className="empty">{t.noMatches}</p>}
           {filtered.map((p) => (
             <PokemonInstanceCard
               key={p.id}
               pokemon={p}
               variant={viewMode}
-              selected={tradeUpMode ? tradeUpSelected.has(p.id) : evolveMode ? evolveSelected.has(p.id) : p.id === selectedId}
-              onSelect={() => (tradeUpMode ? toggleTradeUpPick(p) : evolveMode ? toggleEvolvePick(p) : selectPokemon(p.id))}
-              disabled={tradeUpMode ? p.isStarter : evolveMode ? evolveDisabledReason(p) !== undefined : false}
-              disabledReason={
-                tradeUpMode
-                  ? (p.isStarter ? t.startersCantTradeUp : undefined)
-                  : evolveMode
-                    ? evolveDisabledReason(p)
-                    : undefined
-              }
+              selectable={selecting}
+              selected={selecting ? picked.includes(p.id) : p.id === selectedId && wide}
+              onSelect={() => onCardClick(p)}
+              disabled={selecting && p.isStarter}
+              disabledReason={selecting && p.isStarter ? t.startersCantTradeUp : undefined}
             />
           ))}
         </div>
 
-        {selected && !tradeUpMode && !evolveMode && (
-          <div className="card inventory-detail">
-            <button className="detail-back-btn" onClick={() => setMobileDetailOpen(false)}>{common.backToList}</button>
-            <div id="card-header">
-              {renamingId === selected.id ? (
-                <form className="nickname-edit-form" onSubmit={handleRenameSave}>
-                  <input
-                    value={nicknameInput}
-                    onChange={(e) => setNicknameInput(e.target.value)}
-                    maxLength={24}
-                    placeholder={selected.name}
-                    autoFocus
-                  />
-                  <button className="btn-primary" type="submit" disabled={renaming}>
-                    {renaming ? t.renameSaving : t.renameSave}
-                  </button>
-                  <button className="btn-secondary" type="button" onClick={() => setRenamingId(null)}>
-                    {common.cancel}
-                  </button>
-                </form>
-              ) : (
-                <>
-                  <h2>
-                    {displayName(selected)}{selected.isStarter ? " ⭐" : ""}{" "}
-                    <button className="btn-secondary rename-btn" onClick={() => startRenaming(selected)}>{t.renameBtn}</button>
-                  </h2>
-                  {selected.nickname && <p className="detail-species-line">#{selected.number} {selected.name}</p>}
-                </>
-              )}
-              {renameError && <p className="auth-error">{renameError}</p>}
-              <TypeBadges type1={selected.type1} type2={selected.type2} />
-              {isShinyInstance(selected) && <span className="shiny-badge">{common.shinyBadge}</span>}
-            </div>
-            <Sprite name={selected.name} form={isShinyInstance(selected) ? "shiny" : "normal"} className="sprite-img" />
-            <div id="card-stats">
-              <CardTab icon="📊" label={t.statsLabel} />
-              {STAT_INFO.map(({ label, key, color }) => (
-                <SegmentedMeter key={key} label={label} value={selected[key]} max={160} color={color} />
-              ))}
-              <div className="total-stats">{c.totalLabel(selected.total)}</div>
-            </div>
-            <div id="card-moves">
-              <CardTab icon="⚔️" label={c.movesLabel} />
-              <ul className="move-list">
-                {selected.moves.map((m) => (
-                  <li key={m.name}>{c.moveLine(m.name, m.type, movePower(m), m.max_uses)}</li>
-                ))}
-              </ul>
-            </div>
-            <button
-              className="btn-danger"
-              onClick={() => handleDiscard(selected.id)}
-              disabled={selected.isStarter}
-              title={selected.isStarter ? t.discardTooltip : undefined}
-            >
-              {t.discard}
-            </button>
-          </div>
-        )}
+        {wide && <aside className="panel collection-detail">{detail ?? <p className="empty">{t.detailEmpty}</p>}</aside>}
       </div>
 
-      {tradeUpMode && (
-        <div className="card tradeup-bar">
-          <span className="tradeup-count">{t.selectedCount(tradeUpSelected.size, TRADEUP_COUNT)}</span>
-          <button
-            className="btn-primary"
-            disabled={tradeUpSelected.size !== TRADEUP_COUNT}
-            onClick={() => setShowTradeUpConfirm(true)}
-          >
-            {t.tradeUpButton}
-          </button>
+      {selecting && (
+        <div className="action-bar" role="region" aria-label={t.selectedN(picked.length)}>
+          <b className="mono">{t.selectedN(picked.length)}</b>
+          <span className="action-bar-hint">{hint}</span>
+          <div className="action-bar-buttons">
+            <button type="button" className="btn-ghost btn-sm" onClick={() => setPicked([])} disabled={picked.length === 0}>{t.clearSelection}</button>
+            <button type="button" className="btn-secondary btn-sm" disabled={!canTradeUp} onClick={() => { setError(null); setConfirm("tradeup"); }}>
+              <Icon name="flame" size={14} /> {t.tradeUpButton}
+            </button>
+            <button type="button" className="btn-primary btn-sm" disabled={!canEvolve} onClick={() => { setError(null); setConfirm("evolve"); }}>
+              <Icon name="evolve" size={14} /> {t.evolveButton}
+            </button>
+          </div>
         </div>
       )}
 
-      {showTradeUpConfirm && (
-        <Modal onClose={() => (tradeUpSubmitting ? null : setShowTradeUpConfirm(false))}>
-          <h2>{t.tradeUpConfirmHeading}</h2>
-          <p>{t.tradeUpConfirmBody}</p>
-          <ul className="tradeup-confirm-list">
-            {pokemon.filter((p) => tradeUpSelected.has(p.id)).map((p) => (
-              <li key={p.id}>{t.confirmListItem(displayName(p), p.number, p.name, p.total)}</li>
-            ))}
-          </ul>
-          {tradeUpError && <p className="auth-error">{tradeUpError}</p>}
-          <div className="trade-builder-actions">
-            <button className="btn-primary" disabled={tradeUpSubmitting} onClick={confirmTradeUp}>
-              {tradeUpSubmitting ? t.tradeUpConfirmConfirming : t.tradeUpConfirmConfirm}
-            </button>
-            <button className="btn-secondary" disabled={tradeUpSubmitting} onClick={() => setShowTradeUpConfirm(false)}>
-              {common.cancel}
+      {!wide && detailOpen && selected && !selecting && (
+        <Modal onClose={() => setDetailOpen(false)} size="lg">
+          {detail}
+        </Modal>
+      )}
+
+      {confirm && (
+        <Modal onClose={() => (submitting ? null : setConfirm(null))}>
+          <h2>{confirmCopy[confirm].heading}</h2>
+          <p className="muted">{confirmCopy[confirm].body}</p>
+          {confirm !== "release" && (
+            <ul className="confirm-list">
+              {pickedPokemon.map((p) => (
+                <li key={p.id}>
+                  <Sprite name={p.name} form="normal" className="" />
+                  <span style={{ flex: 1 }}>{displayName(p)} <span className="faint mono">#{p.number}</span></span>
+                  <span className="mono small muted">{p.total}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {error && <p className="alert alert-error" role="alert">{error}</p>}
+          <div className="dialog-actions">
+            <button type="button" className="btn-ghost" disabled={submitting} onClick={() => setConfirm(null)}>{common.cancel}</button>
+            <button type="button" className={confirm === "release" ? "btn-danger" : "btn-primary"} disabled={submitting} onClick={submit}>
+              {submitting ? confirmCopy[confirm].busy : confirmCopy[confirm].cta}
             </button>
           </div>
         </Modal>
       )}
 
-      {evolveMode && (
-        <div className="card evolve-bar">
-          <span className="evolve-count">{t.selectedCount(evolveSelected.size, EVOLVE_COUNT)}</span>
-          <button
-            className="btn-primary"
-            disabled={evolveSelected.size !== EVOLVE_COUNT}
-            onClick={() => setShowEvolveConfirm(true)}
-          >
-            {t.evolveButton}
-          </button>
-        </div>
-      )}
-
-      {showEvolveConfirm && (
-        <Modal onClose={() => (evolveSubmitting ? null : setShowEvolveConfirm(false))}>
-          <h2>{t.evolveConfirmHeading}</h2>
-          <p>{t.evolveConfirmBody}</p>
-          <ul className="evolve-confirm-list">
-            {pokemon.filter((p) => evolveSelected.has(p.id)).map((p) => (
-              <li key={p.id}>{t.confirmListItem(displayName(p), p.number, p.name, p.total)}</li>
-            ))}
-          </ul>
-          {evolveError && <p className="auth-error">{evolveError}</p>}
-          <div className="trade-builder-actions">
-            <button className="btn-primary" disabled={evolveSubmitting} onClick={confirmEvolve}>
-              {evolveSubmitting ? t.evolveConfirmConfirming : t.evolveConfirmConfirm}
-            </button>
-            <button className="btn-secondary" disabled={evolveSubmitting} onClick={() => setShowEvolveConfirm(false)}>
-              {common.cancel}
-            </button>
-          </div>
-        </Modal>
-      )}
+      {evolveReveal && <LootboxRevealDialog key={evolveReveal.id} pokemon={evolveReveal} variant="evolve" onClose={() => setEvolveReveal(null)} />}
     </div>
   );
 }

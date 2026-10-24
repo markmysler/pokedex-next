@@ -3,6 +3,7 @@ import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
 import { typesList } from "@/lib/pokedex";
 import { getDictionary } from "@/lib/i18n/getDictionary";
+import SectionTabs from "@/components/nav/SectionTabs";
 import OnlineBattle from "@/components/online/OnlineBattle";
 
 // Only the page title is fetched here -- OnlineBattle itself reads the
@@ -23,7 +24,13 @@ export default async function OnlinePage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">{dict.battle.online.title}</h1>
+      <div className="page-head">
+        <div>
+          <span className="eyebrow">{dict.battle.online.subtitle}</span>
+          <h1>{dict.battle.online.title}</h1>
+        </div>
+      </div>
+      <SectionTabs section="battle" />
       <OnlineBattle inventory={pokemon} displayName={displayName} typesList={typesList} />
     </div>
   );

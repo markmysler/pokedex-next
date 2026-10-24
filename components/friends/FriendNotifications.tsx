@@ -6,6 +6,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import { useToast } from "@/components/ui/Toast";
 import { localeFromPathname, withLocale, type Locale } from "@/lib/i18n/locale";
 import { useDictionary } from "@/lib/i18n/useDictionary";
+import Icon, { type IconName } from "@/components/ui/Icon";
 
 interface FriendNotificationsProps {
   userId: string;
@@ -40,12 +41,12 @@ export default function FriendNotifications({ userId }: FriendNotificationsProps
       .on("broadcast", { event: "friend-request" }, ({ payload }) => {
         const p = payload as { fromDisplayName: string };
         const t = dictRef.current.social.notifications;
-        pushRef.current(<span>👋 <strong>{p.fromDisplayName}</strong> {t.toastFriendRequestBody}</span>);
+        pushRef.current(<span className="toast-line"><Icon name="users" size={16} /> <span><strong>{p.fromDisplayName}</strong> {t.toastFriendRequestBody}</span></span>);
       })
       .on("broadcast", { event: "friend-request-accepted" }, ({ payload }) => {
         const p = payload as { fromDisplayName: string };
         const t = dictRef.current.social.notifications;
-        pushRef.current(<span>✅ <strong>{p.fromDisplayName}</strong> {t.friendRequestAcceptedBody}</span>);
+        pushRef.current(<span className="toast-line"><Icon name="check" size={16} /> <span><strong>{p.fromDisplayName}</strong> {t.friendRequestAcceptedBody}</span></span>);
       })
       .on("broadcast", { event: "battle-invite" }, ({ payload }) => {
         const p = payload as { fromDisplayName: string; roomCode: string };
@@ -78,7 +79,7 @@ export default function FriendNotifications({ userId }: FriendNotificationsProps
             friendshipId={p.friendshipId}
             senderDisplayName={p.fromDisplayName}
             text={t.toastTradeProposedBody}
-            icon="🔄"
+            icon="swap"
             router={router}
             locale={locale}
             openLabel={t.open}
@@ -88,7 +89,7 @@ export default function FriendNotifications({ userId }: FriendNotificationsProps
       .on("broadcast", { event: "trade-resolved" }, ({ payload }) => {
         const p = payload as { friendshipId: string; status: "accepted" | "declined" | "cancelled" };
         const t = dictRef.current.social.notifications;
-        pushRef.current(<span>🔄 {t.tradeResolved(p.status)}</span>);
+        pushRef.current(<span className="toast-line"><Icon name="swap" size={16} /> <span>{t.tradeResolved(p.status)}</span></span>);
       })
       .subscribe();
 
@@ -129,8 +130,8 @@ function BattleInviteToast({ fromDisplayName, roomCode, router, locale, pushRef,
 
   return (
     <span className="toast-invite">
-      ⚔️ <strong>{fromDisplayName}</strong> {battleInviteBody}
-      <button className="btn-primary toast-action" onClick={accept}>{acceptLabel}</button>
+      <span className="toast-line"><Icon name="swords" size={16} /> <span><strong>{fromDisplayName}</strong> {battleInviteBody}</span></span>
+      <button className="btn-primary btn-sm" onClick={accept}>{acceptLabel}</button>
     </span>
   );
 }
@@ -139,7 +140,7 @@ interface FriendMessageToastProps {
   friendshipId: string;
   senderDisplayName: string;
   text: string;
-  icon?: string;
+  icon?: IconName;
   router: ReturnType<typeof useRouter>;
   locale: Locale;
   openLabel: string;
@@ -152,11 +153,11 @@ interface FriendMessageToastProps {
 // is either the sender's own message body (user-generated, never
 // translated) or an already-localized trade-offer sentence -- either way
 // this component just renders it verbatim.
-function FriendMessageToast({ friendshipId, senderDisplayName, text, icon = "💬", router, locale, openLabel }: FriendMessageToastProps) {
+function FriendMessageToast({ friendshipId, senderDisplayName, text, icon = "chat", router, locale, openLabel }: FriendMessageToastProps) {
   return (
     <span className="toast-invite">
-      {icon} <strong>{senderDisplayName}</strong>: {text}
-      <button className="btn-primary toast-action" onClick={() => router.push(withLocale(locale, `/friends/${friendshipId}`))}>
+      <span className="toast-line"><Icon name={icon} size={16} /> <span><strong>{senderDisplayName}</strong>: {text}</span></span>
+      <button className="btn-primary btn-sm" onClick={() => router.push(withLocale(locale, `/friends/${friendshipId}`))}>
         {openLabel}
       </button>
     </span>

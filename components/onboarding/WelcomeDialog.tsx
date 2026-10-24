@@ -2,6 +2,9 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Modal from "@/components/ui/Modal";
+import Icon from "@/components/ui/Icon";
+import CaseArt from "@/components/cases/CaseArt";
+import Link from "@/components/LocaleLink";
 import type { Dictionary } from "@/lib/i18n/getDictionary";
 
 // Shown once, right after signup -- app/[lang]/signup/page.tsx (via
@@ -27,32 +30,28 @@ export default function WelcomeDialog({ dict }: { dict: Dictionary["account"]["w
 
   return (
     <Modal onClose={dismiss} large>
-      <h2>{dict.heading}</h2>
-      <div className="welcome-dialog-body">
-        <p>{dict.intro1}</p>
-        <p>
+      <div className="welcome">
+        <CaseArt className="case-art welcome-art" />
+        <h2>{dict.heading}</h2>
+        <p className="muted">{dict.intro1}</p>
+        <p className="muted">
           {dict.intro2Prefix}
           <strong>{dict.intro2Lootbox}</strong>
           {dict.intro2Suffix}
         </p>
-        <ul className="welcome-dialog-list">
-          <li>
-            📦 <strong>{dict.lootboxOpeningBold}</strong>{dict.lootboxOpeningRest}
-          </li>
-          <li>
-            ✨ <strong>{dict.shinyBold}</strong>{dict.shinyRest}
-          </li>
-          <li>
-            🏆 <strong>{dict.winningBattlesBold}</strong>{dict.winningBattlesRest}
-          </li>
-          <li>
-            🔥 <strong>{dict.tradeUpBold}</strong>{dict.tradeUpRest}
-          </li>
+        <ul className="welcome-list">
+          <li><Icon name="case" /><span><strong>{dict.lootboxOpeningBold}</strong>{dict.lootboxOpeningRest}</span></li>
+          <li><Icon name="star" /><span><strong>{dict.shinyBold}</strong>{dict.shinyRest}</span></li>
+          <li><Icon name="trophy" /><span><strong>{dict.winningBattlesBold}</strong>{dict.winningBattlesRest}</span></li>
+          <li><Icon name="flame" /><span><strong>{dict.tradeUpBold}</strong>{dict.tradeUpRest}</span></li>
         </ul>
+        <div className="dialog-actions">
+          <button className="btn-ghost" onClick={dismiss}>{dict.dismiss}</button>
+          <Link href="/open" className="btn-primary">
+            <Icon name="case" size={16} /> {dict.openFirstCase}
+          </Link>
+        </div>
       </div>
-      <button className="btn-primary" onClick={dismiss}>
-        {dict.dismiss}
-      </button>
     </Modal>
   );
 }

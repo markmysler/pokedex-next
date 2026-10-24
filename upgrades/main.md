@@ -1,11 +1,79 @@
 # Upgrade Path
 
-## Active wave: v8, security hardening (implemented on `improvements`, awaiting review)
+## Active wave: v9, "Stadium" UX/UI redesign (implemented on `redesign`, awaiting review)
+
+The owner's brief: a full redesign of every screen, the layout and how each
+feature is used, with case opening reworked to feel like a slot machine,
+inspired by Counter-Strike 2's (old) case reel. The direction was proposed
+as a mockup page with a playable reel demo and approved before any code
+changed. Game logic, API routes, migrations and the security behaviour from
+v8 are untouched; the server still decides every result.
+
+| Step | Commit | What shipped |
+|---|---|---|
+| 59 | Foundations & shell | Tokens (night-stadium neutrals, Poké Red, rarity scale), next/font faces, `components/ui/Icon.tsx`, `lib/rarity.ts` (+ tests), native `<dialog>` Modal, rarity-aware Pokémon card; top bar with case counter, Pokédex search, bell and avatar menu; grouped rail; phone tab bar with a raised Open button; section tabs; login/signup split layout; error page restyle. |
+| 60 | Case opening & collection | `/[lang]/open` with the horizontal reel (`components/cases/`): server opens first, a strip seeded from the result's id spins, ticks and lands on it; batches of up to 5 reels; Skip, Fast spin, "open all instantly", odds panel. My Pokémon with a Select mode and action bar (Trade up / Evolve), evolution progress and "Evolve now", release confirmation. Pokédex grid with silhouettes, `#025` links. |
+| 61 | Battle | Shared `BattleStage` (field with HUDs, captions and damage numbers; Fight/Switch dock; round feed) for bot and online; team tray with Best 3 and Lock in; online host/join, waiting, room bar, rematch bar, chat panel; result dialog. |
+| 62 | Social, records, Home | Home with case/quick-battle tiles and stat strip (Quick battle starts with your best three); friends; chat and trades side by side with a two-column trade builder; notifications grouped by day; history and leaderboard tables; profile; welcome dialog; toasts with icons. |
+| 63 | Docs & verification | `design/DESIGN_SYSTEM.md` rewritten, README feature list updated, this log. |
+
+### Key decisions made
+
+- **Rarity grades are display-only** (approved decision 1): a label from
+  the species' base-stat total (Common <330, Uncommon 330–449, Rare
+  450–499, Epic 500–579, Legendary 580+, shiny overrides). Species are
+  still rolled uniformly; nothing stored depends on grades.
+- **The reel never rolls.** `planReel()` is a pure function of the
+  Pokémon the open endpoint returned (seeded PRNG from its id), so the
+  strip is reproducible and nothing random runs during render. Filler uses
+  the real odds, with no planted near-misses.
+- **Opening moved to its own route** (decision 2), `/[lang]/open`. The only
+  new route; the API is unchanged.
+- **Webfonts via next/font** (decision 3) replaced the old system-font
+  rule; they're self-hosted, so there are no runtime requests to Google.
+- **Emoji left the chrome** (decision 4), replaced by an in-house SVG set.
+  Battle-log text keeps its emoji, and UI strings were cleaned in both
+  locales ("lootbox" is "case" in the UI).
+- **Uncaught Pokédex entries are CSS silhouettes** (decision 5); sprite
+  files are unchanged.
+- **Still no UI library** (decision 6). Dialogs use the native element.
+- **"Evolve now" preselects the five strongest copies**, not the weakest
+  as first sketched: evolved stats derive from the burned five
+  (`lib/evolution.ts`), so the strongest give the best result. The player
+  reviews them before confirming.
+- **Top-bar counts stay current** without server round trips: a small
+  `CaseCountProvider` that opening, trade-up and battle rewards update,
+  plus `router.refresh()` after friend actions and marking notifications
+  read.
+
+### Validation
+
+- `npm run lint`, `npm run typecheck`, `npm test` (39 tests, 5 new for
+  rarity) and `npm run build` pass.
+- Production build against local Supabase, driven end to end by a headless
+  browser with two real accounts: case opening (single, ×3 batch,
+  instant), evolution from 5 copies, Select mode, bot battle to the result
+  and "Open it now", friend request and accept, chat, trade offer sent and
+  accepted, notifications, battle invite into a full online 3v3 played to
+  the end, rematch bar; phone width (390px), es-AR and light theme. Before
+  and after screenshots and reel recordings are attached to the PR.
+
+### Found along the way (not fixed in this wave)
+
+- **Online room chat doesn't reach the opponent.** Reproduced on `main`
+  (d40f6b0) as well, so it predates this wave: both players subscribe to
+  the private `room:` channel, but a client-sent `chat-message` broadcast
+  never arrives (server-sent room events do). Probably related to v8's
+  private channels; worth a look on its own.
+- **A 404 for `/en?_rsc=…` right after login**: the login redirect to `/`
+  prefetches the locale root, which only redirects. Harmless but noisy.
+
+## Previous wave: v8, security hardening (merged in PR #1)
 
 Driven by an external code review. Every item was validated against a
 local Supabase stack (migrations, SQL tests, and an end-to-end script that
 tried each exploit against the running app), and the bot battle was
-played through in a browser. Not yet merged or deployed.
+played through in a browser. Merged and deployed.
 
 1. **Direct table access closed** (`20261024000000_table_access_lockdown.sql`):
    `anon`/`authenticated` had insert/update/delete on several tables, so a

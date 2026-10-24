@@ -38,11 +38,11 @@ export default function BattleInviteAcceptButton({ roomCode }: BattleInviteAccep
   }
 
   return (
-    <div className="notification-action">
-      <button className="btn-primary" onClick={accept} disabled={busy}>
+    <div className="stack" style={{ gap: 4, justifyItems: "end" }}>
+      <button className="btn-primary btn-sm" onClick={accept} disabled={busy}>
         {busy ? t.joining : t.accept}
       </button>
-      {error && <p className="auth-error">{error}</p>}
+      {error && <p className="small" style={{ color: "var(--bad)" }} role="alert">{error}</p>}
     </div>
   );
 }

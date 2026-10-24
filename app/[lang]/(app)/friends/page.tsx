@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/session";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendsForUser } from "@/lib/friends";
 import { getDictionary } from "@/lib/i18n/getDictionary";
+import SectionTabs from "@/components/nav/SectionTabs";
 import FriendsPageClient from "@/components/friends/FriendsPageClient";
 
 // Only the page title is fetched here -- FriendsPageClient itself reads
@@ -20,7 +21,13 @@ export default async function FriendsPage() {
 
   return (
     <div className="page">
-      <h1 className="page-title">{dict.social.friends.heading}</h1>
+      <div className="page-head">
+        <div>
+          <span className="eyebrow">{dict.shell.groups.social}</span>
+          <h1>{dict.social.friends.heading}</h1>
+        </div>
+      </div>
+      <SectionTabs section="social" />
       <FriendsPageClient myFriendCode={profile?.friend_code ?? ""} initial={friendsData} />
     </div>
   );

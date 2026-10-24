@@ -2,16 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { BattleAction, OwnedPokemon, RoomSlot, TeamState } from "@/types/pokemon";
-import FighterCard from "@/components/battle/FighterCard";
-import MoveButton from "@/components/battle/MoveButton";
-import AllyTargetPicker from "@/components/battle/AllyTargetPicker";
+import BattleStage, { type StageTurn } from "@/components/battle/BattleStage";
+import { addToFeed, addToLastRound, type FeedRound } from "@/components/battle/feed";
 import BattleResultDialog from "@/components/battle/BattleResultDialog";
 import LootboxRevealDialog from "@/components/inventory/LootboxRevealDialog";
-import CardTab from "@/components/ui/CardTab";
+import Icon from "@/components/ui/Icon";
+import { useCaseCount } from "@/components/nav/CaseCount";
 import TeamPicker from "./TeamPicker";
 import ChatPanel, { type ChatMessage } from "./ChatPanel";
 import { useRoomChannel, type RoundResultPayload } from "./useRoomChannel";
-import { hasLivingAlly, type BattleEvent, type BattleLogEvent } from "@/lib/battleEngine";
+import type { BattleEvent, BattleLogEvent } from "@/lib/battleEngine";
 import { useDictionary } from "@/lib/i18n/useDictionary";
 import { renderBattleLogEvent, type RenderedLogLine } from "@/lib/i18n/renderBattleLogEvent";
 import { playAttackSound, playDodgeSound, playFaintSound, playVictorySound, playDefeatSound } from "@/lib/sound";
@@ -52,7 +52,10 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
   const [status, setStatus] = useState("");
   const [turnStatus, setTurnStatus] = useState("");
   const [battle, setBattle] = useState<OnlineBattleState | null>(null);
-  const [log, setLog] = useState<RenderedLogLine[]>([]);
+  const [feed, setFeed] = useState<FeedRound[]>([]);
+  const [lastTurn, setLastTurn] = useState<StageTurn | null>(null);
+  const [copied, setCopied] = useState(false);
+  const { setCount: setCaseCount } = useCaseCount();
   const [moveLocked, setMoveLocked] = useState(false);
   const [rematchRequestedBy, setRematchRequestedBy] = useState<RoomSlot | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -61,8 +64,6 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
   // Awaiting a target choice for this move index (upgrades/28-move-ui-and
   // -ally-targeting.md) -- only ever set for a buff move whose caster has
   // a living ally; every other move submits immediately with no picker.
-  const [pendingBuffMoveIndex, setPendingBuffMoveIndex] = useState<number | null>(null);
-  const logRef = useRef<HTMLDivElement>(null);
   const mySlotRef = useRef<RoomSlot | null>(null);
   const lockedInRef = useRef(false);
   const phaseRef = useRef<Phase>("setup");
@@ -115,9 +116,10 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Notices outside a round (opponent left, a failed case open) join the
+  // current round of the battle feed.
   function appendLog(lines: RenderedLogLine[]) {
-    setLog((prev) => [...prev, ...lines]);
-    requestAnimationFrame(() => logRef.current?.scrollTo({ top: logRef.current.scrollHeight }));
+    setFeed((prev) => addToLastRound(prev, lines));
   }
 
   function startLogFor(team1: TeamState, team2: TeamState, slot: RoomSlot) {
@@ -125,11 +127,18 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     const opp = slot === 1 ? team2 : team1;
     const youActive = you.members[you.activeIndex].pokemon.name;
     const oppActive = opp.members[opp.activeIndex].pokemon.name;
-    setLog([
-      { text: t.startBanner(youActive, oppActive) },
-      { text: t.yourTeam(you.members.map((m) => m.pokemon.name).join(", ")) },
-      { text: t.opponentTeam(opp.members.map((m) => m.pokemon.name).join(", ")) },
+    setFeed([
+      {
+        key: "start",
+        title: dict.battle.arena.feedStart,
+        lines: [
+          { text: t.startBanner(youActive, oppActive) },
+          { text: `-> ${t.yourTeam(you.members.map((m) => m.pokemon.name).join(", "))}` },
+          { text: `-> ${t.opponentTeam(opp.members.map((m) => m.pokemon.name).join(", "))}` },
+        ],
+      },
     ]);
+    setLastTurn(null);
     setTurnStatus(t.selectPrompt);
   }
 
@@ -174,11 +183,9 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
       awaitingForcedSwitch: payload.awaitingForcedSwitch,
     });
     setMoveLocked(false);
-    setPendingBuffMoveIndex(null);
-    appendLog([
-      { text: t.roundHeader(payload.turnCount) },
-      ...(payload.log ? payload.log.map((event) => renderBattleLogEvent(event, dict)) : [{ text: t.syncedFromServer }]),
-    ]);
+    const lines = payload.log ? payload.log.map((event) => renderBattleLogEvent(event, dict)) : [{ text: t.syncedFromServer }];
+    setFeed((prev) => addToFeed(prev, `r${payload.turnCount}`, t.roundHeader(payload.turnCount), lines));
+    setLastTurn({ id: String(payload.turnCount), events: payload.events ?? [], lines });
 
     // One sound per structured event (upgrades/10-battle-depth.md's `events`
     // array) rather than parsing the log strings above — undefined via the
@@ -195,6 +202,8 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
       if (won) playVictorySound();
       else playDefeatSound();
       setTurnStatus(won ? t.youWon : t.youLost);
+      // Keeps the top bar's case counter in step with the win's case.
+      if (won && payload.lootboxGranted) setCaseCount((c) => c + 1);
       // Trigger the result dialog from here, not a separate effect watching
       // battle?.over — this function only runs once per real turnCount
       // transition (dedup check above), so a naive effect would instead
@@ -335,9 +344,9 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     setPhase("setup");
     setMyLockedIn(false);
     setBattle(null);
-    setLog([]);
+    setFeed([]);
+    setLastTurn(null);
     setMoveLocked(false);
-    setPendingBuffMoveIndex(null);
     setStatus("");
     setTurnStatus("");
     setRoomCodeInput("");
@@ -355,9 +364,9 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
   // reused TeamPicker/lock-in flow behaves identically to a fresh room.
   function resetForRematch() {
     setBattle(null);
-    setLog([]);
+    setFeed([]);
+    setLastTurn(null);
     setMoveLocked(false);
-    setPendingBuffMoveIndex(null);
     setMyLockedIn(false);
     setTurnStatus("");
     setStatus("");
@@ -377,6 +386,7 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
       return;
     }
     const opened = data.pokemon as OwnedPokemon;
+    setCaseCount((c) => c - 1);
     setResultDialog(null);
     setRevealPokemon(opened);
     setInventory((prev) => [...prev, opened]);
@@ -436,7 +446,6 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
 
   async function submitAction(action: BattleAction) {
     if (!battle || battle.over || !roomCode) return;
-    setPendingBuffMoveIndex(null);
     const isMyForcedSwitch = battle.awaitingForcedSwitch === mySlot;
     if (!isMyForcedSwitch) {
       if (moveLocked || battle.awaitingForcedSwitch) return; // my turn to act is blocked right now
@@ -487,68 +496,109 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     resetForRematch();
   }
 
-  const lootboxRevealDict = {
-    stats: dict.common.stats,
-    shinyBadge: dict.common.shinyBadge,
-    movesLabel: dict.collection.movesLabel,
-    totalLabel: dict.collection.totalLabel,
-    moveLine: dict.collection.moveLine,
-    lootboxReveal: dict.collection.lootboxReveal,
-  };
+
+  async function copyCode() {
+    if (!roomCode) return;
+    try {
+      await navigator.clipboard.writeText(roomCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard can be unavailable (permissions, insecure context); the
+      // code is on screen to copy by hand.
+    }
+  }
+
+  const chat = <ChatPanel messages={chatMessages} onSend={sendChat} />;
+
+  const roomBar = roomCode && (
+    <div className="room-bar">
+      <span className="eyebrow">{t.roomCodeLabel}</span>
+      <button type="button" className="room-code" onClick={copyCode} title={t.copyCode}>
+        {roomCode} <Icon name={copied ? "check" : "copy"} size={14} />
+      </button>
+      {status && <span className="small muted">{status}</span>}
+      <button type="button" className="btn-ghost btn-sm row-end" onClick={leaveRoom}>
+        <Icon name="door" size={14} /> {t.leaveRoom}
+      </button>
+    </div>
+  );
 
   if (!roomCode) {
     return (
-      <div className="card" id="online-setup">
-        <CardTab icon="🌐" label={t.setupLabel} />
-        <div className="online-actions">
-          <button className="btn-primary" onClick={createRoom}>{t.createRoom}</button>
+      <div className="stack" style={{ gap: 16 }}>
+        <div className="online-setup">
+          <section className="panel online-card">
+            <span className="online-card-icon"><Icon name="plus" size={22} /></span>
+            <h2>{t.hostTitle}</h2>
+            <p className="muted small">{t.hostBody}</p>
+            <button type="button" className="btn-primary" onClick={createRoom}>{t.createRoom}</button>
+          </section>
+          <form
+            className="panel online-card"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void joinRoom();
+            }}
+          >
+            <span className="online-card-icon"><Icon name="door" size={22} /></span>
+            <h2>{t.joinTitle}</h2>
+            <p className="muted small">{t.joinBody}</p>
+            <div className="row" style={{ flexWrap: "nowrap" }}>
+              <input
+                className="code-input"
+                value={roomCodeInput}
+                onChange={(e) => setRoomCodeInput(e.target.value)}
+                maxLength={6}
+                placeholder={t.joinCodePlaceholder}
+                aria-label={t.joinCodePlaceholder}
+              />
+              <button type="submit" className="btn-secondary">{t.joinRoom}</button>
+            </div>
+          </form>
         </div>
-        <div className="online-divider"><span>{t.or}</span></div>
-        <div className="online-join-row">
-          <input
-            value={roomCodeInput}
-            onChange={(e) => setRoomCodeInput(e.target.value)}
-            maxLength={6}
-            placeholder={t.joinCodePlaceholder}
-          />
-          <button className="btn-secondary" onClick={joinRoom}>{t.joinRoom}</button>
-        </div>
-        <div className="online-status">{status}</div>
+        {status && <p className="alert alert-error" role="alert">{status}</p>}
       </div>
     );
   }
 
   if (phase === "waiting") {
     return (
-      <>
-        <div className="card" id="online-setup">
-          <CardTab icon="🌐" label={t.waitingLabel} />
-          <p className="friend-code-display">{roomCode}</p>
-          <div className="online-status">{status}</div>
-          <button className="btn-secondary" onClick={leaveRoom}>{t.cancel}</button>
-        </div>
-        <ChatPanel messages={chatMessages} onSend={sendChat} />
-      </>
+      <div className="online-split">
+        <section className="panel waiting-card">
+          <span className="eyebrow">{t.waitingLabel}</span>
+          <button type="button" className="room-code room-code-lg" onClick={copyCode} title={t.copyCode}>
+            {roomCode} <Icon name={copied ? "check" : "copy"} size={20} />
+          </button>
+          <p className="muted">{t.waitingBody}</p>
+          <span className="waiting-dots" aria-hidden="true"><span /><span /><span /></span>
+          <button type="button" className="btn-ghost" onClick={leaveRoom}>{t.cancel}</button>
+        </section>
+        {chat}
+      </div>
     );
   }
 
   if (phase === "picking") {
     return (
-      <>
-        <div className="card select-bar">
-          <div>{t.roomCodeLabel} <span className="room-code-chip">{roomCode}</span></div>
-          <button className="btn-secondary" onClick={leaveRoom}>{t.leaveRoom}</button>
-        </div>
+      <div className="stack" style={{ gap: 16 }}>
+        {roomBar}
         {myLockedIn ? (
-          <div className="card">
-            <CardTab icon="✅" label={t.teamLockedIn} color="var(--good)" />
-            <div className="online-status">{status || t.waitingOpponentLockIn}</div>
+          <div className="online-split">
+            <section className="panel waiting-card">
+              <span className="tag tag-good"><Icon name="check" size={13} /> {t.teamLockedIn}</span>
+              <p className="muted">{t.waitingOpponentLockIn}</p>
+              <span className="waiting-dots" aria-hidden="true"><span /><span /><span /></span>
+            </section>
+            {chat}
           </div>
         ) : (
-          <TeamPicker inventory={inventory} typesList={typesList} onSubmit={lockIn} />
+          <>
+            <TeamPicker inventory={inventory} typesList={typesList} onSubmit={lockIn} />
+            {chat}
+          </>
         )}
-        <ChatPanel messages={chatMessages} onSend={sendChat} />
-      </>
+      </div>
     );
   }
 
@@ -556,8 +606,6 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
 
   const youTeamState = mySlot === 1 ? battle.team1 : battle.team2;
   const oppTeamState = mySlot === 1 ? battle.team2 : battle.team1;
-  const you = youTeamState.members[youTeamState.activeIndex];
-  const opp = oppTeamState.members[oppTeamState.activeIndex];
 
   const myForcedSwitch = battle.awaitingForcedSwitch === mySlot;
   const blockedByOpponentSwitch = battle.awaitingForcedSwitch === (mySlot === 1 ? 2 : 1);
@@ -574,126 +622,44 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
           onOpenNow={resultDialog.lootboxId ? () => openLootboxNow(resultDialog.lootboxId!) : undefined}
         />
       )}
-      {revealPokemon && (
-        <LootboxRevealDialog
-          pokemon={revealPokemon}
-          onClose={() => setRevealPokemon(null)}
-          drumrollText={dict.collection.lootboxReveal.openingLootboxText}
-          dict={lootboxRevealDict}
-        />
-      )}
+      {revealPokemon && <LootboxRevealDialog pokemon={revealPokemon} onClose={() => setRevealPokemon(null)} />}
 
-      <div className="card select-bar">
-        <div>{t.roomCodeShare(roomCode)}</div>
-        <button className="btn-secondary" onClick={leaveRoom}>{t.leaveRoom}</button>
-      </div>
-
-      <div className="arena-frame">
-        <FighterCard
-          title={t.youPrefix}
-          pokemon={you.pokemon}
-          hp={you.hp}
-          maxHp={you.maxHp}
-          bleedTurns={you.bleedTurns}
-          blindTurns={you.blindTurns}
-          poisonTurns={you.poisonTurns}
-          burnTurns={you.burnTurns}
-          freezeTurns={you.freezeTurns}
-          atkMod={you.atkMod}
-          atkModTurns={you.atkModTurns}
-          defMod={you.defMod}
-          defModTurns={you.defModTurns}
-          shieldPoints={you.shieldPoints}
-          redirectTurns={you.redirectTurns}
-          movesCaption={myForcedSwitch ? t.chooseNextPokemon : t.selectAttackMove}
-          team={youTeamState.members}
-          activeIndex={youTeamState.activeIndex}
-          onSwitchTo={canSwitchNow ? (i) => submitAction({ type: "switch", teamIndex: i as 0 | 1 | 2 }) : undefined}
-        >
-          {!myForcedSwitch && pendingBuffMoveIndex !== null && (
-            <AllyTargetPicker
-              team={youTeamState.members}
-              activeIndex={youTeamState.activeIndex}
-              onSelect={(teamIndex) => submitAction({ type: "attack", moveIndex: pendingBuffMoveIndex, buffTargetTeamIndex: teamIndex })}
-              onCancel={() => setPendingBuffMoveIndex(null)}
-            />
-          )}
-          {!myForcedSwitch && pendingBuffMoveIndex === null && (
-            <div className="moves-grid">
-              {[0, 1, 2, 3].map((i) => {
-                const move = you.pokemon.moves[i];
-                if (!move) return <button key={i} className="move-btn" disabled>--</button>;
-                const usesLeft = you.moveUses[i];
-                return (
-                  <MoveButton
-                    key={i}
-                    move={move}
-                    disabled={!canAttackNow || usesLeft === 0}
-                    usesLeft={usesLeft}
-                    onClick={() => {
-                      if (move.kind === "buff" && hasLivingAlly(youTeamState)) {
-                        setPendingBuffMoveIndex(i);
-                      } else {
-                        submitAction({ type: "attack", moveIndex: i });
-                      }
-                    }}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </FighterCard>
-
-        <FighterCard
-          title={t.opponentPrefix}
-          pokemon={opp.pokemon}
-          hp={opp.hp}
-          maxHp={opp.maxHp}
-          bleedTurns={opp.bleedTurns}
-          blindTurns={opp.blindTurns}
-          poisonTurns={opp.poisonTurns}
-          burnTurns={opp.burnTurns}
-          freezeTurns={opp.freezeTurns}
-          atkMod={opp.atkMod}
-          atkModTurns={opp.atkModTurns}
-          defMod={opp.defMod}
-          defModTurns={opp.defModTurns}
-          shieldPoints={opp.shieldPoints}
-          redirectTurns={opp.redirectTurns}
-          movesCaption=""
-          team={oppTeamState.members}
-          activeIndex={oppTeamState.activeIndex}
-        />
-      </div>
-
-      <div className="card log-container">
-        <div className="online-status">{blockedByOpponentSwitch ? t.opponentChoosing : turnStatus}</div>
-        <div className="battle-log" ref={logRef}>
-          {log.map((entry, i) => (
-            <div key={i} className={entry.kind}>{entry.text}</div>
-          ))}
-        </div>
-      </div>
-
-      {battle.over && (
-        <div className="card rematch-panel">
-          <CardTab icon="🔁" label={t.rematch} />
-          {rematchRequestedBy === null && (
-            <button className="btn-primary" onClick={requestRematch}>{t.requestRematch}</button>
-          )}
-          {rematchRequestedBy === mySlot && (
-            <div className="online-status">{t.rematchRequestedWaiting}</div>
-          )}
-          {rematchRequestedBy !== null && rematchRequestedBy !== mySlot && (
-            <>
-              <div className="online-status">{t.opponentWantsRematch}</div>
-              <button className="btn-primary" onClick={acceptRematch}>{t.acceptRematch}</button>
-            </>
-          )}
-        </div>
-      )}
-
-      <ChatPanel messages={chatMessages} onSend={sendChat} />
+      <BattleStage
+        you={youTeamState}
+        opp={oppTeamState}
+        oppLabel={t.opponentLabel}
+        viewerSlot={mySlot}
+        canAttack={canAttackNow}
+        canSwitch={canSwitchNow}
+        forcedSwitch={myForcedSwitch && !battle.over}
+        status={blockedByOpponentSwitch ? t.opponentChoosing : turnStatus}
+        lastTurn={lastTurn}
+        feed={feed}
+        onAction={submitAction}
+        toolbar={
+          <>
+            {roomBar}
+            {battle.over && (
+              <div className="rematch-bar">
+                <b>{t.rematch}</b>
+                {rematchRequestedBy === null && (
+                  <button type="button" className="btn-primary btn-sm" onClick={requestRematch}>
+                    <Icon name="refresh" size={14} /> {t.requestRematch}
+                  </button>
+                )}
+                {rematchRequestedBy === mySlot && <span className="small muted">{t.rematchRequestedWaiting}</span>}
+                {rematchRequestedBy !== null && rematchRequestedBy !== mySlot && (
+                  <>
+                    <span className="small">{t.opponentWantsRematch}</span>
+                    <button type="button" className="btn-primary btn-sm" onClick={acceptRematch}>{t.acceptRematch}</button>
+                  </>
+                )}
+              </div>
+            )}
+          </>
+        }
+        aside={chat}
+      />
     </>
   );
 }

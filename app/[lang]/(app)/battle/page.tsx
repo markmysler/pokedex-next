@@ -3,23 +3,29 @@ import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getInventoryForUser } from "@/lib/inventory";
 import { typesList } from "@/lib/pokedex";
 import { getDictionary } from "@/lib/i18n/getDictionary";
+import SectionTabs from "@/components/nav/SectionTabs";
 import BattleArena from "@/components/battle/BattleArena";
 
-// Only the page title is fetched here (a plain string, safe as a Server->
-// Client prop) -- BattleArena itself reads the dictionary via
-// useDictionary() (upgrades/56-i18n-battle-cluster.md), since several of
-// its entries are functions that can't cross that boundary.
-export default async function BattlePage() {
+export default async function BattlePage({ searchParams }: PageProps<"/[lang]/battle">) {
   const user = await getCurrentUser();
   if (!user) return null;
 
   const supabase = getSupabaseServerClient();
-  const [{ pokemon }, dict] = await Promise.all([getInventoryForUser(supabase, user.id), getDictionary()]);
+  const [{ pokemon }, dict, params] = await Promise.all([getInventoryForUser(supabase, user.id), getDictionary(), searchParams]);
+  // Home's "Quick battle" link: the three strongest by total, same as the
+  // team picker's "Best 3".
+  const quickTeamIds = params.team === "best" ? [...pokemon].sort((a, b) => b.total - a.total).slice(0, 3).map((p) => p.id) : undefined;
 
   return (
     <div className="page">
-      <h1 className="page-title">{dict.battle.arena.title}</h1>
-      <BattleArena inventory={pokemon} typesList={typesList} />
+      <div className="page-head">
+        <div>
+          <span className="eyebrow">{dict.battle.arena.subtitle}</span>
+          <h1>{dict.battle.arena.title}</h1>
+        </div>
+      </div>
+      <SectionTabs section="battle" />
+      <BattleArena inventory={pokemon} typesList={typesList} quickTeamIds={quickTeamIds} />
     </div>
   );
 }

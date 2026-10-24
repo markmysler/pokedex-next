@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "@/components/LocaleLink";
 import type { OwnedPokemon } from "@/types/pokemon";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import { useDictionary } from "@/lib/i18n/useDictionary";
 import ChatPanel, { type ChatMessage } from "@/components/online/ChatPanel";
 import PokemonMultiPicker from "@/components/pokemon/PokemonMultiPicker";
 import PokemonInstanceCard from "@/components/inventory/PokemonInstanceCard";
-import CardTab from "@/components/ui/CardTab";
+import Modal from "@/components/ui/Modal";
+import Icon from "@/components/ui/Icon";
 
 interface PendingTrade {
   id: string;
@@ -38,9 +38,9 @@ function noop() {}
 
 function TradeSideCards({ pokemon }: { pokemon: OwnedPokemon[] }) {
   return (
-    <div className="trade-row-cards">
+    <div className="trade-side-cards">
       {pokemon.map((p) => (
-        <PokemonInstanceCard key={p.id} pokemon={p} variant="grid" selected={false} onSelect={noop} />
+        <PokemonInstanceCard key={p.id} pokemon={p} variant="grid" compact selected={false} onSelect={noop} />
       ))}
     </div>
   );
@@ -150,84 +150,88 @@ export default function FriendChatPageClient({
     refreshTrades();
   }
 
+  function closeBuilder() {
+    setShowBuilder(false);
+    setMyOffered([]);
+    setRequested([]);
+    setTradeError("");
+  }
+
+  const offeredPokemon = myOffered.map((id) => myInventory.find((p) => p.id === id)).filter((p): p is OwnedPokemon => Boolean(p));
+  const requestedPokemon = requested.map((id) => friendInventory.find((p) => p.id === id)).filter((p): p is OwnedPokemon => Boolean(p));
+
   return (
-    <>
-      <p><Link href="/friends">{t.backToFriends}</Link></p>
-
-      <div className="card">
-        <CardTab icon="🔄" label={t.trades} />
-        {tradeError && <p className="auth-error">{tradeError}</p>}
-
-        {trades.length === 0 && !showBuilder && <p>{t.noPendingTrades}</p>}
-
-        {trades.map((trade) => (
-          <div key={trade.id} className="trade-row">
-            <div className="trade-row-header">
-              {trade.isMine ? t.youProposed : t.friendProposed(friendDisplayName)}
-            </div>
-            <div className="trade-row-pokemon">
-              <div className="trade-row-side">
-                <h4>{trade.isMine ? t.youGive : t.friendGives(friendDisplayName)}</h4>
-                <TradeSideCards pokemon={trade.offered} />
-              </div>
-              <div className="trade-row-arrow">⇄</div>
-              <div className="trade-row-side">
-                <h4>{trade.isMine ? t.friendGives(friendDisplayName) : t.youGive}</h4>
-                <TradeSideCards pokemon={trade.requested} />
-              </div>
-            </div>
-            <div className="trade-row-actions">
-              {trade.isMine ? (
-                <button className="btn-secondary" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "decline")}>
-                  {t.cancelOffer}
-                </button>
-              ) : (
-                <>
-                  <button className="btn-primary" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "accept")}>
-                    {t.accept}
-                  </button>
-                  <button className="btn-secondary" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "decline")}>
-                    {t.decline}
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {!showBuilder ? (
-          <button className="btn-primary" onClick={() => setShowBuilder(true)}>{t.proposeTrade}</button>
-        ) : (
-          <div className="trade-builder">
-            <h3>{t.yourPokemonSelected(myOffered.length)}</h3>
-            <PokemonMultiPicker
-              inventory={myInventory}
-              typesList={typesList}
-              selected={myOffered}
-              onToggle={toggleOffered}
-              emptyMessage={t.noOwnedPokemon}
-            />
-            <h3>{t.friendPokemonSelected(friendDisplayName, requested.length)}</h3>
-            <PokemonMultiPicker
-              inventory={friendInventory}
-              typesList={typesList}
-              selected={requested}
-              onToggle={toggleRequested}
-              emptyMessage={t.friendNoOwnedPokemon(friendDisplayName)}
-            />
-            <div className="trade-builder-actions">
-              <button className="btn-primary" disabled={proposing} onClick={proposeTrade}>
-                {proposing ? t.proposing : t.sendTradeOffer}
-              </button>
-              <button className="btn-secondary" onClick={() => { setShowBuilder(false); setMyOffered([]); setRequested([]); setTradeError(""); }}>
-                {dict.common.cancel}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
+    <div className="chat-layout">
       <ChatPanel messages={messages} onSend={sendMessage} />
-    </>
+
+      <section className="panel trades-panel">
+        <div className="panel-head">
+          <h2>{t.trades}</h2>
+          <button className="btn-primary btn-sm" onClick={() => setShowBuilder(true)}>
+            <Icon name="swap" size={14} /> {t.proposeTrade}
+          </button>
+        </div>
+        {tradeError && !showBuilder && <p className="alert alert-error" role="alert">{tradeError}</p>}
+        {trades.length === 0 && <p className="empty">{t.noPendingTrades}</p>}
+        <div className="stack">
+          {trades.map((trade) => (
+            <article key={trade.id} className="trade-offer">
+              <span className="eyebrow">{trade.isMine ? t.youProposed : t.friendProposed(friendDisplayName)}</span>
+              <div className="trade-sides">
+                <div className="stack" style={{ gap: 6 }}>
+                  <span className="small muted">{trade.isMine ? t.youGive : t.friendGives(friendDisplayName)}</span>
+                  <TradeSideCards pokemon={trade.offered} />
+                </div>
+                <Icon name="swap" className="trade-arrow" />
+                <div className="stack" style={{ gap: 6 }}>
+                  <span className="small muted">{trade.isMine ? t.friendGives(friendDisplayName) : t.youGive}</span>
+                  <TradeSideCards pokemon={trade.requested} />
+                </div>
+              </div>
+              <div className="row">
+                {trade.isMine ? (
+                  <button className="btn-ghost btn-sm" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "decline")}>{t.cancelOffer}</button>
+                ) : (
+                  <>
+                    <button className="btn-primary btn-sm" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "accept")}>{t.accept}</button>
+                    <button className="btn-ghost btn-sm" disabled={busyTradeId === trade.id} onClick={() => resolveTrade(trade.id, "decline")}>{t.decline}</button>
+                  </>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {showBuilder && (
+        <Modal onClose={() => (proposing ? null : closeBuilder())} size="xl">
+          <h2>{t.builderTitle}</h2>
+          <div className="trade-builder">
+            <div className="stack" style={{ gap: 8 }}>
+              <h3 className="eyebrow">{t.yourPokemonSelected(myOffered.length)}</h3>
+              <div className="trade-tray">
+                {offeredPokemon.length === 0 ? <span className="small faint">{t.nothingPicked}</span> : <TradeSideCards pokemon={offeredPokemon} />}
+              </div>
+              <PokemonMultiPicker inventory={myInventory} typesList={typesList} selected={myOffered} onToggle={toggleOffered} emptyMessage={t.noOwnedPokemon} />
+            </div>
+            <Icon name="swap" className="trade-arrow trade-builder-arrow" size={22} />
+            <div className="stack" style={{ gap: 8 }}>
+              <h3 className="eyebrow">{t.friendPokemonSelected(friendDisplayName, requested.length)}</h3>
+              <div className="trade-tray">
+                {requestedPokemon.length === 0 ? <span className="small faint">{t.nothingPicked}</span> : <TradeSideCards pokemon={requestedPokemon} />}
+              </div>
+              <PokemonMultiPicker inventory={friendInventory} typesList={typesList} selected={requested} onToggle={toggleRequested} emptyMessage={t.friendNoOwnedPokemon(friendDisplayName)} />
+            </div>
+          </div>
+          {tradeError && <p className="alert alert-error" role="alert">{tradeError}</p>}
+          <div className="dialog-actions">
+            <button className="btn-ghost" onClick={closeBuilder} disabled={proposing}>{dict.common.cancel}</button>
+            <button className="btn-primary" disabled={proposing || myOffered.length === 0 || requested.length === 0} onClick={proposeTrade}>
+              {proposing ? t.proposing : t.sendTradeOffer}
+            </button>
+          </div>
+        </Modal>
+      )}
+    </div>
   );
 }
