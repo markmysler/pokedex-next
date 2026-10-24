@@ -26,6 +26,12 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/rooms/[code
     return NextResponse.json({ error: "Not a player in this room" }, { status: 403 });
   }
 
+  // Never return the moves themselves: until the round resolves, a player
+  // could poll this and counter the opponent's submitted move. Each side
+  // only needs to know whether a move is in.
   const state = room.state as unknown as RoomState;
-  return NextResponse.json({ roomCode, status: room.status, state });
+  const publicState = state.pending
+    ? { ...state, pending: { 1: Boolean(state.pending[1]), 2: Boolean(state.pending[2]) } }
+    : state;
+  return NextResponse.json({ roomCode, status: room.status, state: publicState });
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getOwnedPokemonInstances } from "@/lib/inventory";
 import { buildTeamState } from "@/lib/battleEngine";
@@ -18,7 +19,8 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
+  const body = await readJson(request);
+  if (!body) return badRequest();
   const ids = body.pokemonInstanceIds as string[] | undefined;
   if (!Array.isArray(ids) || ids.length !== TEAM_SIZE) {
     return NextResponse.json({ error: `Pick exactly ${TEAM_SIZE} Pokemon` }, { status: 400 });
@@ -53,7 +55,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
     .from("battle_rooms")
     .update(mySlot === 1 ? { player1_team_ids: idsJson } : { player2_team_ids: idsJson })
     .eq("code", roomCode);
-  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+  if (updateError) return serverError("rooms/[code]/lock-in", updateError);
 
   const { data: refreshed, error: refetchError } = await supabase
     .from("battle_rooms")

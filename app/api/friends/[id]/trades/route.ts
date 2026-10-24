@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
 import { getPokemon } from "@/lib/pokedex";
@@ -27,7 +28,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/friends/[id
     .eq("friendship_id", id)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return serverError("friends/[id]/trades", error);
 
   const allIds = Array.from(
     new Set((rows ?? []).flatMap((r) => [...(r.offered_instance_ids as string[]), ...(r.requested_instance_ids as string[])]))

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToRoom } from "@/lib/supabase/broadcast";
 
@@ -36,7 +37,7 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/rooms/[cod
     .select()
     .maybeSingle();
 
-  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+  if (updateError) return serverError("rooms/[code]/join", updateError);
   if (!updated) return NextResponse.json({ error: "Room is full" }, { status: 409 });
 
   await broadcastToRoom(roomCode, "opponent-joined", {});

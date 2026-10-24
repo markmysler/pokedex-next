@@ -37,7 +37,7 @@ interface RoomChannelHandlers {
   onBattleStart: (payload: { team1: unknown; team2: unknown }) => void;
   onRoundResult: (payload: RoundResultPayload) => void;
   onOpponentMoveSubmitted: () => void;
-  onOpponentLeft: () => void;
+  onOpponentLeft: (payload: { forfeit?: boolean }) => void;
   onRematchRequested: (payload: { slot: RoomSlot }) => void;
   onRematchStarted: () => void;
   onChatMessage: (payload: ChatMessagePayload) => void;
@@ -67,13 +67,15 @@ export function useRoomChannel(roomCode: string | null, handlers: RoomChannelHan
 
     const supabase = getSupabaseBrowserClient();
     const channel: RealtimeChannel = supabase
-      .channel(`room:${roomCode}`)
+      .channel(`room:${roomCode}`, { config: { private: true } })
       .on("broadcast", { event: "opponent-joined" }, () => handlersRef.current.onOpponentJoined())
       .on("broadcast", { event: "player-locked-in" }, ({ payload }) => handlersRef.current.onPlayerLockedIn(payload as never))
       .on("broadcast", { event: "battle-start" }, ({ payload }) => handlersRef.current.onBattleStart(payload as never))
       .on("broadcast", { event: "round-result" }, ({ payload }) => handlersRef.current.onRoundResult(payload as never))
       .on("broadcast", { event: "opponent-move-submitted" }, () => handlersRef.current.onOpponentMoveSubmitted())
-      .on("broadcast", { event: "opponent-left" }, () => handlersRef.current.onOpponentLeft())
+      .on("broadcast", { event: "opponent-left" }, ({ payload }) =>
+        handlersRef.current.onOpponentLeft((payload ?? {}) as { forfeit?: boolean })
+      )
       .on("broadcast", { event: "rematch-requested" }, ({ payload }) => handlersRef.current.onRematchRequested(payload as never))
       .on("broadcast", { event: "rematch-started" }, () => handlersRef.current.onRematchStarted())
       .on("broadcast", { event: "chat-message" }, ({ payload }) => handlersRef.current.onChatMessage(payload as never))

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 
 // Unfriend (an accepted row) or cancel (a pending outgoing row) — either
@@ -12,14 +13,14 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/friends/
   const supabase = getSupabaseServerClient();
 
   const { data: row, error: fetchError } = await supabase.from("friendships").select("*").eq("id", id).maybeSingle();
-  if (fetchError) return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (fetchError) return serverError("friends/[id]", fetchError);
   if (!row) return NextResponse.json({ error: "Friendship not found" }, { status: 404 });
   if (row.requester_id !== user.id && row.addressee_id !== user.id) {
     return NextResponse.json({ error: "Not part of this friendship" }, { status: 403 });
   }
 
   const { error: deleteError } = await supabase.from("friendships").delete().eq("id", id);
-  if (deleteError) return NextResponse.json({ error: deleteError.message }, { status: 500 });
+  if (deleteError) return serverError("friends/[id]", deleteError);
 
   return NextResponse.json({ ok: true });
 }

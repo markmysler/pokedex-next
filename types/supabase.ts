@@ -124,6 +124,33 @@ export interface Database {
         };
         Relationships: [];
       };
+      bot_battles: {
+        Row: {
+          id: string;
+          user_id: string;
+          status: string;
+          state: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          status?: string;
+          state: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          status?: string;
+          state?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       battle_rooms: {
         Row: {
           code: string;
@@ -312,6 +339,37 @@ export interface Database {
         Args: { p_code: string; p_new_state: Json };
         Returns: Json;
       };
+      finalize_round_at_turn: {
+        Args: { p_code: string; p_expected_turn: number; p_new_state: Json };
+        Returns: Json;
+      };
+      record_online_battle_end: {
+        Args: {
+          p_code: string;
+          p_winner_id: string | null;
+          p_loser_id: string | null;
+          p_winner_team: Json;
+          p_loser_team: Json;
+          p_final_state?: Json;
+        };
+        Returns: Json;
+      };
+      save_bot_round: {
+        Args: { p_id: string; p_user_id: string; p_expected_turn: number; p_new_state: Json };
+        Returns: Json;
+      };
+      finish_bot_battle: {
+        Args: {
+          p_id: string;
+          p_user_id: string;
+          p_expected_turn: number;
+          p_new_state: Json;
+          p_won: boolean;
+          p_grant_lootbox: boolean;
+          p_team: Json;
+        };
+        Returns: Json;
+      };
       accept_trade: {
         Args: { p_trade_id: string; p_accepting_user_id: string };
         Returns: undefined;
@@ -323,6 +381,14 @@ export interface Database {
       trade_up_pokemon: {
         Args: { p_user_id: string; p_instance_ids: string[] };
         Returns: string;
+      };
+      open_lootbox: {
+        Args: { p_lootbox_id: string; p_user_id: string; p_instance: Json };
+        Returns: Database["public"]["Tables"]["pokemon_instances"]["Row"][];
+      };
+      open_lootboxes: {
+        Args: { p_user_id: string; p_instances: Json };
+        Returns: Database["public"]["Tables"]["pokemon_instances"]["Row"][];
       };
       claim_lootboxes: {
         Args: { p_user_id: string; p_count: number };

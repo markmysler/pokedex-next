@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToUser } from "@/lib/supabase/broadcast";
 import { createNotification } from "@/lib/notifications";
@@ -8,7 +9,8 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
+  const body = await readJson(request);
+  if (!body) return badRequest();
   const friendCode = typeof body.friendCode === "string" ? body.friendCode.trim().toUpperCase() : "";
   if (!friendCode) return NextResponse.json({ error: "Enter a friend code" }, { status: 400 });
 
@@ -19,7 +21,7 @@ export async function POST(request: Request) {
     .select("user_id, display_name")
     .eq("friend_code", friendCode)
     .maybeSingle();
-  if (targetError) return NextResponse.json({ error: targetError.message }, { status: 500 });
+  if (targetError) return serverError("friends/request", targetError);
   if (!target) return NextResponse.json({ error: "No account found with that friend code" }, { status: 404 });
   if (target.user_id === user.id) return NextResponse.json({ error: "You can't friend yourself" }, { status: 400 });
 
@@ -32,7 +34,7 @@ export async function POST(request: Request) {
     .or(
       `and(requester_id.eq.${user.id},addressee_id.eq.${target.user_id}),and(requester_id.eq.${target.user_id},addressee_id.eq.${user.id})`
     );
-  if (existingError) return NextResponse.json({ error: existingError.message }, { status: 500 });
+  if (existingError) return serverError("friends/request", existingError);
 
   const existing = (existingRows ?? [])[0];
   const { data: myProfile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).single();
@@ -51,7 +53,7 @@ export async function POST(request: Request) {
       .from("friendships")
       .update({ status: "accepted", responded_at: new Date().toISOString() })
       .eq("id", existing.id);
-    if (acceptError) return NextResponse.json({ error: acceptError.message }, { status: 500 });
+    if (acceptError) return serverError("friends/request", acceptError);
 
     const acceptedPayload = { fromDisplayName: myProfile?.display_name ?? "Someone" };
     await broadcastToUser(target.user_id, "friend-request-accepted", acceptedPayload);
@@ -63,7 +65,7 @@ export async function POST(request: Request) {
     requester_id: user.id,
     addressee_id: target.user_id,
   });
-  if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
+  if (insertError) return serverError("friends/request", insertError);
 
   const requestPayload = { fromDisplayName: myProfile?.display_name ?? "Someone" };
   await broadcastToUser(target.user_id, "friend-request", requestPayload);

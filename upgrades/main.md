@@ -1,6 +1,40 @@
 # Upgrade Path
 
-No active wave.
+## Active wave: v8, security hardening (implemented on `improvements`, awaiting review)
+
+Driven by an external code review. Every item was validated against a
+local Supabase stack (migrations, SQL tests, and an end-to-end script that
+tried each exploit against the running app), and the bot battle was
+played through in a browser. Not yet merged or deployed.
+
+1. **Direct table access closed** (`20261024000000_table_access_lockdown.sql`):
+   `anon`/`authenticated` had insert/update/delete on several tables, so a
+   player could use the publishable key to mint Pokemon, add lootboxes,
+   forge leaderboard wins or force friendships. Browser roles now have no
+   table privileges and the unused per-user policies are gone.
+2. **Bot battles moved to the server** (`20261024000200_server_bot_battles.sql`,
+   `lib/botBattle.ts`, `app/api/battles/bot/**`): the old
+   `/api/battles/bot-result` trusted `{ won: true }` from the client. The
+   server now builds both teams, resolves every round and decides the
+   result; `BattleArena` only sends the player's choice.
+3. **PvP integrity** (`20261024000100_pvp_round_integrity.sql`): the room
+   GET no longer returns the opponent's pending move; action indexes are
+   integer-checked (`lib/battleValidation.ts`); one move per player per
+   round; a round is written once (`finalize_round_at_turn`); battle end
+   pays out once (`record_online_battle_end`); leaving mid-battle is a
+   forfeit. The old `finalize_round(text, jsonb)` is kept for the deploy
+   window only -- drop it in the next migration.
+4. **Private Realtime channels** (`20261024000300_private_realtime_channels.sql`).
+   Production also needs "Allow public access" turned off under Realtime
+   settings in the Supabase dashboard (not settable by migration).
+5. **Next.js 16.4.3** (critical advisories in 16.3.0); `npm audit` is clean.
+6. **Atomic lootbox opening** (`20261024000400_atomic_lootbox_opening.sql`),
+   `readJson`/`serverError` helpers on every route, UUID check on battle
+   invites, notes length cap, stale room cleanup.
+7. **Tests and CI**: Vitest (`tests/`), SQL tests (`supabase/tests/database.sql`),
+   `.github/workflows/ci.yml`.
+
+## Previous waves
 
 The seventh wave, **evolution, Psychic counterplay, and bilingual
 support**, shipped in full on 2026-09-20 — see

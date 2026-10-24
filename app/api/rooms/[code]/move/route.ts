@@ -1,45 +1,19 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { resolveTeamRound } from "@/lib/battleEngine";
+import { validateAction } from "@/lib/battleValidation";
+import { teamSnapshot } from "@/lib/history";
 import { broadcastToRoom } from "@/lib/supabase/broadcast";
 import type { BattleAction, RoomSlot, RoomState, TeamState } from "@/types/pokemon";
 import type { Database, Json } from "@/types/supabase";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// The authoritative check (upgrades/43-uses-ui-and-server-validation.md) --
-// client-side disabling (MoveButton/BattleArena/OnlineBattle) is UX only,
-// never trusted on its own. A null moveUses entry is always attemptable
-// (unlimited); only an exact 0 is rejected -- there's no "negative uses"
-// state to guard against separately, since executeMove() itself never lets
-// the count go below 0.
-function validateAction(action: BattleAction, team: TeamState): string | null {
-  if (action.type === "attack") {
-    const active = team.members[team.activeIndex];
-    if (active.hp <= 0) return "Your active Pokemon has fainted";
-    const move = active.pokemon.moves[action.moveIndex];
-    if (!move) return "Invalid move";
-    const usesLeft = active.moveUses[action.moveIndex];
-    if (usesLeft !== null && usesLeft <= 0) return "No uses left for that move this battle";
-    return null;
-  }
-  if (action.type === "switch") {
-    const target = team.members[action.teamIndex];
-    if (!target) return "Invalid team slot";
-    if (action.teamIndex === team.activeIndex) return "That Pokemon is already active";
-    if (target.hp <= 0) return "That Pokemon has fainted";
-    return null;
-  }
-  return "Invalid action";
-}
-
-// Lightweight {number, name}[] copy, not owned-instance ids — cheap to snapshot
-// now and doesn't go stale if the instance is later discarded (see
-// upgrades/07-match-history-leaderboard.md).
-function teamSnapshot(team: TeamState): { number: string; name: string }[] {
-  return team.members.map((m) => ({ number: m.pokemon.number, name: m.pokemon.name }));
-}
-
+// One transaction (record_online_battle_end): flips the room to "over" and
+// writes the winner's lootbox plus both match_results rows, but only if the
+// room was still battling -- so a round resolved twice, or a leave racing
+// the last round, can never pay out twice.
 async function recordBattleEnd(
   supabase: SupabaseClient<Database>,
   roomCode: string,
@@ -48,45 +22,21 @@ async function recordBattleEnd(
   team1: TeamState,
   team2: TeamState
 ): Promise<{ lootboxId: string | null }> {
-  await supabase.from("battle_rooms").update({ status: "over" }).eq("code", roomCode);
-
   const winnerId = winner === 1 ? room.player1_id : room.player2_id;
   const loserId = winner === 1 ? room.player2_id : room.player1_id;
-  const winnerTeam = winner === 1 ? team1 : team2;
-  const loserTeam = winner === 1 ? team2 : team1;
-
-  // Winner gets a lootbox every time (100%, unconditional — unlike bot
-  // battles' 60% roll). Both players get a match_results row so each
-  // account's own history/dashboard reflects the result. The inserted row's
-  // id is returned so the winner's result dialog can offer "Open it now"
-  // (upgrades/04-lootbox-opening.md) directly on this exact lootbox.
-  let lootboxId: string | null = null;
-  if (winnerId) {
-    const { data: lootbox } = await supabase.from("lootboxes").insert({ user_id: winnerId }).select("id").single();
-    lootboxId = lootbox?.id ?? null;
+  const { data, error } = await supabase.rpc("record_online_battle_end", {
+    p_code: roomCode,
+    p_winner_id: winnerId,
+    p_loser_id: loserId,
+    p_winner_team: teamSnapshot(winner === 1 ? team1 : team2) as unknown as Json,
+    p_loser_team: teamSnapshot(winner === 1 ? team2 : team1) as unknown as Json,
+  });
+  if (error) {
+    console.error(`recordBattleEnd(${roomCode}) failed:`, error);
+    return { lootboxId: null };
   }
-  if (winnerId) {
-    await supabase.from("match_results").insert({
-      user_id: winnerId,
-      opponent: loserId ?? "unknown",
-      mode: "online",
-      won: true,
-      room_code: roomCode,
-      team_snapshot: teamSnapshot(winnerTeam) as unknown as Json,
-    });
-  }
-  if (loserId) {
-    await supabase.from("match_results").insert({
-      user_id: loserId,
-      opponent: winnerId ?? "unknown",
-      mode: "online",
-      won: false,
-      room_code: roomCode,
-      team_snapshot: teamSnapshot(loserTeam) as unknown as Json,
-    });
-  }
-
-  return { lootboxId };
+  const result = data as { recorded: boolean; lootbox_id: string | null } | null;
+  return { lootboxId: result?.lootbox_id ?? null };
 }
 
 export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code]/move">) {
@@ -94,8 +44,8 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
-  const action = body.action as BattleAction | undefined;
+  const body = await readJson(request);
+  const action = body?.action as BattleAction | undefined;
   if (!action || (action.type !== "attack" && action.type !== "switch")) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
@@ -140,11 +90,13 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
 
     const newState: RoomState = { ...state, awaitingForcedSwitch: null, turnCount: state.turnCount + 1 };
 
-    const { error: finalizeError } = await supabase.rpc("finalize_round", {
+    const { data: applied, error: finalizeError } = await supabase.rpc("finalize_round_at_turn", {
       p_code: roomCode,
+      p_expected_turn: state.turnCount,
       p_new_state: newState as unknown as Json,
     });
-    if (finalizeError) return NextResponse.json({ error: finalizeError.message }, { status: 500 });
+    if (finalizeError) return serverError("finalize_round_at_turn", finalizeError);
+    if (!applied) return NextResponse.json({ error: "That switch was already made" }, { status: 409 });
 
     const payload = {
       log: [{ type: "switched" as const, from: fromName, to: toName }],
@@ -170,7 +122,12 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
     p_slot: mySlot,
     p_move: action as unknown as Json,
   });
-  if (rpcError) return NextResponse.json({ error: rpcError.message }, { status: 500 });
+  if (rpcError) return serverError("submit_move", rpcError);
+  if (!mergedStateRaw) {
+    // submit_move only accepts one move per player per round, while the
+    // battle is live and no forced switch is pending.
+    return NextResponse.json({ error: "You already moved this round" }, { status: 409 });
+  }
   const mergedState = mergedStateRaw as unknown as RoomState;
 
   const action1 = mergedState.pending[1];
@@ -184,7 +141,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
 
   const team1 = mergedState.team1;
   const team2 = mergedState.team2;
-  const nextTurn = state.turnCount + 1;
+  const nextTurn = mergedState.turnCount + 1;
   const result = resolveTeamRound(team1, team2, action1, action2);
 
   const newState: RoomState = {
@@ -197,11 +154,16 @@ export async function POST(request: Request, ctx: RouteContext<"/api/rooms/[code
     winner: result.winner,
   };
 
-  const { error: finalizeError } = await supabase.rpc("finalize_round", {
+  // Only the first request to resolve this turn gets to write it; a second
+  // one (both saw two pending moves) gets null and leaves the result to the
+  // first, whose broadcast and the poll backstop deliver it to this client.
+  const { data: applied, error: finalizeError } = await supabase.rpc("finalize_round_at_turn", {
     p_code: roomCode,
+    p_expected_turn: mergedState.turnCount,
     p_new_state: newState as unknown as Json,
   });
-  if (finalizeError) return NextResponse.json({ error: finalizeError.message }, { status: 500 });
+  if (finalizeError) return serverError("finalize_round_at_turn", finalizeError);
+  if (!applied) return NextResponse.json({ ok: true, waiting: true });
 
   let lootboxId: string | null = null;
   if (result.over && result.winner) {

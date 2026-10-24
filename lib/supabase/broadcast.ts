@@ -1,6 +1,11 @@
 import "server-only";
 import { getSupabaseServerClient } from "./serverClient";
 
+// Every channel is private: Realtime checks the policies in
+// supabase/migrations/20261024000300_private_realtime_channels.sql before a
+// client may join. These server-side sends use service_role and bypass them.
+const PRIVATE = { config: { private: true } };
+
 export function roomChannelName(code: string): string {
   return `room:${code}`;
 }
@@ -23,7 +28,7 @@ export function friendshipChannelName(friendshipId: string): string {
 // is the reliability backstop if this silently fails.
 export async function broadcastToRoom(code: string, event: string, payload: unknown) {
   const supabase = getSupabaseServerClient();
-  const channel = supabase.channel(roomChannelName(code));
+  const channel = supabase.channel(roomChannelName(code), PRIVATE);
   try {
     const result = await channel.httpSend(event, payload as Record<string, unknown>);
     if (!("success" in result) || !result.success) {
@@ -43,7 +48,7 @@ export async function broadcastToRoom(code: string, event: string, payload: unkn
 // on. Never throws, same reasoning as broadcastToRoom.
 export async function broadcastToUser(userId: string, event: string, payload: unknown) {
   const supabase = getSupabaseServerClient();
-  const channel = supabase.channel(userChannelName(userId));
+  const channel = supabase.channel(userChannelName(userId), PRIVATE);
   try {
     const result = await channel.httpSend(event, payload as Record<string, unknown>);
     if (!("success" in result) || !result.success) {
@@ -62,7 +67,7 @@ export async function broadcastToUser(userId: string, event: string, payload: un
 // two above.
 export async function broadcastToFriendship(friendshipId: string, event: string, payload: unknown) {
   const supabase = getSupabaseServerClient();
-  const channel = supabase.channel(friendshipChannelName(friendshipId));
+  const channel = supabase.channel(friendshipChannelName(friendshipId), PRIVATE);
   try {
     const result = await channel.httpSend(event, payload as Record<string, unknown>);
     if (!("success" in result) || !result.success) {

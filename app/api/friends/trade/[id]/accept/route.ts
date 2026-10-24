@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToFriendship, broadcastToUser } from "@/lib/supabase/broadcast";
 import { createNotification } from "@/lib/notifications";
@@ -17,7 +18,7 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/friends/tr
   const supabase = getSupabaseServerClient();
 
   const { data: trade, error: fetchError } = await supabase.from("trade_offers").select("*").eq("id", id).maybeSingle();
-  if (fetchError) return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (fetchError) return serverError("friends/trade/[id]/accept", fetchError);
   if (!trade) return NextResponse.json({ error: "Trade not found" }, { status: 404 });
 
   const { error: rpcError } = await supabase.rpc("accept_trade", { p_trade_id: id, p_accepting_user_id: user.id });

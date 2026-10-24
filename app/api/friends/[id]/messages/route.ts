@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
 import { broadcastToFriendship, broadcastToUser } from "@/lib/supabase/broadcast";
@@ -31,7 +32,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/friends/[id
     .eq("friendship_id", id)
     .order("created_at", { ascending: true })
     .limit(HISTORY_LIMIT);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return serverError("friends/[id]/messages", error);
 
   const { data: profiles } = await supabase
     .from("profiles")
@@ -54,7 +55,8 @@ export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
+  const body = await readJson(request);
+  if (!body) return badRequest();
   const text = typeof body.text === "string" ? body.text.trim() : "";
   if (!text) return NextResponse.json({ error: "Message can't be empty" }, { status: 400 });
   if (text.length > MAX_MESSAGE_LENGTH) {
@@ -74,7 +76,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id
     sender_id: user.id,
     text,
   });
-  if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
+  if (insertError) return serverError("friends/[id]/messages", insertError);
 
   const { data: myProfile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).single();
   const senderDisplayName = myProfile?.display_name ?? "Someone";

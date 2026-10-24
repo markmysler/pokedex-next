@@ -460,6 +460,7 @@ const esAR: typeof en = {
       opponentPokemonFaintedWaiting: "El Pokémon rival se debilitó — esperando a que envíe uno nuevo...",
       selectNextMove: "👇 ¡Elegí tu próximo movimiento de ataque o cambiá de Pokémon!",
       opponentLeft: "\n⚠️ Tu rival dejó la sala.",
+      opponentForfeited: "\n🏆 Tu rival abandonó la batalla, así que ganás por abandono. Se agregó una Lootbox a tu inventario.",
       opponentDisconnected: "El rival se desconectó.",
       actionSubmittedWaiting: "Acción enviada — esperando al rival...",
       opponentActedWaiting: "El rival ya actuó — esperando tu turno...",

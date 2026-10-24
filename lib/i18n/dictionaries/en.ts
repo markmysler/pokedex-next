@@ -538,6 +538,7 @@ const en = {
       opponentPokemonFaintedWaiting: "Opponent's Pokémon fainted — waiting for them to send out a new one...",
       selectNextMove: "👇 Select your next Attack Move or switch Pokémon!",
       opponentLeft: "\n⚠️ Your opponent left the room.",
+      opponentForfeited: "\n🏆 Your opponent left mid-battle, so you win by forfeit. A lootbox was added to your inventory.",
       opponentDisconnected: "Opponent disconnected.",
       actionSubmittedWaiting: "Action submitted — waiting for opponent...",
       opponentActedWaiting: "Opponent has acted — waiting for you...",

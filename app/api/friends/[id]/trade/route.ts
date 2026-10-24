@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
 import { getOwnedPokemonInstances } from "@/lib/inventory";
@@ -17,7 +18,8 @@ export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
+  const body = await readJson(request);
+  if (!body) return badRequest();
   const offeredIds = body.offeredInstanceIds as string[] | undefined;
   const requestedIds = body.requestedInstanceIds as string[] | undefined;
   if (!Array.isArray(offeredIds) || offeredIds.length === 0) {
@@ -57,7 +59,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/friends/[id
     })
     .select("id")
     .single();
-  if (insertError) return NextResponse.json({ error: insertError.message }, { status: 500 });
+  if (insertError) return serverError("friends/[id]/trade", insertError);
 
   const { data: myProfile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).single();
   const fromDisplayName = myProfile?.display_name ?? "Someone";
