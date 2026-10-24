@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getFriendshipForUser } from "@/lib/friends";
 import { broadcastToFriendship, broadcastToUser } from "@/lib/supabase/broadcast";
@@ -17,7 +18,7 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/friends/tr
   const supabase = getSupabaseServerClient();
 
   const { data: trade, error: fetchError } = await supabase.from("trade_offers").select("*").eq("id", id).maybeSingle();
-  if (fetchError) return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (fetchError) return serverError("friends/trade/[id]/decline", fetchError);
   if (!trade) return NextResponse.json({ error: "Trade not found" }, { status: 404 });
 
   const friendship = await getFriendshipForUser(supabase, trade.friendship_id, user.id);
@@ -33,7 +34,7 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/friends/tr
     .update({ status, resolved_at: new Date().toISOString() })
     .eq("id", id)
     .eq("status", "pending"); // atomic guard against a concurrent accept/decline
-  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+  if (updateError) return serverError("friends/trade/[id]/decline", updateError);
 
   await broadcastToFriendship(trade.friendship_id, "trade-resolved", { tradeId: id, status });
   const notifyPayload = { friendshipId: trade.friendship_id, tradeId: id, status };

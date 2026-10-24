@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToRoom } from "@/lib/supabase/broadcast";
 import type { RoomSlot, RoomState } from "@/types/pokemon";
@@ -39,7 +40,7 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/rooms/[cod
     .from("battle_rooms")
     .update({ state: newState as unknown as Json })
     .eq("code", roomCode);
-  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+  if (updateError) return serverError("rooms/[code]/rematch/request", updateError);
 
   await broadcastToRoom(roomCode, "rematch-requested", { slot: mySlot });
 

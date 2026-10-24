@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
-import { rollAndPersistLootboxPokemon } from "@/lib/inventory";
+import { instanceRowToOwned, rollLootboxInstance } from "@/lib/inventory";
 
 export async function POST(_request: Request, ctx: RouteContext<"/api/inventory/lootboxes/[id]/open">) {
   const { id } = await ctx.params;
@@ -10,22 +11,18 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/inventory/
 
   const supabase = getSupabaseServerClient();
 
-  // Atomic claim: only succeeds if this lootbox is still unopened, the same
-  // "UPDATE ... RETURNING" pattern used for battle_rooms — closes the race
-  // where opening the same lootbox twice concurrently could grant two
-  // Pokemon for one box.
-  const { data: claimed, error: claimError } = await supabase
-    .from("lootboxes")
-    .update({ opened_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .is("opened_at", null)
-    .select("id")
-    .maybeSingle();
+  // One transaction (open_lootbox): claims the box only if it's still
+  // unopened and the caller's, and inserts the rolled Pokemon with it. Two
+  // concurrent opens of the same box can't both succeed, and a failed
+  // insert can't leave the box spent.
+  const { data: rows, error } = await supabase.rpc("open_lootbox", {
+    p_lootbox_id: id,
+    p_user_id: user.id,
+    p_instance: rollLootboxInstance(),
+  });
+  if (error) return serverError("open_lootbox", error);
 
-  if (claimError) return NextResponse.json({ error: claimError.message }, { status: 500 });
-
-  if (!claimed) {
+  if (!rows || rows.length === 0) {
     const { data: existing } = await supabase
       .from("lootboxes")
       .select("user_id, opened_at")
@@ -36,10 +33,5 @@ export async function POST(_request: Request, ctx: RouteContext<"/api/inventory/
     return NextResponse.json({ error: "Lootbox already opened" }, { status: 409 });
   }
 
-  try {
-    const pokemon = await rollAndPersistLootboxPokemon(supabase, user.id);
-    return NextResponse.json({ pokemon });
-  } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to open lootbox" }, { status: 500 });
-  }
+  return NextResponse.json({ pokemon: instanceRowToOwned(rows[0]) });
 }

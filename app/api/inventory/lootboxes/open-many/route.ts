@@ -1,46 +1,47 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
-import { rollAndPersistLootboxPokemon } from "@/lib/inventory";
+import { instanceRowToOwned, rollLootboxInstance } from "@/lib/inventory";
+
+// The most boxes one request opens. The inventory UI already trusts the
+// returned count rather than the requested one, so asking for more simply
+// opens this many.
+const MAX_BATCH = 100;
 
 // Opens up to `count` unopened lootboxes at once (upgrades/15-lootbox-batch-opening.md).
-// claim_lootboxes() atomically claims whatever's actually available (FOR
-// UPDATE SKIP LOCKED, so two concurrent batch-opens -- e.g. two tabs --
-// can't double-claim the same row); if fewer than `count` were available,
-// this simply rolls a Pokemon for however many were actually claimed and
-// reports that number back, rather than erroring.
+// open_lootboxes() claims whatever's actually available (FOR UPDATE SKIP
+// LOCKED, so two concurrent batch-opens -- e.g. two tabs -- can't
+// double-claim the same row) and inserts a Pokemon for each claimed box in
+// the same transaction. If fewer than `count` were available, it opens
+// however many it could and reports those, rather than erroring.
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
-  const count: unknown = body.count;
+  const body = await readJson(request);
+  const count: unknown = body?.count;
   if (typeof count !== "number" || !Number.isInteger(count) || count < 1) {
-    return NextResponse.json({ error: "count must be a positive integer" }, { status: 400 });
+    return badRequest("count must be a positive integer");
   }
 
   const supabase = getSupabaseServerClient();
 
-  const { data: claimed, error: claimError } = await supabase.rpc("claim_lootboxes", {
+  // Roll only as many Pokemon as could actually be opened.
+  const { count: unopened, error: countError } = await supabase
+    .from("lootboxes")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .is("opened_at", null);
+  if (countError) return serverError("count lootboxes", countError);
+  const toOpen = Math.min(count, unopened ?? 0, MAX_BATCH);
+  if (toOpen === 0) return NextResponse.json({ pokemon: [] });
+
+  const { data: rows, error } = await supabase.rpc("open_lootboxes", {
     p_user_id: user.id,
-    p_count: count,
+    p_instances: Array.from({ length: toOpen }, () => rollLootboxInstance()),
   });
-  if (claimError) return NextResponse.json({ error: claimError.message }, { status: 500 });
+  if (error) return serverError("open_lootboxes", error);
 
-  // RETURNING row order isn't guaranteed by Postgres -- sort explicitly so
-  // "in the order they were claimed" (oldest lootbox first, matching the
-  // function's own `order by created_at asc`) holds regardless.
-  const orderedClaims = [...claimed].sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
-
-  try {
-    const pokemon = [];
-    for (let i = 0; i < orderedClaims.length; i++) {
-      pokemon.push(await rollAndPersistLootboxPokemon(supabase, user.id));
-    }
-    return NextResponse.json({ pokemon });
-  } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to open lootboxes" }, { status: 500 });
-  }
+  return NextResponse.json({ pokemon: (rows ?? []).map(instanceRowToOwned) });
 }

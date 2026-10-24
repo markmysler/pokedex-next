@@ -36,7 +36,7 @@ export default function FriendNotifications({ userId }: FriendNotificationsProps
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
     const channel = supabase
-      .channel(`user:${userId}`)
+      .channel(`user:${userId}`, { config: { private: true } })
       .on("broadcast", { event: "friend-request" }, ({ payload }) => {
         const p = payload as { fromDisplayName: string };
         const t = dictRef.current.social.notifications;

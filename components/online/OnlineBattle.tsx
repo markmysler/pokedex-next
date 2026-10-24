@@ -244,8 +244,8 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
         return locked;
       });
     },
-    onOpponentLeft: () => {
-      appendLog([{ text: t.opponentLeft }]);
+    onOpponentLeft: ({ forfeit }) => {
+      appendLog([{ text: forfeit ? t.opponentForfeited : t.opponentLeft }]);
       setTurnStatus(t.opponentDisconnected);
       setTimeout(resetToSetup, 2000);
     },

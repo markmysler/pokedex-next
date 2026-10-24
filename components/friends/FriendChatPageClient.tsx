@@ -76,7 +76,7 @@ export default function FriendChatPageClient({
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
     const channel = supabase
-      .channel(`friendship:${friendshipId}`)
+      .channel(`friendship:${friendshipId}`, { config: { private: true } })
       .on("broadcast", { event: "friend-message" }, ({ payload }) => {
         const p = payload as { text: string; senderDisplayName: string; senderId: string };
         // Our own sent messages are already appended optimistically by

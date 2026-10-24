@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { BattleAction, FighterState, OwnedPokemon, RoomSlot, TeamState } from "@/types/pokemon";
-import { buildTeamState, hasLivingAlly, resolveTeamRound } from "@/lib/battleEngine";
-import { rollBotTeam } from "@/lib/collection";
+import type { BattleAction, OwnedPokemon, TeamState } from "@/types/pokemon";
+import { hasLivingAlly } from "@/lib/battleEngine";
+import type { BotBattleState, BotBattleTurn } from "@/lib/botBattle";
 import { useDictionary } from "@/lib/i18n/useDictionary";
 import { renderBattleLogEvent, type RenderedLogLine } from "@/lib/i18n/renderBattleLogEvent";
 import type { Dictionary } from "@/lib/i18n/getDictionary";
@@ -22,28 +22,40 @@ interface BattleArenaProps {
 
 type Phase = "picking" | "battling";
 
-interface LocalBattleState {
-  team1: TeamState;
-  team2: TeamState;
-  awaitingForcedSwitch: RoomSlot | null;
-  turnCount: number;
-  over: boolean;
-  winner: RoomSlot | null;
+interface MoveResponse {
+  state: BotBattleState;
+  turns: BotBattleTurn[];
+  lootboxGranted: boolean;
+  lootboxId: string | null;
 }
 
-function freshBattle(myTeam: OwnedPokemon[]): LocalBattleState {
-  const playerTeamAverageTotal = myTeam.reduce((sum, p) => sum + p.total, 0) / myTeam.length;
-  return {
-    team1: buildTeamState(myTeam),
-    team2: buildTeamState(rollBotTeam(playerTeamAverageTotal)),
-    awaitingForcedSwitch: null,
-    turnCount: 0,
-    over: false,
-    winner: null,
-  };
+// Bot battles are played on the server (app/api/battles/bot/**): it builds
+// both teams from the database, picks the bot's moves, resolves every round
+// and decides the winner and any lootbox. This component only sends the
+// player's choice and renders what comes back.
+async function startBotBattle(ids: string[]): Promise<{ battleId: string; state: BotBattleState }> {
+  const res = await fetch("/api/battles/bot", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pokemonInstanceIds: ids }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error ?? "Couldn't start the battle");
+  return data;
 }
 
-function startLog(battle: LocalBattleState, dict: Dictionary): RenderedLogLine[] {
+async function sendBotMove(battleId: string, action: BattleAction): Promise<MoveResponse> {
+  const res = await fetch(`/api/battles/bot/${battleId}/move`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error ?? "Couldn't play that move");
+  return data;
+}
+
+function startLog(battle: BotBattleState, dict: Dictionary): RenderedLogLine[] {
   const t = dict.battle.arena;
   const you = battle.team1.members[battle.team1.activeIndex].pokemon;
   const opp = battle.team2.members[battle.team2.activeIndex].pokemon;
@@ -53,66 +65,6 @@ function startLog(battle: LocalBattleState, dict: Dictionary): RenderedLogLine[]
     { text: t.opponentTeam(battle.team2.members.map((m) => m.pokemon.name).join(", ")) },
     { text: t.selectPrompt },
   ];
-}
-
-// Returns whether a lootbox was actually granted (server-rolled — see
-// app/api/battles/bot-result/route.ts's 60% chance) and its id, so the
-// result dialog can say so truthfully instead of assuming "won = lootbox,"
-// and its "Open it now" (upgrades/04-lootbox-opening.md) can target this
-// exact lootbox.
-async function reportBotResult(
-  won: boolean,
-  team: OwnedPokemon[]
-): Promise<{ lootboxGranted: boolean; lootboxId: string | null }> {
-  try {
-    const res = await fetch("/api/battles/bot-result", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ won, team: team.map((p) => ({ number: p.number, name: p.name })) }),
-    });
-    const data = await res.json();
-    return { lootboxGranted: Boolean(data.lootboxGranted), lootboxId: (data.lootboxId as string | null) ?? null };
-  } catch {
-    // Best-effort — a dropped report just costs a possible lootbox roll,
-    // not a broken battle. The battle itself is already fully resolved
-    // client-side by this point, and nothing was granted server-side if the
-    // request never landed, so "false"/null is accurate here, not a guess.
-    return { lootboxGranted: false, lootboxId: null };
-  }
-}
-
-function cloneTeam(team: TeamState): TeamState {
-  return {
-    members: team.members.map((m) => ({ ...m })) as [FighterState, FighterState, FighterState],
-    activeIndex: team.activeIndex,
-  };
-}
-
-// Simple decision logic, mirrors the old 1v1 bot: random castable move (uses
-// left, or unlimited), or whichever move has the most uses left if somehow
-// none are castable -- every instance always has at least one unlimited
-// (null) move per buildFighterState()'s free-move guarantee
-// (upgrades/40-uses-based-move-data-model.md), so that fallback should
-// never actually trigger, but it's kept as a defensive no-crash guarantee
-// the same way the old mana version always had a "cheapest" fallback.
-function pickBotAttackAction(team: TeamState): BattleAction {
-  const active = team.members[team.activeIndex];
-  const moves = active.pokemon.moves;
-  const castable = moves.map((_, i) => i).filter((i) => active.moveUses[i] !== 0);
-  if (castable.length) {
-    return { type: "attack", moveIndex: castable[Math.floor(Math.random() * castable.length)] };
-  }
-  let mostAvailableIndex = 0;
-  let mostAvailableUses = -1;
-  moves.forEach((_, i) => {
-    const uses = active.moveUses[i];
-    const comparable = uses === null ? Infinity : uses;
-    if (comparable > mostAvailableUses) {
-      mostAvailableUses = comparable;
-      mostAvailableIndex = i;
-    }
-  });
-  return { type: "attack", moveIndex: mostAvailableIndex };
 }
 
 function firstAliveBenchIndex(team: TeamState): 0 | 1 | 2 | null {
@@ -131,8 +83,13 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   // TeamPicker option when picking a team again via "Change Team".
   const [inventory, setInventory] = useState(initialInventory);
   const [phase, setPhase] = useState<Phase>("picking");
-  const [myTeam, setMyTeam] = useState<OwnedPokemon[] | null>(null);
-  const [battle, setBattle] = useState<LocalBattleState | null>(null);
+  const [myTeamIds, setMyTeamIds] = useState<string[] | null>(null);
+  const [battleId, setBattleId] = useState<string | null>(null);
+  const [battle, setBattle] = useState<BotBattleState | null>(null);
+  // True while a move request is in flight (and while the bot's forced
+  // switch is being shown), so a double click or auto-battle can't send a
+  // second action for the same turn.
+  const [busy, setBusy] = useState(false);
   const [log, setLog] = useState<RenderedLogLine[]>([]);
   const [autoRunning, setAutoRunning] = useState(false);
   const [resultDialog, setResultDialog] = useState<{ won: boolean; lootboxGranted: boolean; lootboxId: string | null } | null>(null);
@@ -165,28 +122,27 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   }
 
   async function startBattle(ids: string[]) {
-    const team = ids.map((id) => inventory.find((p) => p.id === id)).filter((p): p is OwnedPokemon => Boolean(p));
-    if (team.length !== 3) throw new Error("Pick exactly 3 Pokémon");
-    setMyTeam(team);
+    if (ids.length !== 3) throw new Error("Pick exactly 3 Pokémon");
+    const { battleId: id, state } = await startBotBattle(ids);
+    setMyTeamIds(ids);
+    setBattleId(id);
     setAutoRunning(false);
+    setBusy(false);
     setResultDialog(null);
     setRevealPokemon(null);
     setPendingBuffMoveIndex(null);
-    const fresh = freshBattle(team);
-    setBattle(fresh);
-    setLog(startLog(fresh, dict));
+    setBattle(state);
+    setLog(startLog(state, dict));
     setPhase("battling");
   }
 
-  function resetBattle() {
-    if (!myTeam) return;
-    setAutoRunning(false);
-    setResultDialog(null);
-    setRevealPokemon(null);
-    setPendingBuffMoveIndex(null);
-    const fresh = freshBattle(myTeam);
-    setBattle(fresh);
-    setLog(startLog(fresh, dict));
+  async function resetBattle() {
+    if (!myTeamIds) return;
+    try {
+      await startBattle(myTeamIds);
+    } catch (err) {
+      appendLog([{ text: `⚠️ ${(err as Error).message}` }]);
+    }
   }
 
   function changeTeam() {
@@ -195,37 +151,34 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
     setRevealPokemon(null);
     setPendingBuffMoveIndex(null);
     setBattle(null);
+    setBattleId(null);
     setLog([]);
     setPhase("picking");
   }
 
-  function submitAction(action: BattleAction) {
-    if (!battle || battle.over) return;
+  function renderTurn(turn: BotBattleTurn) {
+    appendLog([{ text: t.roundHeader(turn.turn) }, ...turn.log.map((event) => renderBattleLogEvent(event, dict))]);
+    // One sound per structured event (upgrades/10-battle-depth.md's `events`
+    // array) rather than parsing the log strings above.
+    for (const ev of turn.events) {
+      if (ev.hit) playAttackSound(ev.moveType);
+      else playDodgeSound();
+      if (ev.fainted) playFaintSound();
+    }
+  }
+
+  async function submitAction(action: BattleAction) {
+    if (!battle || battle.over || busy || !battleId) return;
     setPendingBuffMoveIndex(null);
 
-    // Forced switch: only the side whose active fainted may act, and only
-    // with a switch — mirrors the online room's same rule.
-    if (battle.awaitingForcedSwitch === 2) return; // bot resolves its own forced switch automatically
-    if (battle.awaitingForcedSwitch === 1) {
-      if (action.type !== "switch") return;
-      const target = battle.team1.members[action.teamIndex];
-      if (!target || action.teamIndex === battle.team1.activeIndex || target.hp <= 0) return;
-
-      const fromName = battle.team1.members[battle.team1.activeIndex].pokemon.name;
-      const toName = target.pokemon.name;
-      const team1: TeamState = { members: battle.team1.members, activeIndex: action.teamIndex };
-      const nextTurn = battle.turnCount + 1;
-      appendLog([{ text: t.roundHeader(nextTurn) }, renderBattleLogEvent({ type: "switched", from: fromName, to: toName }, dict)]);
-      setBattle({ ...battle, team1, awaitingForcedSwitch: null, turnCount: nextTurn });
-      return;
-    }
-
+    // Quick local checks for instant feedback; the server re-checks all of
+    // them (lib/battleValidation.ts) and is the only authority.
+    if (battle.awaitingForcedSwitch === 1 && action.type !== "switch") return;
     if (action.type === "attack") {
       const active = battle.team1.members[battle.team1.activeIndex];
       const move = active.pokemon.moves[action.moveIndex];
       if (!move) return;
-      const usesLeft = active.moveUses[action.moveIndex];
-      if (usesLeft === 0) {
+      if (active.moveUses[action.moveIndex] === 0) {
         appendLog([{ text: t.noUsesLeft(move.name) }]);
         return;
       }
@@ -234,100 +187,84 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
       if (!target || action.teamIndex === battle.team1.activeIndex || target.hp <= 0) return;
     }
 
-    const action2 = pickBotAttackAction(battle.team2);
-    const team1 = cloneTeam(battle.team1);
-    const team2 = cloneTeam(battle.team2);
-    const nextTurn = battle.turnCount + 1;
-    const result = resolveTeamRound(team1, team2, action, action2);
-
-    appendLog([{ text: t.roundHeader(nextTurn) }, ...result.log.map((event) => renderBattleLogEvent(event, dict))]);
-
-    // One sound per structured event (upgrades/10-battle-depth.md's `events`
-    // array) rather than parsing the log strings above.
-    for (const ev of result.events) {
-      if (ev.hit) playAttackSound(ev.moveType);
-      else playDodgeSound();
-      if (ev.fainted) playFaintSound();
+    setBusy(true);
+    let response: MoveResponse;
+    try {
+      response = await sendBotMove(battleId, action);
+    } catch (err) {
+      setAutoRunning(false);
+      setBusy(false);
+      appendLog([{ text: `⚠️ ${(err as Error).message}` }]);
+      return;
     }
 
-    if (result.over) {
+    const { state, turns, lootboxGranted, lootboxId } = response;
+    const [round, botSwitch] = turns;
+    renderTurn(round);
+
+    if (state.over) {
       setAutoRunning(false);
-      const won = result.winner === 1;
+      const won = state.winner === 1;
       appendLog([{ text: won ? t.victory : t.defeat, kind: won ? "win" : "loss" }]);
       if (won) playVictorySound();
       else playDefeatSound();
-      // Server rolls the lootbox chance itself — this only ever reports
-      // win/loss, never "and I should get a lootbox."
-      if (myTeam) {
-        reportBotResult(won, myTeam).then(({ lootboxGranted, lootboxId }) => setResultDialog({ won, lootboxGranted, lootboxId }));
-      }
+      setResultDialog({ won, lootboxGranted, lootboxId });
+      setBattle(state);
+      setBusy(false);
+      return;
     }
 
-    setBattle({
-      team1,
-      team2,
-      awaitingForcedSwitch: result.awaitingForcedSwitch,
-      turnCount: nextTurn,
-      over: result.over,
-      winner: result.winner,
-    });
+    if (!botSwitch) {
+      setBattle(state);
+      setBusy(false);
+      return;
+    }
+
+    // The bot's forced switch is part of the same server response; show the
+    // round first, then the switch a beat later, as before.
+    setBattle({ ...state, team2: { ...state.team2, activeIndex: battle.team2.activeIndex }, awaitingForcedSwitch: 2 });
+    setTimeout(() => {
+      renderTurn(botSwitch);
+      setBattle(state);
+      setBusy(false);
+    }, 600);
   }
 
   function toggleAutoBattle() {
     if (!battle) return;
     if (battle.over) {
-      resetBattle();
+      void resetBattle();
       return;
     }
     setAutoRunning((running) => !running);
   }
 
-  // Bot's own forced switch resolves itself — there's no opponent player to
-  // wait on locally, so this is a short beat rather than an instant jump.
-  useEffect(() => {
-    if (!battle || battle.over || battle.awaitingForcedSwitch !== 2) return;
-
-    const timer = setTimeout(() => {
-      const teamIndex = firstAliveBenchIndex(battle.team2);
-      if (teamIndex === null) return; // shouldn't happen — a wiped team already ended the battle
-      const fromName = battle.team2.members[battle.team2.activeIndex].pokemon.name;
-      const toName = battle.team2.members[teamIndex].pokemon.name;
-      const team2: TeamState = { members: battle.team2.members, activeIndex: teamIndex };
-      const nextTurn = battle.turnCount + 1;
-      appendLog([{ text: t.roundHeader(nextTurn) }, renderBattleLogEvent({ type: "switched", from: fromName, to: toName }, dict)]);
-      setBattle({ ...battle, team2, awaitingForcedSwitch: null, turnCount: nextTurn });
-    }, 600);
-
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [battle]);
-
   // Auto-battle scheduling: this effect's own cleanup (returned setTimeout
-  // cancellation) fires whenever `autoRunning`/`battle` change or the
+  // cancellation) fires whenever `autoRunning`/`battle`/`busy` change or the
   // component unmounts, so no separate imperative timer-ref bookkeeping is
   // needed elsewhere (e.g. resetBattle()/toggleAutoBattle() just flip state).
   useEffect(() => {
-    if (!autoRunning || !battle || battle.over || battle.awaitingForcedSwitch === 2) return;
+    if (!autoRunning || !battle || battle.over || busy || battle.awaitingForcedSwitch === 2) return;
 
     const timer = setTimeout(() => {
       if (battle.awaitingForcedSwitch === 1) {
         const teamIndex = firstAliveBenchIndex(battle.team1);
-        if (teamIndex !== null) submitAction({ type: "switch", teamIndex });
+        if (teamIndex !== null) void submitAction({ type: "switch", teamIndex });
         return;
       }
       const active = battle.team1.members[battle.team1.activeIndex];
       const moves = active.pokemon.moves;
       const castable = moves.map((_, i) => i).filter((i) => active.moveUses[i] !== 0);
       if (castable.length) {
-        submitAction({ type: "attack", moveIndex: castable[Math.floor(Math.random() * castable.length)] });
+        void submitAction({ type: "attack", moveIndex: castable[Math.floor(Math.random() * castable.length)] });
       } else if (moves.length) {
-        submitAction({ type: "attack", moveIndex: Math.floor(Math.random() * moves.length) });
+        void submitAction({ type: "attack", moveIndex: Math.floor(Math.random() * moves.length) });
       }
     }, 750);
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoRunning, battle]);
+  }, [autoRunning, battle, busy]);
 
   if (inventory.length < 3) {
     return (
@@ -345,8 +282,8 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
   const opp = battle.team2.members[battle.team2.activeIndex];
   const myForcedSwitch = battle.awaitingForcedSwitch === 1;
   const blockedByBotSwitch = battle.awaitingForcedSwitch === 2;
-  const canAttackNow = !battle.over && !battle.awaitingForcedSwitch;
-  const canSwitchNow = !battle.over && (myForcedSwitch || !battle.awaitingForcedSwitch);
+  const canAttackNow = !battle.over && !busy && !battle.awaitingForcedSwitch;
+  const canSwitchNow = !battle.over && !busy && (myForcedSwitch || !battle.awaitingForcedSwitch);
 
   return (
     <>

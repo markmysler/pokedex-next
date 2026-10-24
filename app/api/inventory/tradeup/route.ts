@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, readJson } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { getOwnedPokemonInstances } from "@/lib/inventory";
 
@@ -15,7 +16,8 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
+  const body = await readJson(request);
+  if (!body) return badRequest();
   const ids: unknown = body.pokemonInstanceIds;
   if (!Array.isArray(ids) || ids.length !== TRADEUP_COUNT || !ids.every((id) => typeof id === "string")) {
     return NextResponse.json({ error: `Exactly ${TRADEUP_COUNT} Pokemon are required` }, { status: 400 });

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 
 const NICKNAME_MAX_LENGTH = 24;
@@ -13,7 +14,8 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/inventory/
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
+  const body = await readJson(request);
+  if (!body) return badRequest();
   if (body.nickname !== null && typeof body.nickname !== "string") {
     return NextResponse.json({ error: "nickname must be a string or null" }, { status: 400 });
   }
@@ -34,7 +36,7 @@ export async function PATCH(request: Request, ctx: RouteContext<"/api/inventory/
     .select("id")
     .maybeSingle();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return serverError("inventory/pokemon/[id]", error);
   if (!data) return NextResponse.json({ error: "Pokemon not found" }, { status: 404 });
 
   return NextResponse.json({ ok: true, nickname });
@@ -62,7 +64,7 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/inventor
     .select("id")
     .maybeSingle();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return serverError("inventory/pokemon/[id]", error);
 
   if (!data) {
     // Disambiguate why the atomic delete above matched nothing, same

@@ -1,5 +1,7 @@
 # Kanto Pokédex — Web Edition
 
+[![CI](https://github.com/markmysler/pokedex-next/actions/workflows/ci.yml/badge.svg)](https://github.com/markmysler/pokedex-next/actions/workflows/ci.yml)
+
 A full-stack Pokémon collection and battle game covering the original 151
 Kanto species plus 6 Dark-type additions for Psychic counterplay: browse
 the Pokédex, roll and collect your own Pokémon from lootboxes, evolve them,
@@ -54,9 +56,49 @@ Argentinian Spanish.
 ## Tech stack
 
 - [Next.js](https://nextjs.org) 16 (App Router) + React 19 + TypeScript
-- [Supabase](https://supabase.com) — Postgres database, Auth (email/password)
+- [Supabase](https://supabase.com) — Postgres database, Auth (email/password),
+  Realtime broadcast
 - No UI component library — hand-rolled design system (see
   [design/DESIGN_SYSTEM.md](design/DESIGN_SYSTEM.md))
+- [Vitest](https://vitest.dev) unit tests, SQL tests against a real
+  Postgres, and GitHub Actions CI
+
+## How it works
+
+```mermaid
+flowchart LR
+  B[Browser] -- "fetch /api/*" --> R[Next.js Route Handlers]
+  R -- "secret key" --> DB[(Supabase Postgres)]
+  B -- "publishable key: Auth" --> A[Supabase Auth]
+  B <-- "private channels" --> RT[Supabase Realtime]
+  R -- "broadcast" --> RT
+```
+
+- **The server owns every game rule.** Route Handlers check the session,
+  re-check ownership in the same query, and resolve every battle round with
+  the shared engine (`lib/battleEngine.ts`), for online rooms and bot
+  battles alike. The browser only sends which move or switch the player
+  chose; stats, results and rewards are never taken from the client.
+- **Multi-step writes are single transactions.** Opening lootboxes, trades,
+  trade-ups, evolutions, and ending a battle (lootbox plus match history)
+  each run as one Postgres function, guarded so a round or a payout can
+  only happen once even when two requests race.
+- **Online battles** store each player's move until both are in, then
+  resolve the round server-side and push the result over Realtime, with
+  polling as the backstop. Neither player can see the other's move early.
+
+### Security model
+
+- The browser holds only the publishable key, used for Auth and Realtime.
+  The `anon` and `authenticated` roles have **no privileges on any table**
+  and can execute no database function except the Realtime topic check, so
+  the REST API can't be used to skip the app's checks.
+- Route Handlers use the secret key, which bypasses RLS; RLS stays enabled
+  on every table so a future grant is still deny-by-default.
+- Realtime channels are **private**: a player can only join their own
+  `user:` topic, friendships they're in, and rooms they play in. The only
+  event a client may send is room chat.
+- `supabase/tests/database.sql` checks all of the above on every CI run.
 
 ## Getting started
 
@@ -97,9 +139,12 @@ Argentinian Spanish.
 ### Other scripts
 
 ```bash
-npm run build   # production build
-npm run start   # run a production build
-npm run lint    # eslint
+npm run build      # production build
+npm run start      # run a production build
+npm run lint       # eslint
+npm run typecheck  # generate Next's route types, then tsc
+npm test           # unit tests (Vitest)
+npm run test:db    # SQL tests against the local Supabase database
 ```
 
 ## Developing against a local Supabase instance
@@ -146,8 +191,7 @@ production. The workflow:
 ```
 app/
   [lang]/              every page, under an EN/ES-AR URL segment (/en/...,
-                        /es-AR/...) -- see next/root-params in
-                        node_modules/next/dist/docs/
+                        /es-AR/...)
     (app)/              authenticated screens (battle, inventory, pokedex,
                          dashboard, friends, online, leaderboard, etc.)
     login/, signup/     auth screens
@@ -155,13 +199,19 @@ app/
                        ...) -- not under [lang]; Route Handlers don't render
                        user-facing text, so they don't need a locale
 components/           React components, grouped by feature area
+hooks/                shared React hooks
 lib/                  business logic — battle engine, collection/roll
                        logic, evolution, Supabase clients, dashboard/
                        leaderboard/history queries
   i18n/                dictionaries (en.ts/es-AR.ts), getDictionary()
                        (Server Components) / useDictionary() (Client)
 types/                shared TypeScript types (Pokémon, moves, battle state)
+proxy.ts              session refresh, auth redirects and locale routing
+                       (Next 16's renamed middleware)
+tests/                unit tests (battle engine, action validation, bot
+                       battles)
 supabase/migrations/  versioned SQL schema, applied in order
+supabase/tests/       SQL tests run against a migrated database
 design/               design system spec and per-screen redesign tracker
 upgrades/             this project's own step-by-step development log —
                        every feature wave is planned and tracked here
@@ -174,6 +224,12 @@ This project tracks its own feature work in [upgrades/](upgrades/):
 completed waves are archived under `upgrades/archive/`, and
 [upgrades/main.md](upgrades/main.md) always reflects whatever's
 currently in progress (or says "no active wave" between them).
+
+## License
+
+The code in this repository is released under the [MIT License](LICENSE).
+The licence covers this project's own code only, not the Pokémon names,
+artwork or other material described below.
 
 ## Disclaimer
 

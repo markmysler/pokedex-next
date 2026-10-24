@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
+import type { TeamState } from "@/types/pokemon";
 
 export interface MatchHistoryEntry {
   id: string;
@@ -52,4 +53,11 @@ export async function getMatchHistoryForUser(
     teamSnapshot: (r.team_snapshot as { number: string; name: string }[] | null) ?? null,
     playedAt: r.played_at,
   }));
+}
+
+// Lightweight {number, name}[] copy, not owned-instance ids — cheap to snapshot
+// now and doesn't go stale if the instance is later discarded (see
+// upgrades/07-match-history-leaderboard.md).
+export function teamSnapshot(team: TeamState): { number: string; name: string }[] {
+  return team.members.map((m) => ({ number: m.pokemon.number, name: m.pokemon.name }));
 }

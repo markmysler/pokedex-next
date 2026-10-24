@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 
 export async function PATCH(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
+  const body = await readJson(request);
+  if (!body) return badRequest();
   const displayName = typeof body.displayName === "string" ? body.displayName.trim() : "";
   if (displayName.length < 2 || displayName.length > 30) {
     return NextResponse.json({ error: "Display name must be 2-30 characters" }, { status: 400 });
@@ -20,6 +22,6 @@ export async function PATCH(request: Request) {
     .select("display_name")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return serverError("profile", error);
   return NextResponse.json(data);
 }

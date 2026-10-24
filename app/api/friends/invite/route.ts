@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
+import { badRequest, isUuid, readJson, serverError } from "@/lib/http";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { broadcastToUser } from "@/lib/supabase/broadcast";
 import { createNotification } from "@/lib/notifications";
@@ -12,12 +13,16 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await request.json();
+  const body = await readJson(request);
+  if (!body) return badRequest();
   const friendUserId = typeof body.friendUserId === "string" ? body.friendUserId : "";
   const roomCode = typeof body.roomCode === "string" ? body.roomCode.toUpperCase() : "";
   if (!friendUserId || !roomCode) {
     return NextResponse.json({ error: "friendUserId and roomCode are required" }, { status: 400 });
   }
+  // friendUserId is interpolated into the .or() filter below, so only a real
+  // UUID may get that far.
+  if (!isUuid(friendUserId)) return badRequest("Invalid friendUserId");
 
   const supabase = getSupabaseServerClient();
 
@@ -29,7 +34,7 @@ export async function POST(request: Request) {
     )
     .eq("status", "accepted")
     .maybeSingle();
-  if (friendshipError) return NextResponse.json({ error: friendshipError.message }, { status: 500 });
+  if (friendshipError) return serverError("friends/invite", friendshipError);
   if (!friendship) return NextResponse.json({ error: "You can only invite accepted friends" }, { status: 403 });
 
   const { data: myProfile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).single();
