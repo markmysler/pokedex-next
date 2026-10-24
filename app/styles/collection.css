@@ -41,16 +41,16 @@
 .plist .prow:last-child { border-bottom: 0; }
 
 /* Owned Pokémon detail (side panel or dialog) */
-.owned-detail { --rc: var(--r-common); display: grid; gap: 18px; }
+.owned-detail { display: grid; gap: 18px; }
 .owned-detail-hero {
   display: grid;
   place-items: center;
   height: 168px;
   border-radius: var(--r-lg);
   background:
-    radial-gradient(circle at 50% 75%, color-mix(in srgb, var(--rc) 26%, transparent), transparent 65%),
+    radial-gradient(circle at 50% 75%, color-mix(in srgb, var(--rc, var(--r-common)) 26%, transparent), transparent 65%),
     var(--surface-2);
-  border-bottom: 3px solid var(--rc);
+  border-bottom: 3px solid var(--rc, var(--r-common));
 }
 .owned-detail-sprite { width: 140px; height: 140px; object-fit: contain; image-rendering: pixelated; }
 .owned-detail-name { font-size: 24px; min-width: 0; overflow-wrap: anywhere; }
@@ -102,7 +102,7 @@
 .dex-card.is-uncaught .pcard-name { color: var(--ink-soft); }
 .dex-card.is-uncaught::after { opacity: 0.35; }
 
-.dex-detail { --rc: var(--r-common); display: grid; gap: 18px; }
+.dex-detail { display: grid; gap: 18px; }
 .dex-forms { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .dex-forms figure {
   margin: 0;
