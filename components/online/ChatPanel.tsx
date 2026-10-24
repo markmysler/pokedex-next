@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CardTab from "@/components/ui/CardTab";
+import Icon from "@/components/ui/Icon";
 import { useDictionary } from "@/lib/i18n/useDictionary";
 
 export interface ChatMessage {
@@ -39,28 +39,26 @@ export default function ChatPanel({ messages, onSend }: ChatPanelProps) {
   }
 
   return (
-    <div className="card chat-panel">
-      <CardTab icon="💬" label={t.title} />
-      <div className="chat-messages" ref={listRef}>
+    <section className="panel chat-panel" aria-label={t.title}>
+      <div className="panel-head"><h2>{t.title}</h2></div>
+      <div className="chat-messages" ref={listRef} aria-live="polite">
         {messages.length === 0 ? (
           <p className="chat-empty">{t.empty}</p>
         ) : (
           messages.map((m, i) => (
             <div key={i} className={`chat-message${m.mine ? " mine" : ""}`}>
-              <span className="chat-sender">{m.mine ? t.you : m.senderDisplayName}:</span> {m.text}
+              {!m.mine && <span className="chat-sender">{m.senderDisplayName}</span>}
+              <span className="chat-bubble">{m.text}</span>
             </div>
           ))
         )}
       </div>
       <form className="chat-input-row" onSubmit={submit}>
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder={t.placeholder}
-          maxLength={MAX_MESSAGE_LENGTH}
-        />
-        <button className="btn-secondary" type="submit">{t.send}</button>
+        <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t.placeholder} maxLength={MAX_MESSAGE_LENGTH} aria-label={t.placeholder} />
+        <button className="icon-btn" type="submit" aria-label={t.send}>
+          <Icon name="send" size={16} />
+        </button>
       </form>
-    </div>
+    </section>
   );
 }

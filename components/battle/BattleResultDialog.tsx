@@ -1,52 +1,44 @@
 "use client";
 
 import Modal from "@/components/ui/Modal";
+import Icon from "@/components/ui/Icon";
+import CaseArt from "@/components/cases/CaseArt";
 import { useDictionary } from "@/lib/i18n/useDictionary";
 
 interface BattleResultDialogProps {
   won: boolean;
-  // Truthful, not assumed — bot wins are only a 60% roll, so this is always
-  // read from what the server actually granted, never inferred from `won`
-  // alone. Ignored entirely on a loss: losers never get one, in either mode.
   lootboxGranted: boolean;
   onClose: () => void;
-  // Only set when the win response actually carried a lootbox id (see
-  // upgrades/04-lootbox-opening.md) — the online poll-backstop path doesn't
-  // have one to offer, so this degrades gracefully to no button rather than
-  // a broken one.
   onOpenNow?: () => void;
 }
 
-// Shared by BattleArena.tsx (bot) and OnlineBattle.tsx (online) — one
-// dialog, since both modes now resolve to the same "your team won/lost"
-// shape (see upgrades/01-bot-3v3.md).
+// End-of-battle result (redesign wave v9): the outcome first, then the
+// reward with the option to open it on the spot.
 export default function BattleResultDialog({ won, lootboxGranted, onClose, onOpenNow }: BattleResultDialogProps) {
-  const dict = useDictionary();
-  const t = dict.battle.resultDialog;
+  const t = useDictionary().battle.resultDialog;
   return (
     <Modal onClose={onClose}>
-      <div className="battle-result-dialog">
-        {won ? (
-          <>
-            <h2>{t.victoryHeading}</h2>
-            <p>{t.victoryBody}</p>
-            {lootboxGranted ? (
-              <p className="battle-result-lootbox">{t.lootboxEarned}</p>
-            ) : (
-              <p className="battle-result-no-lootbox">{t.noLootbox}</p>
-            )}
-          </>
-        ) : (
-          <>
-            <h2>{t.defeatHeading}</h2>
-            <p className="battle-result-no-lootbox">{t.defeatBody}</p>
-          </>
+      <div className={`result-dialog ${won ? "is-win" : "is-loss"}`}>
+        <span className="result-icon"><Icon name={won ? "trophy" : "shield"} size={30} /></span>
+        <h2>{won ? t.victoryHeading : t.defeatHeading}</h2>
+        <p className="muted">{won ? t.victoryBody : t.defeatBody}</p>
+        {won && (
+          lootboxGranted ? (
+            <div className="result-reward">
+              <CaseArt className="case-art" />
+              <b>{t.lootboxEarned}</b>
+            </div>
+          ) : (
+            <p className="small faint">{t.noLootbox}</p>
+          )
         )}
-        <div className="battle-result-actions">
-          <button className="btn-primary" onClick={onClose}>{t.continue}</button>
+        <div className="dialog-actions" style={{ justifyContent: "center" }}>
           {won && lootboxGranted && onOpenNow && (
-            <button className="btn-secondary" onClick={onOpenNow}>{t.openItNow}</button>
+            <button type="button" className="btn-primary" onClick={onOpenNow}>
+              <Icon name="case" size={16} /> {t.openItNow}
+            </button>
           )}
+          <button type="button" className={won && lootboxGranted && onOpenNow ? "btn-secondary" : "btn-primary"} onClick={onClose}>{t.continue}</button>
         </div>
       </div>
     </Modal>
