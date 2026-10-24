@@ -8,6 +8,8 @@ the Pokédex, roll and collect your own Pokémon from lootboxes, evolve them,
 and battle them against AI or other players in real time — in English or
 Argentinian Spanish.
 
+**Play it:** [pokedex-next-rho.vercel.app](https://pokedex-next-rho.vercel.app) (free account, email and password)
+
 > Unofficial, non-commercial fan project. Not affiliated with or endorsed
 > by Nintendo, Game Freak or The Pokémon Company. See
 > [Disclaimer](#disclaimer).

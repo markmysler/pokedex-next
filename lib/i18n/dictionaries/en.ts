@@ -58,6 +58,11 @@ const STATUS_NOUN = {
 const en = {
   common: {
     appName: "Kanto Pokédex",
+    errorPage: {
+      title: "Something went wrong loading this page",
+      body: "It's usually a brief hiccup on the server. Trying again normally fixes it.",
+      retry: "Try again",
+    },
     nav: {
       dashboard: "Dashboard",
       inventory: "Inventory",

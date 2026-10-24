@@ -39,6 +39,11 @@ const STATUS_NOUN = {
 const esAR: typeof en = {
   common: {
     appName: "Kanto Pokédex",
+    errorPage: {
+      title: "Algo salió mal al cargar esta página",
+      body: "Suele ser un problema momentáneo del servidor. Volver a intentar normalmente lo soluciona.",
+      retry: "Reintentar",
+    },
     nav: {
       dashboard: "Inicio",
       inventory: "Inventario",
