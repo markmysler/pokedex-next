@@ -67,8 +67,6 @@ export default function TeamPicker({ inventory, typesList, onSubmit }: TeamPicke
         sortBy={sortBy}
         onSortByChange={setSortBy}
         typesList={typesList}
-        dict={dict.common.filterBar}
-        allTypesLabel={dict.common.allTypesLabel}
       />
 
       <div className="pokemon-grid team-picker-grid">

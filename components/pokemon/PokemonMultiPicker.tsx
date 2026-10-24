@@ -46,8 +46,6 @@ export default function PokemonMultiPicker({ inventory, typesList, selected, onT
         sortBy={sortBy}
         onSortByChange={setSortBy}
         typesList={typesList}
-        dict={dict.common.filterBar}
-        allTypesLabel={dict.common.allTypesLabel}
       />
       <div className="pokemon-grid trade-picker-grid">
         {filtered.map((p) => (

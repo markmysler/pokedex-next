@@ -1,1 +1,120 @@
-/* collection styles (redesign wave v9) -- see design/DESIGN_SYSTEM.md. */
+/* Collection (redesign wave v9): My Pokémon, the Pokédex and the shared
+   filter bar. Cards themselves (.pcard/.prow) live in app/globals.css. */
+
+.filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.filter-search { flex: 1 1 240px; }
+.filter-select select { width: auto; min-width: 150px; }
+
+.cases-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px 10px 16px;
+  border-radius: var(--r-lg);
+  border: 1px solid color-mix(in srgb, var(--r-shiny) 40%, var(--line));
+  background: color-mix(in srgb, var(--r-shiny) 8%, var(--surface));
+  font-size: 14px;
+}
+.cases-banner > .icon { color: var(--r-shiny); }
+.cases-banner .btn-primary { margin-left: auto; }
+
+.collection-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  align-items: start;
+}
+.collection-layout > :only-child { grid-column: 1 / -1; }
+@media (max-width: 1099px) {
+  .collection-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.collection-detail {
+  position: sticky;
+  top: calc(var(--topbar-h) + 20px);
+  max-height: calc(100dvh - var(--topbar-h) - 40px);
+  overflow-y: auto;
+}
+
+.plist { display: grid; }
+.plist .prow { border: 0; border-bottom: 1px solid var(--line); text-align: left; color: var(--ink); font: inherit; }
+.plist .prow:last-child { border-bottom: 0; }
+
+/* Owned Pokémon detail (side panel or dialog) */
+.owned-detail { --rc: var(--r-common); display: grid; gap: 18px; }
+.owned-detail-hero {
+  display: grid;
+  place-items: center;
+  height: 168px;
+  border-radius: var(--r-lg);
+  background:
+    radial-gradient(circle at 50% 75%, color-mix(in srgb, var(--rc) 26%, transparent), transparent 65%),
+    var(--surface-2);
+  border-bottom: 3px solid var(--rc);
+}
+.owned-detail-sprite { width: 140px; height: 140px; object-fit: contain; image-rendering: pixelated; }
+.owned-detail-name { font-size: 24px; min-width: 0; overflow-wrap: anywhere; }
+.owned-detail .move-chips { grid-template-columns: 1fr; }
+
+.evolve-box {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px dashed var(--line-strong);
+  font-size: 14px;
+}
+.evolve-pips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.evolve-pips span { height: 6px; border-radius: 3px; background: var(--surface-3); }
+.evolve-pips span.on { background: var(--good); }
+
+/* Selection action bar, pinned to the bottom of the viewport */
+.action-bar {
+  position: sticky;
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 10px 12px 10px 16px;
+  border-radius: var(--r-lg);
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: var(--shadow-2);
+}
+.action-bar-hint { flex: 1 1 220px; font-size: 13px; opacity: 0.75; }
+.action-bar-buttons { display: flex; gap: 6px; margin-left: auto; }
+.action-bar .btn-ghost { color: var(--bg); }
+.action-bar .btn-ghost:hover { background: color-mix(in srgb, var(--bg) 14%, transparent); color: var(--bg); }
+.action-bar .btn-secondary { background: transparent; color: var(--bg); border-color: color-mix(in srgb, var(--bg) 35%, transparent); }
+.action-bar .btn-secondary:hover { background: color-mix(in srgb, var(--bg) 14%, transparent); }
+@media (max-width: 899px) {
+  .action-bar { bottom: calc(var(--tabbar-h) + 12px); }
+}
+
+/* Pokédex */
+.dex-progress { display: grid; gap: 6px; min-width: 220px; }
+.dex-grid { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+.dex-card { gap: 2px; }
+.dex-card.is-uncaught .pcard-sprite { filter: brightness(0); opacity: 0.35; }
+[data-theme="light"] .dex-card.is-uncaught .pcard-sprite { opacity: 0.22; }
+.dex-card.is-uncaught .pcard-name { color: var(--ink-soft); }
+.dex-card.is-uncaught::after { opacity: 0.35; }
+
+.dex-detail { --rc: var(--r-common); display: grid; gap: 18px; }
+.dex-forms { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dex-forms figure {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 12px 8px 10px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.dex-forms figure.is-shiny { border-color: color-mix(in srgb, var(--r-shiny) 40%, var(--line)); background: color-mix(in srgb, var(--r-shiny) 7%, var(--surface-2)); }
+.dex-forms figcaption { font-size: 12px; color: var(--ink-soft); }
+.dex-forms .is-shiny figcaption { color: var(--r-shiny); }
+.dex-form-sprite { width: 96px; height: 96px; object-fit: contain; image-rendering: pixelated; }

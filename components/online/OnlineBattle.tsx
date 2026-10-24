@@ -487,14 +487,6 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
     resetForRematch();
   }
 
-  const lootboxRevealDict = {
-    stats: dict.common.stats,
-    shinyBadge: dict.common.shinyBadge,
-    movesLabel: dict.collection.movesLabel,
-    totalLabel: dict.collection.totalLabel,
-    moveLine: dict.collection.moveLine,
-    lootboxReveal: dict.collection.lootboxReveal,
-  };
 
   if (!roomCode) {
     return (
@@ -578,8 +570,6 @@ export default function OnlineBattle({ inventory: initialInventory, displayName,
         <LootboxRevealDialog
           pokemon={revealPokemon}
           onClose={() => setRevealPokemon(null)}
-          drumrollText={dict.collection.lootboxReveal.openingLootboxText}
-          dict={lootboxRevealDict}
         />
       )}
 

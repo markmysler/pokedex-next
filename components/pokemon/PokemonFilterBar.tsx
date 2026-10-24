@@ -1,5 +1,9 @@
+"use client";
+
+import { useId, type ReactNode } from "react";
 import { SORT_OPTIONS, type SortKey } from "@/lib/pokemonFilters";
-import type { Dictionary } from "@/lib/i18n/getDictionary";
+import { useDictionary } from "@/lib/i18n/useDictionary";
+import Icon from "@/components/ui/Icon";
 
 interface PokemonFilterBarProps {
   search: string;
@@ -9,31 +13,13 @@ interface PokemonFilterBarProps {
   sortBy: SortKey;
   onSortByChange: (value: SortKey) => void;
   typesList: string[];
-  // Optional, English-fallback: InventoryPageClient (upgrades/55-i18n-
-  // collection-cluster.md) passes the real dictionary slices; TeamPicker
-  // (upgrades/56-i18n-battle-cluster.md, not yet translated) doesn't pass
-  // them yet and falls back to the literal English text below rather than
-  // needing to be touched in this step.
-  dict?: Dictionary["common"]["filterBar"];
-  allTypesLabel?: string;
+  // Extra controls on the right (a view toggle, a count).
+  children?: ReactNode;
 }
 
-const FALLBACK_DICT: Dictionary["common"]["filterBar"] = {
-  searchPlaceholder: "Search Name, # or Nickname...",
-  typeFilterLabel: "Type Filter:",
-  sortLabel: "Sort:",
-  sortOptions: {
-    unsorted: "Default order",
-    "total-desc": "Total (high to low)",
-    "total-asc": "Total (low to high)",
-    "name-asc": "Name (A-Z)",
-    "number-asc": "Number",
-  },
-};
-const FALLBACK_ALL_TYPES_LABEL = "All Types";
-
-// Presentational only -- reused by InventoryPageClient (replacing its inline
-// toolbar) and TeamPicker (which had no search/filter/sort before this step).
+// One compact row shared by My Pokémon, the team picker and the trade
+// builder (redesign wave v9). Visible labels became placeholders and
+// screen-reader labels, so the row stays one line on desktop.
 export default function PokemonFilterBar({
   search,
   onSearchChange,
@@ -42,36 +28,38 @@ export default function PokemonFilterBar({
   sortBy,
   onSortByChange,
   typesList,
-  dict = FALLBACK_DICT,
-  allTypesLabel = FALLBACK_ALL_TYPES_LABEL,
+  children,
 }: PokemonFilterBarProps) {
+  const dict = useDictionary();
+  const t = dict.common.filterBar;
+  const id = useId();
+
   return (
-    <div className="card inventory-toolbar">
-      <div className="search">
-        <input
-          id="search-input"
-          type="text"
-          placeholder={dict.searchPlaceholder}
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-      </div>
-      <div className="filter-col">
-        <label>{dict.typeFilterLabel}</label>
+    <div className="filter-bar">
+      <label className="search-input filter-search" htmlFor={`${id}-q`}>
+        <span className="sr-only">{t.searchPlaceholder}</span>
+        <Icon name="search" size={16} />
+        <input id={`${id}-q`} type="search" placeholder={t.searchPlaceholder} value={search} onChange={(e) => onSearchChange(e.target.value)} />
+      </label>
+      <label className="filter-select">
+        <span className="sr-only">{t.typeFilterLabel}</span>
         <select value={typeFilter} onChange={(e) => onTypeFilterChange(e.target.value)}>
-          {typesList.map((t) => (
-            <option key={t} value={t}>{t === "All Types" ? allTypesLabel : t}</option>
+          {typesList.map((type) => (
+            // "All Types" is also the filter's sentinel value (lib/pokemonFilters.ts),
+            // so only its label is translated.
+            <option key={type} value={type}>{type === "All Types" ? dict.common.allTypesLabel : type}</option>
           ))}
         </select>
-      </div>
-      <div className="filter-col">
-        <label>{dict.sortLabel}</label>
+      </label>
+      <label className="filter-select">
+        <span className="sr-only">{t.sortLabel}</span>
         <select value={sortBy} onChange={(e) => onSortByChange(e.target.value as SortKey)}>
           {SORT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{dict.sortOptions[opt.value]}</option>
+            <option key={opt.value} value={opt.value}>{t.sortOptions[opt.value]}</option>
           ))}
         </select>
-      </div>
+      </label>
+      {children}
     </div>
   );
 }

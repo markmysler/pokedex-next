@@ -144,3 +144,34 @@ export function playLootboxRevealSound(shiny: boolean): void {
     playTone({ freq: 1500, durationMs: 300, type: "sine", volume: 0.14, delayMs: 320 });
   }
 }
+
+// Case reel (redesign wave v9): one short click per card passing the
+// marker. `speed` is 0..1 (1 = full speed); the pitch drops as the reel
+// slows, which is most of the "slot machine" feel.
+export function playReelTickSound(speed: number): void {
+  const s = Math.max(0, Math.min(1, speed));
+  playTone({ freq: 700 + s * 600, durationMs: 28, type: "square", volume: 0.045 + (1 - s) * 0.03 });
+}
+
+// The case unlocking while the open request is in flight: a quick rattle.
+export function playCaseUnlockSound(): void {
+  for (let i = 0; i < 3; i++) {
+    playTone({ freq: 180 + i * 40, durationMs: 50, type: "square", volume: 0.07, delayMs: i * 110 });
+  }
+}
+
+// Landing chime scaled to the grade's rank (lib/rarity.ts RARITY_RANK):
+// common lands with a single blip, legendary and shiny get the full fanfare.
+export function playReelLandSound(rank: number): void {
+  if (rank >= 4) {
+    playLootboxRevealSound(rank >= 5);
+    playTone({ freq: 1320, durationMs: 260, type: "triangle", volume: 0.12, delayMs: 360 });
+    return;
+  }
+  if (rank >= 2) {
+    playLootboxRevealSound(false);
+    return;
+  }
+  playTone({ freq: 660, durationMs: 110, type: "triangle", volume: 0.13 });
+  playTone({ freq: 880, durationMs: 160, type: "triangle", volume: 0.13, delayMs: 90 });
+}

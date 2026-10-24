@@ -7,9 +7,12 @@ interface SpriteProps {
   name: string;
   form: "normal" | "shiny";
   className: string;
+  // The case reel needs every card's image before it scrolls into view;
+  // lazy loading would leave blank cards flying past.
+  eager?: boolean;
 }
 
-export default function Sprite({ name, form, className }: SpriteProps) {
+export default function Sprite({ name, form, className, eager }: SpriteProps) {
   const dict = useDictionary();
   const [failed, setFailed] = useState(false);
   const src = `/images/${name.toLowerCase()}_${form}.gif`;
@@ -29,7 +32,7 @@ export default function Sprite({ name, form, className }: SpriteProps) {
       className={className}
       src={src}
       alt={dict.ui.spriteAlt(name, form)}
-      loading="lazy"
+      loading={eager ? "eager" : "lazy"}
       decoding="async"
       onError={() => setFailed(true)}
     />

@@ -15,7 +15,7 @@ export default async function InventoryPage() {
   if (!user) return null;
 
   const supabase = getSupabaseServerClient();
-  const { pokemon, lootboxes } = await getInventoryForUser(supabase, user.id);
+  const { pokemon } = await getInventoryForUser(supabase, user.id);
 
-  return <InventoryPageClient initialPokemon={pokemon} initialLootboxes={lootboxes} typesList={typesList} />;
+  return <InventoryPageClient initialPokemon={pokemon} typesList={typesList} />;
 }

@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Pokedex, UserPokedexData } from "@/types/pokemon";
 import { useDictionary } from "@/lib/i18n/useDictionary";
-import CompletionBanner from "./CompletionBanner";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { speciesGrade } from "@/lib/rarity";
 import PokemonDetail from "./PokemonDetail";
-import TypeBadges from "@/components/TypeBadges";
 import Sprite from "@/components/Sprite";
+import SectionTabs from "@/components/nav/SectionTabs";
+import Modal from "@/components/ui/Modal";
+import Icon from "@/components/ui/Icon";
 
 type StatusFilter = "All" | "Caught" | "Missing";
 type StatFilter = "Any" | "300+" | "400+" | "500+";
@@ -18,54 +21,66 @@ interface PokedexPageClientProps {
   initialUserData: UserPokedexData;
 }
 
+function hashEntry(order: string[]): string | null {
+  const n = window.location.hash.replace("#", "");
+  return order.includes(n) ? n : null;
+}
+
+// The Pokédex (redesign wave v9): every species as a card in one grid,
+// uncaught ones as silhouettes, with the entry beside it (or in a dialog on
+// narrow screens). The top bar's search links here as /pokedex#025.
 export default function PokedexPageClient({ pokedex, order, typesList, initialUserData }: PokedexPageClientProps) {
-  // Read client-side (upgrades/55-i18n-collection-cluster.md) rather than
-  // via a Server Component prop -- several entries here are functions
-  // (e.g. showingCount, computed from this component's own filter state),
-  // and functions can't cross the Server->Client prop boundary.
   const dict = useDictionary();
   const t = dict.collection.pokedex;
   const common = dict.common;
+  const wide = useMediaQuery("(min-width: 1100px)");
   const [userData, setUserData] = useState(initialUserData);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All Types");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [statFilter, setStatFilter] = useState<StatFilter>("Any");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [selectedId, setSelectedId] = useState<string | null>(order[0] ?? null);
-  // Only affects <900px (see .mobile-detail-open in globals.css) -- desktop's
-  // split pane always shows both, so this is inert there.
-  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
 
-  function selectEntry(num: string) {
-    setSelectedId(num);
-    setMobileDetailOpen(true);
-  }
+  // Follow #025-style links from the top-bar search, on load and whenever
+  // the hash changes while this page is open.
+  useEffect(() => {
+    function follow() {
+      const n = hashEntry(order);
+      if (!n) return;
+      setSearch("");
+      setTypeFilter("All Types");
+      setStatusFilter("All");
+      setStatFilter("Any");
+      setSelectedId(n);
+      setDetailOpen(true);
+      requestAnimationFrame(() => document.getElementById(`dex-${n}`)?.scrollIntoView({ block: "center", behavior: "smooth" }));
+    }
+    follow();
+    window.addEventListener("hashchange", follow);
+    return () => window.removeEventListener("hashchange", follow);
+  }, [order]);
 
   const isAcquired = (num: string) => Boolean(userData[num]?.acquired);
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = search.trim().toLowerCase().replace(/^#/, "");
     return order.filter((num) => {
       const p = pokedex[num];
-      if (q && !p.name.toLowerCase().includes(q) && !num.toLowerCase().includes(q)) return false;
+      if (q && !p.name.toLowerCase().includes(q) && !num.includes(q)) return false;
       if (typeFilter !== "All Types" && p.type1 !== typeFilter && p.type2 !== typeFilter) return false;
-      const acquired = isAcquired(num);
+      const acquired = Boolean(userData[num]?.acquired);
       if (statusFilter === "Caught" && !acquired) return false;
       if (statusFilter === "Missing" && acquired) return false;
-      if (statFilter === "300+" && p.total < 300) return false;
-      if (statFilter === "400+" && p.total < 400) return false;
-      if (statFilter === "500+" && p.total < 500) return false;
+      if (statFilter !== "Any" && p.total < parseInt(statFilter, 10)) return false;
       return true;
-      // userData intentionally read via isAcquired() rather than listed as a dep array key by field,
-      // it's fine since userData itself is the dep.
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, typeFilter, statusFilter, statFilter, order, pokedex, userData]);
 
   const acquiredCount = order.reduce((count, num) => count + (userData[num]?.acquired ? 1 : 0), 0);
+  const pct = order.length > 0 ? (acquiredCount / order.length) * 100 : 0;
   const selectedPokemon = selectedId ? pokedex[selectedId] : null;
-  const selectedEntry = selectedId ? userData[selectedId] ?? { acquired: false, notes: "" } : { acquired: false, notes: "" };
+  const selectedEntry = (selectedId && userData[selectedId]) || { acquired: false, notes: "" };
 
   async function handleNotesChange(number: string, notes: string) {
     setUserData((prev) => ({
@@ -79,97 +94,96 @@ export default function PokedexPageClient({ pokedex, order, typesList, initialUs
     });
   }
 
+  const detail = selectedPokemon && (
+    <PokemonDetail
+      key={selectedPokemon.number}
+      pokemon={selectedPokemon}
+      entry={selectedEntry}
+      onNotesChange={(notes) => handleNotesChange(selectedPokemon.number, notes)}
+      dict={dict}
+    />
+  );
+
   return (
     <div className="page">
-      <h1 className="page-title">{t.heading}</h1>
-      <CompletionBanner acquiredCount={acquiredCount} total={order.length} dict={dict} />
-
-      <div className="card inventory-toolbar">
-        <div className="search">
-          <input
-            id="search-input"
-            type="text"
-            placeholder={t.searchPlaceholder}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      <div className="page-head">
+        <div>
+          <span className="eyebrow">{dict.shell.groups.collection}</span>
+          <h1>{t.heading}</h1>
         </div>
-        <div className="filter-col">
-          <label>{t.typeFilterLabel}</label>
+        <div className="dex-progress">
+          <span className="mono small">{t.completion(acquiredCount, order.length, pct.toFixed(1))}</span>
+          <span className="hpbar"><span style={{ width: `${pct}%`, background: "var(--accent)" }} /></span>
+        </div>
+      </div>
+      <SectionTabs section="collection" />
+
+      <div className="filter-bar">
+        <label className="search-input filter-search">
+          <span className="sr-only">{t.searchPlaceholder}</span>
+          <Icon name="search" size={16} />
+          <input type="search" placeholder={t.searchPlaceholder} value={search} onChange={(e) => setSearch(e.target.value)} />
+        </label>
+        <div className="seg" role="group" aria-label={t.statusFilterLabel}>
+          {(["All", "Caught", "Missing"] as const).map((s) => (
+            <button key={s} type="button" aria-pressed={statusFilter === s} onClick={() => setStatusFilter(s)}>
+              {s === "All" ? t.statusAll : s === "Caught" ? t.statusCaught : t.statusMissing}
+            </button>
+          ))}
+        </div>
+        <label className="filter-select">
+          <span className="sr-only">{t.typeFilterLabel}</span>
           <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
             {typesList.map((type) => (
               <option key={type} value={type}>{type === "All Types" ? common.allTypesLabel : type}</option>
             ))}
           </select>
-        </div>
-        <div className="filter-col">
-          <label>{t.statusFilterLabel}</label>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}>
-            <option value="All">{t.statusAll}</option>
-            <option value="Caught">{t.statusCaught}</option>
-            <option value="Missing">{t.statusMissing}</option>
-          </select>
-        </div>
-        <div className="filter-col">
-          <label>{t.minTotalStatsLabel}</label>
+        </label>
+        <label className="filter-select">
+          <span className="sr-only">{t.minTotalStatsLabel}</span>
           <select value={statFilter} onChange={(e) => setStatFilter(e.target.value as StatFilter)}>
             <option value="Any">{t.statAny}</option>
             <option value="300+">300+</option>
             <option value="400+">400+</option>
             <option value="500+">500+</option>
           </select>
-        </div>
-        <div className="view-toggle">
-          <button className={viewMode === "grid" ? "active" : ""} onClick={() => setViewMode("grid")}>{common.viewToggle.grid}</button>
-          <button className={viewMode === "list" ? "active" : ""} onClick={() => setViewMode("list")}>{common.viewToggle.list}</button>
-        </div>
-        <div className="count-label">{t.showingCount(filtered.length, order.length)}</div>
+        </label>
+        <span className="faint mono small">{t.showingCount(filtered.length, order.length)}</span>
       </div>
 
-      <div className={`inventory-layout${mobileDetailOpen ? " mobile-detail-open" : ""}`}>
-        <div className={viewMode === "grid" ? "pokemon-grid" : "pokemon-list"}>
+      <div className="collection-layout">
+        <div className="pgrid dex-grid">
           {filtered.map((num) => {
             const p = pokedex[num];
             const acquired = isAcquired(num);
-            if (viewMode === "list") {
-              return (
-                <div
-                  key={num}
-                  className={`pokemon-row${num === selectedId ? " selected" : ""}`}
-                  onClick={() => selectEntry(num)}
-                >
-                  {`#${num}  ${p.name.padEnd(15)}${acquired ? " 🟢" : " ⚪"}`}
-                </div>
-              );
-            }
             return (
-              <div
+              <button
                 key={num}
-                className={`pokemon-grid-card${num === selectedId ? " selected" : ""}`}
-                onClick={() => selectEntry(num)}
+                id={`dex-${num}`}
+                type="button"
+                className={`pcard dex-card rarity-${speciesGrade(num)}${acquired ? "" : " is-uncaught"}`}
+                aria-pressed={num === selectedId && wide}
+                onClick={() => {
+                  setSelectedId(num);
+                  setDetailOpen(true);
+                }}
               >
-                <Sprite name={p.name} form="normal" className="grid-card-sprite" />
-                <div className="grid-card-name">#{p.number} {p.name}</div>
-                <TypeBadges type1={p.type1} type2={p.type2} center small />
-                <div className="grid-card-total">{acquired ? t.caughtBadge : t.uncaughtBadge}</div>
-              </div>
+                <span className="pcard-flags">{acquired && <Icon name="check" size={14} label={t.caughtBadge} style={{ color: "var(--good)" }} />}</span>
+                <Sprite name={p.name} form="normal" className="pcard-sprite" />
+                <span className="pcard-total">#{num}</span>
+                <span className="pcard-name">{p.name}</span>
+              </button>
             );
           })}
         </div>
-
-        {selectedPokemon && (
-          <div className="inventory-detail">
-            <button className="detail-back-btn" onClick={() => setMobileDetailOpen(false)}>{common.backToList}</button>
-            <PokemonDetail
-              key={selectedPokemon.number}
-              pokemon={selectedPokemon}
-              entry={selectedEntry}
-              onNotesChange={(notes) => handleNotesChange(selectedPokemon.number, notes)}
-              dict={dict}
-            />
-          </div>
-        )}
+        {wide && <aside className="panel collection-detail">{detail}</aside>}
       </div>
+
+      {!wide && detailOpen && detail && (
+        <Modal onClose={() => setDetailOpen(false)} size="lg">
+          {detail}
+        </Modal>
+      )}
     </div>
   );
 }

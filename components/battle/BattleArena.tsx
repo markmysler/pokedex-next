@@ -299,15 +299,6 @@ export default function BattleArena({ inventory: initialInventory, typesList }: 
         <LootboxRevealDialog
           pokemon={revealPokemon}
           onClose={() => setRevealPokemon(null)}
-          drumrollText={dict.collection.lootboxReveal.openingLootboxText}
-          dict={{
-            stats: dict.common.stats,
-            shinyBadge: dict.common.shinyBadge,
-            movesLabel: dict.collection.movesLabel,
-            totalLabel: dict.collection.totalLabel,
-            moveLine: dict.collection.moveLine,
-            lootboxReveal: dict.collection.lootboxReveal,
-          }}
         />
       )}
 

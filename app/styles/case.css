@@ -1,1 +1,224 @@
-/* case styles (redesign wave v9) -- see design/DESIGN_SYSTEM.md. */
+/* Case opening (redesign wave v9): the Open cases screen, the horizontal
+   reel and the landed-result card. Rarity colour comes from --rc, set by
+   the .rarity-* classes in app/globals.css. */
+
+.case-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+.case-stage {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  padding: 22px;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(90% 120% at 50% 0%, color-mix(in srgb, var(--surface-3) 60%, transparent), transparent 70%),
+    var(--surface);
+}
+
+.case-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+.case-title { display: flex; align-items: center; gap: 14px; }
+.case-title h2 { font-size: 22px; }
+.case-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+
+.case-art { width: 92px; height: 64px; flex: none; transform-origin: 50% 80%; }
+.case-art.is-shaking { animation: case-shake 0.45s ease-in-out infinite; }
+.case-art-empty { width: 140px; height: 98px; opacity: 0.9; }
+@keyframes case-shake {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-5deg) translateY(-1px); }
+  40% { transform: rotate(5deg); }
+  60% { transform: rotate(-3deg) translateY(-1px); }
+  80% { transform: rotate(2deg); }
+}
+
+/* ---------- Reel ---------- */
+
+.reels { display: grid; gap: 10px; min-width: 0; }
+
+.reel {
+  --card-w: 140px;
+  --card-gap: 6px;
+  position: relative;
+  height: 184px;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 70%, var(--surface));
+}
+.reel-sm { --card-w: 98px; height: 120px; }
+.reel::before,
+.reel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 16%;
+  pointer-events: none;
+}
+.reel::before { left: 0; background: linear-gradient(90deg, var(--bg), transparent); }
+.reel::after { right: 0; background: linear-gradient(270deg, var(--bg), transparent); }
+
+.reel-strip {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 0;
+  display: flex;
+  gap: var(--card-gap);
+  will-change: transform;
+}
+
+.reel-card {
+  --rc: var(--r-common);
+  position: relative;
+  flex: none;
+  width: var(--card-w);
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+}
+.reel-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, color-mix(in srgb, var(--rc) 32%, transparent), transparent 62%);
+}
+.reel-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--rc); }
+.reel-card > * { position: relative; }
+.reel-sprite { width: 92px; height: 92px; object-fit: contain; image-rendering: pixelated; }
+.reel-sm .reel-sprite { width: 60px; height: 60px; }
+.reel-name { font-family: var(--font-display); font-weight: 600; font-size: 13px; max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reel-sm .reel-name { font-size: 11px; }
+
+.reel-card.is-hidden { background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--r-shiny) 32%, var(--surface-2)), var(--surface)); }
+.reel-mystery {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--r-shiny);
+  text-shadow: 0 0 20px color-mix(in srgb, var(--r-shiny) 60%, transparent);
+}
+.reel-sm .reel-mystery { font-size: 32px; }
+
+.reel-marker {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--r-shiny);
+  box-shadow: 0 0 12px var(--r-shiny);
+}
+.reel-marker::before,
+.reel-marker::after { content: ""; position: absolute; left: 50%; margin-left: -8px; border: 8px solid transparent; }
+.reel-marker::before { top: 0; border-top-color: var(--r-shiny); }
+.reel-marker::after { bottom: 0; border-bottom-color: var(--r-shiny); }
+
+.reel.is-idle .reel-card { opacity: 0.55; }
+.reel.is-landed .reel-card:not(.is-won) { opacity: 0.4; transition: opacity 0.4s; }
+.reel-card.is-won {
+  z-index: 1;
+  border-color: var(--rc);
+  box-shadow: 0 0 0 2px var(--rc), 0 0 32px color-mix(in srgb, var(--rc) 70%, transparent);
+  animation: reel-win 0.5s ease-out;
+}
+.reel-card.is-won.rarity-shiny::after { height: 100%; opacity: 0.12; }
+@keyframes reel-win { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 100% { transform: scale(1); } }
+
+/* ---------- Landed result ---------- */
+
+.reveal {
+  --rc: var(--r-common);
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  padding: 20px;
+  border-radius: var(--r-lg);
+  border: 1px solid color-mix(in srgb, var(--rc) 55%, var(--line));
+  background:
+    radial-gradient(70% 120% at 0% 30%, color-mix(in srgb, var(--rc) 20%, transparent), transparent 70%),
+    var(--surface-2);
+}
+.reveal.is-animated { animation: reveal-in 0.4s ease-out; }
+@keyframes reveal-in { from { opacity: 0; transform: translateY(10px); } }
+.reveal-hero {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  max-width: 100%;
+  border-radius: var(--r-lg);
+  background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--rc) 28%, transparent), transparent 70%);
+}
+.reveal-sprite { width: 82%; height: 82%; object-fit: contain; image-rendering: pixelated; }
+.reveal.rarity-shiny .reveal-hero { position: relative; overflow: hidden; }
+.reveal.rarity-shiny .reveal-hero::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 240, 190, 0.5) 50%, transparent 58%);
+  animation: shine 1.8s ease-in-out 2;
+}
+@keyframes shine { from { transform: translateX(-60%); } to { transform: translateX(60%); } }
+.reveal-body { display: grid; gap: 16px; min-width: 0; }
+.reveal-name { font-size: 28px; }
+.reveal-name .mono { font-size: 15px; font-weight: 500; }
+.reveal-stats { display: grid; gap: 6px; }
+.move-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; }
+.move-chips li {
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+.move-chips li.is-in,
+.reveal:not(.is-animated) .move-chips li { opacity: 1; transform: none; }
+.reveal-actions { gap: 8px; }
+
+.pull-summary { display: grid; gap: 14px; }
+
+/* ---------- Contents ---------- */
+
+.case-contents { display: grid; gap: 14px; position: sticky; top: calc(var(--topbar-h) + 20px); }
+.odds { display: grid; gap: 10px; }
+.odds-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 48px; align-items: center; gap: 10px; }
+.odds-row .mono { text-align: right; }
+.odds-track { height: 6px; border-radius: 3px; background: var(--surface-3); overflow: hidden; }
+.odds-track span { display: block; height: 100%; max-width: 100%; background: var(--rc); border-radius: inherit; }
+
+@media (max-width: 1099px) {
+  .case-layout { grid-template-columns: minmax(0, 1fr); }
+  .case-contents { position: static; }
+}
+
+@media (max-width: 699px) {
+  .case-stage { padding: 14px; gap: 14px; }
+  .case-controls { width: 100%; }
+  .case-controls .btn-primary { flex: 1; }
+  .reel { --card-w: 112px; height: 150px; }
+  .reel-sm { --card-w: 84px; height: 108px; }
+  .reel-sprite { width: 72px; height: 72px; }
+  .reel-sm .reel-sprite { width: 52px; height: 52px; }
+  .reveal { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+  .reveal-hero { width: 180px; justify-self: center; }
+  .reveal-name { font-size: 24px; }
+}
