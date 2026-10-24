@@ -50,8 +50,8 @@
 .battle-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .battle-toolbar > .row-end { margin-left: auto; }
 
-/* The field: opponent back-right, you front-left. */
-.field {
+/* The battlefield: opponent back-right, you front-left. */
+.battlefield {
   position: relative;
   display: grid;
   grid-template-rows: auto auto;
@@ -318,7 +318,7 @@
   .team-slot { height: 80px; }
   .team-tray-text .muted { display: none; }
   .team-tray-actions .btn-primary { flex: 1; }
-  .field { min-height: 320px; padding: 10px; }
+  .battlefield { min-height: 320px; padding: 10px; }
   .field-caption { width: calc(100% - 20px); bottom: 10px; font-size: 12px; }
   .field-caption span { white-space: normal; }
   .field-opp, .field-you { gap: 8px; }

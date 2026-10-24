@@ -136,8 +136,8 @@ export default function FriendsPageClient({ myFriendCode, initial }: FriendsPage
                     <button className="btn-primary btn-sm" disabled={busyId === f.userId} onClick={() => battle(f.userId)}>
                       <Icon name="swords" size={14} /> {t.battle}
                     </button>
-                    <Link href={`/friends/${f.friendshipId}`} className="btn-secondary btn-sm">
-                      <Icon name="chat" size={14} /> {t.chat}
+                    <Link href={`/friends/${f.friendshipId}`} className="btn-secondary btn-sm" aria-label={`${t.chat} ${f.displayName}`}>
+                      <Icon name="chat" size={14} /> <span className="btn-label">{t.chat}</span>
                     </Link>
                     <button className="icon-btn icon-btn-plain" disabled={busyId === f.friendshipId} onClick={() => remove(f.friendshipId)} title={t.remove} aria-label={`${t.remove} ${f.displayName}`}>
                       <Icon name="trash" size={16} />
