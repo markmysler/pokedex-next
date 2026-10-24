@@ -76,7 +76,6 @@
 }
 
 .reel-card {
-  --rc: var(--r-common);
   position: relative;
   flex: none;
   width: var(--card-w);
@@ -93,9 +92,9 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, color-mix(in srgb, var(--rc) 32%, transparent), transparent 62%);
+  background: linear-gradient(0deg, color-mix(in srgb, var(--rc, var(--r-common)) 32%, transparent), transparent 62%);
 }
-.reel-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--rc); }
+.reel-card::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--rc, var(--r-common)); }
 .reel-card > * { position: relative; }
 .reel-sprite { width: 92px; height: 92px; object-fit: contain; image-rendering: pixelated; }
 .reel-sm .reel-sprite { width: 60px; height: 60px; }
@@ -133,8 +132,8 @@
 .reel.is-landed .reel-card:not(.is-won) { opacity: 0.4; transition: opacity 0.4s; }
 .reel-card.is-won {
   z-index: 1;
-  border-color: var(--rc);
-  box-shadow: 0 0 0 2px var(--rc), 0 0 32px color-mix(in srgb, var(--rc) 70%, transparent);
+  border-color: var(--rc, var(--r-common));
+  box-shadow: 0 0 0 2px var(--rc, var(--r-common)), 0 0 32px color-mix(in srgb, var(--rc, var(--r-common)) 70%, transparent);
   animation: reel-win 0.5s ease-out;
 }
 .reel-card.is-won.rarity-shiny::after { height: 100%; opacity: 0.12; }
@@ -143,16 +142,15 @@
 /* ---------- Landed result ---------- */
 
 .reveal {
-  --rc: var(--r-common);
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
   gap: 22px;
   align-items: start;
   padding: 20px;
   border-radius: var(--r-lg);
-  border: 1px solid color-mix(in srgb, var(--rc) 55%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--rc, var(--r-common)) 55%, var(--line));
   background:
-    radial-gradient(70% 120% at 0% 30%, color-mix(in srgb, var(--rc) 20%, transparent), transparent 70%),
+    radial-gradient(70% 120% at 0% 30%, color-mix(in srgb, var(--rc, var(--r-common)) 20%, transparent), transparent 70%),
     var(--surface-2);
 }
 .reveal.is-animated { animation: reveal-in 0.4s ease-out; }
@@ -163,7 +161,7 @@
   aspect-ratio: 1;
   max-width: 100%;
   border-radius: var(--r-lg);
-  background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--rc) 28%, transparent), transparent 70%);
+  background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--rc, var(--r-common)) 28%, transparent), transparent 70%);
 }
 .reveal-sprite { width: 82%; height: 82%; object-fit: contain; image-rendering: pixelated; }
 .reveal.rarity-shiny .reveal-hero { position: relative; overflow: hidden; }
@@ -203,7 +201,7 @@
 .odds-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 48px; align-items: center; gap: 10px; }
 .odds-row .mono { text-align: right; }
 .odds-track { height: 6px; border-radius: 3px; background: var(--surface-3); overflow: hidden; }
-.odds-track span { display: block; height: 100%; max-width: 100%; background: var(--rc); border-radius: inherit; }
+.odds-track span { display: block; height: 100%; max-width: 100%; background: var(--rc, var(--r-common)); border-radius: inherit; }
 
 @media (max-width: 1099px) {
   .case-layout { grid-template-columns: minmax(0, 1fr); }

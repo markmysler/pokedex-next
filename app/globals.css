@@ -485,7 +485,6 @@ select {
 /* ---------- Pokémon card (the collection atom) ---------- */
 
 .pcard {
-  --rc: var(--r-common);
   position: relative;
   display: grid;
   justify-items: center;
@@ -506,10 +505,10 @@ select {
   position: absolute;
   inset: auto 0 0 0;
   height: 70%;
-  background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--rc) 34%, transparent), transparent 72%);
+  background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--rc, var(--r-common)) 34%, transparent), transparent 72%);
   pointer-events: none;
 }
-.pcard::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--rc); }
+.pcard::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--rc, var(--r-common)); }
 .pcard:hover { transform: translateY(-2px); border-color: var(--line-strong); }
 .pcard[aria-pressed="true"],
 .pcard.is-active { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
@@ -570,7 +569,6 @@ select {
 
 /* Row variant (list view) */
 .prow {
-  --rc: var(--r-common);
   display: grid;
   grid-template-columns: 4px 44px minmax(0, 1fr) auto auto;
   align-items: center;
@@ -583,7 +581,7 @@ select {
 .prow:hover { background: var(--surface-2); }
 .prow[aria-pressed="true"] { background: var(--surface-3); }
 .prow.is-disabled { opacity: 0.38; cursor: not-allowed; }
-.prow-band { align-self: stretch; background: var(--rc); border-radius: 0 2px 2px 0; }
+.prow-band { align-self: stretch; background: var(--rc, var(--r-common)); border-radius: 0 2px 2px 0; }
 .prow img { width: 44px; height: 44px; image-rendering: pixelated; object-fit: contain; }
 .prow-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .prow-name .faint { font-weight: 400; margin-left: 6px; font-size: 13px; }

@@ -20,7 +20,6 @@
 }
 .team-slots { display: grid; grid-template-columns: repeat(3, 108px); gap: 8px; }
 .team-slot {
-  --rc: var(--r-common);
   position: relative;
   height: 96px;
   display: grid;
@@ -29,8 +28,8 @@
   gap: 2px;
   padding: 4px;
   border-radius: var(--r-md);
-  border: 1.5px solid var(--rc);
-  background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--rc) 22%, transparent), transparent 70%), var(--surface-2);
+  border: 1.5px solid var(--rc, var(--r-common));
+  background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--rc, var(--r-common)) 22%, transparent), transparent 70%), var(--surface-2);
   color: var(--ink);
   cursor: pointer;
 }
