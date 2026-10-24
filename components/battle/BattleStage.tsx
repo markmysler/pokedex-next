@@ -63,7 +63,7 @@ function Hud({ member, team, label }: { member: FighterState; team: TeamState; l
         <span className="hud-name">
           {label && <span className="eyebrow">{label}</span>}
           {displayName(member.pokemon)}
-          {shiny && <Icon name="star" size={13} label={dict.common.shinyBadge} style={{ color: "var(--r-shiny)" }} />}
+          {shiny && <Icon name="star" size={13} fill="currentColor" label={dict.common.shinyBadge} style={{ color: "var(--r-shiny)" }} />}
         </span>
         <TypeBadges type1={member.pokemon.type1} type2={member.pokemon.type2} small />
       </div>

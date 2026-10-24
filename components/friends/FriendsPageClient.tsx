@@ -35,6 +35,8 @@ export default function FriendsPageClient({ myFriendCode, initial }: FriendsPage
     const res = await fetch("/api/friends");
     const fresh = await res.json();
     if (!fresh.error) setData(fresh);
+    // Re-renders the layout too, so the rail's request badge stays right.
+    router.refresh();
   }
 
   async function sendRequest(e: React.FormEvent) {

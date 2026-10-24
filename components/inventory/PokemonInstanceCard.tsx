@@ -48,7 +48,7 @@ export default function PokemonInstanceCard({
   const title = disabled ? disabledReason : undefined;
   const flags = (
     <>
-      {shiny && <Icon name="star" size={14} label={dict.common.shinyBadge} />}
+      {shiny && <Icon name="star" size={14} fill="currentColor" label={dict.common.shinyBadge} />}
       {pokemon.isStarter && <Icon name="heart" size={14} className="starter" label={dict.common.starterBadge} />}
     </>
   );

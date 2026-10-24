@@ -24,6 +24,10 @@ Argentinian Spanish.
   and moveset, centered on (but independently varying from) its species'
   base stats, so no two of the same species are ever quite identical.
   Rare **shiny** rolls land near the top of what a species can roll.
+  Lootboxes ("cases" in the UI) open on a CS2-style horizontal reel that
+  spins toward the Pokémon the server already rolled, one at a time or up
+  to five at once, with display-only rarity grades from each species' base
+  stats.
 - **Battles** — 3-on-3 team battles with switching, status effects (burn,
   poison, blind, freeze, bleed), and buff/debuff/drain/redirect moves
   layered on top of standard type-effectiveness damage:
@@ -38,20 +42,21 @@ Argentinian Spanish.
     battle — that's freely castable with no limit.
   - Every rolled or backfilled moveset guarantees 3 damage moves + 1
     support move.
-- **Collection management** — Inventory with per-Pokémon detail, Trade Up
+- **Collection management** — My Pokémon with per-Pokémon detail and a
+  Select mode for Trade Up
   (burn 5 unwanted Pokémon for 1 guaranteed lootbox), Evolution (burn 5
   same-species Pokémon for 1 guaranteed instance of its evolution, stats
   derived from the 5 burned instances rather than freshly rolled), and
   friend-to-friend trading.
 - **Social** — friends list with invites, direct trading, a chat/message
   thread per friend, and a global leaderboard.
-- **Progress tracking** — Dashboard stat strip, match history, and
+- **Progress tracking** — Home stat strip, match history, and
   in-app notifications.
 - **Starters** — every new account picks one of Bulbasaur, Charmander, or
   Squirtle as a permanent starter (can't be traded or discarded) with a
   hand-authored moveset.
-- **Bilingual** — English and Argentinian Spanish, toggled from the same
-  account block as the Sound toggle; the whole app is translated (species/
+- **Bilingual** — English and Argentinian Spanish, toggled from the
+  account menu alongside theme and sound; the whole app is translated (species/
   move names and a handful of established jargon terms stay untranslated
   in both).
 

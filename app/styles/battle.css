@@ -320,6 +320,8 @@
   .team-tray-text .muted { display: none; }
   .team-tray-actions .btn-primary { flex: 1; }
   .field { min-height: 320px; padding: 10px; }
+  .field-caption { width: calc(100% - 20px); bottom: 10px; font-size: 12px; }
+  .field-caption span { white-space: normal; }
   .field-opp, .field-you { gap: 8px; }
   .field-sprite { width: 96px; height: 96px; }
   .field-sprite.is-mine { width: 116px; height: 116px; }
