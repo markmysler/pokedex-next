@@ -7,7 +7,7 @@ export default async function LoginPage() {
 
   return (
     <Suspense fallback={null}>
-      <LoginForm dict={dict.account.login} />
+      <LoginForm dict={dict.account.login} art={dict.account.authArt} />
     </Suspense>
   );
 }

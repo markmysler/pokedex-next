@@ -16,9 +16,10 @@ export default function Sprite({ name, form, className }: SpriteProps) {
 
   if (failed) {
     return (
-      <div className={className} style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "var(--text-muted)" }}>
+      // <span>, not <div>: sprites render inside Pokémon-card <button>s.
+      <span className={className} style={{ display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "var(--ink-faint)" }}>
         {dict.common.noImage}
-      </div>
+      </span>
     );
   }
 

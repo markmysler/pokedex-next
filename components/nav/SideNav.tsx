@@ -1,85 +1,113 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import SignOutButton from "@/components/auth/SignOutButton";
-import { setMuted } from "@/lib/sound";
-import { localeFromPathname, stripLocale, type Locale } from "@/lib/i18n/locale";
-import type { Dictionary } from "@/lib/i18n/getDictionary";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
+import { isMuted, setMuted } from "@/lib/sound";
+import { localeFromPathname, stripLocale, withLocale, type Locale } from "@/lib/i18n/locale";
+import { useDictionary } from "@/lib/i18n/useDictionary";
 import Link from "@/components/LocaleLink";
+import Icon, { type IconName } from "@/components/ui/Icon";
+import PokedexSearch from "./PokedexSearch";
+import { useCaseCount } from "./CaseCount";
 
-// `key` indexes into dict.nav (this component's `dict` prop) for the
-// translated label -- the href/icon stay fixed, only the label is locale-
-// dependent (upgrades/54-i18n-account-cluster.md).
-const LINKS = [
-  { href: "/dashboard", key: "dashboard", icon: "🏠" },
-  { href: "/inventory", key: "inventory", icon: "🎒" },
-  { href: "/pokedex", key: "pokedex", icon: "📖" },
-  { href: "/battle", key: "battle", icon: "⚔️" },
-  { href: "/online", key: "online", icon: "🌐" },
-  { href: "/friends", key: "friends", icon: "🤝" },
-  { href: "/notifications", key: "notifications", icon: "🔔" },
-  { href: "/history", key: "history", icon: "📜" },
-  { href: "/leaderboard", key: "leaderboard", icon: "🏆" },
-  { href: "/profile", key: "profile", icon: "👤" },
-] as const satisfies readonly { href: string; key: keyof Dictionary["common"]["nav"]; icon: string }[];
+type NavKey = "dashboard" | "battle" | "online" | "open" | "inventory" | "pokedex" | "friends" | "history" | "leaderboard";
 
-// The 4 routes that get their own mobile tab (upgrades/32-navigation-
-// shell-rework.md) -- the ones a trainer reaches for constantly (check the
-// team, manage the bag, browse the dex, fight). Everything else lives
-// behind the 5th tab, "More" -- same split the design mockups used.
-const MOBILE_TAB_HREFS = ["/dashboard", "/inventory", "/pokedex", "/battle"];
+interface NavLink {
+  href: string;
+  key: NavKey;
+  icon: IconName;
+}
+
+// Four groups instead of ten flat links (redesign wave v9). Notifications
+// live behind the bell and Profile behind the avatar menu, so the rail only
+// holds places you go to play.
+const GROUPS: { key: "play" | "collection" | "social" | "records"; links: NavLink[] }[] = [
+  {
+    key: "play",
+    links: [
+      { href: "/dashboard", key: "dashboard", icon: "home" },
+      { href: "/battle", key: "battle", icon: "swords" },
+      { href: "/online", key: "online", icon: "globe" },
+    ],
+  },
+  {
+    key: "collection",
+    links: [
+      { href: "/open", key: "open", icon: "case" },
+      { href: "/inventory", key: "inventory", icon: "grid" },
+      { href: "/pokedex", key: "pokedex", icon: "book" },
+    ],
+  },
+  { key: "social", links: [{ href: "/friends", key: "friends", icon: "users" }] },
+  {
+    key: "records",
+    links: [
+      { href: "/history", key: "history", icon: "clock" },
+      { href: "/leaderboard", key: "leaderboard", icon: "trophy" },
+    ],
+  },
+];
+
+// Phone tab bar: the four places reached most, plus a raised Open button in
+// the middle. Everything else is one tap away through each page's section
+// tabs (SectionTabs) or the avatar menu.
+const TAB_SECTIONS: Record<string, string[]> = {
+  "/dashboard": ["/dashboard"],
+  "/inventory": ["/inventory", "/pokedex"],
+  "/battle": ["/battle", "/online", "/history", "/leaderboard"],
+  "/friends": ["/friends", "/notifications"],
+};
 
 interface SideNavProps {
   displayName: string;
+  email: string;
   pendingFriendRequestCount?: number;
   unreadNotificationCount?: number;
-  dict: Dictionary["common"];
 }
 
-export default function SideNav({
-  displayName,
-  pendingFriendRequestCount = 0,
-  unreadNotificationCount = 0,
-  dict,
-}: SideNavProps) {
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  return (parts.length === 1 ? parts[0].slice(0, 2) : parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+export default function SideNav({ displayName, email, pendingFriendRequestCount = 0, unreadNotificationCount = 0 }: SideNavProps) {
+  const dict = useDictionary();
+  const t = dict.shell;
   const pathname = usePathname();
   const router = useRouter();
-  // The nav's own LINKS array holds bare app paths ("/dashboard"), but
-  // `pathname` (from usePathname()) is always locale-prefixed now -- strip
-  // it once so every "is this the active link" comparison below still
-  // works the same as before the i18n routing change.
   const localePath = stripLocale(pathname);
   const locale = localeFromPathname(pathname);
-  // Mobile-only "More" sheet (upgrades/32-navigation-shell-rework.md) --
-  // replaces the old hamburger drawer's `open` state; the desktop rail
-  // itself has no open/closed state anymore, it's just always visible
-  // >=900px and hidden <900px via CSS.
-  const [moreOpen, setMoreOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  // Same precedent as theme above: not persisted, always starts on (sound
-  // audible) on a fresh load (upgrades/11-sound-effects.md).
-  const [soundOn, setSoundOn] = useState(true);
+  const { count: caseCount } = useCaseCount();
 
-  // Moved here from the old PokedexApp.tsx (retired in step 4) — the side
-  // nav is the one thing rendered on every page, so it's the natural home
-  // for a cross-cutting control like theme. Same behavior as before: not
-  // persisted, always starts dark on a fresh load.
+  const [menuOpen, setMenuOpen] = useState(false);
+  // Not persisted, same as before the redesign: a fresh load starts dark
+  // with sound on.
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [soundOn, setSoundOn] = useState(() => !isMuted());
+  const [signingOut, setSigningOut] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
-  const tabLinks = LINKS.filter((link) => MOBILE_TAB_HREFS.includes(link.href));
-  const moreLinks = LINKS.filter((link) => !MOBILE_TAB_HREFS.includes(link.href));
-  const hasUnread = pendingFriendRequestCount > 0 || unreadNotificationCount > 0;
-  // Friends/Notifications live inside "More" on mobile (upgrades/32-
-  // navigation-shell-rework.md) -- so a route within there still lights
-  // up the More tab as the active one, same as any other tab would.
-  const moreActive = moreLinks.some((link) => link.href === localePath);
-
-  function toggleTheme() {
-    setTheme((t) => (t === "dark" ? "light" : "dark"));
-  }
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onPointer(e: PointerEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
   function toggleSound() {
     const next = !soundOn;
@@ -87,153 +115,149 @@ export default function SideNav({
     setSoundOn(next);
   }
 
-  // Language toggle (upgrades/53-i18n-routing-and-toggle-infrastructure.md)
-  // -- same theme-row pattern as Theme/Sound above, a 2-state EN/ES switch
-  // in the same accountBlock. Persists to localStorage (the user's explicit
-  // ask) and its server-readable cookie twin (proxy.ts can't read
-  // localStorage), then navigates to the same route with the URL segment
-  // swapped so the Server Component tree re-renders in the new language
-  // immediately -- no flash-of-wrong-language to correct for, since the
-  // locale comes from the URL itself, not a value read client-side after
-  // the fact (node_modules/next/dist/docs/01-app/02-guides/preventing-
-  // flash-before-hydration.md's inline-script technique is for values
-  // *unavailable* at SSR time; that's not the case here).
+  // Persists to localStorage and its server-readable cookie twin (proxy.ts
+  // can't read localStorage), then swaps the URL's locale segment so the
+  // Server Component tree re-renders in the new language right away.
   function toggleLanguage() {
     const nextLocale: Locale = locale === "en" ? "es-AR" : "en";
     try {
       localStorage.setItem("lang", nextLocale);
     } catch {
-      // Unavailable in some private/locked-down browser contexts -- the
-      // cookie below still lets the server pick it up next visit either way.
+      // Unavailable in some locked-down browser contexts; the cookie below
+      // still carries the choice to the server.
     }
     document.cookie = `lang=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    setMenuOpen(false);
     router.push(`/${nextLocale}${localePath === "/" ? "" : localePath}`);
   }
 
-  // Shared between the desktop rail's footer and the mobile "More" sheet
-  // (upgrades/32-navigation-shell-rework.md) -- there's no room for these
-  // in a 5-item tab bar, so they relocate into the sheet on mobile but
-  // stay put on the rail, same components either way.
-  const accountBlock = (
-    <>
-      <div className="theme-row">
-        <span>{dict.theme.label}</span>
-        <label className="switch">
-          <input type="checkbox" checked={theme === "dark"} onChange={toggleTheme} />
-          <span className="slider" />
-        </label>
-        <span>{theme === "dark" ? dict.theme.dark : dict.theme.light}</span>
-      </div>
+  async function signOut() {
+    setSigningOut(true);
+    await getSupabaseBrowserClient().auth.signOut();
+    router.replace(withLocale(locale, "/login"));
+    router.refresh();
+  }
 
-      <div className="theme-row">
-        <span>{dict.sound.label}</span>
-        <button
-          type="button"
-          className="btn-secondary sound-toggle"
-          onClick={toggleSound}
-          aria-label={soundOn ? dict.sound.mute : dict.sound.unmute}
-        >
-          {soundOn ? "🔊" : "🔇"}
-        </button>
-      </div>
-
-      <div className="theme-row">
-        <span>{dict.language.label}</span>
-        <label className="switch">
-          <input type="checkbox" checked={locale === "es-AR"} onChange={toggleLanguage} />
-          <span className="slider" />
-        </label>
-        {/* The language codes themselves (EN/ES) aren't translated content
-            -- they're the two options the toggle switches between. */}
-        <span>{locale === "en" ? "EN" : "ES"}</span>
-      </div>
-
-      <div className="account-row">
-        <span className="account-name" title={displayName}>👤 {displayName}</span>
-        <SignOutButton dict={dict} />
-      </div>
-    </>
-  );
+  const isActive = (href: string) => localePath === href || localePath.startsWith(`${href}/`);
+  const linkCount = (key: NavKey): number => {
+    if (key === "friends") return pendingFriendRequestCount;
+    if (key === "open") return caseCount;
+    return 0;
+  };
+  const tabActive = (tab: string) => TAB_SECTIONS[tab].some(isActive);
 
   return (
     <>
-      {/* Desktop rail, >=900px -- hidden via CSS below that, see .side-nav's
-          media query in globals.css. */}
-      <aside className="side-nav">
-        <h1 className="sidebar-title">🔴 POKÉDEX</h1>
+      <header className="topbar">
+        <Link href="/dashboard" className="brand">
+          <span className="brand-ball" aria-hidden="true" />
+          POKÉDEX
+        </Link>
 
-        <nav className="nav-links">
-          {LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`nav-link${localePath === link.href ? " active" : ""}`}
-            >
-              <span className="nav-link-icon">{link.icon}</span> {dict.nav[link.key]}
-              {link.href === "/friends" && pendingFriendRequestCount > 0 && (
-                <span className="nav-link-badge">{pendingFriendRequestCount}</span>
-              )}
-              {link.href === "/notifications" && unreadNotificationCount > 0 && (
-                <span className="nav-link-badge">{unreadNotificationCount}</span>
-              )}
-            </Link>
-          ))}
-        </nav>
+        <PokedexSearch />
 
-        {accountBlock}
-      </aside>
-
-      {/* Mobile bottom tab bar, <900px -- hidden via CSS at/above that. */}
-      <nav className="tab-bar">
-        {tabLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`tab-item${localePath === link.href ? " active" : ""}`}
-          >
-            <span className="tab-item-icon">{link.icon}</span>
-            {dict.nav[link.key]}
+        <div className="top-actions">
+          <Link href="/open" className={`case-chip${caseCount === 0 ? " is-empty" : ""}`}>
+            <Icon name="case" size={16} />
+            <span className="mono">{t.casesChip(caseCount)}</span>
+            {caseCount > 0 && <span className="case-chip-go">{t.open}</span>}
           </Link>
-        ))}
-        <button
-          type="button"
-          className={`tab-item${moreActive ? " active" : ""}`}
-          onClick={() => setMoreOpen(true)}
-          aria-haspopup="dialog"
-          aria-expanded={moreOpen}
-        >
-          <span className="tab-item-icon">⋯</span>
-          {dict.nav.more}
-          {hasUnread && <span className="tab-item-dot" aria-hidden="true" />}
-        </button>
-      </nav>
 
-      {moreOpen && (
-        <div className="modal-overlay sheet-overlay" onClick={() => setMoreOpen(false)}>
-          <div className="card sheet-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="sheet-handle" />
-            <nav className="nav-links">
-              {moreLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`nav-link${localePath === link.href ? " active" : ""}`}
-                  onClick={() => setMoreOpen(false)}
-                >
-                  <span className="nav-link-icon">{link.icon}</span> {dict.nav[link.key]}
-                  {link.href === "/friends" && pendingFriendRequestCount > 0 && (
-                    <span className="nav-link-badge">{pendingFriendRequestCount}</span>
-                  )}
-                  {link.href === "/notifications" && unreadNotificationCount > 0 && (
-                    <span className="nav-link-badge">{unreadNotificationCount}</span>
-                  )}
+          <Link href="/notifications" className="icon-btn" aria-label={t.notificationsLabel(unreadNotificationCount)}>
+            <Icon name="bell" />
+            {unreadNotificationCount > 0 && <span className="dot-badge">{unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}</span>}
+          </Link>
+
+          <div className="popover-anchor" ref={menuRef}>
+            <button
+              type="button"
+              className="avatar-btn"
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              aria-label={t.menu.label}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <span className="avatar">{initials(displayName)}</span>
+            </button>
+            {menuOpen && (
+              <div className="menu" role="menu">
+                <div className="menu-head">
+                  <span className="avatar">{initials(displayName)}</span>
+                  <span style={{ minWidth: 0 }}>
+                    <b>{displayName}</b>
+                    <span>{email}</span>
+                  </span>
+                </div>
+                <Link href="/profile" className="menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                  <Icon name="user" /> {t.menu.profile}
                 </Link>
-              ))}
-            </nav>
-            {accountBlock}
+                <Link href="/history" className="menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                  <Icon name="clock" /> {t.nav.history}
+                </Link>
+                <Link href="/leaderboard" className="menu-item" role="menuitem" onClick={() => setMenuOpen(false)}>
+                  <Icon name="trophy" /> {t.nav.leaderboard}
+                </Link>
+                <div className="menu-sep" />
+                <button type="button" className="menu-item" role="menuitemcheckbox" aria-checked={theme === "dark"} onClick={() => setTheme((v) => (v === "dark" ? "light" : "dark"))}>
+                  <Icon name={theme === "dark" ? "moon" : "sun"} /> {t.menu.darkMode}
+                  <span className="menu-value">{theme === "dark" ? t.menu.on : t.menu.off}</span>
+                </button>
+                <button type="button" className="menu-item" role="menuitemcheckbox" aria-checked={soundOn} onClick={toggleSound}>
+                  <Icon name={soundOn ? "volume" : "mute"} /> {t.menu.sound}
+                  <span className="menu-value">{soundOn ? t.menu.on : t.menu.off}</span>
+                </button>
+                <button type="button" className="menu-item" role="menuitem" onClick={toggleLanguage}>
+                  <Icon name="language" /> {t.menu.language}
+                  {/* The language names themselves aren't translated: each is shown in its own language. */}
+                  <span className="menu-value">{locale === "en" ? "English" : "Español"}</span>
+                </button>
+                <div className="menu-sep" />
+                <button type="button" className="menu-item" role="menuitem" onClick={signOut} disabled={signingOut}>
+                  <Icon name="logout" /> {signingOut ? dict.common.signingOut : dict.common.signOut}
+                </button>
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </header>
+
+      <nav className="rail" aria-label={t.mainNav}>
+        {GROUPS.map((group) => (
+          <div key={group.key} className="rail-group">
+            <span className="eyebrow">{t.groups[group.key]}</span>
+            {group.links.map((link) => {
+              const count = linkCount(link.key);
+              return (
+                <Link key={link.href} href={link.href} className="rail-link" aria-current={isActive(link.href) ? "page" : undefined}>
+                  <Icon name={link.icon} />
+                  {t.nav[link.key]}
+                  {count > 0 && <span className={`count${link.key === "open" ? " count-gold" : ""}`}>{count}</span>}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
+      </nav>
+
+      <nav className="tabbar" aria-label={t.mainNav}>
+        <Link href="/dashboard" className="tab" aria-current={tabActive("/dashboard") ? "page" : undefined}>
+          <Icon name="home" /> {t.nav.dashboard}
+        </Link>
+        <Link href="/inventory" className="tab" aria-current={tabActive("/inventory") ? "page" : undefined}>
+          <Icon name="grid" /> {t.tabs.collection}
+        </Link>
+        <Link href="/open" className="tab-open" aria-label={t.nav.open}>
+          <Icon name="case" />
+          {caseCount > 0 && <span className="dot-badge">{caseCount > 99 ? "99+" : caseCount}</span>}
+        </Link>
+        <Link href="/battle" className="tab" aria-current={tabActive("/battle") ? "page" : undefined}>
+          <Icon name="swords" /> {t.nav.battle}
+        </Link>
+        <Link href="/friends" className="tab" aria-current={tabActive("/friends") ? "page" : undefined}>
+          <Icon name="users" /> {t.tabs.social}
+          {pendingFriendRequestCount > 0 && <span className="dot-badge" style={{ top: 2, right: "calc(50% - 22px)" }}>{pendingFriendRequestCount}</span>}
+        </Link>
+      </nav>
     </>
   );
 }

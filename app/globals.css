@@ -1,1361 +1,984 @@
-/* Design system v5 (upgrades/30-design-tokens-and-foundations.md) — warm,
-   device-inspired neutrals + Poké Red accent, replacing the old
-   pokedex-web-ported blue-purple palette. Token names and values come
-   from design/DESIGN_SYSTEM.md; every existing selector below keeps its
-   name/structure for now and just reads the new tokens -- component
-   restructuring (segmented meters, bezel-tab headers, etc.) is later
-   steps in this wave. */
+/* Design system v9, "Stadium" (upgrades/main.md, design/DESIGN_SYSTEM.md).
+   Night-stadium neutrals with a slight blue bias, Poké Red as the one brand
+   accent, and a separate rarity scale for anything that is a Pokémon you
+   own. This file holds tokens, base styles, shared components and the app
+   shell; each feature area has its own file in app/styles/, imported from
+   the root layout after this one. */
 
-:root {
-  /* Spacing scale (gap/padding only) */
-  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px;
-  --s-6: 24px; --s-7: 32px; --s-8: 40px; --s-9: 56px;
+/* ---------- Tokens ---------- */
 
-  /* Radius scale */
-  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 22px; --r-pill: 999px;
-
-  /* Typography roles -- system stacks, no webfont dependency */
-  --font-display: -apple-system, "Segoe UI Semibold", "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif;
-  --font-body: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-}
-
+:root,
 :root[data-theme="dark"] {
-  --bg: #191215;
-  --surface: #241A1E;
-  --surface-2: #2E2125;
-  --surface-3: #3A2A2F;
-  --ink: #F5EAE7;
-  --ink-soft: #C1AEB0;
-  --ink-faint: #8C767A;
-  --border: #3A2A2F;
-  --border-strong: #4C383D;
+  color-scheme: dark;
+  --bg: #0C0E13;
+  --surface: #141821;
+  --surface-2: #1B202C;
+  --surface-3: #252C3B;
+  --line: #2A3242;
+  --line-strong: #3A4357;
+  --ink: #ECEFF6;
+  --ink-soft: #A2AABD;
+  --ink-faint: #6B7389;
 
-  --accent: #FF5A57;
-  --accent-ink: #1A0D0D;
-  --accent-2: #F0A93E;
-  --accent-2-ink: #1A0D0D;
+  --accent: #FF3B47;
+  --accent-hover: #FF5560;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(255, 59, 71, 0.14);
 
-  --good: #3FDB8F;
-  --good-bg: #113328;
-  --warn: #F0B93E;
-  --warn-bg: #362A11;
-  --bad: #FF8A5B;
-  --bad-bg: #3A2013;
+  --good: #3DDC97;
+  --warn: #F5B941;
+  --bad: #FF7A59;
   --info: #6FA6FF;
-  --info-bg: #16233B;
+  --good-soft: rgba(61, 220, 151, 0.14);
+  --warn-soft: rgba(245, 185, 65, 0.14);
+  --bad-soft: rgba(255, 122, 89, 0.14);
+  --info-soft: rgba(111, 166, 255, 0.14);
 
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, .35), 0 8px 20px rgba(0, 0, 0, .35);
-  --shadow-2: 0 6px 16px rgba(0, 0, 0, .4), 0 24px 48px rgba(0, 0, 0, .5);
+  /* Rarity grades (lib/rarity.ts) */
+  --r-common: #9AA7BA;
+  --r-uncommon: #4B8BFF;
+  --r-rare: #8C5CFF;
+  --r-epic: #E042C4;
+  --r-legendary: #FF4D4D;
+  --r-shiny: #F7C548;
+
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 6px 18px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --scrim: rgba(5, 7, 11, 0.72);
 }
 
 :root[data-theme="light"] {
-  --bg: #F4EFEC;
+  color-scheme: light;
+  --bg: #F2F3F7;
   --surface: #FFFFFF;
-  --surface-2: #EAE1DC;
-  --surface-3: #DED2CB;
-  --ink: #241A1F;
-  --ink-soft: #6E5D62;
-  --ink-faint: #9C8B8F;
-  --border: #DED0C9;
-  --border-strong: #C9B8B1;
+  --surface-2: #EEF0F5;
+  --surface-3: #DFE3EC;
+  --line: #D8DCE6;
+  --line-strong: #C3C9D6;
+  --ink: #12151C;
+  --ink-soft: #4C5568;
+  --ink-faint: #7C8498;
 
-  --accent: #C62A35;
+  --accent: #D7262F;
+  --accent-hover: #C01F28;
   --accent-ink: #FFFFFF;
-  --accent-2: #C97A1F;
-  --accent-2-ink: #241A1F;
+  --accent-soft: rgba(215, 38, 47, 0.1);
 
-  --good: #24875A;
-  --good-bg: #E1F3EA;
-  --warn: #A96A0E;
-  --warn-bg: #FBEBD2;
-  --bad: #C24422;
-  --bad-bg: #FBE5DC;
+  --good: #138A5A;
+  --warn: #A86A00;
+  --bad: #C2411F;
   --info: #2C69B8;
-  --info-bg: #E3EDFB;
+  --good-soft: rgba(19, 138, 90, 0.1);
+  --warn-soft: rgba(168, 106, 0, 0.1);
+  --bad-soft: rgba(194, 65, 31, 0.1);
+  --info-soft: rgba(44, 105, 184, 0.1);
 
-  --shadow-1: 0 1px 2px rgba(36, 20, 20, .06), 0 6px 16px rgba(36, 20, 20, .07);
-  --shadow-2: 0 4px 10px rgba(36, 20, 20, .10), 0 20px 40px rgba(36, 20, 20, .14);
+  --r-common: #6E7B8F;
+  --r-uncommon: #2563EB;
+  --r-rare: #7040E8;
+  --r-epic: #C02AA6;
+  --r-legendary: #DC2F2F;
+  --r-shiny: #C99412;
+
+  --shadow-1: 0 1px 2px rgba(18, 21, 28, 0.05), 0 6px 16px rgba(18, 21, 28, 0.06);
+  --shadow-2: 0 18px 48px rgba(18, 21, 28, 0.18);
+  --scrim: rgba(18, 21, 28, 0.45);
 }
 
-* { box-sizing: border-box; }
+:root {
+  /* Fonts come from next/font in app/[lang]/layout.tsx (self-hosted at
+     build time); the system stacks are the fallback while they load. */
+  --font-display: var(--ff-display), "Segoe UI Semibold", system-ui, sans-serif;
+  --font-body: var(--ff-body), -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--ff-mono), "Cascadia Code", Consolas, monospace;
 
-html, body { padding: 0; margin: 0; }
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-pill: 999px;
+
+  --topbar-h: 56px;
+  --rail-w: 220px;
+  --tabbar-h: 64px;
+}
+
+/* ---------- Base ---------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
 
 body {
   font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
   background: var(--bg);
   color: var(--ink);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
   text-wrap: balance;
-}
-
-/* APP SHELL (side nav + main content) */
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* Desktop rail, >=900px (upgrades/32-navigation-shell-rework.md) -- below
-   900px this is replaced by .tab-bar + .sheet-panel below, not a
-   slide-over of this same element, so there's no "open" state to manage
-   here anymore. */
-.side-nav {
-  width: 220px;
-  flex-shrink: 0;
-  background: var(--surface-2);
-  padding: var(--s-4) var(--s-3);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border-right: 1px solid var(--border);
-}
-
-.sidebar-title { font-size: 20px; margin: 0 0 6px 0; }
-
-.nav-links { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: var(--r-md);
-  color: var(--ink);
-  text-decoration: none;
-  font-size: 13.5px;
-  font-weight: bold;
-}
-.nav-link:hover { background: var(--surface-3); }
-.nav-link.active { background: var(--accent); color: var(--accent-ink); }
-.nav-link-icon { font-size: 16px; }
-
-.app-main { flex: 1; min-width: 0; overflow-y: auto; }
-
-/* Mobile bottom tab bar, <900px (upgrades/32-navigation-shell-rework.md)
-   -- replaces the old hamburger + slide-over drawer, which didn't leave
-   room for 44px touch targets on a 10-item menu. 5 primary destinations;
-   everything else lives behind "More" (.sheet-panel below). */
-.tab-bar {
-  display: none;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 30;
-  background: var(--surface-2);
-  border-top: 1px solid var(--border);
-  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
-  gap: 2px;
-  box-shadow: var(--shadow-2);
-}
-.tab-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 6px 2px;
-  border-radius: var(--r-md);
-  font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ink-faint);
-  text-decoration: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  position: relative;
-}
-.tab-item-icon { font-size: 19px; line-height: 1; }
-.tab-item.active { color: var(--accent); }
-.tab-item-dot {
-  position: absolute;
-  top: 2px;
-  right: calc(50% - 17px);
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 1.5px solid var(--surface-2);
-}
-
-/* "More" sheet -- reuses .modal-overlay's fixed-overlay pattern, anchored
-   to the bottom edge instead of centered, rather than a new library. */
-.sheet-overlay { align-items: flex-end; padding: 0; }
-.sheet-panel {
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  max-height: 82vh;
-  overflow-y: auto;
-  border-radius: var(--r-xl) var(--r-xl) 0 0;
-  text-align: left;
-  padding-bottom: calc(var(--s-5) + env(safe-area-inset-bottom, 0px));
-}
-.sheet-handle {
-  width: 36px;
-  height: 4px;
-  border-radius: var(--r-pill);
-  background: var(--border-strong);
-  margin: 0 auto var(--s-4);
-}
-
-@media (max-width: 899px) {
-  .side-nav { display: none; }
-  .tab-bar { display: flex; }
-  .app-main { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
-}
-
-/* Base theme styling for every text/number input, not just the ones with a
-   more specific selector below -- without this, an input with no explicit
-   rule (e.g. the rename field, the lootbox quantity stepper) falls back to
-   the browser's default white background regardless of theme. */
-input, #search-input, select, textarea, .pokemon-list {
-  background: var(--surface);
-  color: var(--ink);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--r-md);
-}
-input:focus, #search-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
-}
-
-#search-input { padding: 8px 10px; font-size: 14px; }
-
-/* Search icon (upgrades/31-shared-ui-primitives.md) -- wraps #search-input
-   wherever a caller opts in, replacing the old placeholder-embedded 🔍
-   (which disappeared the moment the field had any text). The icon is
-   forced into its own fixed-size flex box rather than centered against
-   its own line box -- plain top:50%/translateY(-50%) on the glyph looked
-   vertically off-center due to emoji glyph metrics (caught in design
-   review, see upgrades/main.md's key decisions). */
-.search { position: relative; }
-.search #search-input { width: 100%; padding-left: 34px; }
-.search::before {
-  content: "🔍";
-  position: absolute;
-  left: 12px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  font-size: 13px;
-  line-height: 1;
-  opacity: .6;
-  pointer-events: none;
-}
-
-.filter-col { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 12px; font-weight: bold; }
-.filter-col select { padding: 6px; }
-
-.count-label { font-size: 11px; color: var(--ink-soft); }
-
-.pokemon-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 4px;
-  min-height: 200px;
-}
-
-.pokemon-row {
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  white-space: pre;
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-.pokemon-row:hover { background: var(--surface-3); }
-.pokemon-row.selected { background: var(--accent); color: var(--accent-ink); }
-
-.theme-row { display: flex; align-items: center; gap: 8px; padding-top: 6px; font-size: 12px; }
-.sound-toggle { padding: 2px 10px; font-size: 14px; line-height: 1.4; }
-
-/* PAGE (shared layout wrapper used by every app-shell page) */
-.page { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-.page-title { margin: 0; font-size: 22px; }
-
-.header-banner {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: var(--s-4) var(--s-5);
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-.completion-label { font-weight: bold; font-size: 14px; white-space: nowrap; }
-
-.progress-bar { flex: 1; height: 12px; background: var(--border); border-radius: 6px; overflow: hidden; }
-.progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.2s; }
-
-/* Completion banner's track stays a smooth fill (a percentage, not a device
-   stat) but gets the pill/gradient hero treatment the segmented meters don't
-   need (upgrades/34-collection-cluster-redesign.md) -- scoped modifiers so
-   the shared base classes above (used by the battle HP bar at the time --
-   an MP bar existed alongside it back then too, but that was retired
-   entirely in upgrades/40-uses-based-move-data-model.md, not just migrated
-   to SegmentedMeter) are untouched. */
-.progress-bar.completion { height: 14px; border-radius: var(--r-pill); background: var(--surface-3); }
-.progress-fill.completion { border-radius: var(--r-pill); background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: var(--s-5);
-  box-shadow: var(--shadow-1);
-}
-
-#card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-#card-header h2 { margin: 0; font-size: 24px; }
-
-.badge-frame { display: flex; gap: 6px; }
-.badge-frame.center { justify-content: center; }
-.type-badge {
-  color: white;
-  font-weight: bold;
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: var(--r-pill);
-  display: inline-block;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
-}
-
-/* .switch-labeled (a labeled variant of this toggle) predates the redesign
-   and was never actually used by any component even before it -- removed
-   here as dead code found in a post-wave audit, not something this wave
-   introduced. */
-.switch { position: relative; }
-.switch input { display: none; }
-.switch .slider {
-  width: 40px; height: 20px; background: var(--border); border-radius: 20px; position: relative; display: inline-block; transition: background 0.2s;
-}
-.switch .slider::before {
-  content: ""; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: left 0.2s;
-}
-.switch input:checked + .slider { background: var(--accent); }
-.switch input:checked + .slider::before { left: 22px; }
-
-.sprites-card { display: flex; justify-content: space-around; gap: var(--s-4); flex-wrap: wrap; }
-.sprite-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--s-2);
-  flex: 1;
-  min-width: 140px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: var(--s-4) var(--s-5);
-}
-/* Fixed gold tint, same "rare item" logic as .shiny-badge -- not a theme
-   token, deliberately identical in both themes. */
-.sprite-col-shiny { background: linear-gradient(135deg, rgba(240, 193, 92, 0.16), var(--surface-2)); border-color: #F0C15C; }
-.sprite-label { font-size: 12px; font-weight: bold; color: var(--ink-soft); }
-.sprite-label.shiny { color: #FFD700; }
-.sprite-img { width: 120px; height: 120px; object-fit: contain; image-rendering: pixelated; }
-
-.total-stats { margin-top: 8px; font-weight: bold; color: var(--ink-soft); font-size: 13px; }
-
-.notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.notes-header h3 { margin: 0; }
-.notes-status { font-size: 11px; color: var(--ink-faint); }
-#notes-box { width: 100%; padding: 8px; font-size: 12px; resize: vertical; }
-
-/* BATTLE ARENA */
-.select-bar { display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap; }
-.fighter-select { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: bold; }
-.fighter-select select { padding: 6px; }
-.fighter-select .online-status { font-weight: 400; }
-.vs-badge { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-/* "VS badge" treatment (upgrades/36-battle-arena-and-team-picker-
-   redesign.md) -- a solid accent pill instead of plain gold text, matching
-   the same chip language used for status/type badges elsewhere. */
-.vs-text {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--accent-ink);
-  background: var(--accent);
-  padding: 6px 14px;
-  border-radius: var(--r-pill);
-  box-shadow: var(--shadow-1);
-  white-space: nowrap;
-}
-.arena-frame { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-/* Stack vertically (you on top, per DOM order) below 720px instead of
-   squeezing both FighterCards to an illegible 50% width (upgrades/36-
-   battle-arena-and-team-picker-redesign.md, DESIGN_SYSTEM.md §7). New
-   breakpoint -- nothing before this step needed the arena to reflow. */
-@media (max-width: 720px) {
-  .arena-frame { grid-template-columns: 1fr; }
-}
-.fighter-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: var(--s-4);
-  box-shadow: var(--shadow-1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.fighter-card h3 { margin: 4px 0; }
-/* "CardTab-adjacent" bezel-pill treatment (upgrades/35-battle-shared-
-   components-redesign.md) -- the literal CardTab component doesn't fit a
-   fighter card's centered, icon-less layout, so this hand-styles the same
-   dark-pill/mono/uppercase language instead (plan explicitly allows this). */
-.fighter-name-tab {
-  display: inline-flex;
-  align-items: center;
-  background: var(--ink);
-  color: var(--bg);
-  padding: 5px 12px;
-  border-radius: var(--r-pill);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-}
-.fighter-species-line { font-size: 11px; color: var(--ink-soft); margin: -4px 0 4px 0; }
-.battle-sprite { width: 85px; height: 85px; object-fit: contain; }
-.fighter-card .meter { width: 100%; }
-.moves-caption {
-  display: inline-flex;
-  align-items: center;
-  background: var(--surface-2);
-  color: var(--ink-soft);
-  padding: 4px 10px;
-  border-radius: var(--r-pill);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  margin-top: var(--s-2);
-}
-.moves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; }
-.move-btn {
-  position: relative;
-  overflow: hidden;
-  border: none;
-  border-radius: var(--r-md);
-  padding: 8px 10px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  text-align: left;
-  color: white;
-}
-/* Subtle top-highlight gradient (upgrades/35-battle-shared-components-
-   redesign.md's "movebtn-style layout") -- a light skeuomorphic sheen
-   fitting the device-readout aesthetic, sitting above the button's own
-   inline background color, below its text (both via z-index stacking). */
-.move-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .22), transparent 60%);
-  pointer-events: none;
-}
-.move-btn-name { position: relative; font-family: var(--font-display); font-weight: 800; font-size: 12px; }
-.move-btn-meta { position: relative; font-family: var(--font-mono); font-size: 10px; opacity: .85; }
-.move-btn:disabled { background: var(--surface-3) !important; color: var(--ink-faint); cursor: not-allowed; }
-.move-btn:disabled::before { display: none; }
-/* .ai-arsenal predates the redesign and was never used by any component
-   even before it -- removed as dead code found in a post-wave audit. */
-
-/* 3v3 TEAM PICKER + BENCH (upgrades/archive/v2/05-3v3-battles.md) */
-.team-picker-grid { max-height: 50vh; overflow-y: auto; }
-/* Lock-in bar (upgrades/36-battle-arena-and-team-picker-redesign.md) --
-   same sticky-footer-inside-a-card convention as Inventory's .tradeup-bar,
-   with its own background so it opaquely overlays the grid scrolling
-   behind it rather than a transparent sticky element. */
-.team-lockbar {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-3);
-  flex-wrap: wrap;
-  margin-top: var(--s-3);
-  padding: var(--s-3) var(--s-4);
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-}
-.team-lockbar-count { font-weight: 700; font-family: var(--font-mono); }
-.trade-picker-grid { max-height: 40vh; overflow-y: auto; }
-.team-picker-order {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-size: 11px;
-  font-weight: bold;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.team-picker-grid .pokemon-grid-card { position: relative; }
-
-.bench-row { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
-.bench-member {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 4px;
-  cursor: pointer;
-  color: var(--ink);
-  font: inherit;
-}
-.bench-member:hover:not(:disabled) { border-color: var(--accent); }
-.bench-member:disabled { cursor: not-allowed; opacity: 0.6; }
-.bench-member.fainted { opacity: 0.5; }
-.bench-sprite { width: 32px; height: 32px; object-fit: contain; }
-.bench-name { font-size: 10px; font-weight: bold; }
-.bench-hp { font-size: 9px; color: var(--ink-soft); }
-.bench-member .meter { width: 100%; margin: 1px 0; }
-
-.status-badges { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
-.status-badge {
-  /* inline-flex, not default inline (upgrades/archive/v3/16-status-tooltip-hover-area.md)
-     -- an inline element's hover/hit-test box for the title tooltip isn't
-     guaranteed to include its own padding consistently, so hovering the
-     padded area around the label (not just the emoji glyph) could miss
-     the tooltip. An explicit flex box gives it a real content box. */
-  display: inline-flex;
-  align-items: center;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 8px;
-  color: white;
-  white-space: nowrap;
-  cursor: help;
-}
-.status-badge.bleed { background: #C0392B; }
-.status-badge.blind { background: #7D6608; }
-.status-badge.poison { background: #7D3C98; }
-.status-badge.burn { background: #D35400; }
-.status-badge.freeze { background: #2E86C1; }
-/* atkMod/defMod/shieldPoints/redirectTurns (upgrades/archive/v4/28-move-ui-and-ally-targeting.md)
-   -- semantic mapping per design/DESIGN_SYSTEM.md §6 (step 31): buff=good,
-   debuff=bad, shield=info, redirect=warn. Paired with --accent-ink, not a
-   literal white -- these tokens run bright in dark theme (meant to read as
-   colored highlights against dark surfaces), so a fixed white would fail
-   contrast there even though it reads fine in light theme; --accent-ink
-   already encodes exactly that same "dark text on a bright token, light
-   text on a muted token" flip, just under an accent-flavored name. */
-.status-badge.buff { background: var(--good); color: var(--accent-ink); }
-.status-badge.debuff { background: var(--bad); color: var(--accent-ink); }
-.status-badge.shield { background: var(--info); color: var(--accent-ink); }
-.status-badge.redirect { background: var(--warn); color: var(--accent-ink); }
-.status-badges.compact { gap: 2px; margin-top: 2px; }
-.status-badges.compact .status-badge { font-size: 8px; padding: 1px 4px; border-radius: 6px; }
-
-.rematch-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-
-/* Ally-target picker for buff moves (upgrades/archive/v4/28-move-ui-and-ally-targeting.md) */
-.ally-target-picker { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
-.ally-target-picker .bench-row { margin-top: 0; }
-
-/* IN-MATCH CHAT (upgrades/archive/v2/08-chat.md — never persisted, local
-   state only; restyled to a bubble layout in upgrades/37-online-battle-
-   redesign.md, "own message" color already correctly on var(--accent)
-   from step 30's token sweep -- nothing to change there). */
-.chat-panel { display: flex; flex-direction: column; gap: 8px; }
-.chat-messages {
-  min-height: 100px;
-  max-height: 200px;
-  overflow-y: auto;
-  background: var(--surface-2);
-  border-radius: var(--r-md);
-  padding: var(--s-3);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  font-size: 13px;
-}
-.chat-empty { color: var(--ink-faint); margin: 0; font-size: 12px; }
-.chat-message {
-  word-break: break-word;
-  max-width: 85%;
-  padding: 5px 10px;
-  border-radius: var(--r-md);
-  background: var(--surface);
-}
-.chat-message.mine { align-self: flex-end; background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
-.chat-message.mine .chat-sender { color: var(--accent); }
-.chat-sender { font-weight: bold; }
-.chat-input-row { display: flex; gap: 8px; }
-.chat-input-row input {
-  flex: 1;
-  padding: 8px 10px;
-  background: var(--surface);
-  color: var(--ink);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--r-md);
-}
-
-.log-container { flex: 1; display: flex; flex-direction: column; }
-.action-row { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); flex-wrap: wrap; margin-bottom: var(--s-3); }
-
-/* Buttons (upgrades/31-shared-ui-primitives.md) -- pill radius, display
-   font. Each variant is a self-contained rule (not a shared .btn base +
-   modifier, since every consumer already passes a single className like
-   "btn-primary" directly) so no component markup needs to change here.
-   Padding bumped to 11px/18px (from 8px/16px) so real buttons clear ~38px
-   tall on mobile -- caught in a post-wave audit measuring an actual
-   rendered button at 33px, short of DESIGN_SYSTEM.md's touch-target
-   guidance. `.btn-ghost` (a 4th variant originally planned alongside these
-   three) was removed in the same pass: it had zero consumers anywhere in
-   the app, confirmed via a full cross-check of every CSS class against
-   every .tsx file's source -- dead code the step-39 QA sweep should have
-   caught but missed. */
-.btn-primary, .btn-secondary, .btn-danger {
-  font-family: var(--font-display);
-  border-radius: var(--r-pill);
-  padding: 11px 18px;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  transition: filter .12s ease, background-color .12s ease, border-color .12s ease;
-}
-.btn-primary, .btn-secondary { border: none; }
-.btn-primary {
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, .15), 0 6px 14px color-mix(in srgb, var(--accent) 35%, transparent);
-}
-.btn-primary:hover { filter: brightness(1.06); }
-.btn-primary:disabled { opacity: .5; cursor: not-allowed; filter: none; box-shadow: none; }
-.btn-secondary { background: var(--surface-2); color: var(--ink); border: 1px solid var(--border-strong); }
-.btn-secondary:hover { background: var(--surface-3); }
-.btn-secondary:disabled { opacity: .5; cursor: not-allowed; }
-.btn-danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); }
-.btn-danger:hover { background: var(--bad-bg); }
-.btn-danger:disabled { opacity: .5; cursor: not-allowed; }
-
-/* ONLINE BATTLE (upgrades/37-online-battle-redesign.md) */
-#online-setup { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
-.online-actions { display: flex; }
-.online-actions .btn-primary { flex: 1; }
-/* "or" divider between Create Room and the join-by-code row -- two
-   equally-weighted entry points, not a primary/secondary hierarchy. */
-.online-divider { display: flex; align-items: center; gap: var(--s-3); color: var(--ink-faint); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
-.online-divider::before, .online-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-.online-join-row { display: flex; gap: 8px; }
-.online-join-row input {
-  flex: 1; padding: 8px; text-transform: uppercase; letter-spacing: 2px; text-align: center;
-}
-.online-status { font-size: 13px; color: var(--ink-soft); white-space: pre-wrap; min-height: 18px; }
-/* Compact inline room-code reference for the picking/battling select-bars
-   -- distinct from .friend-code-display's full "code plate" treatment,
-   which is reserved for the dedicated waiting-room screen where the code
-   is the whole point of the card. */
-.room-code-chip { font-family: var(--font-mono); font-weight: 700; letter-spacing: .08em; background: var(--surface-2); padding: 2px 8px; border-radius: var(--r-sm); }
-
-/* Terminal readout (upgrades/31-shared-ui-primitives.md): dark screen /
-   light text in dark mode, flips to light screen / dark text in light
-   mode -- token-driven, not a permanently-inverted panel. An earlier pass
-   hardcoded this to var(--ink), which flips *opposite* of what's wanted
-   (illegible light-on-light once the app is in dark theme) -- caught
-   during design review, see upgrades/main.md's key decisions. */
-.battle-log {
-  flex: 1;
-  min-height: 220px;
-  max-height: 320px;
-  overflow-y: auto;
-  background: var(--surface-3);
-  color: var(--ink);
-  border-radius: var(--r-md);
-  padding: 10px;
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 12px;
-  white-space: pre-wrap;
   margin: 0;
 }
-/* Per-line highlighting (lib/battleEngine.ts's classifyLogLine) -- each
-   log entry now renders as its own child instead of one joined string, so
-   individual lines can carry a class. white-space: pre-wrap above is an
-   inherited property, so it still applies to these children without
-   needing to repeat it here. Fixed accent colors in both themes, same
-   "rare item"/status-badge convention as elsewhere -- these are highlight
-   colors, not theme-flipping surface colors. */
-.battle-log .win { color: var(--good); font-weight: 700; }
-.battle-log .loss { color: var(--bad); font-weight: 700; }
-.battle-log .hit { color: var(--accent-2); }
 
-/* ACCOUNT (sidebar) */
-.account-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding-top: 8px;
-  margin-top: 4px;
-  border-top: 1px solid var(--border);
-  font-size: 12px;
+p { margin: 0; text-wrap: pretty; }
+a { color: inherit; }
+img { max-width: 100%; }
+button { font: inherit; color: inherit; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+::selection { background: var(--accent-soft); }
+
+.icon { flex: none; vertical-align: middle; }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
-.account-name {
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-soft); }
+.faint { color: var(--ink-faint); }
+.small { font-size: 13px; }
+.link { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; }
+.link:hover { text-decoration-color: var(--accent); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.row-end { margin-left: auto; }
+.stack { display: grid; gap: 12px; align-content: start; }
+
+/* ---------- Page scaffolding ---------- */
+
+.page {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 28px 56px;
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+.page-narrow { max-width: 760px; }
+
+.page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 20px; }
+.page-head h1,
+.page-title { font-size: 28px; }
+.page-head .eyebrow { display: block; margin-bottom: 4px; }
+.page-head-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.panel,
+.card /* transitional alias, removed once every screen uses .panel */ {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  min-width: 0;
+}
+.panel-flush { padding: 0; overflow: hidden; }
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.panel-flush > .panel-head { padding: 14px 16px 0; margin-bottom: 8px; }
+.panel-head h2 { font-size: 16px; }
+.panel-head .link,
+.panel-head a { font-size: 13px; color: var(--ink-soft); }
+
+.empty {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 32px 16px;
+  color: var(--ink-soft);
+}
+.empty .icon { color: var(--ink-faint); }
+.empty h3 { font-size: 17px; color: var(--ink); }
+.empty p { max-width: 42ch; font-size: 14px; }
+
+.alert {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+.alert-error { background: var(--bad-soft); color: var(--bad); border-color: color-mix(in srgb, var(--bad) 30%, transparent); }
+.alert-info { background: var(--info-soft); color: var(--info); border-color: color-mix(in srgb, var(--info) 30%, transparent); }
+.alert-good { background: var(--good-soft); color: var(--good); border-color: color-mix(in srgb, var(--good) 30%, transparent); }
+
+/* ---------- Buttons ---------- */
+
+.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.08s, box-shadow 0.15s;
+}
+.btn:hover, .btn-secondary:hover { border-color: var(--line-strong); background: var(--surface-3); }
+.btn:active, .btn-primary:active, .btn-secondary:active, .btn-ghost:active, .btn-danger:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--accent-ink);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 32%, transparent);
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+.btn-ghost { background: transparent; border-color: transparent; color: var(--ink-soft); }
+.btn-ghost:hover { background: var(--surface-2); color: var(--ink); }
+
+.btn-danger { background: transparent; color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, transparent); }
+.btn-danger:hover { background: var(--bad-soft); }
+
+.btn-sm { min-height: 32px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
+.btn-lg { min-height: 48px; padding: 0 22px; font-size: 16px; }
+.btn-block { width: 100%; }
+
+.btn:disabled, .btn-primary:disabled, .btn-secondary:disabled, .btn-ghost:disabled, .btn-danger:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+}
+.icon-btn:hover { color: var(--ink); border-color: var(--line-strong); }
+.icon-btn-plain { border-color: transparent; background: transparent; }
+
+.dot-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  border: 2px solid var(--surface);
+}
+
+/* ---------- Form controls ---------- */
+
+.field { display: grid; gap: 6px; }
+.field > span,
+.field > label { font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+select,
+textarea {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+input::placeholder, textarea::placeholder { color: var(--ink-faint); }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+input:disabled, select:disabled, textarea:disabled { opacity: 0.55; }
+select {
+  appearance: none;
+  padding-right: 32px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+  background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.search-input { position: relative; display: flex; align-items: center; min-width: 0; }
+.search-input .icon { position: absolute; left: 12px; color: var(--ink-faint); pointer-events: none; }
+.search-input input { padding-left: 36px; }
+
+.code-input { font-family: var(--font-mono) !important; letter-spacing: 0.18em; text-transform: uppercase; }
+
+/* Segmented control (view toggles, quantity pickers) */
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"],
+.seg button.active { background: var(--surface-3); color: var(--ink); box-shadow: var(--shadow-1); }
+.seg button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Filter chips */
+.chip-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.chip-row::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.filter-chip:hover { color: var(--ink); border-color: var(--line-strong); }
+.filter-chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.filter-chip .swatch { width: 8px; height: 8px; border-radius: 50%; }
+
+/* Switch */
+.switch { position: relative; display: inline-block; width: 36px; height: 20px; flex: none; }
+.switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.switch .slider { position: absolute; inset: 0; border-radius: var(--r-pill); background: var(--surface-3); cursor: pointer; transition: background 0.15s; }
+.switch .slider::before { content: ""; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; border-radius: 50%; background: var(--ink); transition: transform 0.15s; }
+.switch input:checked + .slider { background: var(--accent); }
+.switch input:checked + .slider::before { transform: translateX(16px); background: #fff; }
+.switch input:focus-visible + .slider { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Chips & labels ---------- */
+
+.type-chips { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.type-chips.center { justify-content: center; }
+.type-chip {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+}
+.type-chips.small .type-chip { font-size: 10px; padding: 1px 5px; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tag-good { color: var(--good); background: var(--good-soft); border-color: transparent; }
+.tag-bad { color: var(--bad); background: var(--bad-soft); border-color: transparent; }
+.tag-warn { color: var(--warn); background: var(--warn-soft); border-color: transparent; }
+.tag-info { color: var(--info); background: var(--info-soft); border-color: transparent; }
+.tag-accent { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+.tag-shiny { color: var(--r-shiny); background: color-mix(in srgb, var(--r-shiny) 14%, transparent); border-color: transparent; }
+
+/* Rarity: any element with a .rarity-* class gets --rc, which cards,
+   reel cells and grade labels read. */
+.rarity-common { --rc: var(--r-common); }
+.rarity-uncommon { --rc: var(--r-uncommon); }
+.rarity-rare { --rc: var(--r-rare); }
+.rarity-epic { --rc: var(--r-epic); }
+.rarity-legendary { --rc: var(--r-legendary); }
+.rarity-shiny { --rc: var(--r-shiny); }
+.grade-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rc, var(--ink-faint));
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--r-uncommon), var(--r-rare));
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+.avatar-sm { width: 28px; height: 28px; font-size: 11px; }
+.avatar-lg { width: 56px; height: 56px; font-size: 20px; }
+
+/* ---------- Pokémon card (the collection atom) ---------- */
+
+.pcard {
+  --rc: var(--r-common);
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 8px 12px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  overflow: hidden;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+.pcard::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 60%;
+  background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--rc) 24%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.pcard::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--rc); }
+.pcard:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+.pcard[aria-pressed="true"],
+.pcard.is-active { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.pcard.is-disabled { opacity: 0.38; cursor: not-allowed; transform: none; }
+.pcard > * { position: relative; }
+.pcard-sprite { width: 72px; height: 72px; object-fit: contain; image-rendering: pixelated; }
+.pcard-name {
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: bold;
-}
-
-/* AUTH PAGES (login/signup) */
-.auth-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  padding: 20px;
-}
-.auth-form {
-  width: 100%;
-  max-width: 360px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.auth-form h1 { margin: 0 0 4px 0; font-size: 22px; text-align: center; }
-.auth-form label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: bold; }
-.auth-form input {
-  background: var(--surface);
-  color: var(--ink);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--r-md);
-  padding: 8px 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-size: 14px;
 }
-/* Cross-page consistency pass (upgrades/39-responsive-theme-qa-pass.md) --
-   .auth-error and both link colors below were still on hardcoded hex left
-   over from before this wave; DESIGN_SYSTEM.md §1 explicitly maps errors
-   onto --bad and links onto --info, so these now read the same tokens
-   status badges/buttons already do instead of a fixed color that can't
-   adapt between themes. */
-.auth-error { color: var(--bad); font-size: 13px; margin: 0; }
-.auth-switch { font-size: 13px; color: var(--ink-soft); text-align: center; margin: 0; }
-.auth-switch a { color: var(--info); }
-
-/* PROFILE (upgrades/33-account-cluster-redesign.md) -- purely decorative
-   avatar circle (no upload system exists or is planned) above the
-   editable fields. */
-.profile-card { max-width: 420px; }
-/* .auth-form's own 360px cap is meant for when it *is* the whole card
-   (login/signup) -- here it's nested inside .profile-card instead, so it
-   needs to fill that card's width rather than double-capping narrower
-   and leaving a gap. Compound selector, not a rename, so login/signup's
-   plain .auth-form usage is untouched. */
-.auth-form.profile-form { max-width: none; }
-.avatar-lg {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--surface-3), var(--surface));
-  border: 1px solid var(--border);
+.pcard-sub { font-size: 11px; color: var(--ink-faint); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pcard-total { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-faint); }
+.pcard-check {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
-  font-size: 28px;
-}
-.profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: var(--s-4); }
-.profile-header-name { font-weight: 700; font-size: 16px; }
-.profile-header-email { font-size: 12px; color: var(--ink-soft); }
-
-/* DASHBOARD */
-/* Stat strip (upgrades/33-account-cluster-redesign.md) -- the 4 headline
-   numbers (bot wins, bot win rate, online wins, dex-owned %) promoted out
-   of the Battle Stats/Collection Stats prose cards below, since those are
-   the numbers a trainer actually checks at a glance. 4-across >=720px,
-   2x2 below, per design/DESIGN_SYSTEM.md §7. */
-.stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-3); }
-.stat-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 10px 12px; }
-.stat-tile-n { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 19px; font-weight: 700; }
-.stat-tile-l { font-size: 10.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .03em; }
-@media (max-width: 720px) {
-  .stat-strip { grid-template-columns: repeat(2, 1fr); }
-}
-
-.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; align-items: start; }
-.dashboard-team { display: flex; gap: 12px; flex-wrap: wrap; }
-.dashboard-team-member { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; text-align: center; width: 90px; }
-.dashboard-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; }
-.dashboard-note { font-size: 12px; color: var(--ink-soft); margin: 8px 0 0 0; }
-.dashboard-note a { color: var(--info); }
-
-/* Shared "list row inside a card" shape across History/Leaderboard/
-   Notifications (and Friends/Trades below) -- upgrades/38-social-cluster-
-   redesign.md's cross-check that these don't each drift to slightly
-   different padding/radius/font-size despite sharing the same underlying
-   icon-chip + primary-line + muted-meta-line shape from DESIGN_SYSTEM.md.
-   surface-2 (the nested-panel token) gives each row a background distinct
-   from the parent .card, which is plain .surface -- flat rows against a
-   same-color card would have no separation without it. */
-.match-list, .notification-list, .leaderboard-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-2); }
-.match-row, .leaderboard-row, .notification-row {
-  background: var(--surface-2);
-  border-radius: var(--r-md);
-  padding: var(--s-3) var(--s-4);
-  font-size: 13px;
-}
-.match-row { display: flex; align-items: flex-start; gap: var(--s-3); }
-.match-row-icon { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; font-size: 16px; background: var(--surface-3); border-radius: var(--r-pill); }
-.match-row-body { flex: 1; min-width: 0; }
-/* Semantic remap onto --good/--bad (upgrades/38-social-cluster-redesign.md)
-   -- .win previously rode the app-wide hardcoded-green-to-accent swap from
-   step 30, which was mechanically correct then but not the final home for
-   a win/loss signal once --good/--bad existed to hold it. */
-.match-row.win { border-left: 3px solid var(--good); }
-.match-row.loss { border-left: 3px solid var(--bad); }
-
-.match-row-detailed .match-row-main { display: flex; justify-content: space-between; gap: 10px; font-weight: bold; }
-.match-row-date { font-weight: normal; color: var(--ink-soft); white-space: nowrap; }
-.match-row-sub { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
-
-/* LEADERBOARD */
-.leaderboard-row {
-  display: grid;
-  grid-template-columns: 32px 1fr auto;
-  align-items: center;
-  gap: var(--s-3);
-}
-.leaderboard-row.me { border: 1px solid var(--accent); }
-
-/* NOTIFICATIONS (upgrades/archive/v3/17-persistent-notifications.md) */
-.notification-row {
-  display: grid;
-  grid-template-columns: 32px 1fr auto;
-  align-items: center;
-  gap: var(--s-3);
-}
-.notification-row-icon { width: 32px; height: 32px; display: grid; place-items: center; font-size: 16px; background: var(--surface-3); border-radius: var(--r-pill); }
-.notification-row.unread { border-left: 3px solid var(--accent); }
-.notification-row-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.notification-row-date { font-size: 11px; color: var(--ink-soft); }
-.notification-row-unavailable { color: var(--ink-soft); font-style: italic; font-size: 12px; margin: 0; }
-.notification-action { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.leaderboard-rank { font-size: 16px; text-align: center; }
-.leaderboard-name { font-weight: bold; }
-.leaderboard-wins { color: var(--ink-soft); font-size: 13px; white-space: nowrap; }
-
-/* CAUGHT BADGE (Pokedex tab, replaces the old manual toggle) -- soft
-   good-tinted pill (upgrades/31-shared-ui-primitives.md) since "caught" is
-   the same semantic concept as a win/high-HP, not the brand accent. */
-.caught-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--ink-faint); }
-.caught-badge.caught { background: var(--good-bg); color: var(--good); }
-
-/* SHINY BADGE (upgrades/archive/03-shiny-pokemon.md) — an owned instance whose
-   rolled stats+moveset landed in roughly the top 10% for its species.
-   Fixed warm-gold gradient (upgrades/31-shared-ui-primitives.md), same in
-   both themes -- a deliberate "rare item" treatment, not a theme token. */
-.shiny-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: var(--r-pill); background: linear-gradient(135deg, #FFE9A8, #F0C15C); color: #4A3200; }
-
-/* STARTER BADGE (upgrades/34-collection-cluster-redesign.md) -- outlined
-   accent pill, distinct from shiny's solid gold fill so a starter+shiny
-   instance reads as two separate facts, not one badge fighting the other. */
-.starter-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: var(--r-pill); background: var(--surface-2); border: 1px solid var(--accent); color: var(--accent); }
-.grid-card-badges { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
-
-/* INVENTORY / POKEDEX toolbars + grid/list views */
-.inventory-toolbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
-.inventory-toolbar .search { flex: 1; min-width: 160px; }
-
-.view-toggle { display: flex; gap: 4px; }
-.view-toggle button {
-  background: var(--surface);
-  color: var(--ink);
-  border: 1px solid var(--border-strong);
   border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.view-toggle button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-
-/* TRADE UP button -- pulled out of the view-toggle button group visually
-   (margin-left: auto) and given its own "fire" identity instead of
-   swapping between .btn-primary/.btn-secondary, so it reads as a separate
-   action, not a third view mode (upgrades/34-collection-cluster-redesign.md). */
-.btn-tradeup {
-  margin-left: auto;
-  border-radius: var(--r-pill);
-  border: 1px solid var(--accent-2);
+  border: 1.5px solid var(--ink-faint);
   background: var(--surface);
-  color: var(--accent-2);
-  font-weight: 700;
-  font-size: 13px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-.btn-tradeup:hover { background: var(--accent-2); color: var(--accent-2-ink); }
-.btn-tradeup.active { background: var(--accent-2); color: var(--accent-2-ink); box-shadow: var(--shadow-1); }
-
-/* EVOLVE button (upgrades/51-evolution-api-and-inventory-ui.md) -- same
-   pill shape as TRADE UP above, --accent instead of --accent-2 so the two
-   conditionally-available "burn 5 for something" actions read as visually
-   distinct. Sits right after Trade Up, which keeps the margin-left: auto
-   that pushes both to the right of the view-toggle group. */
-.btn-evolve {
-  border-radius: var(--r-pill);
-  border: 1px solid var(--accent);
-  background: var(--surface);
-  color: var(--accent);
-  font-weight: 700;
-  font-size: 13px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-.btn-evolve:hover { background: var(--accent); color: var(--accent-ink); }
-.btn-evolve.active { background: var(--accent); color: var(--accent-ink); box-shadow: var(--shadow-1); }
-
-.inventory-layout { display: grid; grid-template-columns: 1fr 340px; gap: 12px; align-items: start; }
-@media (max-width: 900px) {
-  .inventory-layout { grid-template-columns: 1fr; }
-}
-
-/* MOBILE SPLIT-PANE -> FULL-SCREEN DETAIL (upgrades/34-collection-cluster-
-   redesign.md) -- shared by Pokedex and Inventory so the breakpoint logic
-   lives in one place. Both pages toggle the same "mobile-detail-open" class
-   on their .inventory-layout wrapper; on >=900px this block doesn't apply at
-   all, so desktop's split pane (above) is unaffected either way. */
-.detail-back-btn { display: none; }
-@media (max-width: 899px) {
-  .detail-back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: none;
-    color: var(--ink-soft);
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    padding: 0 0 var(--s-3) 0;
-  }
-  .inventory-layout:not(.mobile-detail-open) .inventory-detail { display: none; }
-  .inventory-layout.mobile-detail-open > .pokemon-grid,
-  .inventory-layout.mobile-detail-open > .pokemon-list {
-    display: none;
-  }
-  .inventory-layout.mobile-detail-open .inventory-detail {
-    position: fixed;
-    inset: 0;
-    z-index: 40;
-    overflow-y: auto;
-    background: var(--bg);
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    margin: 0;
-    padding: var(--s-5);
-  }
-}
-
-/* TRADE-UP (upgrades/archive/v2/14-pokemon-tradeup.md) */
-.tradeup-bar {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 10px;
-  padding: 10px 14px;
-}
-.tradeup-count { font-weight: bold; }
-.tradeup-confirm-list { list-style: none; margin: 10px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.tradeup-confirm-list li { padding: 6px 8px; background: var(--surface); border-radius: 6px; font-size: 13px; }
-
-/* EVOLVE (upgrades/51-evolution-api-and-inventory-ui.md) -- identical
-   layout to TRADE-UP above, kept as separate rules (not a shared selector)
-   so either can be restyled independently later without fighting the other. */
-.evolve-bar {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 10px;
-  padding: 10px 14px;
-}
-.evolve-count { font-weight: bold; }
-.evolve-confirm-list { list-style: none; margin: 10px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-.evolve-confirm-list li { padding: 6px 8px; background: var(--surface); border-radius: 6px; font-size: 13px; }
-
-.pokemon-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-  max-height: 70vh;
-  overflow-y: auto;
-  padding: 4px;
-}
-.pokemon-grid-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  text-align: center;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.pokemon-grid-card:hover { border-color: var(--accent); box-shadow: var(--shadow-1); }
-.pokemon-grid-card.selected { background: var(--accent); color: var(--accent-ink); }
-.pokemon-grid-card.disabled, .pokemon-row.disabled { opacity: 0.4; cursor: not-allowed; }
-.pokemon-grid-card.disabled:hover { border-color: var(--border); }
-.grid-card-sprite { width: 64px; height: 64px; object-fit: contain; }
-.grid-card-name { font-size: 12px; font-weight: bold; }
-.grid-card-species { font-size: 10px; color: var(--ink-soft); }
-/* .grid-card-species's own color would otherwise win over the parent's
-   inherited accent-ink and render near-invisible on the selected
-   background -- explicit override, not inheritance, restores it to
-   readable in both themes (accent-ink flips dark/light with the theme). */
-.pokemon-grid-card.selected .grid-card-species { color: var(--accent-ink); }
-.grid-card-total { font-size: 11px; }
-
-.inventory-layout .pokemon-list { max-height: 70vh; }
-
-/* Below 900px, don't cap the list/grid at a flat 70vh -- that's a
-   desktop-split-pane height, and on a single-column mobile layout it let
-   the list's own inner scroll box extend behind the fixed .tab-bar,
-   hiding its bottom rows with no visual cue more content existed
-   (confirmed live: the box's own bottom edge sat 70-140px past the tab
-   bar's top edge, depending on the page). `.app-main` already reserves
-   padding-bottom for the tab bar (see the MOBILE SPLIT-PANE block below),
-   so removing the inner cap here lets the page's own scroll handle it
-   correctly instead of nesting a second, shorter scroll region inside it. */
-@media (max-width: 899px) {
-  .inventory-layout > .pokemon-grid,
-  .inventory-layout .pokemon-list {
-    max-height: none;
-    overflow: visible;
-  }
-}
-
-.inventory-detail { display: flex; flex-direction: column; gap: 10px; }
-
-/* LOOTBOX HERO (upgrades/34-collection-cluster-redesign.md) -- the unopened-
-   lootboxes card reads as a distinct "hero" element, not a plain .card, in
-   both the single and batch-open states. color-mix keeps the tint subtle
-   enough that plain var(--ink) text stays legible across it in both themes. */
-.lootbox-hero {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-2) 20%, var(--surface)), var(--surface) 65%);
-  border-color: var(--accent-2);
-}
-.rename-btn { font-size: 11px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
-.nickname-edit-form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.nickname-edit-form input { flex: 1; min-width: 120px; }
-.detail-species-line { font-size: 12px; color: var(--ink-soft); margin: -6px 0 0 0; }
-.lootbox-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.lootbox-batch-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.lootbox-qty-stepper input { width: 56px; text-align: center; padding: 6px 4px; }
-.move-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
-.move-list li { padding: 4px 8px; background: var(--surface); border-radius: 6px; }
-
-/* MODAL (upgrades/archive/v2/02-battle-result-dialog.md) — shared by any dialog/overlay */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.modal-panel { position: relative; max-width: 420px; width: 100%; text-align: center; border-radius: var(--r-xl); box-shadow: var(--shadow-2); }
-.modal-panel-large { max-width: 640px; }
-
-/* WELCOME DIALOG (upgrades/archive/main.md's post-plan onboarding addition) */
-.welcome-dialog-body { text-align: left; font-size: 13px; }
-.welcome-dialog-list { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 10px; line-height: 1.5; }
-.modal-close {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  background: transparent;
-  border: none;
-  color: var(--ink-soft);
-  font-size: 16px;
-  cursor: pointer;
-  padding: 4px 8px;
-}
-.modal-close:hover { color: var(--ink); }
-
-.battle-result-dialog { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 6px; }
-.battle-result-dialog h2 { margin: 0; }
-.battle-result-lootbox { color: var(--accent-2); font-weight: bold; }
-.battle-result-no-lootbox { color: var(--ink-soft); }
-.battle-result-actions { display: flex; gap: 10px; }
-
-/* LOOTBOX REVEAL (upgrades/archive/v2/04-lootbox-opening.md) — the roll already
-   happened server-side; everything here is a cosmetic client-side reveal
-   of an already-decided result, never a second roll. */
-.lootbox-reveal { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 6px; min-height: 260px; justify-content: center; cursor: pointer; }
-.lootbox-drumroll { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-@keyframes lootbox-shake {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  20% { transform: rotate(-8deg) scale(1.05); }
-  40% { transform: rotate(8deg) scale(1.05); }
-  60% { transform: rotate(-6deg) scale(1.02); }
-  80% { transform: rotate(6deg) scale(1.02); }
-}
-.lootbox-drumroll-icon { font-size: 64px; animation: lootbox-shake 0.5s ease-in-out infinite; }
-.lootbox-reveal-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  opacity: 0;
-  transform: scale(0.85);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-.lootbox-reveal-content.revealed { opacity: 1; transform: scale(1); }
-.lootbox-reveal-content h2 { margin: 4px 0 0 0; }
-/* Fixed gold "rare item" treatment, same reasoning as .shiny-badge -- not a
-   theme token, identical in both themes (upgrades/34-collection-cluster-
-   redesign.md). */
-.lootbox-reveal-content.lootbox-reveal-shiny {
-  border: 2px solid #F0C15C;
-  border-radius: var(--r-lg);
-  padding: var(--s-4);
-  background: radial-gradient(circle at 50% 30%, rgba(240, 193, 92, 0.18), transparent 70%);
-}
-.lootbox-reveal-content.lootbox-reveal-shiny .lootbox-reveal-sprite { filter: drop-shadow(0 0 14px rgba(240, 193, 92, 0.55)); }
-.lootbox-reveal-sprite { width: 160px; height: 160px; object-fit: contain; image-rendering: pixelated; }
-.lootbox-stats { width: 100%; max-width: 320px; }
-.lootbox-moves { width: 100%; max-width: 320px; }
-.lootbox-moves h3 { margin: 6px 0; text-align: center; }
-.lootbox-moves .move-list li {
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.lootbox-moves .move-list li.move-revealed { opacity: 1; transform: translateY(0); }
-.lootbox-reveal-actions { margin-top: 8px; }
-
-/* TOASTS (upgrades/archive/v2/05-friend-system.md) — app-wide live notifications.
-   align-items: flex-end (upgrades/31-shared-ui-primitives.md) + toast-card's
-   own width: fit-content keep each toast only as wide as its content and
-   anchored to the stack's right edge, instead of stretching to match
-   .toast-stack's width (the flex column's default cross-axis stretch) --
-   caught during design review, see upgrades/main.md's key decisions. */
-.toast-stack {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  z-index: 90;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  max-width: 320px;
-}
-.toast-card {
-  position: relative;
-  width: fit-content;
-  max-width: 100%;
-  padding: 10px 28px 10px 14px;
-  font-size: 13px;
-  line-height: 1.4;
-  box-shadow: var(--shadow-2);
-}
-.toast-close {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: transparent;
-  border: none;
-  color: var(--ink-soft);
-  cursor: pointer;
-  font-size: 12px;
-  padding: 4px;
-}
-.toast-close:hover { color: var(--ink); }
-.toast-invite { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.toast-action { font-size: 11px; padding: 4px 10px; }
-
-/* FRIENDS PAGE (upgrades/archive/v2/05-friend-system.md) */
-/* "Code plate" treatment (upgrades/33-account-cluster-redesign.md) --
-   shared by Profile and Friends (both use this exact class) and Online's
-   room-code display (step 37). A dashed border reads as "this is meant to
-   be copied," distinct from a plain input or a static value. */
-.friend-code-display {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: .18em;
-  text-align: center;
-  background: var(--surface-2);
-  border: 1.5px dashed var(--border-strong);
-  border-radius: var(--r-md);
-  padding: 12px;
-  margin: 8px 0;
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-}
-/* Friend/trade rows join History/Leaderboard/Notifications' shared row
-   shape (upgrades/38-social-cluster-redesign.md) -- surface-2 card-rows
-   with their own gap, replacing the old plain border-bottom divider list. */
-.friend-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: var(--s-3) var(--s-4);
-  background: var(--surface-2);
-  border-radius: var(--r-md);
-  margin-bottom: var(--s-2);
-}
-.friend-row:last-child { margin-bottom: 0; }
-.friend-row-identity { display: flex; align-items: center; gap: var(--s-3); }
-.friend-row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-/* Same radial-gradient recipe as .avatar-lg (step 33), scaled down for a
-   list row rather than a page header. */
-.avatar-sm {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--surface-3), var(--surface));
-  border: 1px solid var(--border);
-  display: grid;
-  place-items: center;
-  font-size: 15px;
-}
-
-.trade-row {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: var(--s-3) var(--s-4);
-  background: var(--surface-2);
-  border-radius: var(--r-md);
-  margin-bottom: var(--s-2);
-  font-size: 13px;
-}
-.trade-row:last-child { margin-bottom: 0; }
-.trade-row-header { font-weight: bold; }
-.trade-row-pokemon { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.trade-row-side { display: flex; flex-direction: column; gap: 6px; }
-.trade-row-side h4 { margin: 0; font-size: 11px; font-weight: bold; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.3px; }
-.trade-row-cards { display: flex; gap: 6px; flex-wrap: wrap; }
-/* Same card as the interactive pickers, but purely informational here --
-   no selection, so the pointer cursor / hover highlight (which imply
-   "click me") are turned off. */
-.trade-row-cards .pokemon-grid-card { width: 92px; cursor: default; }
-.trade-row-cards .pokemon-grid-card:hover { border-color: var(--border); }
-.trade-row-arrow { font-size: 20px; color: var(--ink-soft); align-self: center; }
-.trade-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
-.trade-builder { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-.trade-builder-actions { display: flex; gap: 8px; }
-/* Same contrast fix as .status-badge.buff/etc (step 31) -- --bad runs
-   bright in dark theme, so a literal white label would fail contrast
-   there even though it read fine in light theme; --accent-ink already
-   encodes the correct flip. */
-.nav-link-badge {
-  background: var(--bad);
-  color: var(--accent-ink);
-  font-size: 10px;
-  font-weight: bold;
-  border-radius: 10px;
-  padding: 1px 6px;
-  margin-left: 6px;
-}
-
-/* SEGMENTED METER (components/ui/SegmentedMeter.tsx, upgrades/31-shared-
-   ui-primitives.md) — the Game Boy-style HP/stat readout that replaces
-   the old smooth .progress-fill gradient fill. Wired into every stat/HP
-   context app-wide by steps 34/35 (Pokédex/Inventory/LootboxReveal, then
-   FighterCard's active + compact bench sizes); an MP row was one of those
-   original contexts too, but that row was removed entirely (not just
-   restyled) in upgrades/40-uses-based-move-data-model.md. */
-.meter { display: grid; grid-template-columns: 58px 1fr 56px; align-items: center; gap: var(--s-3); font-size: 12px; margin: 5px 0; }
-.meter .m-label { font-weight: 700; color: var(--ink-soft); }
-.meter .m-value { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-.segbar { height: 10px; border-radius: 4px; background: var(--surface-2); display: flex; gap: 2px; padding: 2px; overflow: hidden; }
-.segbar span { flex: 1; border-radius: 2px; background: var(--surface-3); }
-.segbar span.on { background: var(--seg-color, var(--accent)); }
-
-/* Bench-member size (upgrades/35-battle-shared-components-redesign.md) --
-   same component, smaller everything to fit inside a ~1/3-width bench card. */
-.meter.compact { grid-template-columns: 20px 1fr 30px; gap: 4px; font-size: 8px; margin: 2px 0; }
-.meter.compact .segbar { height: 6px; padding: 1px; gap: 1px; }
-
-/* CARD TAB (components/ui/CardTab.tsx, upgrades/31-shared-ui-primitives.md)
-   — the overlapping icon-chip + eyebrow-label header every card wears
-   instead of an inline-emoji <h3>. Wired app-wide by steps 33–38; the few
-   cards that intentionally keep a plain heading (identity-style headers
-   like PokemonDetail's #card-header, or dialog titles inside Modal) are
-   documented as deliberate exceptions in their own step files. */
-.card-tab {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--ink);
   color: var(--bg);
-  padding: 5px 12px 5px 6px;
-  border-radius: var(--r-pill);
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  margin-bottom: var(--s-3);
 }
-.card-tab-chip {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
+.pcard[aria-pressed="true"] .pcard-check { background: var(--ink); border-color: var(--ink); }
+.pcard-order {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 22px;
+  height: 22px;
   display: grid;
   place-items: center;
-  font-size: 10px;
+  border-radius: 50%;
   background: var(--accent);
   color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+.pcard-flags { position: absolute; top: 7px; right: 7px; display: flex; gap: 3px; color: var(--r-shiny); }
+.pcard-flags .starter { color: var(--ink-soft); }
+
+.pcard-compact { padding: 6px 6px 8px; gap: 2px; }
+.pcard-compact .pcard-sprite { width: 52px; height: 52px; }
+.pcard-compact .pcard-name { font-size: 12px; }
+
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; align-content: start; }
+.pgrid-sm { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+
+/* Row variant (list view) */
+.prow {
+  --rc: var(--r-common);
+  display: grid;
+  grid-template-columns: 4px 44px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px 6px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  background: transparent;
+}
+.prow:hover { background: var(--surface-2); }
+.prow[aria-pressed="true"] { background: var(--surface-3); }
+.prow.is-disabled { opacity: 0.38; cursor: not-allowed; }
+.prow-band { align-self: stretch; background: var(--rc); border-radius: 0 2px 2px 0; }
+.prow img { width: 44px; height: 44px; image-rendering: pixelated; object-fit: contain; }
+.prow-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prow-name .faint { font-weight: 400; margin-left: 6px; font-size: 13px; }
+
+/* ---------- Meters ---------- */
+
+.meter {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.meter .m-label { color: var(--ink-soft); }
+.meter .segbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; }
+.meter .segbar span { height: 8px; border-radius: 2px; background: var(--surface-3); transition: background-color 0.25s; }
+.meter .segbar span.on { background: var(--seg-color, var(--good)); }
+.meter .m-value { font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); text-align: right; font-variant-numeric: tabular-nums; }
+.meter.compact { grid-template-columns: minmax(0, 1fr) auto; gap: 6px; }
+.meter.compact .m-label { display: none; }
+.meter.compact .segbar span { height: 5px; }
+.meter.compact .m-value { font-size: 10.5px; }
+
+.hpbar { height: 8px; border-radius: var(--r-pill); background: var(--surface-3); overflow: hidden; }
+.hpbar > span { display: block; height: 100%; border-radius: inherit; background: var(--good); transition: width 0.5s ease, background-color 0.3s; }
+.hpbar.mid > span { background: var(--warn); }
+.hpbar.low > span { background: var(--bad); }
+
+/* ---------- Dialog & toasts ---------- */
+
+dialog.dialog {
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-2);
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+}
+dialog.dialog.dialog-lg { width: min(760px, calc(100vw - 32px)); }
+dialog.dialog.dialog-xl { width: min(1040px, calc(100vw - 32px)); }
+dialog.dialog::backdrop { background: var(--scrim); backdrop-filter: blur(3px); }
+dialog.dialog[open] { animation: dialog-in 0.18s ease-out; }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+.dialog-body { padding: 24px; display: grid; gap: 14px; }
+.dialog-body > h2 { font-size: 20px; padding-right: 32px; }
+.dialog-close { position: absolute; top: 14px; right: 14px; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+.confirm-list { display: grid; gap: 6px; max-height: 260px; overflow: auto; }
+.confirm-list li { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: var(--r-md); background: var(--surface-2); font-size: 14px; }
+.confirm-list img { width: 36px; height: 36px; image-rendering: pixelated; }
+
+.toast-stack {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 200;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+  width: min(380px, calc(100vw - 32px));
+}
+.toast {
+  position: relative;
+  width: 100%;
+  padding: 12px 40px 12px 14px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-2);
+  font-size: 14px;
+  animation: toast-in 0.2s ease-out;
+}
+.toast .toast-close { position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
+
+/* ---------- App shell ---------- */
+
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  grid-template-rows: var(--topbar-h) minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+.topbar {
+  grid-column: 1 / -1;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: calc(var(--rail-w) - 32px);
+  flex: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  color: var(--ink);
+}
+.brand-ball {
+  position: relative;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: linear-gradient(var(--accent) 0 44%, var(--ink) 44% 56%, #fff 56%);
+}
+.brand-ball::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); }
+
+.top-search { flex: 1; max-width: 380px; position: relative; }
+.top-search input { min-height: 36px; background: var(--surface-2); }
+.top-search kbd {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 5px;
+  pointer-events: none;
+}
+.search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  padding: 6px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-2);
+  display: grid;
+  gap: 2px;
+  max-height: 60vh;
+  overflow: auto;
+}
+.search-result {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 14px;
+}
+.search-result img { width: 36px; height: 36px; image-rendering: pixelated; }
+.search-result:hover,
+.search-result[aria-selected="true"] { background: var(--surface-2); }
+.search-empty { padding: 12px; color: var(--ink-soft); font-size: 14px; }
+
+.top-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+.case-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 5px 0 12px;
+  border-radius: var(--r-md);
+  border: 1px solid color-mix(in srgb, var(--r-shiny) 40%, var(--line));
+  background: color-mix(in srgb, var(--r-shiny) 10%, var(--surface-2));
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.case-chip .icon { color: var(--r-shiny); }
+.case-chip .case-chip-go { padding: 5px 9px; border-radius: 7px; background: var(--accent); color: var(--accent-ink); font-size: 12px; }
+.case-chip:hover { border-color: var(--r-shiny); }
+.case-chip.is-empty { border-color: var(--line); background: var(--surface-2); color: var(--ink-soft); }
+.case-chip.is-empty .icon { color: var(--ink-faint); }
+
+.avatar-btn { border: 0; padding: 0; background: transparent; border-radius: 50%; cursor: pointer; }
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 70;
+  width: 260px;
+  padding: 6px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-2);
+  display: grid;
+  gap: 2px;
+}
+.menu-head { display: flex; align-items: center; gap: 10px; padding: 8px 10px 10px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.menu-head b { display: block; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu-head span { font-size: 12px; color: var(--ink-faint); }
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.menu-item:hover { background: var(--surface-2); }
+.menu-item .icon { color: var(--ink-soft); }
+.menu-item .menu-value { margin-left: auto; font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); }
+.menu-sep { height: 1px; background: var(--line); margin: 4px 0; }
+.popover-anchor { position: relative; }
+
+.rail {
+  grid-column: 1;
+  grid-row: 2;
+  position: sticky;
+  top: var(--topbar-h);
+  height: calc(100dvh - var(--topbar-h));
+  overflow-y: auto;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding: 16px 12px;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+}
+.rail-group { display: grid; gap: 2px; }
+.rail-group > .eyebrow { padding: 0 10px 6px; font-size: 10px; }
+.rail-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.rail-link:hover { background: var(--surface-2); color: var(--ink); }
+.rail-link[aria-current="page"] { background: var(--surface-3); color: var(--ink); box-shadow: inset 3px 0 0 var(--accent); }
+.rail-link .count {
+  margin-left: auto;
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+.rail-link .count.count-gold { background: var(--r-shiny); color: #1a1406; }
+
+.main { grid-column: 2; grid-row: 2; min-width: 0; }
+
+.section-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.section-tabs::-webkit-scrollbar { display: none; }
+.section-tab {
+  flex: none;
+  padding: 8px 4px 10px;
+  margin-right: 16px;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.section-tab:hover { color: var(--ink); }
+.section-tab[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+.tabbar { display: none; }
+
+@media (max-width: 899px) {
+  .app-shell { grid-template-columns: minmax(0, 1fr); padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+  .rail, .top-search, .topbar .case-chip { display: none; }
+  .main { grid-column: 1; }
+  .brand { width: auto; font-size: 16px; }
+  .topbar { padding: 0 12px; }
+  .page { padding: 18px 16px 32px; gap: 16px; }
+  .page-head h1, .page-title { font-size: 24px; }
+
+  .tabbar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: end;
+    height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+    padding: 0 6px env(safe-area-inset-bottom, 0px);
+    border-top: 1px solid var(--line);
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    backdrop-filter: blur(10px);
+  }
+  .tab {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    padding-bottom: 9px;
+    color: var(--ink-faint);
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .tab[aria-current="page"] { color: var(--ink); }
+  .tab .icon { width: 22px; height: 22px; }
+  .tab-open {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 10px;
+    border-radius: 18px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 42%, transparent);
+    text-decoration: none;
+  }
+  .tab-open .icon { width: 26px; height: 26px; }
+  .tab-open .dot-badge { background: var(--r-shiny); color: #1a1406; border-color: var(--surface); }
+  .toast-stack { right: 12px; bottom: calc(var(--tabbar-h) + 12px); }
+  .menu { position: fixed; top: calc(var(--topbar-h) + 6px); right: 12px; }
+}
+
+/* ---------- Auth ---------- */
+
+.auth-page {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+.auth-art {
+  position: relative;
+  display: grid;
+  align-content: space-between;
+  gap: 24px;
+  padding: 40px;
+  overflow: hidden;
+  background:
+    radial-gradient(80% 60% at 80% 10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+    radial-gradient(70% 60% at 10% 100%, color-mix(in srgb, var(--r-rare) 20%, transparent), transparent 70%),
+    var(--surface);
+  border-right: 1px solid var(--line);
+}
+.auth-art h2 { font-size: clamp(30px, 4vw, 46px); max-width: 14ch; }
+.auth-art p { color: var(--ink-soft); max-width: 40ch; font-size: 16px; }
+.auth-sprites { display: flex; align-items: flex-end; gap: 4px; }
+.auth-sprites img { width: 96px; height: 96px; image-rendering: pixelated; }
+.auth-points { display: grid; gap: 10px; }
+.auth-points li { display: flex; gap: 10px; align-items: center; color: var(--ink-soft); font-size: 14px; }
+.auth-points .icon { color: var(--accent); }
+.auth-form-wrap { display: grid; place-items: center; padding: 32px 20px; }
+.auth-form { width: min(380px, 100%); display: grid; gap: 16px; }
+.auth-form h1 { font-size: 28px; }
+.auth-form .muted { font-size: 14px; }
+.auth-switch { font-size: 14px; color: var(--ink-soft); text-align: center; }
+.auth-lang { position: absolute; top: 16px; right: 16px; }
+
+@media (max-width: 899px) {
+  .auth-page { grid-template-columns: 1fr; }
+  .auth-art { padding: 24px 20px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .auth-art h2 { font-size: 28px; }
+  .auth-art .auth-points { display: none; }
+  .auth-sprites img { width: 64px; height: 64px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

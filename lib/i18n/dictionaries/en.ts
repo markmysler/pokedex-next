@@ -151,8 +151,16 @@ const en = {
     },
   },
   account: {
+    // Login/signup side panel (redesign wave v9). Plain strings only: the
+    // pages pass this across the Server->Client boundary.
+    authArt: {
+      title: "Roll, battle and trade the original Kanto Pokémon.",
+      body: "Open cases for Pokémon with their own rolled stats, build a team of three and take on bots or friends in real time.",
+      points: ["Open cases and chase shinies", "3v3 battles against bots or friends", "Trade, evolve and complete your Pokédex"],
+    },
     login: {
-      heading: "🔴 Log in",
+      heading: "Log in",
+      subheading: "Pick up where you left off.",
       email: "Email",
       password: "Password",
       submit: "Log in",
@@ -161,7 +169,8 @@ const en = {
       signUp: "Sign up",
     },
     signup: {
-      heading: "🔴 Sign up",
+      heading: "Create your trainer",
+      subheading: "You start with three starters and your first case.",
       displayName: "Display name",
       email: "Email",
       password: "Password",
@@ -169,7 +178,7 @@ const en = {
       submitting: "Signing up…",
       haveAccount: "Already have an account?",
       logIn: "Log in",
-      checkEmailHeading: "📬 Check your email",
+      checkEmailHeading: "Check your email",
       checkEmailPrefix: "We sent a confirmation link to ",
       checkEmailSuffix: ". Confirm your address, then log in.",
       backToLogin: "Back to login",
@@ -675,6 +684,41 @@ const en = {
   // SideNav (see `common.close`'s comment) and so must stay function-free
   // -- Sprite.tsx reads this directly via its own useDictionary() call
   // instead, same self-fetch pattern as every other function-valued slice.
+  // App shell (redesign wave v9): top bar, grouped rail, phone tab bar,
+  // avatar menu, section tabs. Read client-side via useDictionary(), so
+  // function-valued entries are fine here (unlike `common`, which crosses a
+  // Server->Client prop boundary).
+  shell: {
+    mainNav: "Main navigation",
+    groups: { play: "Play", collection: "Collection", social: "Social", records: "Records" },
+    nav: {
+      dashboard: "Home",
+      battle: "Battle",
+      online: "Online",
+      open: "Open cases",
+      inventory: "My Pokémon",
+      pokedex: "Pokédex",
+      friends: "Friends",
+      notifications: "Notifications",
+      history: "History",
+      leaderboard: "Leaderboard",
+    },
+    tabs: { collection: "Collection", social: "Social" },
+    casesChip: (n: number) => (n === 1 ? "1 case" : `${n} cases`),
+    open: "Open",
+    notificationsLabel: (unread: number) => (unread > 0 ? `Notifications, ${unread} unread` : "Notifications"),
+    searchPlaceholder: "Search the Pokédex",
+    searchNoResults: (q: string) => `No Pokémon match "${q}".`,
+    menu: {
+      label: "Account menu",
+      profile: "Profile & friend code",
+      darkMode: "Dark mode",
+      sound: "Sound",
+      language: "Language",
+      on: "On",
+      off: "Off",
+    },
+  },
   ui: {
     spriteAlt: (name: string, form: string) => `${name} ${form} sprite`,
   },
