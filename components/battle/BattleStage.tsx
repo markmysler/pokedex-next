@@ -128,7 +128,7 @@ export default function BattleStage({
       <div className="battle-main">
         {toolbar && <div className="battle-toolbar">{toolbar}</div>}
 
-        <div className="field">
+        <div className="battlefield">
           <div className="field-opp">
             <Hud member={them} team={opp} label={oppLabel} />
             <div className="field-fighter">

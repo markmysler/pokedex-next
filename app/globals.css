@@ -327,6 +327,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   font-size: 14px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
+/* iOS Safari zooms the page on focus when a control's text is under 16px. */
+@media (pointer: coarse) {
+  :where(input, select, textarea) { font-size: 16px; }
+}
 textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 input::placeholder, textarea::placeholder { color: var(--ink-faint); }
 input:focus, select:focus, textarea:focus {

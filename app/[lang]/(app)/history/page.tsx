@@ -47,7 +47,7 @@ export default async function HistoryPage() {
               <tr>
                 <th>{t.colResult}</th>
                 <th>{t.colOpponent}</th>
-                <th>{t.colMode}</th>
+                <th className="hide-phone">{t.colMode}</th>
                 <th>{t.colTeam}</th>
                 <th className="num">{t.colDate}</th>
               </tr>
@@ -59,7 +59,7 @@ export default async function HistoryPage() {
                   <tr key={m.id}>
                     <td><span className={`tag ${m.won ? "tag-good" : "tag-bad"}`}>{m.won ? t.won : t.lost}</span></td>
                     <td className="strong">{t.vs} {opponent}</td>
-                    <td className="muted">
+                    <td className="muted hide-phone">
                       {m.mode === "online" ? t.onlineMode : t.botMode}
                       {m.mode === "online" && m.roomCode && <span className="mono faint small"> · {t.roomLabel(m.roomCode)}</span>}
                     </td>
@@ -70,7 +70,7 @@ export default async function HistoryPage() {
                         ))}
                       </span>
                     </td>
-                    <td className="num mono small muted">{dateFormat.format(new Date(m.playedAt))}</td>
+                    <td className="num mono small muted date-cell">{dateFormat.format(new Date(m.playedAt))}</td>
                   </tr>
                 );
               })}
