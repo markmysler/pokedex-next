@@ -6,6 +6,10 @@ the Pokédex, roll and collect your own Pokémon from lootboxes, evolve them,
 and battle them against AI or other players in real time — in English or
 Argentinian Spanish.
 
+> Unofficial, non-commercial fan project. Not affiliated with or endorsed
+> by Nintendo, Game Freak or The Pokémon Company. See
+> [Disclaimer](#disclaimer).
+
 ## Features
 
 - **Pokédex** — the 151 Kanto species plus 6 Dark-type additions (Umbreon;
@@ -170,3 +174,19 @@ This project tracks its own feature work in [upgrades/](upgrades/):
 completed waves are archived under `upgrades/archive/`, and
 [upgrades/main.md](upgrades/main.md) always reflects whatever's
 currently in progress (or says "no active wave" between them).
+
+## Disclaimer
+
+Kanto Pokédex — Web Edition is an unofficial, non-commercial fan project
+made for learning and for fun. It is not affiliated with, endorsed,
+sponsored or approved by Nintendo, Game Freak, Creatures Inc. or The
+Pokémon Company.
+
+Pokémon, the Pokémon names, characters, sprites and related marks are
+trademarks and copyrights of Nintendo, Game Freak, Creatures Inc. and The
+Pokémon Company. They are used here for non-commercial fan purposes only.
+Nothing in this project is sold, and no money changes hands: lootboxes are
+earned in game and cannot be bought.
+
+If you are a rights holder and want something changed or removed, please
+open an issue or contact the author and it will be dealt with promptly.
