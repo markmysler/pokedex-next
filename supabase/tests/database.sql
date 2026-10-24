@@ -106,6 +106,56 @@ set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-00000000000b","r
 do $$
 begin
   if not public.can_use_realtime_topic('room:TEST01') then raise exception 'FAIL room player denied'; end if;
+  if not public.can_use_realtime_topic('room-chat:TEST01') then raise exception 'FAIL room chat player denied'; end if;
+end $$;
+
+-- Sending: Realtime decides once per join whether a client may send, by
+-- inserting a probe row with only topic and extension set (no event), the
+-- way these inserts do. Players may send on room-chat:<code> only, never on
+-- room:<code>, where they could fake game events.
+do $$
+declare
+  t text;
+  sent boolean;
+begin
+  foreach t in array array['room-chat:TEST01', 'room:TEST01', 'room-chat:NOPE00'] loop
+    perform set_config('realtime.topic', t, true);
+    begin
+      insert into realtime.messages (topic, extension) values (t, 'broadcast');
+      sent := true;
+    exception
+      when insufficient_privilege then sent := false;
+      -- With only `supabase db start` (CI), Realtime hasn't created
+      -- today's partition of realtime.messages, so the probe can't run.
+      when check_violation then
+        raise notice 'skipping Realtime send check for %: no realtime.messages partition', t;
+        continue;
+    end;
+    if sent <> (t = 'room-chat:TEST01') then
+      raise exception 'FAIL room player send on % allowed=%', t, sent;
+    end if;
+  end loop;
+end $$;
+reset role;
+
+-- The send policy can't depend on the event: the join-time probe has none.
+do $$
+begin
+  if exists (
+    select 1 from pg_policies
+    where schemaname = 'realtime' and tablename = 'messages' and cmd = 'INSERT'
+      and with_check ~ '\mevent\M'
+  ) then
+    raise exception 'FAIL a realtime.messages insert policy checks event, which Realtime never sets at join';
+  end if;
+end $$;
+
+-- Someone outside the room can't use its chat topic.
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"00000000-0000-0000-0000-00000000000c","role":"authenticated"}';
+do $$
+begin
+  if public.can_use_realtime_topic('room-chat:TEST01') then raise exception 'FAIL room chat allowed to non-player'; end if;
 end $$;
 reset role;
 
